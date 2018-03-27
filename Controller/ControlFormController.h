@@ -15,20 +15,40 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef CONTROLFORMCONTROLLER_H
-#define CONTROLFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class ControlFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_ControlForm.h"
+
+using namespace Ui;
+
+class ControlFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit ControlFormController(QObject *parent = nullptr);
+    explicit ControlFormController(QWidget *parent = nullptr);
+    ~ControlFormController();
 
+    void updateControlsState();
+    bool isHoming();
+    bool isResetCompleted();
+    void onCmdZeroZClicked();
 signals:
 
 public slots:
+    void onCmdResetClicked();
+    void onCmdUnlockClicked();
+    void onCmdSafePositionClicked();
+    void onCmdHomeClicked();
+    void onCmdTouchClicked();
+    void onCmdZeroXYClicked();
+    void onCmdRestoreOriginClicked();
+    void onChkTestModeClicked(bool checked);
+private:
+    ControlForm mUi;
+    bool mIsReseting = false;
+    bool mIsResetCompleted = true;
+    bool mIsAborting = false;
+    bool mIsHoming = false;
 };
-
-#endif // CONTROLFORMCONTROLLER_H

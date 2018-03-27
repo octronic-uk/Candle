@@ -15,20 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef STATEFORMCONTROLLER_H
-#define STATEFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class StateFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_StateForm.h"
+
+using namespace Ui;
+
+class StateFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit StateFormController(QObject *parent = nullptr);
-
+    explicit StateFormController(QWidget *parent = nullptr);
+    ~StateFormController();
 signals:
-
 public slots:
+private:
+    StateForm mUi;
 };
-
-#endif // STATEFORMCONTROLLER_H

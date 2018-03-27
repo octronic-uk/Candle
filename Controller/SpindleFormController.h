@@ -15,20 +15,34 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef SPINDLEFORMCONTROLLER_H
-#define SPINDLEFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class SpindleFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_SpindleForm.h"
+
+using namespace Ui;
+
+class SpindleFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit SpindleFormController(QObject *parent = nullptr);
+    explicit SpindleFormController(QWidget *parent = nullptr);
+    ~SpindleFormController();
 
+    bool isUpdatingSpindleSpeed();
+    void setUpdatingSpindleSpeed(bool);
+    QString getSpindleSpeed();
 signals:
-
 public slots:
+    void onCmdSpindleClicked(bool checked);
+    void onCmdSpindleToggled(bool checked);
+    void onTextSpindleSpeedEditingFinished();
+    void onSliderSpindleSpeedValueChanged(int value);
+    void onSliderSpindleSpeedActionTriggered(int action);
+private:
+    SpindleForm mUi;
+    bool mIsUpdatingSpindleSpeed = false;
+    bool mSpindleCW = true;
+    bool mSpindleCommandSpeed = false;
 };
-
-#endif // SPINDLEFORMCONTROLLER_H

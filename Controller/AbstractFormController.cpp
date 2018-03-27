@@ -17,7 +17,13 @@
  */
 #include "AbstractFormController.h"
 
-AbstractFormController::AbstractFormController(QObject *parent) : QObject(parent)
+
+AbstractFormController::AbstractFormController(QWidget *parent)
+    : QWidget(parent)
+{
+}
+
+AbstractFormController::~AbstractFormController()
 {
 
 }

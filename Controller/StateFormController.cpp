@@ -17,7 +17,15 @@
  */
 #include "StateFormController.h"
 
-StateFormController::StateFormController(QObject *parent) : QObject(parent)
+StateFormController::StateFormController(QWidget *parent)
+    : AbstractFormController(parent)
 {
+    QMessageLogger().info("Constructing StateFormController");
+    mUi.setupUi(this);
+}
+
+StateFormController::~StateFormController()
+{
+    QMessageLogger().info("Destructing StateFormController");
 
 }

@@ -15,20 +15,56 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef PROGRAMFORMCONTROLLER_H
-#define PROGRAMFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class ProgramFormController : public QObject
+#include <QMenu>
+
+#include "AbstractFormController.h"
+#include "Model/Tables/GCodeTableModel.h"
+
+#include "ui_ProgramForm.h"
+
+using namespace Ui;
+
+class ProgramFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit ProgramFormController(QObject *parent = nullptr);
+    explicit ProgramFormController(QWidget *parent = nullptr);
+    ~ProgramFormController();
+
+    bool isPauseChecked();
+    void setPauseChecked(bool);
+
+    bool isAutoScrollChecked();
+    void setAutoScrollChecked(bool);
+    int getChkTestModeWidth(); // sizehint->width
+    int getChkAutoScrollWidth(); // sizehint->width
 
 signals:
-
 public slots:
-};
+    void onActSendFromLineTriggered();
+    void onChkBoxTestModeClicked(bool checked);
+    void onCmdFileSendClicked();
+    void onCmdFileAbortClicked();
+    void onCmdCommandSendClicked();
+    void onCmdFileOpenClicked();
+    void onCmdFilePauseClicked(bool checked);
+    void onCmdFileResetClicked();
 
-#endif // PROGRAMFORMCONTROLLER_H
+    void onTableInsertLine();
+    void onTableDeleteLines();
+    void onTableCurrentChanged(QModelIndex idx1, QModelIndex idx2);
+    void onTableCellChanged(QModelIndex i1, QModelIndex i2);
+    void onTableProgramCustomContextMenuRequested(const QPoint &pos);
+
+private:
+    ProgramForm mUi;
+    GCodeTableModel mProgramTableModel;
+    GCodeTableModel *mCurrentGCodeTableModel;
+
+    QMenu mTableMenu;
+
+    void clearTable();
+};

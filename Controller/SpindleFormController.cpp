@@ -17,7 +17,80 @@
  */
 #include "SpindleFormController.h"
 
-SpindleFormController::SpindleFormController(QObject *parent) : QObject(parent)
+SpindleFormController::SpindleFormController(QWidget *parent)
+    : AbstractFormController(parent)
+{
+    QMessageLogger().info("Constructing SpindleFormController");
+    mUi.setupUi(this);
+}
+
+SpindleFormController::~SpindleFormController()
+{
+    QMessageLogger().info("Destructing SpindleFormController");
+
+}
+
+bool SpindleFormController::isUpdatingSpindleSpeed()
 {
 
 }
+
+void SpindleFormController::setUpdatingSpindleSpeed(bool)
+{
+
+}
+
+QString SpindleFormController::getSpindleSpeed()
+{
+
+}
+
+void SpindleFormController::onCmdSpindleToggled(bool checked)
+{
+    /*
+    mUi->grpSpindle->setProperty("overrided", checked);
+    style()->unpolish(mUi->grpSpindle);
+    mUi->grpSpindle->ensurePolished();
+
+    if (checked) {
+        if (!mUi->grpSpindle->isChecked()) mUi->grpSpindle->setTitle(tr("Spindle") + QString(tr(" (%1)")).arg(mUi->txtSpindleSpeed->text()));
+    } else {
+        mUi->grpSpindle->setTitle(tr("Spindle"));
+    }
+    */
+}
+
+void SpindleFormController::onCmdSpindleClicked(bool checked)
+{
+    //sendCommand(checked ? QString("M3 S%1").arg(mUi->txtSpindleSpeed->text()) : "M5", -1, mSettingsForm->showUICommands());
+}
+
+void SpindleFormController::onTextSpindleSpeedEditingFinished()
+{
+    /*
+    mUi->txtSpindleSpeed->setStyleSheet("color: red;");
+    mUi->sliSpindleSpeed->setValue(mUi->txtSpindleSpeed->value() / 100);
+    m_updateSpindleSpeed = true;
+    */
+}
+
+void SpindleFormController::onSliderSpindleSpeedValueChanged(int value)
+{
+    /*
+    Q_UNUSED(value)
+
+    mUi->txtSpindleSpeed->setStyleSheet("color: red;");
+
+    if (!mUi->grpSpindle->isChecked() && mUi->cmdSpindle->isChecked())
+        mUi->grpSpindle->setTitle(tr("Spindle") + QString(tr(" (%1)")).arg(mUi->txtSpindleSpeed->text()));
+        */
+}
+
+void SpindleFormController::onSliderSpindleSpeedActionTriggered(int action)
+{
+    /*
+    mUi->txtSpindleSpeed->setValue(mUi->sliSpindleSpeed->sliderPosition() * 100);
+    m_updateSpindleSpeed = true;
+    */
+}
+

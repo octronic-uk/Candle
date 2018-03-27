@@ -15,20 +15,68 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef HEIGHTMAPFORMCONTROLLER_H
-#define HEIGHTMAPFORMCONTROLLER_H
+#pragma once
 
-#include <QObject>
+#include "AbstractFormController.h"
+#include "ui_HeightMapForm.h"
 
-class HeightMapFormController : public QObject
+#include "View/Drawers/heightmapborderdrawer.h"
+#include "View/Drawers/HeightMapGridDrawer.h"
+#include "View/Drawers/HeightMapInterpolationDrawer.h"
+#include "Model/Tables/HeightMapTableModel.h"
+#include "Model/Tables/GCodeTableModel.h"
+
+class LineSegment;
+
+using namespace Ui;
+
+class HeightMapFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit HeightMapFormController(QObject *parent = nullptr);
+    explicit HeightMapFormController(QWidget *parent = nullptr);
+    ~HeightMapFormController();
+    void updateHeightMapInterpolationDrawer(bool reset = false);
+
+    void updateHeightMapGrid(double arg1);
+    void updateHeightMapBorderDrawer();
+    bool updateHeightMapGrid();
+
+    void resizeTableHeightMapSections();
+    void setHeightMapMode(bool);
 
 signals:
-
 public slots:
-};
+    void onCheckBoxHeightMapBorderShowToggled(bool checked);
+    void onTextHeightMapBorderXValueChanged(double arg1);
+    void onTextHeightMapBorderWidthValueChanged(double arg1);
+    void onTextHeightMapBorderYValueChanged(double arg1);
+    void onTextHeightMapBorderHeightValueChanged(double arg1);
+    void onTextHeightMapGridXValueChanged(double arg1);
+    void onTextHeightMapGridYValueChanged(double arg1);
+    void onTextHeightMapGridZBottomValueChanged(double arg1);
+    void onTextHeightMapGridZTopValueChanged(double arg1);
+    void onCheckBoxHeightMapGridShowToggled(bool checked);
+    void onCmdHeightMapModeToggled(bool checked);
+    void onCheckBoxHeightMapInterpolationShowToggled(bool checked);
+    void onCmdHeightMapLoadClicked();
+    void onTextHeightMapInterpolationStepXValueChanged(double arg1);
+    void onTextHeightMapInterpolationStepYValueChanged(double arg1);
+    void onCheckBoxHeightMapUseClicked(bool checked);
+    void onCmdHeightMapCreateClicked();
+    void onCmdHeightMapBorderAutoClicked();
+    void resizeEvent(QResizeEvent* re);
+    void onGripHeightMapToggled(bool arg1);
+private:
+    HeightMapForm mUi;
+    HeightMapTableModel mHeightMapModel;
+    GCodeTableModel mProgramHeightmapTableModel;
+    GCodeTableModel mProbeTableModel;
+    bool mHeightMapMode;
 
-#endif // HEIGHTMAPFORMCONTROLLER_H
+    QList<LineSegment*> subdivideSegment(LineSegment* segment);
+    QRectF borderRectFromTextboxes();
+    QRectF borderRectFromExtremes();
+    void resetHeightmap();
+
+};

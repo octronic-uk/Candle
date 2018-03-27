@@ -15,20 +15,39 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef FEEDFORMCONTROLLER_H
-#define FEEDFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class FeedFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_FeedForm.h"
+
+using namespace Ui;
+
+class FeedFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit FeedFormController(QObject *parent = nullptr);
+    explicit FeedFormController(QWidget *parent = nullptr);
+    ~FeedFormController();
 
+    bool isUpdatingFeed();
+    void setUpdatingFeed(bool updating);
+
+    double getOriginalFeedRate();
+    bool isFeedOverrideChecked();
+
+    double getTxtFeedValue();
 signals:
 
 public slots:
-};
+    void onTextFeedEditingFinished();
+    void onSliderFeedValueChanged(int value);
+    void onChkBoxFeedOverrideToggled(bool checked);
+private:
+    FeedForm mUi;
+    bool mIsUpdatingFeed = false;
 
-#endif // FEEDFORMCONTROLLER_H
+    double mOriginalFeedRate;
+
+    QString feedOverride(QString command);
+};

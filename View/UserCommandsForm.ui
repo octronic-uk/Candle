@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UserCommandsForm</class>
+ <widget class="QWidget" name="UserCommandsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>220</width>
+    <height>64</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="widgetUserCommands" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_31">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <property name="horizontalSpacing">
+         <number>8</number>
+        </property>
+        <item row="0" column="1">
+         <widget class="StyledToolButton" name="cmdUser2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>44</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Spindle on/off</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../Resources/images.qrc">
+            <normaloff>:/images/num2.png</normaloff>:/images/num2.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="StyledToolButton" name="cmdUser4">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>44</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Spindle on/off</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../Resources/images.qrc">
+            <normaloff>:/images/num4.png</normaloff>:/images/num4.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="StyledToolButton" name="cmdUser3">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>44</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Spindle on/off</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../Resources/images.qrc">
+            <normaloff>:/images/num3.png</normaloff>:/images/num3.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="StyledToolButton" name="cmdUser1">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>44</width>
+            <height>44</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Spindle on/off</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../Resources/images.qrc">
+            <normaloff>:/images/num1.png</normaloff>:/images/num1.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>StyledToolButton</class>
+   <extends>QToolButton</extends>
+   <header location="global">View/Widgets/StyledToolButton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../Resources/images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

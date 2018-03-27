@@ -15,20 +15,25 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef USERCOMMANDSFORMCONTROLLER_H
-#define USERCOMMANDSFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class UserCommandsFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_UserCommandsForm.h"
+
+using namespace Ui;
+
+class UserCommandsFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit UserCommandsFormController(QObject *parent = nullptr);
-
+    explicit UserCommandsFormController(QWidget *parent = nullptr);
+    ~UserCommandsFormController();
 signals:
-
 public slots:
-};
 
-#endif // USERCOMMANDSFORMCONTROLLER_H
+    // User Commands
+    void onCmdUserClicked(bool checked);
+private:
+    UserCommandsForm mUi;
+};

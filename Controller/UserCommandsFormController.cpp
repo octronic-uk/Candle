@@ -17,7 +17,29 @@
  */
 #include "UserCommandsFormController.h"
 
-UserCommandsFormController::UserCommandsFormController(QObject *parent) : QObject(parent)
+UserCommandsFormController::UserCommandsFormController(QWidget *parent)
+    : AbstractFormController(parent)
 {
 
+    QMessageLogger().info("Constructing UserCommandsFormController");
+    mUi.setupUi(this);
+}
+
+UserCommandsFormController::~UserCommandsFormController()
+{
+    QMessageLogger().info("Destructing UserCommandsFormController");
+
+}
+
+void UserCommandsFormController::onCmdUserClicked(bool checked)
+{
+    /*
+    int i = sender()->objectName().right(1).toInt();
+
+    QStringList list = mSettingsForm->userCommands(i).split(";");
+
+    foreach (QString cmd, list) {
+        sendCommand(cmd.trimmed(), -1, mSettingsForm->showUICommands());
+    }
+    */
 }

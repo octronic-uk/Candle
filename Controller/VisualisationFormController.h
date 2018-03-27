@@ -15,20 +15,68 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef VISUALISATIONFORMCONTROLLER_H
-#define VISUALISATIONFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class VisualisationFormController : public QObject
+#include "AbstractFormController.h"
+#include "ui_VisualisationForm.h"
+
+
+#include "View/Drawers/OriginDrawer.h"
+#include "View/Drawers/GCodeDrawer.h"
+#include "View/Drawers/ToolDrawer.h"
+#include "View/Drawers/SelectionDrawer.h"
+#include "View/Drawers/HeightMapGridDrawer.h"
+#include "View/Drawers/HeightMapBorderDrawer.h"
+#include "View/Drawers/HeightMapInterpolationDrawer.h"
+
+using namespace Ui;
+
+class VisualisationFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit VisualisationFormController(QObject *parent = nullptr);
-
+    explicit VisualisationFormController(QWidget *parent = nullptr);
+    ~VisualisationFormController();
 signals:
-
 public slots:
-};
+    void onCmdFitClicked();
+    void onCmdTopClicked();
+    void onCmdFrontClicked();
+    void onCmdLeftClicked();
+    void onCmdIsometricClicked();
+    double toolZPosition();
+    QString getParserStatus();
+    GLWidget* getVisualiser();
+    void setGLWBufferState(QString state); // glwBuffer.setBufferState
+    void placeVisualizerButtons();
+    void onVisualizatorRotationChanged();
 
-#endif // VISUALISATIONFORMCONTROLLER_H
+    void timerEvent(QTimerEvent* te);
+    void showEvent(QShowEvent* se);
+    void hideEvent(QHideEvent* he);
+    void resizeEvent(QResizeEvent* re);
+private slots:
+
+private:
+    VisualisationForm mUi;
+
+    // GL Drawers
+    GcodeDrawer mCodeDrawer;
+    GcodeDrawer mProbeDrawer;
+    GcodeDrawer mCurrentDrawer;
+    OriginDrawer mOriginDrawer;
+    ToolDrawer mToolDrawer;
+    SelectionDrawer mSelectionDrawer;
+    HeightMapBorderDrawer mHeightMapBorderDrawer;
+    HeightMapGridDrawer mHeightMapGridDrawer;
+    HeightMapInterpolationDrawer mHeightMapInterpolationDrawer;
+
+    // Parsers
+    GcodeViewParse mViewParser;
+    GcodeViewParse mProbeParser;
+
+    QBasicTimer mToolAnimationTimer;
+    int mLastDrawnLineIndex;
+    void updateParser();
+};

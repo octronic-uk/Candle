@@ -17,7 +17,94 @@
  */
 #include "FeedFormController.h"
 
-FeedFormController::FeedFormController(QObject *parent) : QObject(parent)
+FeedFormController::FeedFormController(QWidget *parent)
+    : AbstractFormController(parent)
+{
+    QMessageLogger().info("Contructing FeedFormController");
+    mUi.setupUi(this);
+
+}
+
+FeedFormController::~FeedFormController()
+{
+    QMessageLogger().info("Destructing FeedFormController");
+}
+
+bool FeedFormController::isUpdatingFeed()
 {
 
 }
+
+void FeedFormController::setUpdatingFeed(bool updating)
+{
+
+}
+
+double FeedFormController::getOriginalFeedRate()
+{
+
+}
+
+bool FeedFormController::isFeedOverrideChecked()
+{
+
+}
+
+double FeedFormController::getTxtFeedValue()
+{
+
+}
+
+
+// Feed
+
+void FeedFormController::onChkBoxFeedOverrideToggled(bool checked)
+{
+    /*
+    mUi.grpFeed->setProperty("overrided", checked);
+    style()->unpolish(mUi.grpFeed);
+    mUi.grpFeed->ensurePolished();
+    updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
+
+    if (mIsProcessingFile)
+    {
+        mUi.txtFeed->setStyleSheet("color: red;");
+        mIsUpdatingFeed = true;
+    }
+    */
+}
+
+void FeedFormController::onTextFeedEditingFinished()
+{
+    mUi.sliFeed->setValue(mUi.txtFeed->value());
+}
+
+QString FeedFormController::feedOverride(QString command)
+{
+    /*
+    // Feed override if not in heightmap probing mode
+    if (!mUi.cmdHeightMapMode->isChecked())
+    {
+        command = GcodePreprocessorUtils::overrideSpeed(
+            command,
+            mUi.chkFeedOverride->isChecked() ? mUi.txtFeed->value() : 100,
+            &mOriginalFeedRate
+        );
+    }
+    return command;
+    */
+}
+
+void FeedFormController::onSliderFeedValueChanged(int value)
+{
+    /*
+    mUi.txtFeed->setValue(value);
+    updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
+    if (mIsProcessingFile && mUi.chkFeedOverride->isChecked())
+    {
+        mUi.txtFeed->setStyleSheet("color: red;");
+        mIsUpdatingFeed = true;
+    }
+    */
+}
+

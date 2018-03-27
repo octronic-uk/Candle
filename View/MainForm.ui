@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainForm</class>
+ <widget class="QMainWindow" name="MainForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>961</width>
+    <height>899</height>
+   </rect>
+  </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Candle</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resources/images.qrc">
+    <normaloff>:/images/candle_256.png</normaloff>:/images/candle_256.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout_5">
+    <property name="spacing">
+     <number>9</number>
+    </property>
+    <property name="leftMargin">
+     <number>9</number>
+    </property>
+    <property name="topMargin">
+     <number>9</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
+     <number>9</number>
+    </property>
+    <item>
+     <widget class="VisualisationFormController" name="visualisationFormController"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>961</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="mnuFile">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <widget class="QMenu" name="mnuRecent">
+     <property name="title">
+      <string>&amp;Recent files</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actRecentClear"/>
+    </widget>
+    <addaction name="actFileNew"/>
+    <addaction name="actFileOpen"/>
+    <addaction name="mnuRecent"/>
+    <addaction name="separator"/>
+    <addaction name="actFileSave"/>
+    <addaction name="actFileSaveAs"/>
+    <addaction name="actFileSaveTransformedAs"/>
+    <addaction name="separator"/>
+    <addaction name="actFileExit"/>
+   </widget>
+   <widget class="QMenu" name="mnuService">
+    <property name="title">
+     <string>&amp;Service</string>
+    </property>
+    <addaction name="actServiceSettings"/>
+   </widget>
+   <widget class="QMenu" name="mnuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actAbout"/>
+   </widget>
+   <addaction name="mnuFile"/>
+   <addaction name="mnuService"/>
+   <addaction name="mnuHelp"/>
+  </widget>
+  <widget class="QDockWidget" name="controlDockWidget">
+   <property name="windowTitle">
+    <string>Control</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="ControlFormController" name="controlFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="jogDockWidget">
+   <property name="windowTitle">
+    <string>Jog</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="JogFormController" name="jogFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="spindleDockWidget">
+   <property name="windowTitle">
+    <string>Spindle</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="SpindleFormController" name="spindleFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="consoleDockWidget">
+   <property name="windowTitle">
+    <string>Console</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="ConsoleFormController" name="consoleFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="programDockWidget">
+   <property name="windowTitle">
+    <string>Program</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="ProgramFormController" name="programFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="userCommandsDockWidget">
+   <property name="windowTitle">
+    <string>User Commands</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="userCommandsFormController"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actFileOpen">
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+  </action>
+  <action name="actFileExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="actServiceSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="actFileNew">
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="actFileSave">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+  </action>
+  <action name="actFileSaveAs">
+   <property name="text">
+    <string>Save &amp;as...</string>
+   </property>
+  </action>
+  <action name="actAbout">
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actRecentClear">
+   <property name="text">
+    <string>&amp;Clear</string>
+   </property>
+  </action>
+  <action name="actFileSaveTransformedAs">
+   <property name="text">
+    <string>Save &amp;transformed as...</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ControlFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/ControlFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>JogFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/JogFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SpindleFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/SpindleFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConsoleFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/ConsoleFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ProgramFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/ProgramFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VisualisationFormController</class>
+   <extends>QOpenGLWidget</extends>
+   <header>Controller/VisualisationFormController.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../Resources/images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

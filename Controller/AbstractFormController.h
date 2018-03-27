@@ -15,20 +15,19 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#ifndef ABSTRACTFORMCONTROLLER_H
-#define ABSTRACTFORMCONTROLLER_H
 
-#include <QObject>
+#pragma once
 
-class AbstractFormController : public QObject
+#include <QWidget>
+
+class AbstractFormController : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AbstractFormController(QObject *parent = nullptr);
+    explicit AbstractFormController(QWidget *parent = nullptr);
+    virtual ~AbstractFormController() = 0;
 
 signals:
 
 public slots:
 };
-
-#endif // ABSTRACTFORMCONTROLLER_H
