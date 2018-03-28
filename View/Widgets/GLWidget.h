@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -84,45 +84,44 @@ private slots:
     void viewAnimation();
 
 private:
-    double m_xRot, m_yRot, m_xLastRot, m_yLastRot;
-    double m_xPan, m_yPan, m_xLastPan, m_yLastPan;
-    double m_xLookAt, m_yLookAt, m_zLookAt;
-    QPoint m_lastPos;
-    double m_zoom;
-    double m_distance;
-    double m_xMin, m_xMax, m_yMin, m_yMax, m_zMin, m_zMax, m_xSize, m_ySize, m_zSize;
-    double m_lineWidth;
-    double m_pointSize;
-    bool m_antialiasing;
-    bool m_msaa;
-    bool m_vsync;
-    bool m_zBuffer;
-    int m_frames = 0;
-    int m_fps = 0;
-    int m_targetFps;
-    int m_animationFrame;
-    QTime m_spendTime;
-    QTime m_estimatedTime;
-    QBasicTimer m_timerPaint;
-    double m_xRotTarget, m_yRotTarget;
-    double m_xRotStored, m_yRotStored;
-    bool m_animateView;
-    QString m_parserStatus;
-    QString m_bufferState;
-    bool m_updatesEnabled;
-
     double normalizeAngle(double angle);
     double calculateVolume(QVector3D size);
     void beginViewAnimation();
     void stopViewAnimation();
 
-    QList<ShaderDrawable*> m_shaderDrawables;
-    QOpenGLShaderProgram *m_shaderProgram;
-    QMatrix4x4 m_projectionMatrix;
-    QMatrix4x4 m_viewMatrix;
+    double mXRot, mYRot, mXLastRot, mYLastRot;
+    double mXPan, mYPan, mXLastPan, mYLastPan;
+    double mXLookAt, mYLookAt, mZLookAt;
+    QPoint mLastPos;
+    double mZoom;
+    double m_distance;
+    double mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mXSize, mYSize, mZSize;
+    double mLineWidth;
+    double mPointSize;
+    bool mAntialiasing;
+    bool mMsaa;
+    bool mVsync;
+    bool mZBuffer;
+    int mFrames = 0;
+    int mFps = 0;
+    int mTargetFps;
+    int mAnimationFrame;
+    QTime mSpendTime;
+    QTime mEstimatedTime;
+    QBasicTimer mTimerPaint;
+    double mXRotTarget, mYRotTarget;
+    double mXRotStored, mYRotStored;
+    bool mAnimateView;
+    QString mParserStatus;
+    QString mBufferState;
+    bool mUpdatesEnabled;
+    QList<ShaderDrawable*> mShaderDrawables;
+    QOpenGLShaderProgram *mShaderProgram;
+    QMatrix4x4 mProjectionMatrix;
+    QMatrix4x4 mViewMatrix;
 
-    QColor m_colorBackground;
-    QColor m_colorText;
+    QColor mColorBackground;
+    QColor mColorText;
 
 protected:
     void initializeGL();

@@ -6,32 +6,59 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>202</width>
-    <height>110</height>
+    <width>262</width>
+    <height>116</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_5">
      <property name="spacing">
-      <number>2</number>
+      <number>4</number>
      </property>
      <item row="0" column="1">
-      <widget class="QToolButton" name="cmdHome">
+      <widget class="QPushButton" name="cmdHome">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>44</width>
-         <height>44</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
         <string>Home</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
@@ -43,77 +70,40 @@
          <height>30</height>
         </size>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QToolButton" name="cmdTouch">
-       <property name="minimumSize">
-        <size>
-         <width>44</width>
-         <height>44</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Z-probe</string>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/search_for_z.png</normaloff>:/images/search_for_z.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
+       <property name="flat">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QToolButton" name="cmdZeroXY">
+     <item row="1" column="3">
+      <widget class="QPushButton" name="cmdReset">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>44</width>
-         <height>44</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
-        <string>Zero XY</string>
+        <string>Reset</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/axis_zero.png</normaloff>:/images/axis_zero.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QToolButton" name="cmdZeroZ">
-       <property name="minimumSize">
-        <size>
-         <width>44</width>
-         <height>44</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Zero Z</string>
-       </property>
-       <property name="text">
-        <string>...</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/zero_z.png</normaloff>:/images/zero_z.png</iconset>
+         <normaloff>:/images/restart.png</normaloff>:/images/restart.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -124,21 +114,33 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QToolButton" name="cmdRestoreOrigin">
+      <widget class="QPushButton" name="cmdRestoreOrigin">
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>42</width>
-         <height>42</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
         <string>Restore origin</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
@@ -153,18 +155,30 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QToolButton" name="cmdSafePosition">
+      <widget class="QPushButton" name="cmdSafePosition">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>44</width>
-         <height>44</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
         <string>Safe position</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
@@ -178,23 +192,35 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="3">
-      <widget class="QToolButton" name="cmdReset">
+     <item row="0" column="2">
+      <widget class="QPushButton" name="cmdTouch">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>44</width>
-         <height>44</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
-        <string>Reset</string>
+        <string>Z-probe</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/restart.png</normaloff>:/images/restart.png</iconset>
+         <normaloff>:/images/search_for_z.png</normaloff>:/images/search_for_z.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -205,21 +231,33 @@
       </widget>
      </item>
      <item row="1" column="4">
-      <widget class="QToolButton" name="cmdUnlock">
+      <widget class="QPushButton" name="cmdUnlock">
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>44</width>
-         <height>44</height>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
         </size>
        </property>
        <property name="toolTip">
         <string>Unlock</string>
        </property>
        <property name="text">
-        <string>...</string>
+        <string/>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
@@ -229,6 +267,82 @@
         <size>
          <width>24</width>
          <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="cmdZeroXY">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Zero XY</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/images.qrc">
+         <normaloff>:/images/axis_zero.png</normaloff>:/images/axis_zero.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QPushButton" name="cmdZeroZ">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Zero Z</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/images.qrc">
+         <normaloff>:/images/zero_z.png</normaloff>:/images/zero_z.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
         </size>
        </property>
       </widget>

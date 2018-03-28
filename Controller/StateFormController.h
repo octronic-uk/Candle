@@ -33,4 +33,8 @@ signals:
 public slots:
 private:
     StateForm mUi;
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

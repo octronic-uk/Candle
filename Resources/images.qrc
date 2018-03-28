@@ -36,11 +36,31 @@
         <file>images/handle_small.png</file>
         <file>images/guard.png</file>
         <file>images/origin.png</file>
-        <file>images/candle_256.png</file>
+        <file>images/cocoanut_256.png</file>
         <file>images/run.png</file>
         <file>images/num1.png</file>
         <file>images/num2.png</file>
         <file>images/num3.png</file>
         <file>images/num4.png</file>
+        <file>Images/folder-open-outline/32x32.png</file>
+        <file>Images/document-edit-outline/32x32.png</file>
+        <file>Images/minus-circle-outline/32x32.png</file>
+        <file>Images/plus-circle-outline/32x32.png</file>
+        <file>Images/document-download-outline/32x32.png</file>
+        <file>Images/home-var-outline/32x32.png</file>
+        <file>Images/chevron-circle-outline/32x32 down.png</file>
+        <file>Images/chevron-circle-outline/32x32 left.png</file>
+        <file>Images/chevron-circle-outline/32x32 right.png</file>
+        <file>Images/chevron-circle-outline/32x32 up.png</file>
+        <file>Images/chevron-circle-outline/32x32 down-left.png</file>
+        <file>Images/chevron-circle-outline/32x32 down-right.png</file>
+        <file>Images/chevron-circle-outline/32x32 up-left.png</file>
+        <file>Images/chevron-circle-outline/32x32 up-right.png</file>
+        <file>Images/info-circle-outline/32x32.png</file>
+        <file>Images/settings-var-outline/256x256.png</file>
+        <file>Images/percent-circle-outline/256x256.png</file>
+        <file>Images/location-arrow-outline/256x256.png</file>
+        <file>Images/eye-outline/256x256.png</file>
+        <file>Images/cocoanut.png</file>
     </qresource>
 </RCC>

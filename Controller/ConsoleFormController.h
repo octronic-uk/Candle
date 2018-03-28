@@ -32,9 +32,10 @@ public:
     ~ConsoleFormController();
     void onCmdClearConsoleClicked();
     int getConsoleMinHeight();
+signals:
+    void commandSentSignal(QString cmd, int len);
 public slots:
     void onComboBoxCommandReturnPressed();
-    void onConsoleResized(QSize size);
     void onCmdCommandSendClicked();
 private:
     ConsoleForm mUi;
@@ -42,4 +43,8 @@ private:
     int mStoredConsoleMinimumHeight;
     int mStoredConsoleHeight;
     int mConsolePureHeight;
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

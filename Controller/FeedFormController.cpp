@@ -20,14 +20,15 @@
 FeedFormController::FeedFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Contructing FeedFormController");
+    qDebug() << "FeedFormController: Constructing";
     mUi.setupUi(this);
+    setupSignalSlots();
 
 }
 
 FeedFormController::~FeedFormController()
 {
-    QMessageLogger().info("Destructing FeedFormController");
+    qDebug() << "FeedFormController: Destructing";
 }
 
 bool FeedFormController::isUpdatingFeed()
@@ -93,6 +94,12 @@ QString FeedFormController::feedOverride(QString command)
     }
     return command;
     */
+}
+
+void FeedFormController::setupSignalSlots()
+{
+
+    qDebug() << "FeedFormController: Setup Signals/Slots";
 }
 
 void FeedFormController::onSliderFeedValueChanged(int value)

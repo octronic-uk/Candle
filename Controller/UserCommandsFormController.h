@@ -36,4 +36,8 @@ public slots:
     void onCmdUserClicked(bool checked);
 private:
     UserCommandsForm mUi;
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

@@ -36,18 +36,6 @@ QGroupBox {
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QListWidget" name="listCategories">
-       <property name="styleSheet">
-        <string notr="true">QListWidget::item {
-	height: 1.75em;
-}</string>
-       </property>
-       <property name="spacing">
-        <number>1</number>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="ScrollArea" name="scrollSettings">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
@@ -71,8 +59,8 @@ QGroupBox {
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
-          <width>449</width>
+          <y>-1043</y>
+          <width>525</width>
           <height>1706</height>
          </rect>
         </property>
@@ -1556,7 +1544,6 @@ QGroupBox {
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>listCategories</tabstop>
   <tabstop>scrollSettings</tabstop>
   <tabstop>cboPort</tabstop>
   <tabstop>cmdRefresh</tabstop>

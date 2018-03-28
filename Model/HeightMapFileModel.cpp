@@ -16,19 +16,20 @@
  * this file belongs to.
  */
 #include "HeightMapFileModel.h"
+#include <QtDebug>
 
 HeightMapFileModel::HeightMapFileModel(QObject *parent)
     : QObject(parent)
 {
-
+    qDebug() << "Constructing HeightMapFileModel";
 }
 
 HeightMapFileModel::~HeightMapFileModel()
 {
-
+    qDebug() << "Destructing HeightMapFileModel";
 }
 
-bool HeightMapFileModel::isHeightmapFile(QString fileName)
+bool HeightMapFileModel::isHeightMapFile(QString fileName)
 {
     return fileName.endsWith(".map", Qt::CaseInsensitive);
 }
@@ -82,14 +83,16 @@ bool HeightMapFileModel::save(QString fileName)
 
 void HeightMapFileModel::load(QString fileName)
 {
-    /*
-    QFile file(fileName);
+    emit heightMapFileLoadStartedSignal();
 
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(this, this->windowTitle(), tr("Can't open file:\n") + fileName);
+    mFile.setFileName(fileName);
+    if (!mFile.open(QIODevice::ReadOnly))
+    {
+        emit statusUpdateSignal(QString(tr("Can't open file:\n") + fileName));
         return;
     }
-    QTextStream textStream(&file);
+    QTextStream textStream(&mFile);
+    /*
 
     m_settingsLoading = true;
 
@@ -156,4 +159,12 @@ void HeightMapFileModel::load(QString fileName)
 
     updateHeightMapInterpolationDrawer();
     */
+    qDebug() << "HeightMapFileModel: Loaded %s",fileName.toStdString().c_str();
+    emit heightMapFileLoadFinishedSignal();
 }
+
+QString HeightMapFileModel::getCurrentFileName()
+{
+   return mFile.fileName();
+}
+

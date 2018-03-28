@@ -20,13 +20,14 @@
 SpindleFormController::SpindleFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Constructing SpindleFormController");
+    qDebug() << "SpindleFormController: Constructing";
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 SpindleFormController::~SpindleFormController()
 {
-    QMessageLogger().info("Destructing SpindleFormController");
+    qDebug() << "SpindleFormController: Destructing";
 
 }
 
@@ -92,5 +93,11 @@ void SpindleFormController::onSliderSpindleSpeedActionTriggered(int action)
     mUi->txtSpindleSpeed->setValue(mUi->sliSpindleSpeed->sliderPosition() * 100);
     m_updateSpindleSpeed = true;
     */
+}
+
+void SpindleFormController::setupSignalSlots()
+{
+
+    qDebug() << "SpindleFormController: Setup Signals/Slots";
 }
 

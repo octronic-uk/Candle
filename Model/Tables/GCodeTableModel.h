@@ -1,28 +1,19 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#ifndef GCODETABLEMODEL_H
-#define GCODETABLEMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QString>
+#include "../GcodeItem.h"
 
-struct GCodeItem
-{
-    enum States { InQueue, Sent, Processed, Skipped };
 
-    QString command;
-    char state;
-    QString response;
-    int line;
-    QStringList args;
-};
 
-class GCodeTableModel : public QAbstractTableModel
+class GcodeTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit GCodeTableModel(QObject *parent = 0);
+    explicit GcodeTableModel(QObject *parent = 0);
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
@@ -37,15 +28,15 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
 
-    QList<GCodeItem> &data();
+    QList<GcodeItem> &data();
+
+    void append(QList<GcodeItem> &items);
 
 signals:
 
 public slots:
 
 private:
-    QList<GCodeItem> m_data;
-    QStringList m_headers;
+    QList<GcodeItem> mData;
+    QStringList mHeaders;
 };
-
-#endif // GCODETABLEMODEL_H

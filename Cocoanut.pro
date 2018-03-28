@@ -27,19 +27,19 @@ contains(QT_CONFIG, opengles.) {
     target.path = /home/pi
 }
 
-TARGET = Candle
+TARGET = Cocoanut
 TEMPLATE = app
 VERSION = 1.0.12
-RC_ICONS += images/candle.ico
+RC_ICONS += images/cocoanut.ico
 
 DEFINES += sNan=\"65536\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TRANSLATIONS += \
-    translations/candle_es.ts \
-    translations/candle_fr.ts \
-    translations/candle_pt.ts \
-    translations/candle_ru.ts
+    translations/cocoanut_es.ts \
+    translations/cocoanut_fr.ts \
+    translations/cocoanut_pt.ts \
+    translations/cocoanut_ru.ts
 
 SOURCES +=\
     Main.cpp \
@@ -86,7 +86,8 @@ SOURCES +=\
     Model/GCodeFileModel.cpp \
     Model/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
-    Model/RecentHeightMapFilesModel.cpp
+    Model/RecentHeightMapFilesModel.cpp \
+    Model/GcodeItem.cpp
 
 
 HEADERS  += \
@@ -139,7 +140,8 @@ HEADERS  += \
     Model/RecentHeightMapFilesModel.h \
     Controller/CommandAttributes.h \
     Controller/CommandQueue.h \
-    Controller/CancelException.h
+    Controller/CancelException.h \
+    Model/GcodeItem.h
 
 FORMS    += \
     View/AboutForm.ui \

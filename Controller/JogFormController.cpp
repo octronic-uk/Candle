@@ -17,13 +17,15 @@
  */
 #include "JogFormController.h"
 #include <QPushButton>
+#include <QtDebug>
 
 JogFormController::JogFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Constructing JogFormController");
+    qDebug() << "JogFormController: Constructing";
     mUi.setupUi(this);
-    mUi.txtJogStep->setLocale(QLocale::C);
+    mUi.jogStepSpinner->setLocale(QLocale::C);
+    setupSignalSlots();
 
     // Apply settings to jog controls
     /*foreach (StyledToolButton* button, mUi.findChildren<StyledToolButton*>(QRegExp("cmdJogStep\\d")))
@@ -36,7 +38,7 @@ JogFormController::JogFormController(QWidget *parent)
 
 JogFormController::~JogFormController()
 {
-    QMessageLogger().info("Destructing JogFormController");
+    qDebug() << "JogFormController: Destructing";
 }
 
 void JogFormController::onCheckBoxKeyboardControlToggled(bool checked)
@@ -152,5 +154,11 @@ void JogFormController::onJogTimer()
 bool JogFormController::keyIsMovement(int key)
 {
     return key == Qt::Key_4 || key == Qt::Key_6 || key == Qt::Key_8 || key == Qt::Key_2 || key == Qt::Key_9 || key == Qt::Key_3;
+}
+
+void JogFormController::setupSignalSlots()
+{
+
+    qDebug() << "JogFormController: Setup Signals/Slots";
 }
 

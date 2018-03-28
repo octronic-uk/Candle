@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QMenu>
+#include <QTimer>
 
 #include "AbstractFormController.h"
 #include "Model/Tables/GCodeTableModel.h"
@@ -43,13 +44,14 @@ public:
     int getChkAutoScrollWidth(); // sizehint->width
 
 signals:
+    void setKeyboardControlSignal(bool);
 public slots:
+    void onReserveGcodeRowsSignal(int);
     void onActSendFromLineTriggered();
     void onChkBoxTestModeClicked(bool checked);
     void onCmdFileSendClicked();
     void onCmdFileAbortClicked();
     void onCmdCommandSendClicked();
-    void onCmdFileOpenClicked();
     void onCmdFilePauseClicked(bool checked);
     void onCmdFileResetClicked();
 
@@ -59,12 +61,26 @@ public slots:
     void onTableCellChanged(QModelIndex i1, QModelIndex i2);
     void onTableProgramCustomContextMenuRequested(const QPoint &pos);
 
+    void onScrollBarAction(int action);
+    void onGcodeFileLoadStarted();
+    void onGcodeFileLoadFinished(QList<GcodeItem>);
 private:
     ProgramForm mUi;
-    GCodeTableModel mProgramTableModel;
-    GCodeTableModel *mCurrentGCodeTableModel;
+    GcodeTableModel mProgramTableModel;
+    bool mCellChanged;
+    QTimer mStartTime;
+    bool mTransferCompleted;
+    bool mProcessingFile;
+    bool mFileEndSent;
+    bool mProgramLoading;
 
     QMenu mTableMenu;
+    QMenu mSendMenu;
 
     void clearTable();
+    QByteArray mHeaderState;
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

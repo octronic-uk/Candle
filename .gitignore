@@ -53,3 +53,9 @@ bin/*
 
 # Idea
 .idea
+
+# Archives
+.zip
+.rar
+.exe
+.tar*

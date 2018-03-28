@@ -65,13 +65,13 @@ public slots:
     void onCheckBoxHeightMapUseClicked(bool checked);
     void onCmdHeightMapCreateClicked();
     void onCmdHeightMapBorderAutoClicked();
-    void resizeEvent(QResizeEvent* re);
+    void resizeEvent(QResizeEvent* re) override;
     void onGripHeightMapToggled(bool arg1);
 private:
     HeightMapForm mUi;
     HeightMapTableModel mHeightMapModel;
-    GCodeTableModel mProgramHeightmapTableModel;
-    GCodeTableModel mProbeTableModel;
+    GcodeTableModel mProgramHeightmapTableModel;
+    GcodeTableModel mProbeTableModel;
     bool mHeightMapMode;
 
     QList<LineSegment*> subdivideSegment(LineSegment* segment);
@@ -79,4 +79,8 @@ private:
     QRectF borderRectFromExtremes();
     void resetHeightmap();
 
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

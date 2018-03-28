@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QtDebug>
 
 class AbstractFormController : public QWidget
 {
@@ -26,8 +27,7 @@ class AbstractFormController : public QWidget
 public:
     explicit AbstractFormController(QWidget *parent = nullptr);
     virtual ~AbstractFormController() = 0;
-
+    virtual void setupSignalSlots() = 0;
 signals:
-
-public slots:
+    void statusUpdateSignal(QString status);
 };

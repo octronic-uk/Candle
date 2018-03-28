@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // This file was originally ported from "GcodeParser.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -37,58 +37,70 @@ GcodeParser::~GcodeParser()
     foreach (PointSegment *ps, this->m_points) delete ps;
 }
 
-bool GcodeParser::getConvertArcsToLines() {
+bool GcodeParser::getConvertArcsToLines()
+{
     return m_convertArcsToLines;
 }
 
-void GcodeParser::setConvertArcsToLines(bool convertArcsToLines) {
+void GcodeParser::setConvertArcsToLines(bool convertArcsToLines)
+{
     this->m_convertArcsToLines = convertArcsToLines;
 }
 
-bool GcodeParser::getRemoveAllWhitespace() {
+bool GcodeParser::getRemoveAllWhitespace()
+{
     return m_removeAllWhitespace;
 }
 
-void GcodeParser::setRemoveAllWhitespace(bool removeAllWhitespace) {
+void GcodeParser::setRemoveAllWhitespace(bool removeAllWhitespace)
+{
     this->m_removeAllWhitespace = removeAllWhitespace;
 }
 
-double GcodeParser::getSmallArcSegmentLength() {
+double GcodeParser::getSmallArcSegmentLength()
+{
     return m_smallArcSegmentLength;
 }
 
-void GcodeParser::setSmallArcSegmentLength(double smallArcSegmentLength) {
+void GcodeParser::setSmallArcSegmentLength(double smallArcSegmentLength)
+{
     this->m_smallArcSegmentLength = smallArcSegmentLength;
 }
 
-double GcodeParser::getSmallArcThreshold() {
+double GcodeParser::getSmallArcThreshold()
+{
     return m_smallArcThreshold;
 }
 
-void GcodeParser::setSmallArcThreshold(double smallArcThreshold) {
+void GcodeParser::setSmallArcThreshold(double smallArcThreshold)
+{
     this->m_smallArcThreshold = smallArcThreshold;
 }
 
-double GcodeParser::getSpeedOverride() {
+double GcodeParser::getSpeedOverride()
+{
     return m_speedOverride;
 }
 
-void GcodeParser::setSpeedOverride(double speedOverride) {
+void GcodeParser::setSpeedOverride(double speedOverride)
+{
     this->m_speedOverride = speedOverride;
 }
 
-int GcodeParser::getTruncateDecimalLength() {
+int GcodeParser::getTruncateDecimalLength()
+{
     return m_truncateDecimalLength;
 }
 
-void GcodeParser::setTruncateDecimalLength(int truncateDecimalLength) {
+void GcodeParser::setTruncateDecimalLength(int truncateDecimalLength)
+{
     this->m_truncateDecimalLength = truncateDecimalLength;
 }
 
 // Resets the current state.
 void GcodeParser::reset(const QVector3D &initialPoint)
 {
-    qDebug() << "reseting gp" << initialPoint;
+    qDebug() << "GcodeParser: Reseting parser with initial point" << initialPoint;
 
     foreach (PointSegment *ps, this->m_points) delete ps;
     this->m_points.clear();
@@ -113,7 +125,8 @@ PointSegment* GcodeParser::addCommand(QString command)
 */
 PointSegment* GcodeParser::addCommand(const QStringList &args)
 {
-    if (args.isEmpty()) {
+    if (args.isEmpty())
+    {
         return NULL;
     }
     return processCommand(args);
@@ -123,14 +136,16 @@ PointSegment* GcodeParser::addCommand(const QStringList &args)
 * Warning, this should only be used when modifying live gcode, such as when
 * expanding an arc or canned cycle into line segments.
 */
-void GcodeParser::setLastGcodeCommand(float num) {
+void GcodeParser::setLastGcodeCommand(float num)
+{
     this->m_lastGcodeCommand = num;
 }
 
 /**
 * Gets the point at the end of the list.
 */
-QVector3D *GcodeParser::getCurrentPoint() {
+QVector3D *GcodeParser::getCurrentPoint()
+{
     return &m_currentPoint;
 }
 
@@ -146,7 +161,8 @@ QList<PointSegment*> GcodeParser::expandArc()
     QList<PointSegment*> empty;
 
     // Can only expand arcs.
-    if (!lastSegment->isArc()) {
+    if (!lastSegment->isArc())
+    {
         return empty;
     }
 
@@ -165,7 +181,8 @@ QList<PointSegment*> GcodeParser::expandArc()
     QList<QVector3D> expandedPoints = GcodePreprocessorUtils::generatePointsAlongArcBDring(plane, *start, *end, *center, clockwise, radius, m_smallArcThreshold, m_smallArcSegmentLength, false);
 
     // Validate output of expansion.
-    if (expandedPoints.length() == 0) {
+    if (expandedPoints.length() == 0)
+    {
         return empty;
     }
 
@@ -183,7 +200,8 @@ QList<PointSegment*> GcodeParser::expandArc()
     // skip first element.
     if (psi.hasNext()) psi.next();
 
-    while (psi.hasNext()) {
+    while (psi.hasNext())
+    {
         temp = new PointSegment(&psi.next(), m_commandNumber++);
         temp->setIsMetric(lastSegment->isMetric());
         this->m_points.append(temp);
@@ -198,9 +216,11 @@ QList<PointSegment*> GcodeParser::expandArc()
     return psl;
 }
 
-QList<PointSegment*> GcodeParser::getPointSegmentList() {
+QList<PointSegment*> GcodeParser::getPointSegmentList()
+{
     return this->m_points;
 }
+
 double GcodeParser::getTraverseSpeed() const
 {
     return m_traverseSpeed;
@@ -238,11 +258,13 @@ PointSegment *GcodeParser::processCommand(const QStringList &args)
     gCodes = GcodePreprocessorUtils::parseCodes(args, 'G');
 
     // If there was no command, add the implicit one to the party.
-    if (gCodes.isEmpty() && m_lastGcodeCommand != -1) {
+    if (gCodes.isEmpty() && m_lastGcodeCommand != -1)
+    {
         gCodes.append(m_lastGcodeCommand);
     }
 
-    foreach (float code, gCodes) {
+    foreach (float code, gCodes)
+    {
         ps = handleGCode(code, args);
     }
 
@@ -258,7 +280,8 @@ PointSegment *GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, boo
     // Check for z-only
     if ((this->m_currentPoint.x() == nextPoint.x()) &&
             (this->m_currentPoint.y() == nextPoint.y()) &&
-            (this->m_currentPoint.z() != nextPoint.z())) {
+            (this->m_currentPoint.z() != nextPoint.z()))
+    {
         zOnly = true;
     }
 
@@ -284,11 +307,13 @@ PointSegment *GcodeParser::addArcPointSegment(const QVector3D &nextPoint, bool c
     double radius = GcodePreprocessorUtils::parseCoord(args, 'R');
 
     // Calculate radius if necessary.
-    if (qIsNaN(radius)) {
+    if (qIsNaN(radius))
+    {
 
         QMatrix4x4 m;
         m.setToIdentity();
-        switch (m_currentPlane) {
+        switch (m_currentPlane)
+        {
         case PointSegment::XY:
             break;
         case PointSegment::ZX:
@@ -351,18 +376,21 @@ PointSegment * GcodeParser::handleGCode(float code, const QStringList &args)
     return ps;
 }
 
-QStringList GcodeParser::preprocessCommands(QStringList commands) {
+QStringList GcodeParser::preprocessCommands(QStringList commands)
+{
 
     QStringList result;
 
-    foreach (QString command, commands) {
+    foreach (QString command, commands)
+    {
         result.append(preprocessCommand(command));
     }
 
     return result;
 }
 
-QStringList GcodeParser::preprocessCommand(QString command) {
+QStringList GcodeParser::preprocessCommand(QString command)
+{
 
     QStringList result;
     bool hasComment = false;
@@ -372,36 +400,50 @@ QStringList GcodeParser::preprocessCommand(QString command) {
     QString rawCommand = newCommand;
     hasComment = (newCommand.length() != command.length());
 
-    if (m_removeAllWhitespace) {
+    if (m_removeAllWhitespace)
+    {
         newCommand = GcodePreprocessorUtils::removeAllWhitespace(newCommand);
     }
 
-    if (newCommand.length() > 0) {
+    if (newCommand.length() > 0)
+    {
 
         // Override feed speed
-        if (m_speedOverride > 0) {
+        if (m_speedOverride > 0)
+        {
             newCommand = GcodePreprocessorUtils::overrideSpeed(newCommand, m_speedOverride);
         }
 
-        if (m_truncateDecimalLength > 0) {
+        if (m_truncateDecimalLength > 0)
+        {
             newCommand = GcodePreprocessorUtils::truncateDecimals(m_truncateDecimalLength, newCommand);
         }
 
         // If this is enabled we need to parse the gcode as we go along.
-        if (m_convertArcsToLines) { // || this.expandCannedCycles) {
+        if (m_convertArcsToLines)
+        { // || this.expandCannedCycles) {
             QStringList arcLines = convertArcsToLines(newCommand);
-            if (arcLines.length() > 0) {
+            if (arcLines.length() > 0)
+            {
                 result.append(arcLines);
-            } else {
+            }
+            else
+            {
                 result.append(newCommand);
             }
-        } else if (hasComment) {
+        }
+        else if (hasComment)
+        {
             // Maintain line level comment.
             result.append(command.replace(rawCommand, newCommand));
-        } else {
+        }
+        else
+        {
             result.append(newCommand);
         }
-    } else if (hasComment) {
+    }
+    else if (hasComment)
+    {
         // Reinsert comment-only lines.
         result.append(command);
     }
@@ -409,7 +451,8 @@ QStringList GcodeParser::preprocessCommand(QString command) {
     return result;
 }
 
-QStringList GcodeParser::convertArcsToLines(QString command) {
+QStringList GcodeParser::convertArcsToLines(QString command)
+{
 
     QStringList result;
 
@@ -417,19 +460,22 @@ QStringList GcodeParser::convertArcsToLines(QString command) {
 
     PointSegment *ps = addCommand(command);
 
-    if (ps == NULL || !ps->isArc()) {
+    if (ps == NULL || !ps->isArc())
+    {
         return result;
     }
 
     QList<PointSegment*> psl = expandArc();
 
-    if (psl.length() == 0) {
+    if (psl.length() == 0)
+    {
         return result;
     }
 
     // Create an array of new commands out of the of the segments in psl.
     // Don't add them to the gcode parser since it is who expanded them.
-    foreach (PointSegment* segment, psl) {
+    foreach (PointSegment* segment, psl)
+    {
         //Point3d end = segment.point();
         QVector3D end = *segment->point();
         result.append(GcodePreprocessorUtils::generateG1FromPoints(start, end, this->m_inAbsoluteMode, m_truncateDecimalLength));

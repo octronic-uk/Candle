@@ -57,4 +57,8 @@ private:
     bool mAbsoluteCoordinates;
     bool mStoredKeyboardControl;
     bool keyIsMovement(int key);
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "HeightMapGridDrawer.h"
@@ -11,6 +11,7 @@ HeightMapGridDrawer::HeightMapGridDrawer()
 
 bool HeightMapGridDrawer::updateData()
 {
+    /*
     // Clear data
     m_lines.clear();
     m_points.clear();
@@ -72,6 +73,7 @@ bool HeightMapGridDrawer::updateData()
     }
 
     return true;
+    */
 }
 
 QPointF HeightMapGridDrawer::gridSize() const

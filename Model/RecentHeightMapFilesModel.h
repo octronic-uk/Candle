@@ -26,13 +26,19 @@ class RecentHeightMapFilesModel : public QObject
 public:
     explicit RecentHeightMapFilesModel(QObject *parent = nullptr);
     ~RecentHeightMapFilesModel();
+    void add(QString fileName);
+    void clear();
 
-    void addRecentHeightmap(QString fileName);
+    int getMaxRecent() const;
+    void setMaxRecent(int maxRecent);
+    QStringList getRecentFiles();
 
 signals:
+    void recentFilesChangedSignal();
 
 public slots:
 
 private:
-    QStringList mRecentHeightmaps;
+    QStringList mRecentFiles;
+    int mMaxRecent;
 };

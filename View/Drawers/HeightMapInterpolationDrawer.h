@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #ifndef HEIGHTMAPINTERPOLATIONDRAWER_H

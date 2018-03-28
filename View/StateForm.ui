@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>287</width>
-    <height>250</height>
+    <width>243</width>
+    <height>199</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <property name="spacing">
@@ -24,7 +24,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Work coordinates:</string>
+          <string>Work Coordinates</string>
          </property>
         </widget>
        </item>
@@ -44,7 +44,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -60,7 +60,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -76,7 +76,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -97,7 +97,7 @@
        <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Machine coordinates:</string>
+          <string>Machine Coordinates:</string>
          </property>
         </widget>
        </item>
@@ -117,7 +117,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -133,7 +133,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -149,7 +149,7 @@
           <string>0</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -161,18 +161,15 @@
     </layout>
    </item>
    <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="horizontalSpacing">
-      <number>14</number>
-     </property>
-     <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
       <widget class="QLabel" name="Label">
        <property name="text">
-        <string>Status:</string>
+        <string>Status</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item>
       <widget class="QLineEdit" name="txtStatus">
        <property name="enabled">
         <bool>false</bool>
@@ -181,7 +178,7 @@
         <string notr="true">QLineEdit {color: palette(text);}</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="readOnly">
         <bool>true</bool>
@@ -192,6 +189,19 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>4</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

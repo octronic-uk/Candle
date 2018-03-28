@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QObject>
+#include <QFile>
 
 class HeightMapFileModel : public QObject
 {
@@ -29,12 +30,16 @@ public:
 
     void load(QString fileName);
     bool save(QString fileName);
-    bool isHeightmapFile(QString fileName);
-
+    bool isHeightMapFile(QString fileName);
     bool hasFileChanged();
     void setFileChanged(bool changed);
+    QString getCurrentFileName();
 
+signals:
+    void heightMapFileLoadStartedSignal();
+    void heightMapFileLoadFinishedSignal();
+    void statusUpdateSignal(QString);
 private:
-    QString mHeightMapFileName;
+    QFile mFile;
     bool mHeightMapChanged = false;
 };

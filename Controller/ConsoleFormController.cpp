@@ -25,68 +25,28 @@ using namespace Ui;
 ConsoleFormController::ConsoleFormController(QWidget *parent)
     : AbstractFormController (parent)
 {
-    QMessageLogger().info("Constructing ConsoleFormController");
+    qDebug() << "Constructing ConsoleFormController";
     mUi.setupUi(this);
-    /*
-
-#ifndef UNIX
-    mUi.cboCommand->setStyleSheet("QComboBox {padding: 2;} QComboBox::drop-down {width: 0; border-style: none;} QComboBox::down-arrow {image: url(noimg);	border-width: 0;}");
-#endif
-    mSendMenu.addAction(tr("Send from current line"), this, SLOT(onActSendFromLineTriggered()));
-    connect(mUi.cboCommand, SIGNAL(returnPressed()), this, SLOT(onCboCommandReturnPressed()));
-
- // Console window handling
-    connect(
-        mUi.grpConsole, SIGNAL(resized(QSize)),
-        this, SLOT(onConsoleResized(QSize))
-    );
-    */
+    setupSignalSlots();
 }
 
 ConsoleFormController::~ConsoleFormController()
 {
-    QMessageLogger().info("Destructing ConsoleFormController");
+    qDebug() << "Destructing ConsoleFormController";
 
 
 }
 void ConsoleFormController::onComboBoxCommandReturnPressed()
 {
-    /*
     QString command = mUi.cboCommand->currentText();
-    if (command.isEmpty()) return;
+    if (command.isEmpty())
+    {
+        return;
+    }
 
     mUi.cboCommand->setCurrentText("");
-    sendCommand(command, -1);
-    */
-}
-
-
-
-void ConsoleFormController::onConsoleResized(QSize size)
-{
-    /*
-    Q_UNUSED(size)
-
-    int minHeight = getConsoleMinHeight();
-    bool visible = mUi.grpConsole->height() > minHeight;
-    if (mUi.txtConsole->isVisible() != visible)
-    {
-        mUi.txtConsole->setVisible(visible);
-    }
-    */
-}
-
-int ConsoleFormController::getConsoleMinHeight()
-{
-    /*
-    return
-        mUi.grpConsole->height() -
-        mUi.grpConsole->contentsRect().height() +
-        mUi.spacerConsole->geometry().height() +
-        mUi.grpConsole->layout()->margin() * 2 +
-        mUi.cboCommand->height();
-        */
-    return -1;
+    emit commandSentSignal(command, -1);
+    //sendCommand(command, -1);
 }
 
 void ConsoleFormController::onCmdClearConsoleClicked()
@@ -98,13 +58,24 @@ void ConsoleFormController::onCmdClearConsoleClicked()
 // Console
 void ConsoleFormController::onCmdCommandSendClicked()
 {
-    /*
-    QString command = mUi->cboCommand->currentText();
-    if (command.isEmpty()) return;
+    QString command = mUi.cboCommand->currentText();
+    if (command.isEmpty())
+    {
+        return;
+    }
 
-    mUi->cboCommand->storeText();
-    mUi->cboCommand->setCurrentText("");
-    sendCommand(command, -1);
-    */
+    //mUi.cboCommand->storeText();
+    mUi.cboCommand->setCurrentText("");
+    emit commandSentSignal(command,-1);
+    //sendCommand(command, -1);
+}
+
+void ConsoleFormController::setupSignalSlots()
+{
+    qDebug() << "ConsoleFormController: Setup Signals/Slots";
+    //connect(
+    //    mUi.cboCommand, SIGNAL(returnPressed()),
+    //    this, SLOT(onComboBoxCommandReturnPressed())
+    //);
 }
 

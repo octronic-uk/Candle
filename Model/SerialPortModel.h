@@ -28,8 +28,8 @@ public:
     explicit SerialPortModel(QObject *parent = nullptr);
     ~SerialPortModel();
 
-    void openPort();
-    void closePort();
+    bool openPort();
+    bool closePort();
 
     int bufferLength();
     void sendCommand(QString command, int tableIndex = -1, bool showInConsole = true);
@@ -48,10 +48,13 @@ public:
 
     void setBaudRate(int baud);
     int getBaudRate();
+
     void restoreOffsets();
     void storeOffsets();
     void restoreParserState();
 signals:
+    void serialPortErrorSignal(QString errorMessage);
+    void statusUpdateSignal(QString status);
 
 public slots:
     void onTimerConnection();

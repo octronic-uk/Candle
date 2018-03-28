@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "GCodeDrawer.h"
@@ -66,12 +66,12 @@ bool GcodeDrawer::updateData()
 
 bool GcodeDrawer::prepareVectors()
 {
-    qDebug() << "preparing vectors" << this;
+    qDebug() << "GcodeDrawer: preparing vectors" << this;
 
     QList<LineSegment*> *list = m_viewParser->getLines();
     VertexData vertex;
 
-    qDebug() << "lines count" << list->count();
+    qDebug() << "GcodeDrawer: lines count" << list->count();
 
     // Clear all vertex data
     m_lines.clear();
@@ -198,11 +198,11 @@ bool GcodeDrawer::prepareRaster()
 {
     const int maxImageSize = 8192;
 
-    qDebug() << "preparing raster" << this;
+    qDebug() << "GcodeDrawer: preparing raster" << this;
 
     // Generate image
     QImage image;
-    qDebug() << "image info" << m_viewParser->getResolution() << m_viewParser->getMinLength();
+    qDebug() << "GcodeDrawer: image info" << m_viewParser->getResolution() << m_viewParser->getMinLength();
 
     if (m_viewParser->getResolution().width() <= maxImageSize && m_viewParser->getResolution().height() <= maxImageSize)
     {
@@ -210,7 +210,7 @@ bool GcodeDrawer::prepareRaster()
         image.fill(Qt::white);
 
         QList<LineSegment*> *list = m_viewParser->getLines();
-        qDebug() << "lines count" << list->count();
+        qDebug() << "GcodeDrawer: lines count" << list->count();
 
         double pixelSize = m_viewParser->getMinLength();
         QVector3D origin = m_viewParser->getMinimumExtremes();
@@ -302,8 +302,9 @@ bool GcodeDrawer::updateRaster()
 
 void GcodeDrawer::setImagePixelColor(QImage &image, double x, double y, QRgb color) const
 {
-    if (qIsNaN(x) || qIsNaN(y)) {
-        qDebug() << "Error updating pixel" << x << y;
+    if (qIsNaN(x) || qIsNaN(y))
+    {
+        qDebug() << "GcodeDrawer: Error updating pixel" << x << y;
         return;
     };
 

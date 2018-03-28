@@ -52,10 +52,11 @@ public slots:
     void placeVisualizerButtons();
     void onVisualizatorRotationChanged();
 
-    void timerEvent(QTimerEvent* te);
-    void showEvent(QShowEvent* se);
-    void hideEvent(QHideEvent* he);
-    void resizeEvent(QResizeEvent* re);
+    void timerEvent(QTimerEvent* te) override;
+    void showEvent(QShowEvent* se) override;
+    void hideEvent(QHideEvent* he) override;
+    void resizeEvent(QResizeEvent* re) override;
+    void onGcodeFileLoadFinished();
 private slots:
 
 private:
@@ -79,4 +80,8 @@ private:
     QBasicTimer mToolAnimationTimer;
     int mLastDrawnLineIndex;
     void updateParser();
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

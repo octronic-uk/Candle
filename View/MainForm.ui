@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>961</width>
+    <width>488</width>
     <height>899</height>
    </rect>
   </property>
@@ -14,34 +14,76 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Candle</string>
+   <string>Cocoanut</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../Resources/images.qrc">
-    <normaloff>:/images/candle_256.png</normaloff>:/images/candle_256.png</iconset>
+    <normaloff>:/Images/cocoanut.png</normaloff>:/Images/cocoanut.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_5">
-    <property name="spacing">
-     <number>9</number>
-    </property>
-    <property name="leftMargin">
-     <number>9</number>
-    </property>
-    <property name="topMargin">
-     <number>9</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
-     <number>9</number>
-    </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="VisualisationFormController" name="visualisationFormController"/>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="VisualisationFormController" name="visualisationFormController">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QTabWidget" name="tabWidget">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <property name="elideMode">
+        <enum>Qt::ElideNone</enum>
+       </property>
+       <property name="usesScrollButtons">
+        <bool>false</bool>
+       </property>
+       <widget class="ProgramFormController" name="programForm">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <attribute name="title">
+         <string>Program</string>
+        </attribute>
+       </widget>
+       <widget class="HeightMapFormController" name="heightMapForm">
+        <attribute name="title">
+         <string>Height Map</string>
+        </attribute>
+       </widget>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -50,7 +92,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>961</width>
+     <width>488</width>
      <height>22</height>
     </rect>
    </property>
@@ -58,16 +100,23 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <widget class="QMenu" name="mnuRecent">
+    <widget class="QMenu" name="recentGcodeFilesMenu">
      <property name="title">
-      <string>&amp;Recent files</string>
+      <string>&amp;Recent Gcode Fies</string>
      </property>
      <addaction name="separator"/>
-     <addaction name="actRecentClear"/>
+     <addaction name="clearRecentGcodeFilesAction"/>
+    </widget>
+    <widget class="QMenu" name="recentHeightMapFilesMenu">
+     <property name="title">
+      <string>Recent HeightMap Files</string>
+     </property>
+     <addaction name="clearRecentHeightMapFilesAction"/>
     </widget>
     <addaction name="actFileNew"/>
     <addaction name="actFileOpen"/>
-    <addaction name="mnuRecent"/>
+    <addaction name="recentGcodeFilesMenu"/>
+    <addaction name="recentHeightMapFilesMenu"/>
     <addaction name="separator"/>
     <addaction name="actFileSave"/>
     <addaction name="actFileSaveAs"/>
@@ -79,7 +128,7 @@
     <property name="title">
      <string>&amp;Service</string>
     </property>
-    <addaction name="actServiceSettings"/>
+    <addaction name="actFileSettings"/>
    </widget>
    <widget class="QMenu" name="mnuHelp">
     <property name="title">
@@ -92,6 +141,15 @@
    <addaction name="mnuHelp"/>
   </widget>
   <widget class="QDockWidget" name="controlDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Control</string>
    </property>
@@ -101,6 +159,18 @@
    <widget class="ControlFormController" name="controlFormController"/>
   </widget>
   <widget class="QDockWidget" name="jogDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Jog</string>
    </property>
@@ -110,6 +180,15 @@
    <widget class="JogFormController" name="jogFormController"/>
   </widget>
   <widget class="QDockWidget" name="spindleDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Spindle</string>
    </property>
@@ -119,6 +198,9 @@
    <widget class="SpindleFormController" name="spindleFormController"/>
   </widget>
   <widget class="QDockWidget" name="consoleDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Console</string>
    </property>
@@ -127,26 +209,90 @@
    </attribute>
    <widget class="ConsoleFormController" name="consoleFormController"/>
   </widget>
-  <widget class="QDockWidget" name="programDockWidget">
-   <property name="windowTitle">
-    <string>Program</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="ProgramFormController" name="programFormController"/>
-  </widget>
   <widget class="QDockWidget" name="userCommandsDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>User Commands</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="userCommandsFormController"/>
+   <widget class="UserCommandsFormController" name="userCommandsFormController"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actFileNew"/>
+   <addaction name="actFileOpen"/>
+   <addaction name="actFileSave"/>
+   <addaction name="separator"/>
+   <addaction name="actionToggleJogForm"/>
+   <addaction name="actionToggleControlForm"/>
+   <addaction name="actionToggleSpindleForm"/>
+   <addaction name="actionToggleFeed"/>
+   <addaction name="actionToggleUserCommandsForm"/>
+   <addaction name="actionToggleStateForm"/>
+   <addaction name="actionToggleConsoleForm"/>
+   <addaction name="separator"/>
+   <addaction name="actFileSettings"/>
+  </widget>
+  <widget class="QDockWidget" name="feedDockWidget">
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="FeedFormController" name="feedFormController"/>
+  </widget>
+  <widget class="QDockWidget" name="stateDockWidget">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>State</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="StateFormController" name="stateFormController"/>
+  </widget>
   <action name="actFileOpen">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/folder-open-outline/32x32.png</normaloff>:/Images/folder-open-outline/32x32.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>
@@ -156,17 +302,32 @@
     <string>E&amp;xit</string>
    </property>
   </action>
-  <action name="actServiceSettings">
+  <action name="actFileSettings">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/settings-var-outline/256x256.png</normaloff>:/Images/settings-var-outline/256x256.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Settings</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+,</string>
+   </property>
   </action>
   <action name="actFileNew">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/document-edit-outline/32x32.png</normaloff>:/Images/document-edit-outline/32x32.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;New</string>
    </property>
   </action>
   <action name="actFileSave">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/document-download-outline/32x32.png</normaloff>:/Images/document-download-outline/32x32.png</iconset>
+   </property>
    <property name="text">
     <string>&amp;Save</string>
    </property>
@@ -181,7 +342,7 @@
     <string>&amp;About</string>
    </property>
   </action>
-  <action name="actRecentClear">
+  <action name="clearRecentGcodeFilesAction">
    <property name="text">
     <string>&amp;Clear</string>
    </property>
@@ -189,6 +350,74 @@
   <action name="actFileSaveTransformedAs">
    <property name="text">
     <string>Save &amp;transformed as...</string>
+   </property>
+  </action>
+  <action name="actionToggleSpindleForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/images/cutter.png</normaloff>:/images/cutter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Spindle</string>
+   </property>
+  </action>
+  <action name="actionToggleControlForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/images/origin.png</normaloff>:/images/origin.png</iconset>
+   </property>
+   <property name="text">
+    <string>Control</string>
+   </property>
+  </action>
+  <action name="actionToggleJogForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/chevron-circle-outline/32x32 right.png</normaloff>:/Images/chevron-circle-outline/32x32 right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Jog</string>
+   </property>
+  </action>
+  <action name="actionToggleUserCommandsForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/images/num1.png</normaloff>:/images/num1.png</iconset>
+   </property>
+   <property name="text">
+    <string>User Commands</string>
+   </property>
+  </action>
+  <action name="actionToggleConsoleForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/info-circle-outline/32x32.png</normaloff>:/Images/info-circle-outline/32x32.png</iconset>
+   </property>
+   <property name="text">
+    <string>Console</string>
+   </property>
+  </action>
+  <action name="actionToggleFeed">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/percent-circle-outline/256x256.png</normaloff>:/Images/percent-circle-outline/256x256.png</iconset>
+   </property>
+   <property name="text">
+    <string>Feed</string>
+   </property>
+  </action>
+  <action name="clearRecentHeightMapFilesAction">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionToggleStateForm">
+   <property name="icon">
+    <iconset resource="../Resources/images.qrc">
+     <normaloff>:/Images/eye-outline/256x256.png</normaloff>:/Images/eye-outline/256x256.png</iconset>
+   </property>
+   <property name="text">
+    <string>State</string>
    </property>
   </action>
  </widget>
@@ -228,6 +457,30 @@
    <class>VisualisationFormController</class>
    <extends>QOpenGLWidget</extends>
    <header>Controller/VisualisationFormController.h</header>
+  </customwidget>
+  <customwidget>
+   <class>UserCommandsFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/UserCommandsFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>HeightMapFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/HeightMapFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>FeedFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/FeedFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>StateFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/StateFormController.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

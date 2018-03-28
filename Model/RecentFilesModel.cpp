@@ -17,14 +17,38 @@
  */
 #include "RecentFilesModel.h"
 
-RecentFilesModel::RecentFilesModel(QObject *parent) : QObject(parent)
-{
+#include <QtDebug>
 
+RecentFilesModel::RecentFilesModel(QObject *parent)
+    : QObject(parent),
+      mMaxRecent(5)
+{
+    qDebug() << "RecentFilesModel: Constructing";
 }
 
-void RecentFilesModel::addRecentFile(QString fileName)
+RecentFilesModel::~RecentFilesModel()
 {
+   qDebug() << "RecentFilesModel: Destructing";
+}
+
+void RecentFilesModel::clear()
+{
+    mRecentFiles.clear();
+}
+
+QStringList RecentFilesModel::getRecentFiles()
+{
+   return mRecentFiles;
+}
+
+void RecentFilesModel::add(QString fileName)
+{
+    qDebug() << "RecentFilesModel: Adding file " << fileName;
     mRecentFiles.removeAll(fileName);
     mRecentFiles.append(fileName);
-    if (mRecentFiles.count() > 5) mRecentFiles.takeFirst();
+    if (mRecentFiles.count() > mMaxRecent)
+    {
+        mRecentFiles.takeFirst();
+    }
+    emit recentFilesChangedSignal();
 }

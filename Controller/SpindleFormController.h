@@ -45,4 +45,8 @@ private:
     bool mIsUpdatingSpindleSpeed = false;
     bool mSpindleCW = true;
     bool mSpindleCommandSpeed = false;
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

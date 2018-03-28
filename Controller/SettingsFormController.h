@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -165,16 +165,14 @@ public:
 
     void applySettings();
 protected:
-    void showEvent(QShowEvent *se);
+    void showEvent(QShowEvent *se) override;
 private slots:
-    void onScrollBarValueChanged(int value);
     void onCmdRefreshClicked();
     void onCmdOKClicked();
     void onCmdCancelClicked();
     void onCmdDefaultsClicked();
     void onComboBoxToolTypeCurrentIndexChanged(int index);
     void onComboBoxFontSizeCurrentTextChanged(const QString &arg1);
-    void onListCategoriesCurrentRowChanged(int currentRow);
     void onRadioBtnDrawModeVectorsToggled(bool checked);
     void onRadioBtnDrawModeRasterToggled(bool checked);
     void onRadioBtnGrayscaleSToggled(bool checked);
@@ -193,5 +191,9 @@ private:
     QString mSerialPortName;
     QString mSerialPortBaudRate;
 
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };
 

@@ -25,12 +25,17 @@ class RecentFilesModel : public QObject
     Q_OBJECT
 public:
     explicit RecentFilesModel(QObject *parent = nullptr);
+    ~RecentFilesModel();
 
-    void addRecentFile(QString fileName);
+    void add(QString fileName);
+    void clear();
+    QStringList getRecentFiles();
+
 signals:
+    void recentFilesChangedSignal();
 
 public slots:
 private:
-
     QStringList mRecentFiles;
+    int mMaxRecent;
 };

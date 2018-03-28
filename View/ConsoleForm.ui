@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>346</width>
-    <height>313</height>
+    <width>284</width>
+    <height>261</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -33,25 +33,18 @@
     </widget>
    </item>
    <item>
-    <spacer name="spacerConsole">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="0,0,0">
+     <property name="spacing">
+      <number>4</number>
      </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::Fixed</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>7</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="1,0,0">
      <item>
-      <widget class="ComboBox" name="cboCommand">
+      <widget class="QComboBox" name="cboCommand">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="styleSheet">
         <string notr="true">padding-top: 3;
 padding-bottom: 3;
@@ -73,6 +66,24 @@ padding-right: 8;</string>
      </item>
      <item>
       <widget class="QPushButton" name="cmdCommandSend">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Send command</string>
        </property>
@@ -90,6 +101,24 @@ padding-right: 8;</string>
      </item>
      <item>
       <widget class="QPushButton" name="cmdClearConsole">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Clear console</string>
        </property>
@@ -109,13 +138,6 @@ padding-right: 8;</string>
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ComboBox</class>
-   <extends>QComboBox</extends>
-   <header location="global">View/Widgets/ComboBox.h</header>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="../Resources/images.qrc"/>
  </resources>

@@ -18,7 +18,7 @@
 
 #pragma once
 
-namespace Candle
+namespace Cocoanut
 {
     enum MachineState
     {

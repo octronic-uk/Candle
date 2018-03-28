@@ -20,12 +20,19 @@
 StateFormController::StateFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Constructing StateFormController");
+    qDebug() << "StateFormController: Constructing";
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 StateFormController::~StateFormController()
 {
-    QMessageLogger().info("Destructing StateFormController");
+    qDebug() << "StateFormController: Destructing";
 
+}
+
+void StateFormController::setupSignalSlots()
+{
+
+    qDebug() << "StateFormController: Setup Signals/Slots";
 }

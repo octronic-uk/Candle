@@ -19,27 +19,37 @@
 #pragma once
 
 #include <QObject>
+#include <QFile>
+#include "Model/Tables/GcodeTableModel.h"
 
-class GCodeTableModel;
 class LineSegment;
 
-class GCodeFileModel : public QObject
+class GcodeFileModel : public QObject
 {
     Q_OBJECT
 public:
-    GCodeFileModel(QObject *parent = nullptr);
-    ~GCodeFileModel();
+    GcodeFileModel(QObject *parent = nullptr);
+    ~GcodeFileModel();
 
     void load(QList<QString> data);
     void load(QString fileName);
-    bool save(QString fileName, GCodeTableModel *model);
-    bool isGCodeFile(QString fileName);
+    bool save(QString fileName, GcodeTableModel *model);
+    bool isGcodeFile(QString fileName);
     bool hasFileChanged();
     void setFileChanged(bool changed);
-
     QTime updateProgramEstimatedTime(QList<LineSegment*> lines);
+    QString getCurrentFileName();
+
+signals:
+    void statusUpdateSignal(QString);
+    void gcodeFileLoadStartedSignal();
+    void gcodeFileLoadFinishedSignal(QList<GcodeItem> items);
+    void nextGcodeLineReadySignal(GcodeItem);
+    void clearExistingGcodeFileSignal();
+    void reserveGcodeRowsSignal(int count);
+
 private:
     bool mProgramLoading;
     bool mFileChanged = false;
-    QString mProgramFileName;
+    QFile mFile;
 };

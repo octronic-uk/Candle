@@ -517,36 +517,37 @@ void SerialPortModel::onSerialPortReadyRead()
 
 void SerialPortModel::onSerialPortError(QSerialPort::SerialPortError error)
 {
-    /*
     static QSerialPort::SerialPortError previousError;
 
-    if (error != QSerialPort::NoError && error != previousError) {
+    if (error != QSerialPort::NoError && error != previousError)
+    {
         previousError = error;
-        mUi->txtConsole->appendPlainText(tr("Serial port error ") + QString::number(error) + ": " + mSerialPort.errorString());
-        if (mSerialPort.isOpen()) {
+        if (mSerialPort.isOpen())
+        {
             mSerialPort.close();
-            updateControlsState();
         }
+        emit serialPortErrorSignal(tr("Serial port error ") + QString::number(error) + ": " + mSerialPort.errorString());
     }
-    */
 }
 
 
-void SerialPortModel::openPort()
+bool SerialPortModel::openPort()
 {
-    /*
-    if (mSerialPort.open(QIODevice::ReadWrite)) {
-        mUi->txtStatus->setText(tr("Port opened"));
-        mUi->txtStatus->setStyleSheet(QString("background-color: palette(button); color: palette(text);"));
-//        updateControlsState();
+    if (mSerialPort.open(QIODevice::ReadWrite))
+    {
+        //mUi->txtStatus->setText(tr("Port opened"));
+        //mUi->txtStatus->setStyleSheet(QString("background-color: palette(button); color: palette(text);"));
+        //updateControlsState();
         grblReset();
+        return true;
     }
-    */
+    return false;
 }
 
-void SerialPortModel::closePort()
+bool SerialPortModel::closePort()
 {
-
+    mSerialPort.close();
+    return true;
 }
 
 void SerialPortModel::sendCommand(QString command, int tableIndex, bool showInConsole)
@@ -723,8 +724,28 @@ void SerialPortModel::setStatusReceived(bool rx)
     mStatusReceived=rx;
 }
 
-void SerialPortModel::write(QByteArray)
+void SerialPortModel::write(QByteArray data)
 {
+   mSerialPort.write(data.data(), data.length());
+}
 
+QString SerialPortModel::getPortName()
+{
+    return mSerialPort.portName();
+}
+
+void SerialPortModel::setPortName(QString name)
+{
+   mSerialPort.setPortName(name);
+}
+
+void SerialPortModel::setBaudRate(int baud)
+{
+   mSerialPort.setBaudRate(baud);
+}
+
+int SerialPortModel::getBaudRate()
+{
+   return mSerialPort.baudRate();
 }
 

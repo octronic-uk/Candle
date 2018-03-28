@@ -16,20 +16,50 @@
  * this file belongs to.
  */
 #include "RecentHeightMapFilesModel.h"
+#include <QtDebug>
 
-RecentHeightMapFilesModel::RecentHeightMapFilesModel(QObject *parent) : QObject(parent)
+RecentHeightMapFilesModel::RecentHeightMapFilesModel(QObject *parent)
+    : QObject(parent),
+      mMaxRecent(5)
 {
-
+    qDebug() << "RecentHeightMapFilesModel: Constructing";
 }
 
 RecentHeightMapFilesModel::~RecentHeightMapFilesModel()
 {
-
+    qDebug() << "RecentHeightMapFilesModel: Destructing";
 }
 
-void RecentHeightMapFilesModel::addRecentHeightmap(QString fileName)
+void RecentHeightMapFilesModel::add(QString fileName)
 {
-    mRecentHeightmaps.removeAll(fileName);
-    mRecentHeightmaps.append(fileName);
-    if (mRecentHeightmaps.count() > 5) mRecentHeightmaps.takeFirst();
+    qDebug() << "RecentHeightMapFilesModel: Adding file %s"
+             << fileName;
+    mRecentFiles.removeAll(fileName);
+    mRecentFiles.append(fileName);
+    if (mRecentFiles.count() > mMaxRecent)
+    {
+        mRecentFiles.takeFirst();
+    }
+
+    emit recentFilesChangedSignal();
+}
+
+void RecentHeightMapFilesModel::clear()
+{
+    mRecentFiles.clear();
+}
+
+int RecentHeightMapFilesModel::getMaxRecent() const
+{
+    return mMaxRecent;
+}
+
+void RecentHeightMapFilesModel::setMaxRecent(int maxRecent)
+{
+    mMaxRecent = maxRecent;
+}
+
+QStringList RecentHeightMapFilesModel::getRecentFiles()
+{
+   return mRecentFiles;
 }

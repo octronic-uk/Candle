@@ -50,4 +50,8 @@ private:
     double mOriginalFeedRate;
 
     QString feedOverride(QString command);
+
+    // AbstractFormController interface
+public:
+    void setupSignalSlots() override;
 };

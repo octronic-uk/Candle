@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "SettingsFormController.h"
@@ -13,8 +13,9 @@
 SettingsFormController::SettingsFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Constructing SettingsFormController");
+    qDebug() << "SettingsFormController: Constructing";
     mUi.setupUi(&mDialog);
+    setupSignalSlots();
     /*
     mUi.setupUi(&mDialog);
     mDialog.setLocale(QLocale::C);
@@ -44,7 +45,7 @@ SettingsFormController::SettingsFormController(QWidget *parent)
 
 SettingsFormController::~SettingsFormController()
 {
-    QMessageLogger().info("Destructing SettingsFormController");
+    qDebug() << "SettingsFormController: Destructing";
 }
 
 int SettingsFormController::exec()
@@ -96,36 +97,6 @@ void SettingsFormController::undo()
     foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
     {
         pick->setColor(mStoredColors.takeFirst());
-    }
-}
-
-void SettingsFormController::onListCategoriesCurrentRowChanged(int currentRow)
-{
-    // Scroll to selected groupbox
-    QGroupBox *box = this->findChild<QGroupBox*>(mUi.listCategories->item(currentRow)->data(Qt::UserRole).toString());
-    if (box)
-    {
-        mUi.scrollSettings->ensureWidgetVisible(box);
-    }
-}
-
-void SettingsFormController::onScrollBarValueChanged(int value)
-{
-    Q_UNUSED(value)
-
-    // Search for first full visible groupbox
-    for (int i = 0; i < mUi.listCategories->count(); i++)
-    {
-        QGroupBox *box = this->findChild<QGroupBox*>(mUi.listCategories->item(i)->data(Qt::UserRole).toString());
-        if (box)
-        {
-            if (!box->visibleRegion().isEmpty() && box->visibleRegion().boundingRect().y() == 0)
-            {
-                // Select corresponding item in categories list
-                mUi.listCategories->setCurrentRow(i);
-                return;
-            }
-        }
     }
 }
 
@@ -612,6 +583,12 @@ void SettingsFormController::searchPorts()
 //        mUi.cboPort->addItem(info.portName());
         mUi.cboPort->insertItem(0, info.portName());
     }
+}
+
+void SettingsFormController::setupSignalSlots()
+{
+
+    qDebug() << "SettingsFormController: Setup Signals/Slots";
 }
 
 void SettingsFormController::onCmdRefreshClicked()

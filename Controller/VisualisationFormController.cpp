@@ -20,9 +20,9 @@
 VisualisationFormController::VisualisationFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Constructing VisualisationFormController");
+    qDebug() << "VisualisationFormController: Constructing ";
+
     mUi.setupUi(this);
-    /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
     mUi.cmdTop->setParent(mUi.glwVisualizer);
@@ -32,7 +32,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mCodeDrawer.setViewParser(&mViewParser);
     mProbeDrawer.setViewParser(&mProbeParser);
     mProbeDrawer.setVisible(false);
-    //mCurrentDrawer = mCodeDrawer;
     mToolDrawer.setToolPosition(QVector3D(0, 0, 0));
     mLastDrawnLineIndex = 0;
 
@@ -46,77 +45,81 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
     mUi.glwVisualizer->fitDrawable();
 
-    connect
-    (
-        getVisualiser(), SIGNAL(rotationChanged()),
-        this, SLOT(onVisualizatorRotationChanged())
-    );
+    placeVisualizerButtons();
 
-    connect
-    (
-        getVisualiser(), SIGNAL(resized()),
-        this, SLOT(placeVisualizerButtons())
-    );
-    */
+    setupSignalSlots();
+
 }
 
 VisualisationFormController::~VisualisationFormController()
 {
-    QMessageLogger().info("Denstructing VisualisationFormController");
+    qDebug() << "VisualisationFormController: Destructing";
 }
 
 void VisualisationFormController::placeVisualizerButtons()
 {
+    qDebug() << "VisualisationFormController: placeVisualizerButtons";
     mUi.cmdIsometric->move(mUi.glwVisualizer->width() - mUi.cmdIsometric->width() - 8, 8);
     mUi.cmdTop->move(mUi.cmdIsometric->geometry().left() - mUi.cmdTop->width() - 8, 8);
     mUi.cmdLeft->move(mUi.glwVisualizer->width() - mUi.cmdLeft->width() - 8, mUi.cmdIsometric->geometry().bottom() + 8);
     mUi.cmdFront->move(mUi.cmdLeft->geometry().left() - mUi.cmdFront->width() - 8, mUi.cmdIsometric->geometry().bottom() + 8);
-//    mUi.cmdFit->move(mUi.cmdTop->geometry().left() - mUi.cmdFit->width() - 10, 10);
+    //    mUi.cmdFit->move(mUi.cmdTop->geometry().left() - mUi.cmdFit->width() - 10, 10);
     mUi.cmdFit->move(mUi.glwVisualizer->width() - mUi.cmdFit->width() - 8, mUi.cmdLeft->geometry().bottom() + 8);
 }
 
 void VisualisationFormController::onCmdTopClicked()
 {
-    mUi.glwVisualizer->setTopView();
+    qDebug() << "VisualisationFormController: onCmdTopClicked";
+    //mUi.glwVisualizer->setTopView();
 }
 
 void VisualisationFormController::onCmdFrontClicked()
 {
-    mUi.glwVisualizer->setFrontView();
+    qDebug() << "VisualisationFormController: onCmdFrontClicked";
+    //mUi.glwVisualizer->setFrontView();
 }
 
 void VisualisationFormController::onCmdLeftClicked()
 {
-    mUi.glwVisualizer->setLeftView();
+    qDebug() << "VisualisationFormController: onCmdLeftClicked";
+    //mUi.glwVisualizer->setLeftView();
 }
 
 void VisualisationFormController::onCmdIsometricClicked()
 {
-    mUi.glwVisualizer->setIsometricView();
+    qDebug() << "VisualisationFormController: isCmdIsometricClicked";
+    //mUi.glwVisualizer->setIsometricView();
 }
 
 double VisualisationFormController::toolZPosition()
 {
-    return mToolDrawer.toolPosition().z();
+    qDebug() << "VisualisationFormController: toolZPosition";
+    //return mToolDrawer.toolPosition().z();
+    return 0.0;
 }
 
 QString VisualisationFormController::getParserStatus()
 {
-   return mUi.glwVisualizer->parserStatus();
+    qDebug() << "VisualisationFormController: getParserStatus";
+    //return mUi.glwVisualizer->parserStatus();
+    return "";
 }
 
 void VisualisationFormController::onVisualizatorRotationChanged()
 {
-    mUi.cmdIsometric->setChecked(false);
+    qDebug() << "VisualisationFormController: noVisualizatorRotationChanged";
+    //mUi.cmdIsometric->setChecked(false);
 }
 
 void VisualisationFormController::onCmdFitClicked()
 {
-    mUi.glwVisualizer->fitDrawable(&mCurrentDrawer);
+    qDebug() << "VisualisationFormController: onCmdFitClicked";
+    //mUi.glwVisualizer->fitDrawable(&mCurrentDrawer);
 }
 
 void VisualisationFormController::updateParser()
 {
+    qDebug() << "VisualisationFormController: updateParser";
     /*
     QTime time;
 
@@ -185,8 +188,26 @@ void VisualisationFormController::updateParser()
     */
 }
 
+void VisualisationFormController::setupSignalSlots()
+{
+    qDebug() << "VisualisationFormController: Setup Signals/Slots";
+    /*
+    connect
+    (
+        getVisualiser(), SIGNAL(rotationChanged()),
+        this, SLOT(onVisualizatorRotationChanged())
+    );
+    connect
+    (
+        getVisualiser(), SIGNAL(resized()),
+        this, SLOT(placeVisualizerButtons())
+    );
+    */
+}
+
 void VisualisationFormController::showEvent(QShowEvent *se)
 {
+    qDebug() << "VisualisationFormController: showEvent";
     /*
     Q_UNUSED(se)
 
@@ -210,6 +231,7 @@ void VisualisationFormController::showEvent(QShowEvent *se)
 
 void VisualisationFormController::hideEvent(QHideEvent *he)
 {
+    qDebug() << "VisualisationFormController: hideEvent";
     /*
     Q_UNUSED(he)
     mUi->glwVisualizer->setUpdatesEnabled(false);
@@ -218,6 +240,7 @@ void VisualisationFormController::hideEvent(QHideEvent *he)
 
 void VisualisationFormController::resizeEvent(QResizeEvent *re)
 {
+    qDebug() << "VisualisationFormController: resizeEvent";
     /*
     Q_UNUSED(re)
     placeVisualizerButtons();
@@ -226,16 +249,18 @@ void VisualisationFormController::resizeEvent(QResizeEvent *re)
 
 GLWidget* VisualisationFormController::getVisualiser()
 {
+    qDebug() << "VisualisationFormController: getVisualizer";
     return mUi.glwVisualizer;
 }
 
 void VisualisationFormController::setGLWBufferState(QString state)
 {
-
+    qDebug() << "VisualisationFormController: setGLWBufferState";
 }
 
 void VisualisationFormController::timerEvent(QTimerEvent *te)
 {
+    qDebug() << "VisualisationFormController: timerEvent";
     /*
     if (te->timerId() == mToolAnimationTimer.timerId())
     {
@@ -250,4 +275,9 @@ void VisualisationFormController::timerEvent(QTimerEvent *te)
         QMainWindow::timerEvent(te);
     }
     */
+}
+
+void VisualisationFormController::onGcodeFileLoadFinished()
+{
+    qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
 }

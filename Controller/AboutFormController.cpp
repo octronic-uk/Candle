@@ -1,4 +1,4 @@
-// This file is a part of "Candle" application.
+// This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QDesktopServices>
@@ -8,7 +8,7 @@ AboutFormController::AboutFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
 
-    QMessageLogger().info("Constructing AboutFormController");
+    qDebug() << "AboutFormController: Constructing";
     mUi.setupUi(&mDialog);
     mUi.lblAbout->setText(
          mUi.lblAbout->text().arg(qApp->applicationVersion())
@@ -20,11 +20,18 @@ AboutFormController::AboutFormController(QWidget *parent)
     {
         mUi.txtLicense->setPlainText(file.readAll());
     }
+
+    setupSignalSlots();
 }
 
 AboutFormController::~AboutFormController()
 {
-    QMessageLogger().info("Destructing AboutFormController");
+    qDebug() << "AboutFormController: Destructing";
+}
+
+void AboutFormController::exec()
+{
+    mDialog.exec();
 }
 
 void AboutFormController::on_cmdOk_clicked()
@@ -35,4 +42,10 @@ void AboutFormController::on_cmdOk_clicked()
 void AboutFormController::on_lblAbout_linkActivated(const QString &link)
 {
     QDesktopServices::openUrl(link);
+}
+
+void AboutFormController::setupSignalSlots()
+{
+
+    qDebug() << "AboutFormController: Setup Signals/Slots";
 }

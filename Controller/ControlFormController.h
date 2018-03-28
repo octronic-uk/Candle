@@ -34,6 +34,7 @@ public:
     bool isHoming();
     bool isResetCompleted();
     void onCmdZeroZClicked();
+    void setupSignalSlots() override;
 signals:
 
 public slots:

@@ -15,66 +15,67 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include <QTime>
 #include <QFile>
 #include <QDir>
+#include <QTime>
 
+#include <QtDebug>
 #include <QMessageBox> // TODO - Move these to view/controller
 #include <QProgressDialog>
 
-#include "GCodeFileModel.h"
-#include "Parser/GCodeParser.h"
-#include "Model/Tables/GCodeTableModel.h"
+#include "GcodeFileModel.h"
+#include "Parser/GcodeParser.h"
+#include "Model/Tables/GcodeTableModel.h"
 
-GCodeFileModel::GCodeFileModel(QObject *parent)
+GcodeFileModel::GcodeFileModel(QObject *parent)
     : QObject(parent)
 {
-
+    qDebug() << "GcodeFileModel: Constructing";
 }
 
-GCodeFileModel::~GCodeFileModel()
+GcodeFileModel::~GcodeFileModel()
 {
-
+    qDebug() << "GcodeFileModel: Destructing";
 }
 
-void GCodeFileModel::load(QList<QString> data)
+void GcodeFileModel::load(QList<QString> data)
 {
-    /*
+    qDebug() << "GcodeFileModel: load(Qlist<QString>)";
     QTime time;
     time.start();
 
     // Reset tables
-    clearTable();
-    mProbeModel.clear();
-    mProgramHeightmapModel.clear();
-    mCurrentModel = &mProgramModel;
+    emit gcodeFileLoadStartedSignal();
+
+    //clearTable();
+    //mProbeModel.clear();
+    //mProgramHeightmapModel.clear();
+    //mCurrentModel = &mProgramModel;
 
     // Reset parsers
-    mViewParser.reset();
-    mProbeParser.reset();
+    //mViewParser.reset();
+    //mProbeParser.reset();
 
     // Reset code drawer
-    mCurrentDrawer = mCodeDrawer;
-    mCodeDrawer->update();
-    mUi->glwVisualizer->fitDrawable(mCodeDrawer);
-    updateProgramEstimatedTime(QList<LineSegment*>());
+    //mCurrentDrawer = mCodeDrawer;
+    //mCodeDrawer->update();
+    //mUi->glwVisualizer->fitDrawable(mCodeDrawer);
+    //updateProgramEstimatedTime(QList<LineSegment*>());
 
     // Update interface
-    mUi->chkHeightMapUse->setChecked(false);
-    mUi->grpHeightMap->setProperty("overrided", false);
-    style()->unpolish(mUi->grpHeightMap);
-    mUi->grpHeightMap->ensurePolished();
+    //mUi->chkHeightMapUse->setChecked(false);
+    //mUi->grpHeightMap->setProperty("overrided", false);
+    //style()->unpolish(mUi->grpHeightMap);
+    //mUi->grpHeightMap->ensurePolished();
 
-    // Reset tableview
-    QByteArray headerState = mUi->tblProgram->horizontalHeader()->saveState();
-    mUi->tblProgram->setModel(NULL);
+
 
     // Prepare parser
     GcodeParser gp;
-    gp.setTraverseSpeed(mSettingsForm->rapidSpeed());
-    if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
+    gp.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
+    //if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
 
-    qDebug() << "Prepared to load:" << time.elapsed();
+    qDebug() << "GcodeFileModel: Prepared to load at time: " << time.elapsed();
     time.start();
 
     // Block parser updates on table changes
@@ -84,20 +85,23 @@ void GCodeFileModel::load(QList<QString> data)
     QString stripped;
     QString trimmed;
     QList<QString> args;
-    GCodeItem item;
+    GcodeItem item;
 
     // Prepare model
-    mProgramModel.data().clear();
-    mProgramModel.data().reserve(data.count());
+    emit clearExistingGcodeFileSignal();
+    emit reserveGcodeRowsSignal(data.count());
+    //mProgramModel.data().reserve(data.count());
 
-    QProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, data.count(), this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setFixedSize(progress.sizeHint());
-    if (data.count() > PROGRESS_MIN_LINES) {
-        progress.show();
-        progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
-    }
+//    QProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, data.count(), nullptr);//parent);
+//    progress.setWindowModality(Qt::WindowModal);
+//    progress.setFixedSize(progress.sizeHint());
+//    if (data.count() > PROGRESS_MIN_LINES)
+//    {
+//        progress.show();
+//       progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
+//    }
 
+    QList<GcodeItem> items;
     while (!data.isEmpty())
     {
         command = data.takeFirst();
@@ -105,86 +109,89 @@ void GCodeFileModel::load(QList<QString> data)
         // Trim command
         trimmed = command.trimmed();
 
-        if (!trimmed.isEmpty()) {
+        if (!trimmed.isEmpty())
+        {
             // Split command
             stripped = GcodePreprocessorUtils::removeComment(command);
             args = GcodePreprocessorUtils::splitCommand(stripped);
 
             PointSegment *ps = gp.addCommand(args);
 
-    //        if (ps && (qIsNaN(ps->point()->x()) || qIsNaN(ps->point()->y()) || qIsNaN(ps->point()->z())))
-    //                   qDebug() << "nan point segment added:" << *ps->point();
+            if  (
+                ps && (qIsNaN(ps->point()->x()) ||
+                qIsNaN(ps->point()->y()) ||
+                qIsNaN(ps->point()->z()))
+            ) {
+                qDebug() << "GcodeFileModel: nan point segment added:" << *ps->point();
+            }
 
-            item.command = trimmed;
-            item.state = GCodeItem::InQueue;
-            item.line = gp.getCommandNumber();
-            item.args = args;
+            item.setCommand(trimmed);
+            item.setState(GCODE_ITEM_STATE_IN_QUEUE);
+            item.setLine(gp.getCommandNumber());
+            item.setArgs(args);
 
-            mProgramModel.data().append(item);
+            //emit nextGcodeLineReadySignal(item);
+            items.append(item);
+
         }
 
-        if (progress.isVisible() && (data.count() % PROGRESS_STEP == 0)) {
-            progress.setValue(progress.maximum() - data.count());
-            qApp->processEvents();
-            if (progress.wasCanceled()) break;
-        }
+//        if (progress.isVisible() && (data.count() % PROGRESS_STEP == 0)) {
+//            progress.setValue(progress.maximum() - data.count());
+//            qApp->processEvents();
+//            if (progress.wasCanceled()) break;
+//        }
     }
-    progress.close();
+    //progress.close();
 
-    mProgramModel.insertRow(mProgramModel.rowCount());
 
-    qDebug() << "model filled:" << time.elapsed();
+    qDebug() << "GcodeFileModel: model filled at time " << time.elapsed();
     time.start();
 
-    updateProgramEstimatedTime(mViewParser.getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
-    qDebug() << "view parser filled:" << time.elapsed();
+    //updateProgramEstimatedTime(mViewParser.getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
+    qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
 
     mProgramLoading = false;
+    emit gcodeFileLoadFinishedSignal(items);
 
-    // Set table model
-    mUi->tblProgram->setModel(&mProgramModel);
-    mUi->tblProgram->horizontalHeader()->restoreState(headerState);
-
-    // Update tableview
-    connect(mUi->tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex)));
-    mUi->tblProgram->selectRow(0);
 
     //  Update code drawer
-    mCodeDrawer->update();
-    mUi->glwVisualizer->fitDrawable(mCodeDrawer);
+    //mCodeDrawer->update();
+    //mUi->glwVisualizer->fitDrawable(mCodeDrawer);
 
-    resetHeightmap();
-    updateControlsState();
-    */
+    //resetHeightmap();
+    //updateControlsState();
 }
 
-void GCodeFileModel::load(QString fileName)
+void GcodeFileModel::load(QString fileName)
 {
-    /*
-    QFile file(fileName);
+    qDebug() << "GcodeFileModel: load(QString fileName)";
+    mFile.setFileName(fileName);
 
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical(this, this->windowTitle(), tr("Can't open file:\n") + fileName);
+    if (!mFile.open(QIODevice::ReadOnly))
+    {
+        emit statusUpdateSignal(QString(tr("Can't open file") + fileName));
         return;
     }
 
-    // Set filename
-    mProgramFileName = fileName;
-
     // Prepare text stream
-    QTextStream textStream(&file);
+    QTextStream textStream(&mFile);
 
     // Read lines
     QList<QString> data;
-    while (!textStream.atEnd()) data.append(textStream.readLine());
+    while (!textStream.atEnd())
+    {
+        data.append(textStream.readLine());
+    }
 
     // Load lines
-    loadFile(data);
-    */
+    load(data);
+    qDebug() << "GcodeFileModel: Loaded Gcode File "
+             << fileName;
 }
 
-QTime GCodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
+QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 {
+    qDebug() << "GcodeFileModel: updateProgramEstimatedTime(QList<LineSegment*> lines)";
     /*
     double time = 0;
 
@@ -197,12 +204,12 @@ QTime GCodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
                 length / ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
                           ? (ls->getSpeed() * mUi->txtFeed->value() / 100) : ls->getSpeed());
 
-//        qDebug() << "length/time:" << length << ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
+//        qDebug() << "GcodeFileModel: length/time:" << length << ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
 //                                                 ? (ls->getSpeed() * mUi->txtFeed->value() / 100) : ls->getSpeed())
 //                 << time;
 
-//        if (qIsNaN(length)) qDebug() << "length nan:" << i << ls->getLineNumber() << ls->getStart() << ls->getEnd();
-//        if (qIsNaN(ls->getSpeed())) qDebug() << "speed nan:" << ls->getSpeed();
+//        if (qIsNaN(length)) qDebug() << "GcodeFileModel: length nan:" << i << ls->getLineNumber() << ls->getStart() << ls->getEnd();
+//        if (qIsNaN(ls->getSpeed())) qDebug() << "GcodeFileModel: speed nan:" << ls->getSpeed();
     }
 
     time *= 60;
@@ -219,14 +226,21 @@ QTime GCodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
     */
 }
 
-
-bool GCodeFileModel::save(QString fileName, GCodeTableModel *model)
+QString GcodeFileModel::getCurrentFileName()
 {
+   qDebug() << "GcodeFileModel: getCurrentFileName()";
+   return mFile.fileName();
+}
+
+
+bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
+{
+   qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
     /*
     QFile file(fileName);
     QDir dir;
 
-    qDebug() << "Saving program";
+    qDebug() << "GcodeFileModel: Saving program";
 
     if (file.exists()) dir.remove(file.fileName());
     if (!file.open(QIODevice::WriteOnly)) return false;
@@ -244,21 +258,20 @@ bool GCodeFileModel::save(QString fileName, GCodeTableModel *model)
 }
 
 
-bool GCodeFileModel::isGCodeFile(QString fileName)
+bool GcodeFileModel::isGcodeFile(QString fileName)
 {
-    /*
+    qDebug() << "GcodeTableModel: isGcodeFile" << fileName;
     return fileName.endsWith(".txt", Qt::CaseInsensitive)
             || fileName.endsWith(".nc", Qt::CaseInsensitive)
             || fileName.endsWith(".ncc", Qt::CaseInsensitive)
             || fileName.endsWith(".ngc", Qt::CaseInsensitive)
             || fileName.endsWith(".tap", Qt::CaseInsensitive);
-            */
-    return false;
 }
 
 
-bool GCodeFileModel::hasFileChanged()
+bool GcodeFileModel::hasFileChanged()
 {
-    return false;
+    qDebug() << "GcodeTableModel: hasFileChanged";
+    return mFileChanged;
 }
 

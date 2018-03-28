@@ -21,13 +21,14 @@ UserCommandsFormController::UserCommandsFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
 
-    QMessageLogger().info("Constructing UserCommandsFormController");
+    qDebug() << "UserCommandsFormController: Constructing";
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 UserCommandsFormController::~UserCommandsFormController()
 {
-    QMessageLogger().info("Destructing UserCommandsFormController");
+    qDebug() << "UserCommandsFormController: Destructing";
 
 }
 
@@ -42,4 +43,10 @@ void UserCommandsFormController::onCmdUserClicked(bool checked)
         sendCommand(cmd.trimmed(), -1, mSettingsForm->showUICommands());
     }
     */
+}
+
+void UserCommandsFormController::setupSignalSlots()
+{
+
+    qDebug() << "UserCommandsFormController: Setup Signals/Slots";
 }

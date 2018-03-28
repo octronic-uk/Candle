@@ -20,13 +20,14 @@
 ControlFormController::ControlFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Contructing ControlFormController");
+    qDebug() << "Contructing ControlFormController";
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 ControlFormController::~ControlFormController()
 {
-    QMessageLogger().info("Destructing ControlFormController");
+    qDebug() << "Destructing ControlFormController";
 
 }
 
@@ -67,6 +68,12 @@ void ControlFormController::onCmdZeroZClicked()
     sendCommand("G92Z0", -1, mSettingsForm->showUICommands());
     sendCommand("$#", -2, mSettingsForm->showUICommands());
     */
+}
+
+void ControlFormController::setupSignalSlots()
+{
+
+    qDebug() << "ControlFormController: Setup Signals/Slots";
 }
 
 void ControlFormController::onCmdRestoreOriginClicked()

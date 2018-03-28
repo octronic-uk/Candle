@@ -20,8 +20,9 @@
 HeightMapFormController::HeightMapFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
-    QMessageLogger().info("Contructing HeightMapFormController");
+    qDebug() << "HeightMapFormController: Contructing";
     mUi.setupUi(this);
+    setupSignalSlots();
     /*
     mHeightMapGridDrawer.setModel(&mHeightMapModel);
     mHeightMapMode = false;
@@ -47,7 +48,7 @@ HeightMapFormController::HeightMapFormController(QWidget *parent)
 
 HeightMapFormController::~HeightMapFormController()
 {
-    QMessageLogger().info("Destructing HeightMapFormController");
+    qDebug() << "HeightMapFormController: Destructing";
 }
 
 void HeightMapFormController::onCheckBoxHeightMapBorderShowToggled(bool checked)
@@ -688,6 +689,12 @@ void HeightMapFormController::resetHeightmap()
     mHeightMapFileName.clear();
     m_heightMapChanged = false;
     */
+}
+
+void HeightMapFormController::setupSignalSlots()
+{
+
+    qDebug() << "HeightMapFormController: Setup Signals/Slots";
 }
 
 QList<LineSegment*> HeightMapFormController::subdivideSegment(LineSegment* segment)
