@@ -18,7 +18,8 @@
 #include "VisualisationFormController.h"
 
 VisualisationFormController::VisualisationFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mButtonPadding(4)
 {
     qDebug() << "VisualisationFormController: Constructing ";
 
@@ -59,12 +60,12 @@ VisualisationFormController::~VisualisationFormController()
 void VisualisationFormController::placeVisualizerButtons()
 {
     qDebug() << "VisualisationFormController: placeVisualizerButtons";
-    mUi.cmdIsometric->move(mUi.glwVisualizer->width() - mUi.cmdIsometric->width() - 8, 8);
-    mUi.cmdTop->move(mUi.cmdIsometric->geometry().left() - mUi.cmdTop->width() - 8, 8);
-    mUi.cmdLeft->move(mUi.glwVisualizer->width() - mUi.cmdLeft->width() - 8, mUi.cmdIsometric->geometry().bottom() + 8);
-    mUi.cmdFront->move(mUi.cmdLeft->geometry().left() - mUi.cmdFront->width() - 8, mUi.cmdIsometric->geometry().bottom() + 8);
-    //    mUi.cmdFit->move(mUi.cmdTop->geometry().left() - mUi.cmdFit->width() - 10, 10);
-    mUi.cmdFit->move(mUi.glwVisualizer->width() - mUi.cmdFit->width() - 8, mUi.cmdLeft->geometry().bottom() + 8);
+    int xPos = mUi.glwVisualizer->width() - mUi.cmdIsometric->width() + mButtonPadding;
+    mUi.cmdIsometric->move(xPos , mButtonPadding);
+    mUi.cmdTop->move(xPos, mUi.cmdIsometric->geometry().bottom() + mButtonPadding);
+    mUi.cmdLeft->move(xPos, mUi.cmdTop->geometry().bottom() + mButtonPadding);
+    mUi.cmdFront->move(xPos, mUi.cmdLeft->geometry().bottom() + mButtonPadding);
+    mUi.cmdFit->move(xPos, mUi.cmdFront->geometry().bottom() + mButtonPadding);
 }
 
 void VisualisationFormController::onCmdTopClicked()

@@ -23,7 +23,7 @@
 
 
 #include "View/Drawers/OriginDrawer.h"
-#include "View/Drawers/GCodeDrawer.h"
+#include "View/Drawers/GcodeDrawer.h"
 #include "View/Drawers/ToolDrawer.h"
 #include "View/Drawers/SelectionDrawer.h"
 #include "View/Drawers/HeightMapGridDrawer.h"
@@ -60,6 +60,7 @@ public slots:
 private slots:
 
 private:
+    int mButtonPadding;
     VisualisationForm mUi;
 
     // GL Drawers

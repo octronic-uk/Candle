@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QVector3D>
 #include "../../Model/Parser/LineSegment.h"
-#include "../../Model/Parser/GCodeViewParse.h"
+#include "../../Model/Parser/GcodeViewParse.h"
 #include "ShaderDrawable.h"
 
 class GcodeDrawer : public QObject, public ShaderDrawable

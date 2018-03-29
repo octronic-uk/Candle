@@ -8,9 +8,9 @@
 #include <QRegExp>
 #include <QDebug>
 #include <QVector3D>
-#include "GCodePreprocessorUtils.h"
+#include "GcodePreprocessorUtils.h"
 #include "limits"
-#include "../tables/GCodeTableModel.h"
+#include "../Tables/GcodeTableModel.h"
 
 /**
 * Searches the command string for an 'f' and replaces the speed value

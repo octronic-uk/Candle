@@ -34,7 +34,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/images.qrc">
-           <normaloff>:/images/cube.png</normaloff>:/images/cube.png</iconset>
+           <normaloff>:/Images/cube.png</normaloff>:/Images/cube.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -60,7 +60,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/images.qrc">
-           <normaloff>:/images/cubeTop.png</normaloff>:/images/cubeTop.png</iconset>
+           <normaloff>:/Images/cubeTop.png</normaloff>:/Images/cubeTop.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -86,7 +86,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/images.qrc">
-           <normaloff>:/images/cubeFront.png</normaloff>:/images/cubeFront.png</iconset>
+           <normaloff>:/Images/cubeFront.png</normaloff>:/Images/cubeFront.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -112,7 +112,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/images.qrc">
-           <normaloff>:/images/cubeLeft.png</normaloff>:/images/cubeLeft.png</iconset>
+           <normaloff>:/Images/cubeLeft.png</normaloff>:/Images/cubeLeft.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -138,7 +138,7 @@
          </property>
          <property name="icon">
           <iconset resource="../Resources/images.qrc">
-           <normaloff>:/images/fit_1.png</normaloff>:/images/fit_1.png</iconset>
+           <normaloff>:/Images/fit_1.png</normaloff>:/Images/fit_1.png</iconset>
          </property>
          <property name="iconSize">
           <size>

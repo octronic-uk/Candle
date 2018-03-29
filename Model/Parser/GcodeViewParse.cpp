@@ -6,7 +6,7 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QDebug>
-#include "GCodeViewParse.h"
+#include "GcodeViewParse.h"
 
 GcodeViewParse::GcodeViewParse(QObject *parent) :
     QObject(parent)

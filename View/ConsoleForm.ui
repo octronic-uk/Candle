@@ -89,7 +89,7 @@ padding-right: 8;</string>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/send_1.png</normaloff>:/images/send_1.png</iconset>
+         <normaloff>:/Images/send_1.png</normaloff>:/Images/send_1.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -124,7 +124,7 @@ padding-right: 8;</string>
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/erase_1.png</normaloff>:/images/erase_1.png</iconset>
+         <normaloff>:/Images/erase_1.png</normaloff>:/Images/erase_1.png</iconset>
        </property>
        <property name="iconSize">
         <size>

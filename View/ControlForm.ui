@@ -62,7 +62,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/search_for_home2.png</normaloff>:/images/search_for_home2.png</iconset>
+         <normaloff>:/Images/search_for_home2.png</normaloff>:/Images/search_for_home2.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -103,7 +103,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/restart.png</normaloff>:/images/restart.png</iconset>
+         <normaloff>:/Images/restart.png</normaloff>:/Images/restart.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -144,7 +144,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/origin.png</normaloff>:/images/origin.png</iconset>
+         <normaloff>:/Images/origin.png</normaloff>:/Images/origin.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -182,7 +182,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/run.png</normaloff>:/images/run.png</iconset>
+         <normaloff>:/Images/run.png</normaloff>:/Images/run.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -220,7 +220,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/search_for_z.png</normaloff>:/images/search_for_z.png</iconset>
+         <normaloff>:/Images/search_for_z.png</normaloff>:/Images/search_for_z.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -261,7 +261,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/unlock.png</normaloff>:/images/unlock.png</iconset>
+         <normaloff>:/Images/unlock.png</normaloff>:/Images/unlock.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -299,7 +299,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/axis_zero.png</normaloff>:/images/axis_zero.png</iconset>
+         <normaloff>:/Images/axis_zero.png</normaloff>:/Images/axis_zero.png</iconset>
        </property>
        <property name="iconSize">
         <size>
@@ -337,7 +337,7 @@
        </property>
        <property name="icon">
         <iconset resource="../Resources/images.qrc">
-         <normaloff>:/images/zero_z.png</normaloff>:/images/zero_z.png</iconset>
+         <normaloff>:/Images/zero_z.png</normaloff>:/Images/zero_z.png</iconset>
        </property>
        <property name="iconSize">
         <size>

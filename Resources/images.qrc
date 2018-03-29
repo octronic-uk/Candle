@@ -1,47 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>images/search_for_home2.png</file>
-        <file>images/search_for_z.png</file>
-        <file>images/safe_z.png</file>
-        <file>images/axis_zero.png</file>
-        <file>images/axis_return.png</file>
-        <file>images/restart.png</file>
-        <file>images/handle_horizontal.png</file>
-        <file>images/handle_vertical.png</file>
-        <file>images/unlock.png</file>
-        <file>images/icon-arrow-up-b.png</file>
-        <file>images/icon-arrow-down-b.png</file>
-        <file>images/chevron-down.png</file>
-        <file>images/chevron-up.png</file>
-        <file>images/chevron-right.png</file>
-        <file>images/chevron-left.png</file>
-        <file>images/zero_z.png</file>
-        <file>images/cutter.png</file>
-        <file>images/handle2s.png</file>
-        <file>images/handle2sh.png</file>
-        <file>images/cube.png</file>
-        <file>images/fit_1.png</file>
-        <file>images/send_1.png</file>
-        <file>images/erase_1.png</file>
-        <file>images/cubeFront.png</file>
-        <file>images/cubeLeft.png</file>
-        <file>images/cubeTop.png</file>
-        <file>images/icon3png.png</file>
-        <file>images/expand.png</file>
-        <file>images/collapse.png</file>
-        <file>images/collapse_disabled.png</file>
-        <file>images/expand_disabled.png</file>
-        <file>images/small_arrow.png</file>
-        <file>images/shadow.png</file>
-        <file>images/handle_small.png</file>
-        <file>images/guard.png</file>
-        <file>images/origin.png</file>
-        <file>images/cocoanut_256.png</file>
-        <file>images/run.png</file>
-        <file>images/num1.png</file>
-        <file>images/num2.png</file>
-        <file>images/num3.png</file>
-        <file>images/num4.png</file>
         <file>Images/folder-open-outline/32x32.png</file>
         <file>Images/document-edit-outline/32x32.png</file>
         <file>Images/minus-circle-outline/32x32.png</file>
@@ -62,5 +20,65 @@
         <file>Images/location-arrow-outline/256x256.png</file>
         <file>Images/eye-outline/256x256.png</file>
         <file>Images/cocoanut.png</file>
+        <file>Images/axis_return.png</file>
+        <file>Images/axis_zero.png</file>
+        <file>Images/chevron-down.png</file>
+        <file>Images/chevron-left.png</file>
+        <file>Images/chevron-right.png</file>
+        <file>Images/chevron-up.png</file>
+        <file>Images/cocoanut.ico</file>
+        <file>Images/cocoanut_16.png</file>
+        <file>Images/cocoanut_20.png</file>
+        <file>Images/cocoanut_256.png</file>
+        <file>Images/collapse.png</file>
+        <file>Images/collapse_disabled.png</file>
+        <file>Images/cube.png</file>
+        <file>Images/cubeFront.png</file>
+        <file>Images/cubeLeft.png</file>
+        <file>Images/cubeTop.png</file>
+        <file>Images/cutter.png</file>
+        <file>Images/cutter1.ico</file>
+        <file>Images/erase_1.png</file>
+        <file>Images/expand.png</file>
+        <file>Images/expand_disabled.png</file>
+        <file>Images/fit_1.png</file>
+        <file>Images/g7567.png</file>
+        <file>Images/grblControl1.ico</file>
+        <file>Images/grblControl2.ico</file>
+        <file>Images/guard.png</file>
+        <file>Images/handle2s.png</file>
+        <file>Images/handle2sh.png</file>
+        <file>Images/handle_horizontal.png</file>
+        <file>Images/handle_small.png</file>
+        <file>Images/handle_vertical.png</file>
+        <file>Images/icon.png</file>
+        <file>Images/icon1.png</file>
+        <file>Images/icon3_16.png</file>
+        <file>Images/icon3_20.png</file>
+        <file>Images/icon3png.png</file>
+        <file>Images/icon-arrow-down-b.png</file>
+        <file>Images/icon-arrow-up-b.png</file>
+        <file>Images/list.png</file>
+        <file>Images/list_collapsed.png</file>
+        <file>Images/menu_13.png</file>
+        <file>Images/menu_16.png</file>
+        <file>Images/menu_collapse.png</file>
+        <file>Images/menu_collapse_13.png</file>
+        <file>Images/menu_collapse_16.png</file>
+        <file>Images/num1.png</file>
+        <file>Images/num2.png</file>
+        <file>Images/num3.png</file>
+        <file>Images/num4.png</file>
+        <file>Images/origin.png</file>
+        <file>Images/restart.png</file>
+        <file>Images/run.png</file>
+        <file>Images/safe_z.png</file>
+        <file>Images/search_for_home2.png</file>
+        <file>Images/search_for_z.png</file>
+        <file>Images/send_1.png</file>
+        <file>Images/shadow.png</file>
+        <file>Images/small_arrow.png</file>
+        <file>Images/unlock.png</file>
+        <file>Images/zero_z.png</file>
     </qresource>
 </RCC>

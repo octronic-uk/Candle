@@ -7,7 +7,7 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLTexture>
-#include "utils/Util.h"
+#include "Utils/Util.h"
 
 struct VertexData
 {

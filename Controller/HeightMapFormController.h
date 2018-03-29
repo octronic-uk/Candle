@@ -20,11 +20,11 @@
 #include "AbstractFormController.h"
 #include "ui_HeightMapForm.h"
 
-#include "View/Drawers/heightmapborderdrawer.h"
+#include "View/Drawers/HeightMapBorderDrawer.h"
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapInterpolationDrawer.h"
 #include "Model/Tables/HeightMapTableModel.h"
-#include "Model/Tables/GCodeTableModel.h"
+#include "Model/Tables/GcodeTableModel.h"
 
 class LineSegment;
 

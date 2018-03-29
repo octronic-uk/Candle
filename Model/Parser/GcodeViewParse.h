@@ -11,8 +11,8 @@
 #include <QVector3D>
 #include <QVector2D>
 #include "LineSegment.h"
-#include "GCodeParser.h"
-#include "utils/Util.h"
+#include "GcodeParser.h"
+#include "Utils/Util.h"
 
 class GcodeViewParse : public QObject
 {

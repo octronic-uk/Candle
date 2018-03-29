@@ -11,7 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About</string>
+   <string>About Cocoanut</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../Resources/images.qrc">
+    <normaloff>:/Images/cocoanut.png</normaloff>:/Images/cocoanut.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget {
@@ -45,7 +49,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">image: url(:/images/cocoanut_256.png);</string>
+        <string notr="true">image: url(:/Images/cocoanut_256.png);</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -128,6 +132,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resources/images.qrc"/>
+ </resources>
  <connections/>
 </ui>

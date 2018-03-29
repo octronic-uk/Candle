@@ -69,7 +69,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/images.qrc">
-          <normaloff>:/images/num1.png</normaloff>:/images/num1.png</iconset>
+          <normaloff>:/Images/num1.png</normaloff>:/Images/num1.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -101,7 +101,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/images.qrc">
-          <normaloff>:/images/num2.png</normaloff>:/images/num2.png</iconset>
+          <normaloff>:/Images/num2.png</normaloff>:/Images/num2.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -133,7 +133,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/images.qrc">
-          <normaloff>:/images/num3.png</normaloff>:/images/num3.png</iconset>
+          <normaloff>:/Images/num3.png</normaloff>:/Images/num3.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -165,7 +165,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Resources/images.qrc">
-          <normaloff>:/images/num4.png</normaloff>:/images/num4.png</iconset>
+          <normaloff>:/Images/num4.png</normaloff>:/Images/num4.png</iconset>
         </property>
         <property name="iconSize">
          <size>

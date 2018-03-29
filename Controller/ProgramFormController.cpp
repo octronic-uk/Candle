@@ -20,7 +20,7 @@
 #include <QShortcut>
 #include <QMessageBox>
 #include <QScrollBar>
-#include "Model/Parser/GCodeViewParse.h"
+#include "Model/Parser/GcodeViewParse.h"
 
 #include "ProgramFormController.h"
 #include "ProgramFormController.h"

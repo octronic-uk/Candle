@@ -416,7 +416,7 @@
             </property>
             <property name="icon">
              <iconset resource="../Resources/images.qrc">
-              <normaloff>:/images/icon-arrow-up-b.png</normaloff>:/images/icon-arrow-up-b.png</iconset>
+              <normaloff>:/Images/chevron-circle-outline/32x32 up.png</normaloff>:/Images/chevron-circle-outline/32x32 up.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -454,7 +454,7 @@
             </property>
             <property name="icon">
              <iconset resource="../Resources/images.qrc">
-              <normaloff>:/images/icon-arrow-down-b.png</normaloff>:/images/icon-arrow-down-b.png</iconset>
+              <normaloff>:/Images/chevron-circle-outline/32x32 down.png</normaloff>:/Images/chevron-circle-outline/32x32 down.png</iconset>
             </property>
             <property name="iconSize">
              <size>

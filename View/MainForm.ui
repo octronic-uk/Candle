@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
+    <width>858</width>
     <height>899</height>
    </rect>
   </property>
@@ -92,7 +92,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>488</width>
+     <width>858</width>
      <height>22</height>
     </rect>
    </property>
@@ -355,7 +355,7 @@
   <action name="actionToggleSpindleForm">
    <property name="icon">
     <iconset resource="../Resources/images.qrc">
-     <normaloff>:/images/cutter.png</normaloff>:/images/cutter.png</iconset>
+     <normaloff>:/Images/cutter.png</normaloff>:/Images/cutter.png</iconset>
    </property>
    <property name="text">
     <string>Spindle</string>
@@ -364,7 +364,7 @@
   <action name="actionToggleControlForm">
    <property name="icon">
     <iconset resource="../Resources/images.qrc">
-     <normaloff>:/images/origin.png</normaloff>:/images/origin.png</iconset>
+     <normaloff>:/Images/origin.png</normaloff>:/Images/origin.png</iconset>
    </property>
    <property name="text">
     <string>Control</string>
@@ -382,7 +382,7 @@
   <action name="actionToggleUserCommandsForm">
    <property name="icon">
     <iconset resource="../Resources/images.qrc">
-     <normaloff>:/images/num1.png</normaloff>:/images/num1.png</iconset>
+     <normaloff>:/Images/num1.png</normaloff>:/Images/num1.png</iconset>
    </property>
    <property name="text">
     <string>User Commands</string>

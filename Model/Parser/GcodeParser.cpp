@@ -7,7 +7,7 @@
 
 #include <QListIterator>
 #include <QDebug>
-#include "GCodeParser.h"
+#include "GcodeParser.h"
 
 GcodeParser::GcodeParser(QObject *parent) : QObject(parent)
 {

@@ -48,15 +48,15 @@ SOURCES +=\
     Controller/JogFormController.cpp \
     Controller/ConsoleFormController.cpp \
     Controller/AboutFormController.cpp \
-    Model/Tables/GCodeTableModel.cpp \
+    Model/Tables/GcodeTableModel.cpp \
     Model/Tables/HeightMapTableModel.cpp \
     Model/Parser/ArcProperties.cpp \
-    Model/Parser/GCodeParser.cpp \
-    Model/Parser/GCodePreprocessorUtils.cpp \
-    Model/Parser/GCodeViewParse.cpp \
+    Model/Parser/GcodeParser.cpp \
+    Model/Parser/GcodePreprocessorUtils.cpp \
+    Model/Parser/GcodeViewParse.cpp \
     Model/Parser/LineSegment.cpp \
     Model/Parser/PointSegment.cpp \
-    View/Drawers/GCodeDrawer.cpp \
+    View/Drawers/GcodeDrawer.cpp \
     View/Drawers/HeightMapBorderDrawer.cpp \
     View/Drawers/HeightMapGridDrawer.cpp \
     View/Drawers/HeightMapInterpolationDrawer.cpp \
@@ -83,7 +83,7 @@ SOURCES +=\
     Model/SerialPortModel.cpp \
     Model/SettingsModel.cpp \
     Model/StatusModel.cpp \
-    Model/GCodeFileModel.cpp \
+    Model/GcodeFileModel.cpp \
     Model/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
     Model/RecentHeightMapFilesModel.cpp \
@@ -97,14 +97,14 @@ HEADERS  += \
     Controller/SettingsFormController.h \
     Controller/MainFormController.h \
     Model/Parser/ArcProperties.h \
-    Model/Parser/GCodeParser.h \
-    Model/Parser/GCodePreprocessorUtils.h \
-    Model/Parser/GCodeViewParse.h \
+    Model/Parser/GcodeParser.h \
+    Model/Parser/GcodePreprocessorUtils.h \
+    Model/Parser/GcodeViewParse.h \
     Model/Parser/LineSegment.h \
     Model/Parser/PointSegment.h \
     Model/Tables/HeightMapTableModel.h \
-    Model/Tables/GCodeTableModel.h \
-    View/Drawers/GCodeDrawer.h \
+    Model/Tables/GcodeTableModel.h \
+    View/Drawers/GcodeDrawer.h \
     View/Drawers/HeightMapBorderDrawer.h \
     View/Drawers/HeightMapGridDrawer.h \
     View/Drawers/HeightMapInterpolationDrawer.h \
@@ -134,7 +134,7 @@ HEADERS  += \
     Model/SerialPortModel.h \
     Model/SettingsModel.h \
     Model/StatusModel.h \
-    Model/GCodeFileModel.h \
+    Model/GcodeFileModel.h \
     Model/HeightMapFileModel.h \
     Model/RecentFilesModel.h \
     Model/RecentHeightMapFilesModel.h \

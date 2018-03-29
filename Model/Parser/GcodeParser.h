@@ -5,14 +5,13 @@
 
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#ifndef GCODEPARSER_H
-#define GCODEPARSER_H
+#pragma once
 
 #include <QObject>
 #include <QVector3D>
 #include <cmath>
 #include "PointSegment.h"
-#include "GCodePreprocessorUtils.h"
+#include "GcodePreprocessorUtils.h"
 
 class GcodeParser : public QObject
 {
@@ -85,4 +84,3 @@ private:
     void setLastGcodeCommand(float num);
 };
 
-#endif // GCODEPARSER_H

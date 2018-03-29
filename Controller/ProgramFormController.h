@@ -22,7 +22,7 @@
 #include <QTimer>
 
 #include "AbstractFormController.h"
-#include "Model/Tables/GCodeTableModel.h"
+#include "Model/Tables/GcodeTableModel.h"
 
 #include "ui_ProgramForm.h"
 

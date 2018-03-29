@@ -1,7 +1,7 @@
 // This file is a part of "Cocoanut" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#include "GCodeDrawer.h"
+#include "GcodeDrawer.h"
 
 GcodeDrawer::GcodeDrawer() : QObject()
 {
