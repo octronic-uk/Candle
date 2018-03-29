@@ -11,18 +11,30 @@ GcodeTableModel::GcodeTableModel(QObject *parent) :
 
 QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid()) return QVariant();
+    if (!index.isValid())
+    {
+        return QVariant();
+    }
 
-    if (index.row() >= mData.size()) return QVariant();
+    if (index.row() >= mData.size())
+    {
+        return QVariant();
+    }
 
     if (role == Qt::DisplayRole || role == Qt::EditRole)
     {
         switch (index.column())
         {
-        case 0: return index.row() == this->rowCount() - 1 ? QString() : QString::number(index.row() + 1);
-        case 1: return mData.at(index.row()).getCommand();
+        case 0:
+            return index.row() == this->rowCount() - 1 ? QString() : QString::number(index.row() + 1);
+        case 1:
+            return mData.at(index.row()).getCommand();
         case 2:
-            if (index.row() == this->rowCount() - 1) return QString();
+            if (index.row() == this->rowCount() - 1)
+            {
+                return QString();
+            }
+
             switch (mData.at(index.row()).getState())
             {
                 case GCODE_ITEM_STATE_IN_QUEUE:
@@ -64,7 +76,8 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
     {
         switch (index.column())
         {
-        case 0: return false;
+        case 0:
+            return false;
         case 1:
             mData[index.row()].setCommand(value.toString());
             break;
@@ -90,7 +103,6 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
 bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
 {
     if (row > rowCount()) return false;
-
     beginInsertRows(parent, row, row);
     mData.insert(row, GcodeItem());
     endInsertRows();
@@ -99,8 +111,7 @@ bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
 
 bool GcodeTableModel::removeRow(int row, const QModelIndex &parent)
 {
-    //if (!index(row, 0).isValid()) return false;
-
+    if (!index(row, 0).isValid()) return false;
     beginRemoveRows(parent, row, row);
     mData.removeAt(row);
     endRemoveRows();
@@ -118,9 +129,6 @@ bool GcodeTableModel::removeRows(int row, int count, const QModelIndex &parent)
 void GcodeTableModel::clear()
 {
     beginResetModel();
-
-//    foreach (GCodeItem* item, m_data) delete item;
-
     mData.clear();
     endResetModel();
 }
@@ -178,18 +186,16 @@ QList<GcodeItem> &GcodeTableModel::data()
 
 void GcodeTableModel::append(QList<GcodeItem> &items)
 {
-    //int row = rowCount();
-    //beginInsertRows(QModelIndex(), row, row+items.count()-1);
-    beginResetModel();
+    int startRow = rowCount();
+    int endRow = startRow + items.count() - 1;
 
-    mData.clear();
+    beginInsertRows(QModelIndex(),startRow,endRow);
 
     for (GcodeItem nextItem : items)
     {
         mData.append(nextItem);
     }
 
-    //endInsertRows();
-    endResetModel();
+    endInsertRows();
 
 }
