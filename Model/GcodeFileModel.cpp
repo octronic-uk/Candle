@@ -28,7 +28,9 @@
 #include "Model/Tables/GcodeTableModel.h"
 
 GcodeFileModel::GcodeFileModel(QObject *parent)
-    : QObject(parent)
+    : QObject(parent),
+      mProgramLoading(false),
+      mFileChanged(false)
 {
     qDebug() << "GcodeFileModel: Constructing";
 }
@@ -84,6 +86,7 @@ void GcodeFileModel::load(QList<QString> data)
 
 
     // Prepare model
+    qDebug() << "GcodeFileModel: Clearing data";
     mData.clear();
     emit clearExistingGcodeFileSignal();
     emit reserveGcodeRowsSignal(data.count());
@@ -100,6 +103,7 @@ void GcodeFileModel::load(QList<QString> data)
 
     while (!data.isEmpty())
     {
+        qDebug() << "GcodeFileModel: Next Line";
         QString command;
         QString stripped;
         QString trimmed;
@@ -133,6 +137,7 @@ void GcodeFileModel::load(QList<QString> data)
             item.setArgs(args);
 
             //emit nextGcodeLineReadySignal(item);
+            qDebug() << "GcodeFileModel: Appending to mData";
             mData.append(item);
 
         }

@@ -17,6 +17,8 @@
  */
 
 #pragma once
+
+#include <QMetaType>
 #include <QStringList>
 #include "GcodeItemState.h"
 
@@ -24,6 +26,7 @@ class GcodeItem
 {
 public:
     explicit GcodeItem();
+    GcodeItem(const GcodeItem& other);
     ~GcodeItem();
 
     QString getCommand() const;
@@ -50,3 +53,4 @@ private:
 };
 
 
+Q_DECLARE_METATYPE(GcodeItem)

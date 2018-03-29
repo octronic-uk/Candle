@@ -36,3 +36,12 @@ void StateFormController::setupSignalSlots()
 
     qDebug() << "StateFormController: Setup Signals/Slots";
 }
+
+bool StateFormController::compareCoordinates(double x, double y, double z)
+{
+    qDebug() << "MainFormController: compareCoordinates";
+    return
+        mUi.txtMPosX->text().toDouble() == x &&
+        mUi.txtMPosY->text().toDouble() == y &&
+        mUi.txtMPosZ->text().toDouble() == z;
+}

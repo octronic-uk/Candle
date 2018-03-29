@@ -21,12 +21,12 @@
 HeightMapFileModel::HeightMapFileModel(QObject *parent)
     : QObject(parent)
 {
-    qDebug() << "Constructing HeightMapFileModel";
+    qDebug() << "HeightMapFileModel: Constructing";
 }
 
 HeightMapFileModel::~HeightMapFileModel()
 {
-    qDebug() << "Destructing HeightMapFileModel";
+    qDebug() << "HeightMapFileModel: Destructing";
 }
 
 bool HeightMapFileModel::isHeightMapFile(QString fileName)
@@ -46,6 +46,7 @@ void HeightMapFileModel::setFileChanged(bool changed)
 
 bool HeightMapFileModel::save(QString fileName)
 {
+    Q_UNUSED(fileName)
     /*
     QFile file(fileName);
     QDir dir;

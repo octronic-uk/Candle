@@ -37,6 +37,7 @@ MainFormController::MainFormController(QWidget *parent) :
 {
     qDebug() << "MainFormController: Constructing";
     mUi.setupUi(&mMainWindow);
+    setupToolbarActions();
     setupSignalSlots();
 
     mFileProcessedCommandIndex = 0;
@@ -80,6 +81,38 @@ MainFormController::~MainFormController()
 {
     qDebug() << "MainFormController: Destructing";
     mSettingsModel.save();
+}
+
+void MainFormController::setupToolbarActions()
+{
+    QAction *console = mUi.consoleDockWidget->toggleViewAction();
+    console->setIcon(QIcon(":/Images/info-circle-outline/32x32.png"));
+    mUi.toolBar->addAction(console);
+
+    QAction *control = mUi.controlDockWidget->toggleViewAction();
+    control->setIcon(QIcon(":/Images/origin.png"));
+    mUi.toolBar->addAction(control);
+
+    QAction *feed = mUi.feedDockWidget->toggleViewAction();
+    feed->setIcon(QIcon(":/Images/percent-circle-outline/256x256.png"));
+    mUi.toolBar->addAction(feed);
+
+    QAction *jog = mUi.jogDockWidget->toggleViewAction();
+    jog->setIcon(QIcon(":/Images/chevron-circle-outline/32x32 right.png"));
+    mUi.toolBar->addAction(jog);
+
+    QAction *spindle = mUi.spindleDockWidget->toggleViewAction();
+    spindle->setIcon(QIcon(":/Images/cutter.png"));
+    mUi.toolBar->addAction(spindle);
+
+    QAction *state = mUi.stateDockWidget->toggleViewAction();
+    state->setIcon(QIcon(":/Images/eye-outline/256x256.png"));
+    mUi.toolBar->addAction(state);
+
+    QAction *userCommands = mUi.userCommandsDockWidget->toggleViewAction();
+    userCommands->setIcon(QIcon(":/Images/num1.png"));
+    mUi.toolBar->addAction(userCommands);
+
 }
 
 void MainFormController::setupSignalSlots()
@@ -1176,16 +1209,7 @@ void MainFormController::onActRecentClearTriggered()
     */
 }
 
-bool MainFormController::compareCoordinates(double x, double y, double z)
-{
-    qDebug() << "MainFormController: compareCoordinates";
-    /*
-    return
-        mUi.txtMPosX->text().toDouble() == x &&
-        mUi.txtMPosY->text().toDouble() == y &&
-        mUi.txtMPosZ->text().toDouble() == z;
-        */
-}
+
 
 void MainFormController::onRecentHeightMapFilesChanged()
 {

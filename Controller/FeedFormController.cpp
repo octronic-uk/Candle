@@ -22,8 +22,12 @@ FeedFormController::FeedFormController(QWidget *parent)
 {
     qDebug() << "FeedFormController: Constructing";
     mUi.setupUi(this);
+    mUi.feedProgress->setMinimum(mUi.feedSlider->minimum());
+    mUi.feedProgress->setMaximum(mUi.feedSlider->maximum());
+    onFeedSliderValueChanged(mUi.feedSlider->value());
+    // TODO - Think about this one
+    //mUi.overrideButton->setStyleSheet("QPushButton:checked { font-weight: bold; window-color: rgb(255, 0,0 ) }");
     setupSignalSlots();
-
 }
 
 FeedFormController::~FeedFormController()
@@ -33,38 +37,36 @@ FeedFormController::~FeedFormController()
 
 bool FeedFormController::isUpdatingFeed()
 {
-
+    return mIsUpdatingFeed;
 }
 
 void FeedFormController::setUpdatingFeed(bool updating)
 {
-
+    mIsUpdatingFeed = updating;
 }
 
 double FeedFormController::getOriginalFeedRate()
 {
-
+    return 100;
 }
 
 bool FeedFormController::isFeedOverrideChecked()
 {
-
+    return mUi.overrideButton->isChecked();
 }
 
-double FeedFormController::getTxtFeedValue()
+void FeedFormController::onFeedOverrideToggled(bool checked)
 {
+    if (!checked)
+    {
+        mUi.feedSlider->setValue(100);
+        mUi.feedProgress->setValue(100);
+    }
+    else
+    {
 
-}
-
-
-// Feed
-
-void FeedFormController::onChkBoxFeedOverrideToggled(bool checked)
-{
+    }
     /*
-    mUi.grpFeed->setProperty("overrided", checked);
-    style()->unpolish(mUi.grpFeed);
-    mUi.grpFeed->ensurePolished();
     updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
 
     if (mIsProcessingFile)
@@ -73,11 +75,6 @@ void FeedFormController::onChkBoxFeedOverrideToggled(bool checked)
         mIsUpdatingFeed = true;
     }
     */
-}
-
-void FeedFormController::onTextFeedEditingFinished()
-{
-    mUi.sliFeed->setValue(mUi.txtFeed->value());
 }
 
 QString FeedFormController::feedOverride(QString command)
@@ -98,15 +95,26 @@ QString FeedFormController::feedOverride(QString command)
 
 void FeedFormController::setupSignalSlots()
 {
-
     qDebug() << "FeedFormController: Setup Signals/Slots";
+    connect(
+        mUi.feedSlider, SIGNAL(valueChanged(int)),
+        this, SLOT(onFeedSliderValueChanged(int))
+    );
+    connect(
+        mUi.overrideButton, SIGNAL(toggled(bool)),
+        this, SLOT(onFeedOverrideToggled(bool))
+    );
 }
 
-void FeedFormController::onSliderFeedValueChanged(int value)
+void FeedFormController::onFeedSliderValueChanged(int value)
 {
-    /*
-    mUi.txtFeed->setValue(value);
-    updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
+    mUi.feedProgress->setValue(value);
+    if (value != 100)
+    {
+        mUi.overrideButton->setChecked(true);
+    }
+
+    /*updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
     if (mIsProcessingFile && mUi.chkFeedOverride->isChecked())
     {
         mUi.txtFeed->setStyleSheet("color: red;");

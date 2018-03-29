@@ -37,25 +37,14 @@ ProgramFormController::ProgramFormController(QWidget *parent)
     // TODO - This was using ConsoleFormController.mSendMenu
     mUi.cmdFileSend->setMenu(&mSendMenu);
 
-    // Model
+    // Table & Model
     mUi.tblProgram->setModel(&mProgramTableModel);
     connect(
         mUi.tblProgram->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
         this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex))
     );
-
-    // A E S T H E T I C
-//    mUi.tblProgram->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
-//    mUi.tblProgram->hideColumn(4);
-//    mUi.tblProgram->hideColumn(5);
-    // mUi.tblProgram->showColumn(4);
-
-    //mCurrentGCodeTableModel = &mProgramTableModel;
-
-    clearTable();
-
-    //mUi.tblProgram->installEventFilter(this);
-
+    mUi.tblProgram->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    mUi.tblProgram->installEventFilter(this);
 }
 
 ProgramFormController::~ProgramFormController()
@@ -65,34 +54,33 @@ ProgramFormController::~ProgramFormController()
 
 bool ProgramFormController::isPauseChecked()
 {
-
+    return mUi.cmdFilePause->isChecked();
 }
 
-void ProgramFormController::setPauseChecked(bool)
+void ProgramFormController::setPauseChecked(bool checked)
 {
-
+    mUi.cmdFilePause->setChecked(checked);
 }
 
 bool ProgramFormController::isAutoScrollChecked()
 {
-
+    return mUi.chkAutoScroll->isChecked();
 }
 
-void ProgramFormController::setAutoScrollChecked(bool)
+void ProgramFormController::setAutoScrollChecked(bool checked)
 {
-
+    mUi.chkAutoScroll->setChecked(checked);
 }
 
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
 {
     qDebug() << "ProgramFormController: Reserving " << rows << " rows";
-    //mProgramTableModel.data().reserve(rows);
+    mProgramTableModel.data().reserve(rows);
 }
 
 void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoint &pos)
 {
     qDebug() << "ProgramFormController: onTableProgramCustomContextMenuRequested(const QPoint &pos)";
-    /*
     if (mProcessingFile)
     {
         return;
@@ -112,35 +100,37 @@ void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoin
         mTableMenu.actions().at(1)->setEnabled(false);
     }
     mTableMenu.popup(mUi.tblProgram->viewport()->mapToGlobal(pos));
-    */
 }
 
 void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 {
     qDebug() << "ProgramFormController: Table Cell Changed" << i1 << i2;
-    /*
     Q_UNUSED(i2)
 
-    GcodeTableModel *model = (GcodeTableModel*)sender();
+    GcodeTableModel *model = static_cast<GcodeTableModel*>(sender());
 
-    if (i1.column() != 1)
+    if (i1.column() != 0)
     {
+        qDebug() << "ProgramFormController: Not an editable column??";
         return;
     }
+
     // Inserting new line at end
     if (i1.row() == (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() != "")
     {
         model->setData(model->index(model->rowCount() - 1, 2), GCODE_ITEM_STATE_IN_QUEUE);
         model->insertRow(model->rowCount());
+
         if (!mProgramLoading)
         {
             mUi.tblProgram->setCurrentIndex(model->index(i1.row() + 1, 1));
         }
-
+    }
     // Remove last line
-    } //else if (i1.row() != (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() == "") {
-        mUi->tblProgram->setCurrentIndex(model->index(i1.row() + 1, 1));
-        mTableModel.removeRow(i1.row());
+    else if (i1.row() != (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() == "")
+    {
+        mUi.tblProgram->setCurrentIndex(model->index(i1.row() + 1, 1));
+        mProgramTableModel.removeRow(i1.row());
     }
 
     if (!mProgramLoading)
@@ -156,11 +146,12 @@ void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 
         // Hightlight w/o current cell changed event (double hightlight on current cell changed)
         //QList<LineSegment*> list = mViewParser.getLineSegmentList();
+        /*
         for (int i = 0; i < list.count() && list[i]->getLineNumber() <= mProgramTableModel.data(mProgramTableModel.index(i1.row(), 4)).toInt(); i++) {
             list[i]->setIsHightlight(true);
         }
+        */
     }
-    */
 }
 
 void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2)
@@ -244,8 +235,7 @@ void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2
 void ProgramFormController::onTableInsertLine()
 {
     qDebug() << "ProgramFormController: onTableInsertLine";
-    /*
-    if (mUi.tblProgram->selectionModel()->selectedRows().count() == 0 )//|| mProcessingFile)
+    if (mUi.tblProgram->selectionModel()->selectedRows().count() == 0 )
     {
         return;
     }
@@ -258,16 +248,13 @@ void ProgramFormController::onTableInsertLine()
     //updateParser();
     mCellChanged = true;
     mUi.tblProgram->selectRow(row);
-    */
 }
 
 void ProgramFormController::onTableDeleteLines()
 {
     qDebug() << "ProgramFormController: onTableDeleteLine";
-    /*
     if (
         mUi.tblProgram->selectionModel()->selectedRows().count() == 0 ||
-        //mProcessingFile ||
         QMessageBox::warning(
             this,
             this->windowTitle(),
@@ -280,6 +267,7 @@ void ProgramFormController::onTableDeleteLines()
 
     QModelIndex firstRow = mUi.tblProgram->selectionModel()->selectedRows()[0];
     int rowsCount = mUi.tblProgram->selectionModel()->selectedRows().count();
+
     if (mUi.tblProgram->selectionModel()->selectedRows().last().row() == mProgramTableModel.rowCount() - 1)
     {
         rowsCount--;
@@ -290,24 +278,20 @@ void ProgramFormController::onTableDeleteLines()
     if (firstRow.row() != mProgramTableModel.rowCount() - 1)
     {
         mProgramTableModel.removeRows(firstRow.row(), rowsCount);
-    } else return;
-
-    // Drop heightmap cache
-    if (mProgramTableModel == &mProgramModel)
+    }
+    else
     {
-        mProgramHeightmapModel.clear();
+        return;
     }
 
     //updateParser();
     mCellChanged = true;
     mUi.tblProgram->selectRow(firstRow.row());
-    */
 }
 
 void ProgramFormController::clearTable()
 {
     qDebug() << "ProgramFormController: clearTable";
-    mUi.tblProgram->setModel(nullptr);
     mProgramTableModel.clear();
 }
 
@@ -315,7 +299,6 @@ void ProgramFormController::setupSignalSlots()
 {
     qDebug() << "ProgramFormController: Setup Signals/Slots";
 
-    /*
     connect
     (
         &mProgramTableModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
@@ -335,15 +318,13 @@ void ProgramFormController::setupSignalSlots()
     QShortcut *deleteShortcut = new QShortcut(QKeySequence(Qt::Key_Delete), mUi.tblProgram);
     connect(deleteShortcut, SIGNAL(activated()), this, SLOT(onTableDeleteLines()));
     mTableMenu.addAction(tr("&Delete lines"), this, SLOT(onTableDeleteLines()), deleteShortcut->key());
-    */
 }
 
 void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeItem> items)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
+    mProgramTableModel.insertRows(0,items.count(),QModelIndex());
     mProgramTableModel.append(items);
-    mUi.tblProgram->setModel(&mProgramTableModel);
-    //mUi.tblProgram->selectRow(0);
 }
 
 void ProgramFormController::onCmdFileSendClicked()
@@ -512,7 +493,6 @@ void ProgramFormController::onActSendFromLineTriggered()
 void ProgramFormController::onChkBoxTestModeClicked(bool checked)
 {
     qDebug() << "ProgramFormController: onChkBoxTestClicked";
-
 }
 
 void ProgramFormController::onCmdFileAbortClicked()

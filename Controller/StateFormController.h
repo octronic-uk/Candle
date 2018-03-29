@@ -37,4 +37,5 @@ private:
     // AbstractFormController interface
 public:
     void setupSignalSlots() override;
+    bool compareCoordinates(double x, double y, double z);
 };

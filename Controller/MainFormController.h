@@ -192,7 +192,6 @@ private:
 
     void storeOffsets();
     void restoreOffsets();
-    bool compareCoordinates(double x, double y, double z);
 
     bool saveChanges(bool heightMapMode);
     int bufferLength();
@@ -209,6 +208,7 @@ private:
     void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();
     void clearRecentHeightMapFilesMenu();
+    void setupToolbarActions();
 public:
     void setupSignalSlots() override;
     bool isInHeightMapMode();

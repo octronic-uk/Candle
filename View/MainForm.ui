@@ -39,8 +39,29 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="midLineWidth">
+       <number>1</number>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
+      </property>
+      <property name="childrenCollapsible">
+       <bool>false</bool>
       </property>
       <widget class="VisualisationFormController" name="visualisationFormController">
        <property name="sizePolicy">
@@ -254,19 +275,15 @@
    <addaction name="actFileOpen"/>
    <addaction name="actFileSave"/>
    <addaction name="separator"/>
-   <addaction name="actionToggleJogForm"/>
-   <addaction name="actionToggleControlForm"/>
-   <addaction name="actionToggleSpindleForm"/>
-   <addaction name="actionToggleFeed"/>
-   <addaction name="actionToggleUserCommandsForm"/>
-   <addaction name="actionToggleStateForm"/>
-   <addaction name="actionToggleConsoleForm"/>
-   <addaction name="separator"/>
    <addaction name="actFileSettings"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="feedDockWidget">
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Feed Rate</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -281,7 +298,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>State</string>
+    <string>Machine State</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -352,72 +369,9 @@
     <string>Save &amp;transformed as...</string>
    </property>
   </action>
-  <action name="actionToggleSpindleForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/cutter.png</normaloff>:/Images/cutter.png</iconset>
-   </property>
-   <property name="text">
-    <string>Spindle</string>
-   </property>
-  </action>
-  <action name="actionToggleControlForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/origin.png</normaloff>:/Images/origin.png</iconset>
-   </property>
-   <property name="text">
-    <string>Control</string>
-   </property>
-  </action>
-  <action name="actionToggleJogForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/chevron-circle-outline/32x32 right.png</normaloff>:/Images/chevron-circle-outline/32x32 right.png</iconset>
-   </property>
-   <property name="text">
-    <string>Jog</string>
-   </property>
-  </action>
-  <action name="actionToggleUserCommandsForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/num1.png</normaloff>:/Images/num1.png</iconset>
-   </property>
-   <property name="text">
-    <string>User Commands</string>
-   </property>
-  </action>
-  <action name="actionToggleConsoleForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/info-circle-outline/32x32.png</normaloff>:/Images/info-circle-outline/32x32.png</iconset>
-   </property>
-   <property name="text">
-    <string>Console</string>
-   </property>
-  </action>
-  <action name="actionToggleFeed">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/percent-circle-outline/256x256.png</normaloff>:/Images/percent-circle-outline/256x256.png</iconset>
-   </property>
-   <property name="text">
-    <string>Feed</string>
-   </property>
-  </action>
   <action name="clearRecentHeightMapFilesAction">
    <property name="text">
     <string>Clear</string>
-   </property>
-  </action>
-  <action name="actionToggleStateForm">
-   <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/eye-outline/256x256.png</normaloff>:/Images/eye-outline/256x256.png</iconset>
-   </property>
-   <property name="text">
-    <string>State</string>
    </property>
   </action>
  </widget>

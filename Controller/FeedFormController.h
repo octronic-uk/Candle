@@ -40,18 +40,13 @@ public:
 signals:
 
 public slots:
-    void onTextFeedEditingFinished();
-    void onSliderFeedValueChanged(int value);
-    void onChkBoxFeedOverrideToggled(bool checked);
+    void onFeedSliderValueChanged(int value);
+    void onFeedOverrideToggled(bool checked);
 private:
     FeedForm mUi;
     bool mIsUpdatingFeed = false;
-
     double mOriginalFeedRate;
-
     QString feedOverride(QString command);
-
-    // AbstractFormController interface
 public:
     void setupSignalSlots() override;
 };

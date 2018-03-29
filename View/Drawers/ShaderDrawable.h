@@ -1,5 +1,4 @@
-﻿#ifndef SHADERDRAWABLE_H
-#define SHADERDRAWABLE_H
+﻿#pragma once
 
 #include <QObject>
 #include <QOpenGLFunctions>
@@ -61,8 +60,5 @@ protected:
 
 private:
     QOpenGLVertexArrayObject m_vao;
-
     bool m_needsUpdateGeometry;
 };
-
-#endif // SHADERDRAWABLE_H

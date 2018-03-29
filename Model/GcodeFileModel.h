@@ -50,7 +50,7 @@ signals:
 
 private:
     bool mProgramLoading;
-    bool mFileChanged = false;
+    bool mFileChanged;
     QFile mFile;
     QList<GcodeItem> mData;
 };

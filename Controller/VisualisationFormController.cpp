@@ -22,9 +22,9 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
       mButtonPadding(4)
 {
     qDebug() << "VisualisationFormController: Constructing ";
-    /*
 
     mUi.setupUi(this);
+
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
     mUi.cmdTop->setParent(mUi.glwVisualizer);
@@ -50,8 +50,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     placeVisualizerButtons();
 
     setupSignalSlots();
-    */
-
 }
 
 VisualisationFormController::~VisualisationFormController()
@@ -73,51 +71,49 @@ void VisualisationFormController::placeVisualizerButtons()
 void VisualisationFormController::onCmdTopClicked()
 {
     qDebug() << "VisualisationFormController: onCmdTopClicked";
-    //mUi.glwVisualizer->setTopView();
+    mUi.glwVisualizer->setTopView();
 }
 
 void VisualisationFormController::onCmdFrontClicked()
 {
     qDebug() << "VisualisationFormController: onCmdFrontClicked";
-    //mUi.glwVisualizer->setFrontView();
+    mUi.glwVisualizer->setFrontView();
 }
 
 void VisualisationFormController::onCmdLeftClicked()
 {
     qDebug() << "VisualisationFormController: onCmdLeftClicked";
-    //mUi.glwVisualizer->setLeftView();
+    mUi.glwVisualizer->setLeftView();
 }
 
 void VisualisationFormController::onCmdIsometricClicked()
 {
     qDebug() << "VisualisationFormController: isCmdIsometricClicked";
-    //mUi.glwVisualizer->setIsometricView();
+    mUi.glwVisualizer->setIsometricView();
 }
 
 double VisualisationFormController::toolZPosition()
 {
     qDebug() << "VisualisationFormController: toolZPosition";
-    //return mToolDrawer.toolPosition().z();
-    return 0.0;
+    return static_cast<double>(mToolDrawer.toolPosition().z());
 }
 
 QString VisualisationFormController::getParserStatus()
 {
     qDebug() << "VisualisationFormController: getParserStatus";
-    //return mUi.glwVisualizer->parserStatus();
-    return "";
+    return mUi.glwVisualizer->parserStatus();
 }
 
 void VisualisationFormController::onVisualizatorRotationChanged()
 {
     qDebug() << "VisualisationFormController: noVisualizatorRotationChanged";
-    //mUi.cmdIsometric->setChecked(false);
+    mUi.cmdIsometric->setChecked(false);
 }
 
 void VisualisationFormController::onCmdFitClicked()
 {
     qDebug() << "VisualisationFormController: onCmdFitClicked";
-    //mUi.glwVisualizer->fitDrawable(&mCurrentDrawer);
+    mUi.glwVisualizer->fitDrawable(&mCurrentDrawer);
 }
 
 void VisualisationFormController::updateParser()
@@ -194,7 +190,6 @@ void VisualisationFormController::updateParser()
 void VisualisationFormController::setupSignalSlots()
 {
     qDebug() << "VisualisationFormController: Setup Signals/Slots";
-    /*
     connect
     (
         getVisualiser(), SIGNAL(rotationChanged()),
@@ -205,49 +200,28 @@ void VisualisationFormController::setupSignalSlots()
         getVisualiser(), SIGNAL(resized()),
         this, SLOT(placeVisualizerButtons())
     );
-    */
 }
 
 void VisualisationFormController::showEvent(QShowEvent *se)
 {
     qDebug() << "VisualisationFormController: showEvent";
-    /*
     Q_UNUSED(se)
-
     placeVisualizerButtons();
-
-    #ifdef WINDOWS
-        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
-            if (m_taskBarButton == NULL) {
-                m_taskBarButton = new QWinTaskbarButton(this);
-                m_taskBarButton->setWindow(this->windowHandle());
-                m_taskBarProgress = m_taskBarButton->progress();
-            }
-        }
-    #endif
-
-    mUi->glwVisualizer->setUpdatesEnabled(true);
-
-    resizeCheckBoxes();
-    */
+    mUi.glwVisualizer->setUpdatesEnabled(true);
 }
 
 void VisualisationFormController::hideEvent(QHideEvent *he)
 {
     qDebug() << "VisualisationFormController: hideEvent";
-    /*
     Q_UNUSED(he)
-    mUi->glwVisualizer->setUpdatesEnabled(false);
-    */
+    mUi.glwVisualizer->setUpdatesEnabled(false);
 }
 
 void VisualisationFormController::resizeEvent(QResizeEvent *re)
 {
     qDebug() << "VisualisationFormController: resizeEvent";
-    /*
     Q_UNUSED(re)
     placeVisualizerButtons();
-    */
 }
 
 GLWidget* VisualisationFormController::getVisualiser()
@@ -259,11 +233,13 @@ GLWidget* VisualisationFormController::getVisualiser()
 void VisualisationFormController::setGLWBufferState(QString state)
 {
     qDebug() << "VisualisationFormController: setGLWBufferState";
+    Q_UNUSED(state)
 }
 
 void VisualisationFormController::timerEvent(QTimerEvent *te)
 {
     qDebug() << "VisualisationFormController: timerEvent";
+    Q_UNUSED(te)
     /*
     if (te->timerId() == mToolAnimationTimer.timerId())
     {

@@ -26,14 +26,6 @@ JogFormController::JogFormController(QWidget *parent)
     mUi.setupUi(this);
     mUi.jogStepSpinner->setLocale(QLocale::C);
     setupSignalSlots();
-
-    // Apply settings to jog controls
-    /*foreach (StyledToolButton* button, mUi.findChildren<StyledToolButton*>(QRegExp("cmdJogStep\\d")))
-    {
-        connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdJogStepClicked()));
-        button->setChecked(button->text().toDouble() == mUi->txtJogStep->value());
-    }
-    */
 }
 
 JogFormController::~JogFormController()

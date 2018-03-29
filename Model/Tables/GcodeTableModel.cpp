@@ -8,7 +8,12 @@ GcodeTableModel::GcodeTableModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
     qDebug() << "GcodeTableModel: Constructing";
-    mHeaders << "#" << "Command" << "State" << "Response" << "Line" << "Args";
+    mHeaders /*<< "#" not needed, on the left already */
+            << "Command"
+            << "State"
+            << "Response"
+            << "Line"
+            << "Args";
 }
 
 GcodeTableModel::~GcodeTableModel()
@@ -35,19 +40,21 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
+            /*
         case 0: // Number
-            if (index.row() == this->rowCount() - 1)
+            if (index.row() == rowCount() - 1)
             {
-                return QString();
+                return QString(mData.at(index.row()).getLine());
             }
             else
             {
                 return  QString::number(index.row() + 1);
             }
-        case 1: // Command
+            */
+        case 0: // Command
             return mData.at(index.row()).getCommand();
-        case 2: // Status
-            if (index.row() == this->rowCount() - 1)
+        case 1: // Status
+            if (index.row() == rowCount() - 1)
             {
                 return QString();
             }
@@ -66,11 +73,11 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
                 default:
                     return "Unknown";
             }
-        case 3: // Response
-            return mData.at(index.row()).getResponse();
-        case 4: // Line
-            return mData.at(index.row()).getLine();
-        case 5: // Args
+        case 2: // Response
+            return QVariant(mData.at(index.row()).getResponse());
+        case 3: // Line
+            return QVariant(mData.at(index.row()).getLine());
+        case 4: // Args
             return QVariant(mData.at(index.row()).getArgs());
         }
     }
@@ -85,11 +92,10 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
             return Qt::AlignVCenter;
         }
     }
-    qDebug() << "GcodeTableModel: Returning empty QVariant";
+    qDebug() << "GcodeTableModel: Returning empty GcodeItem for role" << role;
     return QVariant();
 }
 
-/*
 bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     qDebug() << "GcodeTableModel: setData";
@@ -97,21 +103,23 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
     {
         switch (index.column())
         {
+            /*
         case 0:
             return false;
-        case 1:
+            */
+        case 0:
             mData[index.row()].setCommand(value.toString());
             break;
-        case 2:
+        case 1:
             mData[index.row()].setState(value.value<GcodeItemState>());
             break;
-        case 3:
+        case 2:
             mData[index.row()].setResponse(value.toString());
             break;
-        case 4:
+        case 3:
             mData[index.row()].setLine(value.toInt());
             break;
-        case 5:
+        case 4:
             mData[index.row()].setArgs(value.toStringList());
             break;
         }
@@ -120,9 +128,7 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
     }
     return true;
 }
-*/
 
-/*
 bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
 {
     qDebug() << "GcodeTableModel: insertRow";
@@ -135,9 +141,7 @@ bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
     endInsertRows();
     return true;
 }
-*/
 
-/*
 bool GcodeTableModel::removeRow(int row, const QModelIndex &parent)
 {
     qDebug() << "GcodeTableModel: removeRow";
@@ -150,9 +154,7 @@ bool GcodeTableModel::removeRow(int row, const QModelIndex &parent)
     endRemoveRows();
     return true;
 }
-*/
 
-/*
 bool GcodeTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     qDebug() << "GcodeTableModel: removeRows";
@@ -161,7 +163,6 @@ bool GcodeTableModel::removeRows(int row, int count, const QModelIndex &parent)
     endRemoveRows();
     return true;
 }
-*/
 
 void GcodeTableModel::clear()
 {
@@ -188,7 +189,7 @@ int GcodeTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant GcodeTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    qDebug() << "GcodeTableModel: headerData section " << section << "or " << orientation << "role " << role;
+    qDebug() << "GcodeTableModel: headerData section" << section << "for" << orientation << "role" << role;
     if (role != Qt::DisplayRole)
     {
         return QVariant();
@@ -225,12 +226,6 @@ QList<GcodeItem> &GcodeTableModel::data()
 
 void GcodeTableModel::append(QList<GcodeItem> &items)
 {
-    qDebug() << "GcodeTableModel: append";
-    int startRow = rowCount();
-    int endRow = startRow + items.count() - 1;
-
-    beginInsertRows(QModelIndex(),startRow,endRow);
+    qDebug() << "GcodeTableModel: append" << items.count() << "to mData ONLY";
     mData << items;
-    endInsertRows();
-    emit dataChanged(QModelIndex(),QModelIndex());
 }
