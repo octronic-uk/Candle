@@ -81,13 +81,10 @@ void GcodeFileModel::load(QList<QString> data)
     // Block parser updates on table changes
     mProgramLoading = true;
 
-    QString command;
-    QString stripped;
-    QString trimmed;
-    QList<QString> args;
-    GcodeItem item;
+
 
     // Prepare model
+    mData.clear();
     emit clearExistingGcodeFileSignal();
     emit reserveGcodeRowsSignal(data.count());
     //mProgramModel.data().reserve(data.count());
@@ -101,9 +98,14 @@ void GcodeFileModel::load(QList<QString> data)
 //       progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
 //    }
 
-    QList<GcodeItem> items;
     while (!data.isEmpty())
     {
+        QString command;
+        QString stripped;
+        QString trimmed;
+        QList<QString> args;
+        GcodeItem item;
+
         command = data.takeFirst();
 
         // Trim command
@@ -126,12 +128,12 @@ void GcodeFileModel::load(QList<QString> data)
             }
 
             item.setCommand(trimmed);
-            item.setState(GCODE_ITEM_STATE_IN_QUEUE);
+            item.setState(GcodeItemState::GCODE_ITEM_STATE_IN_QUEUE);
             item.setLine(gp.getCommandNumber());
             item.setArgs(args);
 
             //emit nextGcodeLineReadySignal(item);
-            items.append(item);
+            mData.append(item);
 
         }
 
@@ -151,8 +153,7 @@ void GcodeFileModel::load(QList<QString> data)
     qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
 
     mProgramLoading = false;
-    emit gcodeFileLoadFinishedSignal(items);
-
+    emit gcodeFileLoadFinishedSignal(mData);
 
     //  Update code drawer
     //mCodeDrawer->update();
@@ -183,6 +184,8 @@ void GcodeFileModel::load(QString fileName)
         data.append(textStream.readLine());
     }
 
+    mFile.close();
+
     // Load lines
     load(data);
     qDebug() << "GcodeFileModel: Loaded Gcode File "
@@ -191,6 +194,8 @@ void GcodeFileModel::load(QString fileName)
 
 QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 {
+
+    Q_UNUSED(lines)
     qDebug() << "GcodeFileModel: updateProgramEstimatedTime(QList<LineSegment*> lines)";
     /*
     double time = 0;
@@ -224,6 +229,7 @@ QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 
     return t;
     */
+    return QTime();
 }
 
 QString GcodeFileModel::getCurrentFileName()
@@ -235,6 +241,8 @@ QString GcodeFileModel::getCurrentFileName()
 
 bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
 {
+    Q_UNUSED(fileName)
+    Q_UNUSED(model)
    qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
     /*
     QFile file(fileName);
@@ -255,6 +263,7 @@ bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
 
     return true;
     */
+   return true;
 }
 
 

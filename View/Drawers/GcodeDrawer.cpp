@@ -19,6 +19,7 @@ GcodeDrawer::GcodeDrawer() : QObject()
 }
 
 GcodeDrawer::GcodeDrawer(const GcodeDrawer& other)
+    : QObject(other.parent())
 {
     m_viewParser = other.m_viewParser;
     m_drawMode = other.m_drawMode;
@@ -56,12 +57,28 @@ void GcodeDrawer::update(QList<int> indexes)
 
 bool GcodeDrawer::updateData()
 {
-    switch (m_drawMode) {
+    switch (m_drawMode)
+    {
     case GcodeDrawer::Vectors:
-        if (m_indexes.isEmpty()) return prepareVectors(); else return updateVectors();
+        if (m_indexes.isEmpty())
+        {
+            return prepareVectors();
+        }
+        else
+        {
+            return updateVectors();
+        }
     case GcodeDrawer::Raster:
-        if (m_indexes.isEmpty()) return prepareRaster(); else return updateRaster();
+        if (m_indexes.isEmpty())
+        {
+            return prepareRaster();
+        }
+        else
+        {
+            return updateRaster();
+        }
     }
+    return false;
 }
 
 bool GcodeDrawer::prepareVectors()

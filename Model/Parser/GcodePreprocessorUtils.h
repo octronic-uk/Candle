@@ -5,9 +5,7 @@
 
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#ifndef GCODEPREPROCESSORUTILS_H
-#define GCODEPREPROCESSORUTILS_H
-
+#pragma once
 #include <QObject>
 #include <QMatrix4x4>
 #include <cmath>
@@ -47,5 +45,3 @@ public slots:
 private:
 
 };
-
-#endif // GCODEPREPROCESSORUTILS_H

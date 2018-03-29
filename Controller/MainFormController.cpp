@@ -322,9 +322,9 @@ void MainFormController::onTimerStateQuery()
 
 void MainFormController::resizeEvent(QResizeEvent *re)
 {
+    Q_UNUSED(re)
     qDebug() << "MainFormController: resizeEvent";
     /*
-    Q_UNUSED(re)
 
     mVisualisationFormController->placeVisualizerButtons();
     resizeCheckBoxes();
@@ -387,6 +387,7 @@ void MainFormController::resizeCheckBoxes()
 
 void MainFormController::closeEvent(QCloseEvent *ce)
 {
+    Q_UNUSED(ce)
     qDebug() << "MainFormController: closeEvent";
     /*
     bool mode = mHeightMapMode;
@@ -426,6 +427,7 @@ void MainFormController::closeEvent(QCloseEvent *ce)
 
 void MainFormController::dragEnterEvent(QDragEnterEvent *dee)
 {
+    Q_UNUSED(dee)
     qDebug() << "MainFormController: dragEnterEvent";
 //    if (mIsProcessingFile)
 //    {
@@ -453,6 +455,7 @@ void MainFormController::dragEnterEvent(QDragEnterEvent *dee)
 
 void MainFormController::dropEvent(QDropEvent *de)
 {
+    Q_UNUSED(de)
     qDebug() << "MainFormController: dropEvent";
 //    QString fileName = de->mimeData()->urls().at(0).toLocalFile();
 
@@ -545,7 +548,7 @@ void MainFormController::onActSettingsTriggered()
     }
 }
 
-bool buttonLessThan(StyledToolButton *b1, StyledToolButton *b2)
+bool buttonLessThan(QPushButton *b1, QPushButton *b2)
 {
     qDebug() << "MainFormController: buttonLessThan";
     return b1->text().toDouble() < b2->text().toDouble();
@@ -811,6 +814,7 @@ bool MainFormController::dataIsReset(QString data)
 
 void MainFormController::onGripFeedToggled(bool checked)
 {
+    Q_UNUSED(checked)
     qDebug() << "MainFormController: onGripFeedToggled";
     /*
     if (checked)
@@ -829,6 +833,8 @@ void MainFormController::onGripFeedToggled(bool checked)
 
 void MainFormController::onGripSpindleToggled(bool checked)
 {
+
+    Q_UNUSED(checked)
     qDebug() << "MainFormController: onGripSpindleToggled";
     /*
     if (checked)
@@ -847,6 +853,8 @@ void MainFormController::onGripSpindleToggled(bool checked)
 
 void MainFormController::onGripJogToggled(bool checked)
 {
+
+    Q_UNUSED(checked)
     qDebug() << "MainFormController: onGripJogToggled";
     /*
     if (checked)
@@ -865,6 +873,8 @@ void MainFormController::onGripJogToggled(bool checked)
 
 void MainFormController::onGripUserCommandsToggled(bool checked)
 {
+
+    Q_UNUSED(checked)
     qDebug() << "MainFormController: onGripUserCommandsToggled";
     //mUi.widgetUserCommands->setVisible(checked);
 }
@@ -891,12 +901,16 @@ void MainFormController::onHeightMapFileLoadFinished()
 
 void MainFormController::showEvent(QShowEvent* se)
 {
+
+    Q_UNUSED(se)
     qDebug() << "MainFormController: showEvent";
 
 }
 
 void MainFormController::hideEvent(QHideEvent* he)
 {
+
+    Q_UNUSED(he)
     qDebug() << "MainFormController: hideEvent";
 
 }
@@ -1059,8 +1073,8 @@ bool MainFormController::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    return QMainWindow::eventFilter(obj, event);
     */
+    return mMainWindow.eventFilter(obj, event);
 }
 
 void MainFormController::onPanelsSizeChanged(QSize size)
@@ -1212,8 +1226,9 @@ void MainFormController::onGcodeFileLoadFinished()
 
 void MainFormController::onCommandSent(QString command, int len)
 {
+    Q_UNUSED(command)
+    Q_UNUSED(len)
     qDebug() << "MainFormController: onCommandSent";
-
 }
 
 void MainFormController::populateRecentGcodeFilesMenu()

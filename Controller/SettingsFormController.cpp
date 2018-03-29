@@ -71,10 +71,11 @@ int SettingsFormController::exec()
         mStoredCombos.append(cb->currentText());
     }
 
-    foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
+    /*foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
     {
-        mStoredColors.append(pick->color());
+        //mStoredColors.append(pick->color());
     }
+    */
 
     return mDialog.exec();
 }
@@ -94,10 +95,11 @@ void SettingsFormController::undo()
     {
         cb->setCurrentText(mStoredCombos.takeFirst());
     }
-    foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
+    /*foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
     {
         pick->setColor(mStoredColors.takeFirst());
     }
+    */
 }
 
 QString SettingsFormController::getPortName()
@@ -485,16 +487,19 @@ void SettingsFormController::setPanelJog(bool panelJog)
     mUi.chkPanelJog->setChecked(panelJog);
 }
 
-QList<ColorPicker *> SettingsFormController::colors()
+/*QList<ColorPicker *> SettingsFormController::colors()
 {
     return this->findChildren<ColorPicker*>();
 }
+*/
 
+/*
 QColor SettingsFormController::colors(QString name)
 {
     ColorPicker *pick = this->findChildren<ColorPicker*>("clp" + name).at(0);
     if (pick) return pick->color(); else return QColor();
 }
+*/
 
 int SettingsFormController::fontSize()
 {
@@ -572,7 +577,7 @@ void SettingsFormController::showEvent(QShowEvent *se)
 {
     Q_UNUSED(se)
 
-    mUi.scrollSettings->updateMinimumWidth();
+   // mUi.scrollSettings->updateMinimumWidth();
 }
 
 void SettingsFormController::searchPorts()
@@ -673,18 +678,6 @@ void SettingsFormController::onCmdDefaultsClicked()
     setPanelHeightmap(true);
     setPanelJog(true);
     setPanelSpindle(true);
-
-    mUi.clpTool->setColor(QColor(255, 153, 0));
-
-    mUi.clpVisualizerBackground->setColor(QColor(255, 255, 255));
-    mUi.clpVisualizerText->setColor(QColor(0, 0, 0));
-
-    mUi.clpToolpathNormal->setColor(QColor(0, 0, 0));
-    mUi.clpToolpathDrawn->setColor(QColor(217, 217, 217));
-    mUi.clpToolpathHighlight->setColor(QColor(145, 130, 230));
-    mUi.clpToolpathZMovement->setColor(QColor(255, 0, 0));
-    mUi.clpToolpathStart->setColor(QColor(255, 0, 0));
-    mUi.clpToolpathEnd->setColor(QColor(0, 255, 0));
 
     setFontSize(9);
 }

@@ -16,15 +16,21 @@
  * this file belongs to.
  */
 #include "GcodeItem.h"
+#include <QtDebug>
 
 GcodeItem::GcodeItem()
+    :
+      mState(GcodeItemState::GCODE_ITEM_STATE_NONE),
+      mCommand(""),
+      mResponse(""),
+      mLine(-1)
 {
-
+    qDebug() << "GcodeItem: Constructing";
 }
 
 GcodeItem::~GcodeItem()
 {
-
+    qDebug() << "GcodeItem: Destructing";
 }
 
 QString GcodeItem::getCommand() const
@@ -57,12 +63,12 @@ void GcodeItem::setArgs(const QStringList& args)
     mArgs = args;
 }
 
-char GcodeItem::getState() const
+GcodeItemState GcodeItem::getState() const
 {
     return mState;
 }
 
-void GcodeItem::setState(char state)
+void GcodeItem::setState(GcodeItemState state)
 {
     mState = state;
 }

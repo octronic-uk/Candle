@@ -86,7 +86,7 @@ void ProgramFormController::setAutoScrollChecked(bool)
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
 {
     qDebug() << "ProgramFormController: Reserving " << rows << " rows";
-    mProgramTableModel.data().reserve(rows);
+    //mProgramTableModel.data().reserve(rows);
 }
 
 void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoint &pos)
@@ -307,8 +307,7 @@ void ProgramFormController::onTableDeleteLines()
 void ProgramFormController::clearTable()
 {
     qDebug() << "ProgramFormController: clearTable";
-    //mHeaderState = mUi.tblProgram->horizontalHeader()->saveState();
-    //mUi.tblProgram->setModel(nullptr);
+    mUi.tblProgram->setModel(nullptr);
     mProgramTableModel.clear();
 }
 
@@ -343,8 +342,8 @@ void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeItem> items)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
     mProgramTableModel.append(items);
-    mUi.tblProgram->selectRow(0);
-
+    mUi.tblProgram->setModel(&mProgramTableModel);
+    //mUi.tblProgram->selectRow(0);
 }
 
 void ProgramFormController::onCmdFileSendClicked()

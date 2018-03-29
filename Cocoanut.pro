@@ -64,13 +64,6 @@ SOURCES +=\
     View/Drawers/SelectionDrawer.cpp \
     View/Drawers/ShaderDrawable.cpp \
     View/Drawers/ToolDrawer.cpp \
-    View/Widgets/Widget.cpp \
-    View/Widgets/StyledToolButton.cpp \
-    View/Widgets/ScrollArea.cpp \
-    View/Widgets/GroupBox.cpp \
-    View/Widgets/GLWidget.cpp \
-    View/Widgets/ComboBox.cpp \
-    View/Widgets/ColorPicker.cpp \
     Controller/ControlFormController.cpp \
     Controller/FeedFormController.cpp \
     Controller/HeightMapFormController.cpp \
@@ -87,7 +80,8 @@ SOURCES +=\
     Model/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
     Model/RecentHeightMapFilesModel.cpp \
-    Model/GcodeItem.cpp
+    Model/GcodeItem.cpp \
+    View/Widgets/GLWidget.cpp
 
 
 HEADERS  += \
@@ -112,13 +106,7 @@ HEADERS  += \
     View/Drawers/SelectionDrawer.h \
     View/Drawers/ShaderDrawable.h \
     View/Drawers/ToolDrawer.h \
-    View/Widgets/ColorPicker.h \
-    View/Widgets/ComboBox.h \
     View/Widgets/GLWidget.h \
-    View/Widgets/GroupBox.h \
-    View/Widgets/ScrollArea.h \
-    View/Widgets/StyledToolButton.h \
-    View/Widgets/Widget.h \
     Utils/Interpolation.h \
     Utils/Util.h \
     Utils/MachineState.h \
@@ -141,7 +129,8 @@ HEADERS  += \
     Controller/CommandAttributes.h \
     Controller/CommandQueue.h \
     Controller/CancelException.h \
-    Model/GcodeItem.h
+    Model/GcodeItem.h \
+    Model/GcodeItemState.h
 
 FORMS    += \
     View/AboutForm.ui \

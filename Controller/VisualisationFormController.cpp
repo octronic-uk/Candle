@@ -22,6 +22,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
       mButtonPadding(4)
 {
     qDebug() << "VisualisationFormController: Constructing ";
+    /*
 
     mUi.setupUi(this);
     mUi.cmdFit->setParent(mUi.glwVisualizer);
@@ -49,6 +50,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     placeVisualizerButtons();
 
     setupSignalSlots();
+    */
 
 }
 

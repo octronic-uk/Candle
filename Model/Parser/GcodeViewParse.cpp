@@ -103,6 +103,8 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
     double minArcLength = 0.1;
     double length;
 
+    Q_UNUSED(length)
+
     QVector3D *start, *end;
     start = NULL;
     end = NULL;

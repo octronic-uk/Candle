@@ -1,0 +1,15 @@
+#pragma once
+
+#include <QMetaType>
+
+enum GcodeItemState
+{
+    GCODE_ITEM_STATE_NONE,
+    GCODE_ITEM_STATE_IN_QUEUE,
+    GCODE_ITEM_STATE_SENT,
+    GCODE_ITEM_STATE_PROCESSED,
+    GCODE_ITEM_STATE_SKIPPED
+};
+
+
+Q_DECLARE_METATYPE(GcodeItemState)

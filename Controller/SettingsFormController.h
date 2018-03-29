@@ -7,7 +7,6 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include "AbstractFormController.h"
-#include "../View/Widgets/ColorPicker.h"
 #include "ui_SettingsForm.h"
 
 using namespace Ui;
@@ -139,8 +138,8 @@ public:
     bool panelJog();
     void setPanelJog(bool panelJog);
 
-    QList<ColorPicker*> colors();
-    QColor colors(QString name);
+    //QList<ColorPicker*> colors();
+    //QColor colors(QString name);
 
     int fontSize();
     void setFontSize(int fontSize);

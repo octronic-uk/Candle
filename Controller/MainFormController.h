@@ -39,7 +39,6 @@
 
 #include "Utils/Interpolation.h"
 
-#include "View/Widgets/StyledToolButton.h"
 
 #include "Controller/AboutFormController.h"
 #include "Controller/ConsoleFormController.h"

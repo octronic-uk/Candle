@@ -17,16 +17,8 @@
  */
 
 #pragma once
-
 #include <QStringList>
-
-enum GcodeItemState
-{
-    GCODE_ITEM_STATE_IN_QUEUE,
-    GCODE_ITEM_STATE_SENT,
-    GCODE_ITEM_STATE_PROCESSED,
-    GCODE_ITEM_STATE_SKIPPED
-};
+#include "GcodeItemState.h"
 
 class GcodeItem
 {
@@ -43,8 +35,8 @@ public:
     QStringList getArgs() const;
     void setArgs(const QStringList& args);
 
-    char getState() const;
-    void setState(char state);
+    GcodeItemState getState() const;
+    void setState(GcodeItemState state);
 
     int getLine() const;
     void setLine(int line);
@@ -53,6 +45,8 @@ private:
     QString mCommand;
     QString mResponse;
     QStringList mArgs;
-    char mState;
+    GcodeItemState mState;
     int mLine;
 };
+
+

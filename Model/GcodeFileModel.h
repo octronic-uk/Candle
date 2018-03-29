@@ -43,7 +43,7 @@ public:
 signals:
     void statusUpdateSignal(QString);
     void gcodeFileLoadStartedSignal();
-    void gcodeFileLoadFinishedSignal(QList<GcodeItem> items);
+    void gcodeFileLoadFinishedSignal(QList<GcodeItem>);
     void nextGcodeLineReadySignal(GcodeItem);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
@@ -52,4 +52,5 @@ private:
     bool mProgramLoading;
     bool mFileChanged = false;
     QFile mFile;
+    QList<GcodeItem> mData;
 };

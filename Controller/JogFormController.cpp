@@ -66,6 +66,7 @@ void JogFormController::onCheckBoxKeyboardControlToggled(bool checked)
 
 void JogFormController::blockJogForRapidMovement(bool repeated)
 {
+    Q_UNUSED(repeated)
     /*
     mJogBlock = true;
 

@@ -36,7 +36,7 @@ QGroupBox {
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="ScrollArea" name="scrollSettings">
+      <widget class="QScrollArea" name="scrollSettings">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -55,18 +55,18 @@ QGroupBox {
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
-       <widget class="Widget" name="scrollAreaWidgetContents">
+       <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-1043</y>
+          <y>0</y>
           <width>525</width>
-          <height>1706</height>
+          <height>1759</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="GroupBox" name="grpConnection">
+          <widget class="QGroupBox" name="grpConnection">
            <property name="title">
             <string>Connection</string>
            </property>
@@ -102,7 +102,7 @@ QGroupBox {
                  <string>...</string>
                 </property>
                 <property name="icon">
-                 <iconset resource="../Resources/images.qrc">
+                 <iconset>
                   <normaloff>:/images/restart.png</normaloff>:/images/restart.png</iconset>
                 </property>
                </widget>
@@ -160,7 +160,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpConnection_2">
+          <widget class="QGroupBox" name="grpConnection_2">
            <property name="title">
             <string>Sender</string>
            </property>
@@ -183,7 +183,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpGRBL">
+          <widget class="QGroupBox" name="grpGRBL">
            <property name="title">
             <string>Machine information</string>
            </property>
@@ -414,7 +414,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="groupBox_2">
+          <widget class="QGroupBox" name="groupBox_2">
            <property name="title">
             <string>Control</string>
            </property>
@@ -523,7 +523,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="groupBox_5">
            <property name="title">
             <string>User commands</string>
            </property>
@@ -624,7 +624,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="groupBox_4">
            <property name="title">
             <string>Heightmap</string>
            </property>
@@ -675,7 +675,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpParser">
+          <widget class="QGroupBox" name="grpParser">
            <property name="title">
             <string>Parser</string>
            </property>
@@ -783,7 +783,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpVisualizer">
+          <widget class="QGroupBox" name="grpVisualizer">
            <property name="title">
             <string>Visualizer</string>
            </property>
@@ -1005,7 +1005,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpTool">
+          <widget class="QGroupBox" name="grpTool">
            <property name="title">
             <string>Tool model</string>
            </property>
@@ -1147,7 +1147,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpConsole">
+          <widget class="QGroupBox" name="grpConsole">
            <property name="title">
             <string>Console</string>
            </property>
@@ -1177,7 +1177,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpPanels">
+          <widget class="QGroupBox" name="grpPanels">
            <property name="title">
             <string>Panels</string>
            </property>
@@ -1221,7 +1221,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="grpColors">
+          <widget class="QGroupBox" name="grpColors">
            <property name="title">
             <string>Colors</string>
            </property>
@@ -1246,7 +1246,7 @@ QGroupBox {
                </widget>
               </item>
               <item row="7" column="3">
-               <widget class="ColorPicker" name="clpToolpathZMovement" native="true"/>
+               <widget class="QWidget" name="clpToolpathZMovement" native="true"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_24">
@@ -1256,10 +1256,10 @@ QGroupBox {
                </widget>
               </item>
               <item row="7" column="1">
-               <widget class="ColorPicker" name="clpToolpathHighlight" native="true"/>
+               <widget class="QWidget" name="clpToolpathHighlight" native="true"/>
               </item>
               <item row="8" column="1">
-               <widget class="ColorPicker" name="clpToolpathStart" native="true"/>
+               <widget class="QWidget" name="clpToolpathStart" native="true"/>
               </item>
               <item row="7" column="0">
                <widget class="QLabel" name="label_25">
@@ -1276,7 +1276,7 @@ QGroupBox {
                </widget>
               </item>
               <item row="8" column="3">
-               <widget class="ColorPicker" name="clpToolpathEnd" native="true"/>
+               <widget class="QWidget" name="clpToolpathEnd" native="true"/>
               </item>
               <item row="8" column="2">
                <widget class="QLabel" name="label_27">
@@ -1286,10 +1286,10 @@ QGroupBox {
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="ColorPicker" name="clpVisualizerBackground" native="true"/>
+               <widget class="QWidget" name="clpVisualizerBackground" native="true"/>
               </item>
               <item row="2" column="3">
-               <widget class="ColorPicker" name="clpVisualizerText" native="true"/>
+               <widget class="QWidget" name="clpVisualizerText" native="true"/>
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="label_22">
@@ -1313,7 +1313,7 @@ QGroupBox {
                </widget>
               </item>
               <item row="3" column="1">
-               <widget class="ColorPicker" name="clpTool" native="true"/>
+               <widget class="QWidget" name="clpTool" native="true"/>
               </item>
               <item row="4" column="0">
                <spacer name="verticalSpacer">
@@ -1339,10 +1339,10 @@ QGroupBox {
                </widget>
               </item>
               <item row="6" column="3">
-               <widget class="ColorPicker" name="clpToolpathDrawn" native="true"/>
+               <widget class="QWidget" name="clpToolpathDrawn" native="true"/>
               </item>
               <item row="6" column="1">
-               <widget class="ColorPicker" name="clpToolpathNormal" native="true"/>
+               <widget class="QWidget" name="clpToolpathNormal" native="true"/>
               </item>
               <item row="6" column="0">
                <widget class="QLabel" name="label_23">
@@ -1357,7 +1357,7 @@ QGroupBox {
           </widget>
          </item>
          <item>
-          <widget class="GroupBox" name="groupBox">
+          <widget class="QGroupBox" name="groupBox">
            <property name="title">
             <string>Font</string>
            </property>
@@ -1517,32 +1517,6 @@ QGroupBox {
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header location="global">View/Widgets/ScrollArea.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>Widget</class>
-   <extends>QWidget</extends>
-   <header location="global">View/Widgets/Widget.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>GroupBox</class>
-   <extends>QGroupBox</extends>
-   <header location="global">View/Widgets/GroupBox.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ColorPicker</class>
-   <extends>QWidget</extends>
-   <header>View/Widgets/ColorPicker.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>scrollSettings</tabstop>
   <tabstop>cboPort</tabstop>
@@ -1560,9 +1534,7 @@ QGroupBox {
   <tabstop>cmdOK</tabstop>
   <tabstop>cmdCancel</tabstop>
  </tabstops>
- <resources>
-  <include location="../Resources/images.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>chkAntialiasing</sender>
