@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #ifndef HEIGHTMAPBORDERDRAWER_H

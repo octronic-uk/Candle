@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -13,8 +13,14 @@ class GcodeDrawer : public QObject, public ShaderDrawable
 {
     Q_OBJECT
 public:
-    enum GrayscaleCode { S, Z };
-    enum DrawMode { Vectors, Raster };
+    enum GrayscaleCode
+    {
+        S, Z
+    };
+    enum DrawMode
+    {
+        Vectors, Raster
+    };
 
     explicit GcodeDrawer();
     GcodeDrawer(const GcodeDrawer& other);
@@ -27,7 +33,7 @@ public:
     QVector3D getMinimumExtremes();
     QVector3D getMaximumExtremes();
 
-    void setViewParser(GcodeViewParse* viewParser);
+    void setViewParser(GcodeViewParse *viewParser);
     GcodeViewParse* viewParser();
 
     bool simplify() const;
@@ -73,6 +79,9 @@ public:
 
     DrawMode drawMode() const;
     void setDrawMode(const DrawMode &drawMode);
+
+    GcodeParser getParser() const;
+    void setParser(const GcodeParser& parser);
 
 signals:
 

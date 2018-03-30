@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QFile>
 #include "Model/Tables/GcodeTableModel.h"
+#include "Parser/GcodeParser.h"
 
 class LineSegment;
 
@@ -47,10 +48,12 @@ signals:
     void nextGcodeLineReadySignal(GcodeItem);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
+    void gcodeParserUpdatedSignal(GcodeParser*);
 
 private:
     bool mProgramLoading;
     bool mFileChanged;
     QFile mFile;
     QList<GcodeItem> mData;
+    GcodeParser mGcodeParser;
 };

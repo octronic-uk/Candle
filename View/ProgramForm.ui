@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="tblProgram"/>
+    <widget class="QTableView" name="programTable"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -26,7 +26,7 @@
       <number>6</number>
      </property>
      <item>
-      <widget class="QPushButton" name="chkTestMode">
+      <widget class="QPushButton" name="testModeButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -48,7 +48,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="chkAutoScroll">
+      <widget class="QPushButton" name="autoScrollButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -70,7 +70,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="spacerBot">
+      <spacer name="buttonSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -83,7 +83,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="cmdFileSend">
+      <widget class="QPushButton" name="sendButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -96,7 +96,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cmdFilePause">
+      <widget class="QPushButton" name="pauseButton">
        <property name="text">
         <string>Pause</string>
        </property>
@@ -106,14 +106,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cmdFileReset">
+      <widget class="QPushButton" name="resetButton">
        <property name="text">
         <string>Reset</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="cmdFileAbort">
+      <widget class="QPushButton" name="abortButton">
        <property name="text">
         <string>Abort</string>
        </property>

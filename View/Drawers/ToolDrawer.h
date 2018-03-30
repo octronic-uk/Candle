@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #ifndef TOOLDRAWER_H
@@ -14,6 +14,7 @@ class ToolDrawer : public ShaderDrawable
 {
 public:
     explicit ToolDrawer();
+    virtual ~ToolDrawer();
 
     double toolDiameter() const;
     void setToolDiameter(double toolDiameter);
@@ -34,24 +35,20 @@ public:
     QColor color() const;
     void setColor(const QColor &color);
 
-signals:
-
-public slots:
-
 protected:
-    bool updateData();
+    QVector<VertexData> createCircle(QVector3D center, double radius, int arcs, QVector3D color);
+    double normalizeAngle(double angle);
+    bool updateData() override;
 
 private:
-    double m_toolDiameter;
-    double m_toolLength;
-    double m_endLength;
-    QVector3D m_toolPosition;
-    double m_rotationAngle;
-    double m_toolAngle;
-    QColor m_color;
+    double mToolDiameter;
+    double mToolLength;
+    double mEndLength;
+    QVector3D mToolPosition;
+    double mRotationAngle;
+    double mToolAngle;
+    QColor mColor;
 
-    double normalizeAngle(double angle);
-    QVector<VertexData> createCircle(QVector3D center, double radius, int arcs, QVector3D color);
 };
 
 #endif // TOOLDRAWER_H

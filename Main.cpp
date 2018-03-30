@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QApplication>
@@ -42,6 +42,10 @@ void initGL()
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setOrganizationName("octronic");
+    QCoreApplication::setOrganizationDomain("octronic.co.uk");
+    QCoreApplication::setApplicationName("CocoanutCNC");
+
     QApplication a(argc, argv);
     a.setApplicationVersion(APP_VERSION);
     initGL();

@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -17,7 +17,7 @@
 #include <exception>
 
 #include "Model/Parser/GcodeViewParse.h"
-#include "Model/SettingsModel.h"
+#include "Model/Settings/IniFileSettingsModel.h"
 #include "Model/HeightMapFileModel.h"
 
 #include "Model/RecentFilesModel.h"
@@ -38,7 +38,6 @@
 #include "Model/SerialPortModel.h"
 
 #include "Utils/Interpolation.h"
-
 
 #include "Controller/AboutFormController.h"
 #include "Controller/ConsoleFormController.h"
@@ -74,8 +73,8 @@ class MainFormController : public AbstractFormController
     Q_OBJECT
 
 public:
-    explicit MainFormController(QWidget *parent = 0);
-    ~MainFormController();
+    explicit MainFormController(QWidget *parent = nullptr);
+    ~MainFormController() override;
 
     double toolZPosition();
     void showMainWindow();
@@ -124,7 +123,6 @@ protected:
 
 private:
     const int BUFFERLENGTH = 127;
-
     Ui::MainForm mUi;
 
     // Dialog Controllers
@@ -133,23 +131,14 @@ private:
     RecentFilesModel mRecentFilesModel;
     RecentHeightMapFilesModel mRecentHeightMapFilesModel;
     MainFormMode mFormMode;
-
     QString mLastFolder;
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
-
-    SettingsModel mSettingsModel;
-
-#ifdef WINDOWS
-    QWinTaskbarButton *m_taskBarButton;
-    QWinTaskbarProgress *m_taskBarProgress;
-#endif
-
+    IniFileSettingsModel mSettingsModel;
     QMenu *mTableMenu;
     QList<CommandAttributes> mCommandsList;
     QList<CommandQueue> mCommandsQueue;
     QTime mStartTime;
-
     QSharedPointer<QMessageBox> mSenderErrorBox;
 
     // Stored origin
@@ -203,7 +192,6 @@ private:
     bool mHeightMapMode = false;
     SerialPortModel mSerialPortModel;
     void setFormMode(MainFormMode mode);
-
     void populateRecentGcodeFilesMenu();
     void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();

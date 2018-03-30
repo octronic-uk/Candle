@@ -1,19 +1,26 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "GcodeDrawer.h"
 
-GcodeDrawer::GcodeDrawer() : QObject()
+GcodeDrawer::GcodeDrawer()
+    : QObject(),
+    m_drawMode(GcodeDrawer::Vectors),
+    m_ignoreZ(false),
+    m_grayscaleSegments(false),
+    m_grayscaleCode(GcodeDrawer::S),
+    m_grayscaleMin(0),
+    m_grayscaleMax(255),
+    m_colorStart(QColor("White")),
+    m_colorNormal(QColor("White")),
+    m_colorEnd(QColor("White")),
+    m_colorDrawn(QColor("White")),
+    m_colorHighlight(QColor("White")),
+    m_colorZMovement(QColor("White")),
+    m_geometryUpdated(false)
 {
-    m_geometryUpdated = false;
     m_pointSize = 6;
-    m_ignoreZ = false;
-    m_grayscaleSegments = false;
-    m_grayscaleCode = GcodeDrawer::S;
-    m_grayscaleMin = 0;
-    m_grayscaleMax = 255;
-    m_drawMode = GcodeDrawer::Vectors;
-
+    m_lineWidth = 3;
     connect(&m_timerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
     m_timerVertexUpdate.start(100);
 }
@@ -99,7 +106,7 @@ bool GcodeDrawer::prepareVectors()
     if (m_texture) {
         m_texture->destroy();
         delete m_texture;
-        m_texture = NULL;
+        m_texture = nullptr;
     }
 
     bool drawFirstPoint = true;
@@ -249,7 +256,7 @@ bool GcodeDrawer::prepareRaster()
     if (m_texture) {
         m_texture->destroy();
         delete m_texture;
-        m_texture = NULL;
+        m_texture = nullptr;
     }
 
     QVector<VertexData> vertices;
@@ -381,15 +388,16 @@ QVector3D GcodeDrawer::getMaximumExtremes()
     return v;
 }
 
-void GcodeDrawer::setViewParser(GcodeViewParse* viewParser)
+void GcodeDrawer::setViewParser(GcodeViewParse *viewParser)
 {
     m_viewParser = viewParser;
 }
 
-GcodeViewParse *GcodeDrawer::viewParser()
+GcodeViewParse* GcodeDrawer::viewParser()
 {
     return m_viewParser;
 }
+
 bool GcodeDrawer::simplify() const
 {
     return m_simplify;
@@ -399,6 +407,7 @@ void GcodeDrawer::setSimplify(bool simplify)
 {
     m_simplify = simplify;
 }
+
 double GcodeDrawer::simplifyPrecision() const
 {
     return m_simplifyPrecision;
@@ -413,6 +422,7 @@ bool GcodeDrawer::geometryUpdated()
 {
     return m_geometryUpdated;
 }
+
 QColor GcodeDrawer::colorNormal() const
 {
     return m_colorNormal;
@@ -432,6 +442,7 @@ void GcodeDrawer::setColorHighlight(const QColor &colorHighlight)
 {
     m_colorHighlight = colorHighlight;
 }
+
 QColor GcodeDrawer::colorZMovement() const
 {
     return m_colorZMovement;
@@ -451,6 +462,7 @@ void GcodeDrawer::setColorDrawn(const QColor &colorDrawn)
 {
     m_colorDrawn = colorDrawn;
 }
+
 QColor GcodeDrawer::colorStart() const
 {
     return m_colorStart;
@@ -460,6 +472,7 @@ void GcodeDrawer::setColorStart(const QColor &colorStart)
 {
     m_colorStart = colorStart;
 }
+
 QColor GcodeDrawer::colorEnd() const
 {
     return m_colorEnd;

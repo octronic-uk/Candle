@@ -33,6 +33,7 @@ public:
     void blockJogForRapidMovement(bool repeated = false);
 
 signals:
+    void statusUpdateSignal(QString);
 public slots:
     // Jog
     void onCmdYPlusClicked();
@@ -41,12 +42,16 @@ public slots:
     void onCmdXMinusClicked();
     void onCmdZPlusClicked();
     void onCmdZMinusClicked();
-    void onCheckBoxKeyboardControlToggled(bool checked);
+    void onKeyboardControlToggled(bool checked);
+    void onJogPresetButtonToggled(bool);
+
 private slots:
     void onJogTimer();
     void onCmdJogStepClicked();
 private:
     JogForm mUi;
+    double mJogDelta;
+    double mJogDistance;
     // Flags
     bool mIsSettingZeroXY = false;
     bool mIsSettingZeroZ = false;
@@ -61,4 +66,8 @@ private:
     // AbstractFormController interface
 public:
     void setupSignalSlots() override;
+    double getJogDelta() const;
+    void setJogDelta(double jogDelta);
+    double getJogDistance() const;
+    void setJogDistance(double jogDistance);
 };

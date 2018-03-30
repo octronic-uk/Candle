@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
-    <height>899</height>
+    <width>1052</width>
+    <height>785</height>
    </rect>
   </property>
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Cocoanut</string>
+   <string>CocoanutCNC</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../Resources/images.qrc">
@@ -39,71 +39,11 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Plain</enum>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="midLineWidth">
-       <number>1</number>
-      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
-      <property name="childrenCollapsible">
-       <bool>false</bool>
-      </property>
-      <widget class="VisualisationFormController" name="visualisationFormController">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <property name="elideMode">
-        <enum>Qt::ElideNone</enum>
-       </property>
-       <property name="usesScrollButtons">
-        <bool>false</bool>
-       </property>
-       <widget class="ProgramFormController" name="programForm">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <attribute name="title">
-         <string>Program</string>
-        </attribute>
-       </widget>
-       <widget class="HeightMapFormController" name="heightMapForm">
-        <attribute name="title">
-         <string>Height Map</string>
-        </attribute>
-       </widget>
-      </widget>
+      <widget class="VisualisationFormController" name="visualisationFormController"/>
+      <widget class="ProgramFormController" name="programForm" native="true"/>
      </widget>
     </item>
    </layout>
@@ -113,7 +53,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>858</width>
+     <width>1052</width>
      <height>22</height>
     </rect>
    </property>
@@ -168,8 +108,11 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
     <string>Control</string>
@@ -207,6 +150,12 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -214,11 +163,17 @@
     <string>Spindle</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="SpindleFormController" name="spindleFormController"/>
   </widget>
   <widget class="QDockWidget" name="consoleDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <property name="allowedAreas">
     <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -237,6 +192,12 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
@@ -244,7 +205,7 @@
     <string>User Commands</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>1</number>
+    <number>2</number>
    </attribute>
    <widget class="UserCommandsFormController" name="userCommandsFormController"/>
   </widget>
@@ -280,7 +241,7 @@
   </widget>
   <widget class="QDockWidget" name="feedDockWidget">
    <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
     <string>Feed Rate</string>
@@ -291,6 +252,12 @@
    <widget class="FeedFormController" name="feedFormController"/>
   </widget>
   <widget class="QDockWidget" name="stateDockWidget">
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -408,20 +375,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>VisualisationFormController</class>
-   <extends>QOpenGLWidget</extends>
-   <header>Controller/VisualisationFormController.h</header>
-  </customwidget>
-  <customwidget>
    <class>UserCommandsFormController</class>
    <extends>QWidget</extends>
    <header>Controller/UserCommandsFormController.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>HeightMapFormController</class>
-   <extends>QWidget</extends>
-   <header>Controller/HeightMapFormController.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -435,6 +391,11 @@
    <extends>QWidget</extends>
    <header>Controller/StateFormController.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>VisualisationFormController</class>
+   <extends>QOpenGLWidget</extends>
+   <header>Controller/VisualisationFormController.h</header>
   </customwidget>
  </customwidgets>
  <resources>

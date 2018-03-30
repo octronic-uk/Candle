@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "SettingsFormController.h"
@@ -16,31 +16,14 @@ SettingsFormController::SettingsFormController(QWidget *parent)
     qDebug() << "SettingsFormController: Constructing";
     mUi.setupUi(&mDialog);
     setupSignalSlots();
-    /*
-    mUi.setupUi(&mDialog);
-    mDialog.setLocale(QLocale::C);
-    mIntValidator.setBottom(1);
-    mIntValidator.setTop(999);
-    mUi.cboFps->setValidator(&mIntValidator);
-    mUi.cboFontSize->setValidator(&mIntValidator);
-
-    foreach (QGroupBox *box, this->findChildren<QGroupBox*>())
-    {
-        mUi.listCategories->addItem(box->title());
-        mUi.listCategories->item(mUi.listCategories->count() - 1)->setData(Qt::UserRole, box->objectName());
-    }
-
-    mUi.listCategories->item(0)->setSelected(true);
-    connect(mUi.scrollSettings->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(onScrollBarValueChanged(int)));
-
     searchPorts();
+    mDialog.setLocale(QLocale::C);
 
     if (mSerialPortName != "")
     {
-        //mSerialPort.setPortName(mSettingsForm->port());
-        //mSerialPort.setBaudRate(mSettingsForm->baud());
+        emit serialPortNameChangedSignal(getPortName());
+        emit serialPortBaudRateChangedSignal(getBaudRate());
     }
-    */
 }
 
 SettingsFormController::~SettingsFormController()
@@ -437,56 +420,6 @@ void SettingsFormController::setSimplifyPrecision(double simplifyPrecision)
     mUi.txtSimplifyPrecision->setValue(simplifyPrecision);
 }
 
-bool SettingsFormController::panelUserCommands()
-{
-    return mUi.chkPanelUserCommands->isChecked();
-}
-
-void SettingsFormController::setPanelUserCommands(bool value)
-{
-    mUi.chkPanelUserCommands->setChecked(value);
-}
-
-bool SettingsFormController::panelHeightmap()
-{
-    return mUi.chkPanelHeightmap->isChecked();
-}
-
-void SettingsFormController::setPanelHeightmap(bool panelHeightmap)
-{
-    mUi.chkPanelHeightmap->setChecked(panelHeightmap);
-}
-
-bool SettingsFormController::panelSpindle()
-{
-    return mUi.chkPanelSpindle->isChecked();
-}
-
-void SettingsFormController::setPanelSpindle(bool panelSpindle)
-{
-    mUi.chkPanelSpindle->setChecked(panelSpindle);
-}
-
-bool SettingsFormController::panelFeed()
-{
-    return mUi.chkPanelFeed->isChecked();
-}
-
-void SettingsFormController::setPanelFeed(bool panelFeed)
-{
-    mUi.chkPanelFeed->setChecked(panelFeed);
-}
-
-bool SettingsFormController::panelJog()
-{
-    return mUi.chkPanelJog->isChecked();
-}
-
-void SettingsFormController::setPanelJog(bool panelJog)
-{
-    mUi.chkPanelJog->setChecked(panelJog);
-}
-
 /*QList<ColorPicker *> SettingsFormController::colors()
 {
     return this->findChildren<ColorPicker*>();
@@ -500,16 +433,6 @@ QColor SettingsFormController::colors(QString name)
     if (pick) return pick->color(); else return QColor();
 }
 */
-
-int SettingsFormController::fontSize()
-{
-    return mUi.cboFontSize->currentText().toInt();
-}
-
-void SettingsFormController::setFontSize(int fontSize)
-{
-    mUi.cboFontSize->setCurrentText(QString::number(fontSize));
-}
 
 bool SettingsFormController::grayscaleSegments()
 {
@@ -576,16 +499,15 @@ void SettingsFormController::setAutoLine(bool value)
 void SettingsFormController::showEvent(QShowEvent *se)
 {
     Q_UNUSED(se)
-
-   // mUi.scrollSettings->updateMinimumWidth();
 }
 
 void SettingsFormController::searchPorts()
 {
     mUi.cboPort->clear();
 
-    foreach (QSerialPortInfo info ,QSerialPortInfo::availablePorts()) {
-//        mUi.cboPort->addItem(info.portName());
+    foreach (QSerialPortInfo info ,QSerialPortInfo::availablePorts())
+    {
+        mUi.cboPort->addItem(info.portName());
         mUi.cboPort->insertItem(0, info.portName());
     }
 }
@@ -650,11 +572,9 @@ void SettingsFormController::onCmdDefaultsClicked()
     setRestoreMode(0);
     setHeightmapProbingFeed(10);
     setUnits(0);
-
     setArcLength(0.0);
     setArcDegreeMode(true);
     setArcDegree(5.0);
-
     setLineWidth(1.5);
     setAntialiasing(true);
     setMsaa(true);
@@ -665,26 +585,12 @@ void SettingsFormController::onCmdDefaultsClicked()
     setGrayscaleSegments(false);
     setGrayscaleSCode(true);
     setDrawModeVectors(true);
-
     setToolType(1);
     setToolAngle(15.0);
     setToolDiameter(3.0);
     setToolLength(30.0);
-
     setShowProgramCommands(false);
     setAutoCompletion(true);
-
-    setPanelFeed(true);
-    setPanelHeightmap(true);
-    setPanelJog(true);
-    setPanelSpindle(true);
-
-    setFontSize(9);
-}
-
-void SettingsFormController::onComboBoxFontSizeCurrentTextChanged(const QString &arg1)
-{
-    qApp->setStyleSheet(QString(qApp->styleSheet()).replace(QRegExp("font-size:\\s*\\d+"), "font-size: " + arg1));
 }
 
 void SettingsFormController::onRadioBtnDrawModeVectorsToggled(bool checked)

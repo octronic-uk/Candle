@@ -4,6 +4,8 @@ SelectionDrawer::SelectionDrawer()
 {
     m_endPosition = QVector3D(sNan, sNan, sNan);
     m_pointSize = 6.0;
+    m_lineWidth = 3;
+    m_color = QColor("Purple");
 }
 
 bool SelectionDrawer::updateData()

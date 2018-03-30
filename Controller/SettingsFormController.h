@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -15,8 +15,8 @@ class SettingsFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit SettingsFormController(QWidget *parent = 0);
-    ~SettingsFormController();
+    explicit SettingsFormController(QWidget *parent = nullptr);
+    ~SettingsFormController() override;
 
     void saveSettings();
     int exec();
@@ -123,26 +123,8 @@ public:
     double simplifyPrecision();
     void setSimplifyPrecision(double simplifyPrecision);
 
-    bool panelUserCommands();
-    void setPanelUserCommands(bool value);
-
-    bool panelHeightmap();
-    void setPanelHeightmap(bool panelHeightmap);
-
-    bool panelSpindle();
-    void setPanelSpindle(bool panelSpindle);
-
-    bool panelFeed();
-    void setPanelFeed(bool panelFeed);
-
-    bool panelJog();
-    void setPanelJog(bool panelJog);
-
     //QList<ColorPicker*> colors();
     //QColor colors(QString name);
-
-    int fontSize();
-    void setFontSize(int fontSize);
 
     bool grayscaleSegments();
     void setGrayscaleSegments(bool value);
@@ -163,6 +145,10 @@ public:
     void setAutoLine(bool value);
 
     void applySettings();
+signals:
+     void serialPortNameChangedSignal(QString);
+     void serialPortBaudRateChangedSignal(int);
+
 protected:
     void showEvent(QShowEvent *se) override;
 private slots:
@@ -171,7 +157,6 @@ private slots:
     void onCmdCancelClicked();
     void onCmdDefaultsClicked();
     void onComboBoxToolTypeCurrentIndexChanged(int index);
-    void onComboBoxFontSizeCurrentTextChanged(const QString &arg1);
     void onRadioBtnDrawModeVectorsToggled(bool checked);
     void onRadioBtnDrawModeRasterToggled(bool checked);
     void onRadioBtnGrayscaleSToggled(bool checked);

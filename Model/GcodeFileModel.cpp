@@ -24,7 +24,6 @@
 #include <QProgressDialog>
 
 #include "GcodeFileModel.h"
-#include "Parser/GcodeParser.h"
 #include "Model/Tables/GcodeTableModel.h"
 
 GcodeFileModel::GcodeFileModel(QObject *parent)
@@ -32,17 +31,17 @@ GcodeFileModel::GcodeFileModel(QObject *parent)
       mProgramLoading(false),
       mFileChanged(false)
 {
-    qDebug() << "GcodeFileModel: Constructing";
+    //qDebug() << "GcodeFileModel: Constructing";
 }
 
 GcodeFileModel::~GcodeFileModel()
 {
-    qDebug() << "GcodeFileModel: Destructing";
+    //qDebug() << "GcodeFileModel: Destructing";
 }
 
 void GcodeFileModel::load(QList<QString> data)
 {
-    qDebug() << "GcodeFileModel: load(Qlist<QString>)";
+    //qDebug() << "GcodeFileModel: load(Qlist<QString>)";
     QTime time;
     time.start();
 
@@ -73,20 +72,17 @@ void GcodeFileModel::load(QList<QString> data)
 
 
     // Prepare parser
-    GcodeParser gp;
-    gp.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
+    mGcodeParser.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
     //if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
 
-    qDebug() << "GcodeFileModel: Prepared to load at time: " << time.elapsed();
+    //qDebug() << "GcodeFileModel: Prepared to load at time: " << time.elapsed();
     time.start();
 
     // Block parser updates on table changes
     mProgramLoading = true;
 
-
-
     // Prepare model
-    qDebug() << "GcodeFileModel: Clearing data";
+    //qDebug() << "GcodeFileModel: Clearing data";
     mData.clear();
     emit clearExistingGcodeFileSignal();
     emit reserveGcodeRowsSignal(data.count());
@@ -103,9 +99,9 @@ void GcodeFileModel::load(QList<QString> data)
 
     while (!data.isEmpty())
     {
-        qDebug() << "GcodeFileModel: Next Line";
+        //qDebug() << "GcodeFileModel: Next Line";
         QString command;
-        QString stripped;
+        QString cmd_no_comment;
         QString trimmed;
         QList<QString> args;
         GcodeItem item;
@@ -118,26 +114,27 @@ void GcodeFileModel::load(QList<QString> data)
         if (!trimmed.isEmpty())
         {
             // Split command
-            stripped = GcodePreprocessorUtils::removeComment(command);
-            args = GcodePreprocessorUtils::splitCommand(stripped);
+            QStringList cmdAndComment =GcodePreprocessorUtils::removeComment(command);
+            cmd_no_comment = cmdAndComment.at(0);
+            args = GcodePreprocessorUtils::splitCommand(cmd_no_comment);
 
-            PointSegment *ps = gp.addCommand(args);
+            PointSegment *ps = mGcodeParser.addCommand(args);
 
             if  (
                 ps && (qIsNaN(ps->point()->x()) ||
                 qIsNaN(ps->point()->y()) ||
                 qIsNaN(ps->point()->z()))
             ) {
-                qDebug() << "GcodeFileModel: nan point segment added:" << *ps->point();
+                //qDebug() << "GcodeFileModel: nan point segment added:" << *ps->point();
             }
 
             item.setCommand(trimmed);
             item.setState(GcodeItemState::GCODE_ITEM_STATE_IN_QUEUE);
-            item.setLine(gp.getCommandNumber());
+            item.setLine(mGcodeParser.getCommandNumber());
             item.setArgs(args);
 
             //emit nextGcodeLineReadySignal(item);
-            qDebug() << "GcodeFileModel: Appending to mData";
+            //qDebug() << "GcodeFileModel: Appending to mData";
             mData.append(item);
 
         }
@@ -151,14 +148,15 @@ void GcodeFileModel::load(QList<QString> data)
     //progress.close();
 
 
-    qDebug() << "GcodeFileModel: model filled at time " << time.elapsed();
+    //qDebug() << "GcodeFileModel: model filled at time " << time.elapsed();
     time.start();
 
     //updateProgramEstimatedTime(mViewParser.getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
-    qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
+    //qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
 
     mProgramLoading = false;
     emit gcodeFileLoadFinishedSignal(mData);
+    emit gcodeParserUpdatedSignal(&mGcodeParser);
 
     //  Update code drawer
     //mCodeDrawer->update();
@@ -170,7 +168,7 @@ void GcodeFileModel::load(QList<QString> data)
 
 void GcodeFileModel::load(QString fileName)
 {
-    qDebug() << "GcodeFileModel: load(QString fileName)";
+    //qDebug() << "GcodeFileModel: load(QString fileName)";
     mFile.setFileName(fileName);
 
     if (!mFile.open(QIODevice::ReadOnly))
@@ -193,15 +191,15 @@ void GcodeFileModel::load(QString fileName)
 
     // Load lines
     load(data);
-    qDebug() << "GcodeFileModel: Loaded Gcode File "
-             << fileName;
+    //qDebug() << "GcodeFileModel: Loaded Gcode File "
+             //<< fileName;
 }
 
 QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 {
 
     Q_UNUSED(lines)
-    qDebug() << "GcodeFileModel: updateProgramEstimatedTime(QList<LineSegment*> lines)";
+    //qDebug() << "GcodeFileModel: updateProgramEstimatedTime(QList<LineSegment*> lines)";
     /*
     double time = 0;
 
@@ -214,12 +212,12 @@ QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
                 length / ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
                           ? (ls->getSpeed() * mUi->txtFeed->value() / 100) : ls->getSpeed());
 
-//        qDebug() << "GcodeFileModel: length/time:" << length << ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
+//        //qDebug() << "GcodeFileModel: length/time:" << length << ((mUi->chkFeedOverride->isChecked() && !ls->isFastTraverse())
 //                                                 ? (ls->getSpeed() * mUi->txtFeed->value() / 100) : ls->getSpeed())
 //                 << time;
 
-//        if (qIsNaN(length)) qDebug() << "GcodeFileModel: length nan:" << i << ls->getLineNumber() << ls->getStart() << ls->getEnd();
-//        if (qIsNaN(ls->getSpeed())) qDebug() << "GcodeFileModel: speed nan:" << ls->getSpeed();
+//        if (qIsNaN(length)) //qDebug() << "GcodeFileModel: length nan:" << i << ls->getLineNumber() << ls->getStart() << ls->getEnd();
+//        if (qIsNaN(ls->getSpeed())) //qDebug() << "GcodeFileModel: speed nan:" << ls->getSpeed();
     }
 
     time *= 60;
@@ -239,7 +237,7 @@ QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 
 QString GcodeFileModel::getCurrentFileName()
 {
-   qDebug() << "GcodeFileModel: getCurrentFileName()";
+   //qDebug() << "GcodeFileModel: getCurrentFileName()";
    return mFile.fileName();
 }
 
@@ -248,12 +246,12 @@ bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
 {
     Q_UNUSED(fileName)
     Q_UNUSED(model)
-   qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
+   //qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
     /*
     QFile file(fileName);
     QDir dir;
 
-    qDebug() << "GcodeFileModel: Saving program";
+    //qDebug() << "GcodeFileModel: Saving program";
 
     if (file.exists()) dir.remove(file.fileName());
     if (!file.open(QIODevice::WriteOnly)) return false;
@@ -274,7 +272,7 @@ bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
 
 bool GcodeFileModel::isGcodeFile(QString fileName)
 {
-    qDebug() << "GcodeTableModel: isGcodeFile" << fileName;
+    //qDebug() << "GcodeTableModel: isGcodeFile" << fileName;
     return fileName.endsWith(".txt", Qt::CaseInsensitive)
             || fileName.endsWith(".nc", Qt::CaseInsensitive)
             || fileName.endsWith(".ncc", Qt::CaseInsensitive)
@@ -285,7 +283,7 @@ bool GcodeFileModel::isGcodeFile(QString fileName)
 
 bool GcodeFileModel::hasFileChanged()
 {
-    qDebug() << "GcodeTableModel: hasFileChanged";
+    //qDebug() << "GcodeTableModel: hasFileChanged";
     return mFileChanged;
 }
 

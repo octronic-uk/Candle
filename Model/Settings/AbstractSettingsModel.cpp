@@ -1,7 +1,7 @@
 /*
- * SettingsModel.h
+ * AbstractSettingsModel.cpp
  *
- * Created: 24 2018 by Ashley
+ * Created: 30 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -15,22 +15,14 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#include "AbstractSettingsModel.h"
 
-#pragma once
-
-#include <QObject>
-
-class SettingsModel : public QObject
+AbstractSettingsModel::AbstractSettingsModel(QObject *parent) : QObject(parent)
 {
-    Q_OBJECT
-public:
-    SettingsModel(QObject *parent=nullptr);
-    ~SettingsModel();
 
-    void preload();
-    void load();
-    void save();
-private:
-    bool mSettingsLoading;
-    QString mSettingsFileName;
-};
+}
+
+AbstractSettingsModel::~AbstractSettingsModel()
+{
+
+}

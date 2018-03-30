@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // This file was originally ported from "GcodePreprocessorUtils.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -15,8 +15,8 @@ class GcodePreprocessorUtils : public QObject
 {
     Q_OBJECT
 public:
-    static QString overrideSpeed(QString command, double speed, double *original = NULL);
-    static QString removeComment(QString command);
+    static QString overrideSpeed(QString command, double speed, double *original = nullptr);
+    static QStringList removeComment(QString command);
     static QString parseComment(QString command);
     static QString truncateDecimals(int length, QString command);
     static QString removeAllWhitespace(QString command);

@@ -1,14 +1,22 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "ToolDrawer.h"
 
 ToolDrawer::ToolDrawer()
 {
-    m_toolDiameter = 3;
-    m_toolLength = 15;
-    m_toolPosition = QVector3D(0, 0, 0);
-    m_rotationAngle = 0;
+    qDebug() << "ToolDrawer: Constructing";
+    mToolDiameter = 3;
+    mToolLength = 15;
+    mToolPosition = QVector3D(0, 0, 0);
+    mRotationAngle = 0;
+    setColor(QColor("Orange"));
+    m_lineWidth = 3;
+}
+
+ToolDrawer::~ToolDrawer()
+{
+    qDebug() << "ToolDrawer: Destructing";
 }
 
 bool ToolDrawer::updateData()
@@ -21,34 +29,45 @@ bool ToolDrawer::updateData()
 
     // Prepare vertex
     VertexData vertex;
-    vertex.color = Util::colorToVector(m_color);//QVector3D(1.0, 0.6, 0.0);
+    vertex.color = Util::colorToVector(mColor);
     vertex.start = QVector3D(sNan, sNan, sNan);
 
     // Draw lines
-    for (int i = 0; i < arcs; i++) {
-        double x = m_toolPosition.x() + m_toolDiameter / 2 * cos(m_rotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
-        double y = m_toolPosition.y() + m_toolDiameter / 2 * sin(m_rotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
+    for (int i = 0; i < arcs; i++)
+    {
+        double x = mToolPosition.x() + mToolDiameter / 2 *
+                cos(mRotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
+        double y = mToolPosition.y() + mToolDiameter / 2 *
+                sin(mRotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
 
         // Side lines
-        vertex.position = QVector3D(x, y, m_toolPosition.z() + m_endLength);
+        vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
         m_lines.append(vertex);
-        vertex.position = QVector3D(x, y, m_toolPosition.z() + m_toolLength);
+        vertex.position = QVector3D(x, y, mToolPosition.z() + mToolLength);
         m_lines.append(vertex);
 
         // Bottom lines
-        vertex.position = QVector3D(m_toolPosition.x(), m_toolPosition.y(), m_toolPosition.z());
+        vertex.position = QVector3D(
+            mToolPosition.x(), mToolPosition.y(), mToolPosition.z()
+        );
+
         m_lines.append(vertex);
-        vertex.position = QVector3D(x, y, m_toolPosition.z() + m_endLength);
+        vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
         m_lines.append(vertex);
 
         // Top lines
-        vertex.position = QVector3D(m_toolPosition.x(), m_toolPosition.y(), m_toolPosition.z() + m_toolLength);
+        vertex.position = QVector3D(
+            mToolPosition.x(),
+            mToolPosition.y(),
+            mToolPosition.z() + mToolLength
+        );
+
         m_lines.append(vertex);
-        vertex.position = QVector3D(x, y, m_toolPosition.z() + m_toolLength);
+        vertex.position = QVector3D(x, y, mToolPosition.z() + mToolLength);
         m_lines.append(vertex);
 
         // Zero Z lines
-        vertex.position = QVector3D(m_toolPosition.x(), m_toolPosition.y(), 0);
+        vertex.position = QVector3D(mToolPosition.x(), mToolPosition.y(), 0);
         m_lines.append(vertex);
         vertex.position = QVector3D(x, y, 0);
         m_lines.append(vertex);
@@ -56,29 +75,43 @@ bool ToolDrawer::updateData()
 
     // Draw circles
     // Bottom
-    m_lines += createCircle(QVector3D(m_toolPosition.x(), m_toolPosition.y(), m_toolPosition.z() + m_endLength),
-                            m_toolDiameter / 2, 20, vertex.color);
+    m_lines += createCircle(
+        QVector3D(
+            mToolPosition.x(), mToolPosition.y(),
+            mToolPosition.z() + mEndLength
+        ),
+        mToolDiameter / 2, 20, vertex.color
+    );
 
     // Top
-    m_lines += createCircle(QVector3D(m_toolPosition.x(), m_toolPosition.y(), m_toolPosition.z() + m_toolLength),
-                            m_toolDiameter / 2, 20, vertex.color);
+    m_lines += createCircle(
+        QVector3D(
+            mToolPosition.x(), mToolPosition.y(),
+            mToolPosition.z() + mToolLength
+        ),
+        mToolDiameter / 2, 20, vertex.color
+    );
 
     // Zero Z circle
-    if (m_endLength == 0) {
-        m_lines += createCircle(QVector3D(m_toolPosition.x(), m_toolPosition.y(), 0),
-                                m_toolDiameter / 2, 20, vertex.color);
+    if (mEndLength == 0)
+    {
+        m_lines += createCircle(
+            QVector3D(mToolPosition.x(), mToolPosition.y(), 0),
+            mToolDiameter / 2, 20, vertex.color
+        );
     }
 
     return true;
 }
+
 QColor ToolDrawer::color() const
 {
-    return m_color;
+    return mColor;
 }
 
 void ToolDrawer::setColor(const QColor &color)
 {
-    m_color = color;
+    mColor = color;
 }
 
 
@@ -93,15 +126,20 @@ QVector<VertexData> ToolDrawer::createCircle(QVector3D center, double radius, in
     vertex.start = QVector3D(sNan, sNan, sNan);
 
     // Create line loop
-    for (int i = 0; i <= arcs; i++) {
+    for (int i = 0; i <= arcs; i++)
+    {
         double angle = 2 * M_PI * i / arcs;
         double x = center.x() + radius * cos(angle);
         double y = center.y() + radius * sin(angle);
 
-        if (i > 1) {
+        if (i > 1)
+        {
             circle.append(circle.last());
         }
-        else if (i == arcs) circle.append(circle.first());
+        else if (i == arcs)
+        {
+            circle.append(circle.first());
+        }
 
         vertex.position = QVector3D(x, y, center.z());
         circle.append(vertex);
@@ -112,79 +150,92 @@ QVector<VertexData> ToolDrawer::createCircle(QVector3D center, double radius, in
 
 double ToolDrawer::toolDiameter() const
 {
-    return m_toolDiameter;
+    return mToolDiameter;
 }
 
 void ToolDrawer::setToolDiameter(double toolDiameter)
 {
-    if (m_toolDiameter != toolDiameter) {
-        m_toolDiameter = toolDiameter;
+    if (mToolDiameter != toolDiameter)
+    {
+        mToolDiameter = toolDiameter;
         update();
     }
 }
 double ToolDrawer::toolLength() const
 {
-    return m_toolLength;
+    return mToolLength;
 }
 
 void ToolDrawer::setToolLength(double toolLength)
 {
-    if (m_toolLength != toolLength) {
-        m_toolLength = toolLength;
+    if (mToolLength != toolLength)
+    {
+        mToolLength = toolLength;
         update();
     }
 }
 QVector3D ToolDrawer::toolPosition() const
 {
-    return m_toolPosition;
+    return mToolPosition;
 }
 
 void ToolDrawer::setToolPosition(const QVector3D &toolPosition)
 {
-    if (m_toolPosition != toolPosition) {
-        m_toolPosition = toolPosition;
+    if (mToolPosition != toolPosition)
+    {
+        mToolPosition = toolPosition;
         update();
     }
 }
 double ToolDrawer::rotationAngle() const
 {
-    return m_rotationAngle;
+    return mRotationAngle;
 }
 
 void ToolDrawer::setRotationAngle(double rotationAngle)
 {
-    if (m_rotationAngle != rotationAngle) {
-        m_rotationAngle = rotationAngle;
+    if (mRotationAngle != rotationAngle)
+    {
+        mRotationAngle = rotationAngle;
         update();
     }
 }
 
 void ToolDrawer::rotate(double angle)
 {
-    setRotationAngle(normalizeAngle(m_rotationAngle + angle));
+    setRotationAngle(normalizeAngle(mRotationAngle + angle));
 }
 
 double ToolDrawer::toolAngle() const
 {
-    return m_toolAngle;
+    return mToolAngle;
 }
 
 void ToolDrawer::setToolAngle(double toolAngle)
 {
-    if (m_toolAngle != toolAngle) {
-        m_toolAngle = toolAngle;
-
-        m_endLength = m_toolAngle > 0 && m_toolAngle < 180 ? m_toolDiameter / 2 / tan(m_toolAngle / 180 * M_PI / 2) : 0;
-        if (m_toolLength < m_endLength) m_toolLength = m_endLength;
-
+    if (mToolAngle != toolAngle)
+    {
+        mToolAngle = toolAngle;
+        mEndLength = mToolAngle > 0 && mToolAngle < 180 ? mToolDiameter / 2 / tan(mToolAngle / 180 * M_PI / 2) : 0;
+        if (mToolLength < mEndLength)
+        {
+            mToolLength = mEndLength;
+        }
         update();
     }
 }
 
 double ToolDrawer::normalizeAngle(double angle)
 {
-    while (angle < 0) angle += 360;
-    while (angle > 360) angle -= 360;
+    while (angle < 0)
+    {
+        angle += 360;
+    }
+
+    while (angle > 360)
+    {
+        angle -= 360;
+    }
 
     return angle;
 }

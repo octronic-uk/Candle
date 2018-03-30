@@ -25,12 +25,12 @@ GcodeItem::GcodeItem()
       mState(GcodeItemState::GCODE_ITEM_STATE_NONE),
       mLine(-1)
 {
-    qDebug() << "GcodeItem: Constructing";
+    //qDebug() << "GcodeItem: Constructing";
 }
 
 GcodeItem::GcodeItem(const GcodeItem& other)
 {
-    qDebug() << "GcodeItem: Copy Constructor";
+    //qDebug() << "GcodeItem: Copy Constructor";
     mState = other.mState;
     mCommand = other.mCommand;
     mResponse = other.mResponse;
@@ -39,7 +39,7 @@ GcodeItem::GcodeItem(const GcodeItem& other)
 
 GcodeItem::~GcodeItem()
 {
-    qDebug() << "GcodeItem: Destructing";
+    //qDebug() << "GcodeItem: Destructing";
 }
 
 QString GcodeItem::getCommand() const

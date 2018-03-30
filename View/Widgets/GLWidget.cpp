@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "GLWidget.h"
@@ -7,6 +7,7 @@
 #include <QtWidgets>
 #include <QPainter>
 #include <QEasingCurve>
+#include <QtDebug>
 
 #ifdef GLES
 #include <GLES/gl.h>
@@ -19,7 +20,7 @@ GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), mShaderProgram(0)
 #else
 GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent), mShaderProgram(0)
 #endif
-
+     ,mColorText(QColor("Purple"))
 {
     mAnimateView = false;
     mUpdatesEnabled = false;
@@ -401,9 +402,9 @@ void GLWidget::initializeGL()
     if (mShaderProgram)
     {
         // Compile vertex shader
-        mShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vshader.glsl");
+        mShaderProgram->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/Shaders/vshader.glsl");
         // Compile fragment shader
-        mShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fshader.glsl");
+        mShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shaders/fshader.glsl");
         // Link shader pipeline
         mShaderProgram->link();
         qDebug() << "shader program created";
@@ -423,7 +424,14 @@ void GLWidget::updateProjection()
     mProjectionMatrix.setToIdentity();
 
     double asp = (double)width() / height();
-    mProjectionMatrix.frustum((-0.5 + mXPan) * asp, (0.5 + mXPan) * asp, -0.5 + mYPan, 0.5 + mYPan, 2, m_distance * 2);
+    mProjectionMatrix.frustum(
+        (-0.5 + mXPan) * asp,
+        (0.5 + mXPan) * asp,
+        -0.5 + mYPan,
+        0.5 + mYPan,
+        2,
+        m_distance * 2
+    );
 }
 
 void GLWidget::updateView()
@@ -435,9 +443,19 @@ void GLWidget::updateView()
     double angY = M_PI / 180 * mYRot;
     double angX = M_PI / 180 * mXRot;
 
-    QVector3D eye(r * cos(angX) * sin(angY) + mXLookAt, r * sin(angX) + mYLookAt, r * cos(angX) * cos(angY) + mZLookAt);
+    QVector3D eye(
+        r * cos(angX) * sin(angY) + mXLookAt,
+        r * sin(angX) + mYLookAt,
+        r * cos(angX) * cos(angY) + mZLookAt
+    );
     QVector3D center(mXLookAt, mYLookAt, mZLookAt);
-    QVector3D up(fabs(mXRot) == 90 ? -sin(angY + (mXRot < 0 ? M_PI : 0)) : 0, cos(angX), fabs(mXRot) == 90 ? -cos(angY + (mXRot < 0 ? M_PI : 0)) : 0);
+    QVector3D up(
+        fabs(mXRot) == 90 ?
+        -sin(angY + (mXRot < 0 ? M_PI : 0)) :
+        0,
+        cos(angX), fabs(mXRot) == 90 ?
+            -cos(angY + (mXRot < 0 ? M_PI :  0)) : 0
+    );
 
     mViewMatrix.lookAt(eye, center, up.normalized());
 
@@ -464,7 +482,11 @@ void GLWidget::paintEvent(QPaintEvent *pe)
     painter.beginNativePainting();
 
     // Clear viewport
-    glClearColor(mColorBackground.redF(), mColorBackground.greenF(), mColorBackground.blueF(), 1.0);
+    glClearColor(mColorBackground.redF(),
+                 mColorBackground.greenF(),
+                 mColorBackground.blueF(),
+                 1.0
+    );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Shader drawable points
@@ -513,6 +535,10 @@ void GLWidget::paintEvent(QPaintEvent *pe)
         }
 
         mShaderProgram->release();
+    }
+    else
+    {
+        qDebug() << "GLWidget: ShaderProgram is false??";
     }
 
     // Draw 2D
@@ -563,11 +589,19 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     mYLastRot = mYRot;
     mXLastPan = mXPan;
     mYLastPan = mYPan;
+    repaint();
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if ((event->buttons() & Qt::MiddleButton && !(event->modifiers() & Qt::ShiftModifier)) || event->buttons() & Qt::LeftButton)
+    if  (
+            (
+                event->buttons() & Qt::MiddleButton &&
+                !(event->modifiers() & Qt::ShiftModifier)
+            )
+            ||
+            event->buttons() & Qt::LeftButton
+        )
     {
 
         stopViewAnimation();
@@ -582,13 +616,21 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         emit rotationChanged();
     }
 
-    if ((event->buttons() & Qt::MiddleButton && event->modifiers() & Qt::ShiftModifier) || event->buttons() & Qt::RightButton)
+    if  (
+            (
+                event->buttons() & Qt::MiddleButton &&
+                event->modifiers() & Qt::ShiftModifier
+            )
+            ||
+            event->buttons() & Qt::RightButton
+         )
     {
         mXPan = mXLastPan - (event->pos().x() - mLastPos.x()) * 1 / (double)width();
         mYPan = mYLastPan + (event->pos().y() - mLastPos.y()) * 1 / (double)height();
 
         updateProjection();
     }
+    repaint();
 }
 
 void GLWidget::wheelEvent(QWheelEvent *we)
@@ -610,18 +652,20 @@ void GLWidget::wheelEvent(QWheelEvent *we)
 
     updateProjection();
     updateView();
+    repaint();
 }
 
 void GLWidget::timerEvent(QTimerEvent *te)
 {
-    if (te->timerId() == mTimerPaint.timerId())
+    //qDebug() << "GLWidget: Timer Event!";
+    //if (te->timerId() == mTimerPaint.timerId())
     {
         if (mAnimateView) viewAnimation();
 #ifndef GLES
         if (mUpdatesEnabled) update();
 #endif
     }
-    else
+   /* else
     {
 #ifdef GLES
         QOpenGLWidget::timerEvent(te);
@@ -629,6 +673,7 @@ void GLWidget::timerEvent(QTimerEvent *te)
         QGLWidget::timerEvent(te);
 #endif
     }
+    */
 }
 
 double GLWidget::normalizeAngle(double angle)

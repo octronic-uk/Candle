@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // This file was originally ported from "GcodeViewParse.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -106,8 +106,8 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
     Q_UNUSED(length)
 
     QVector3D *start, *end;
-    start = NULL;
-    end = NULL;
+    start = nullptr;
+    end = nullptr;
     LineSegment *ls;
 
     // Prepare segments indexes
@@ -122,8 +122,8 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
         end = ps->point();
 
         // start is null for the first iteration.
-        if (start != NULL) {           
-            // Expand arc for graphics.            
+        if (start != nullptr) {
+            // Expand arc for graphics.
             if (ps->isArc()) {
                 QList<QVector3D> points =
                     GcodePreprocessorUtils::generatePointsAlongArcBDring(ps->plane(),

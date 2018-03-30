@@ -19,17 +19,19 @@
 
 VisualisationFormController::VisualisationFormController(QWidget *parent)
     : AbstractFormController(parent),
-      mButtonPadding(4)
+      mButtonPadding(4),
+      mSpindleClockwise(false)
 {
     qDebug() << "VisualisationFormController: Constructing ";
 
     mUi.setupUi(this);
-
+    /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
     mUi.cmdTop->setParent(mUi.glwVisualizer);
     mUi.cmdFront->setParent(mUi.glwVisualizer);
     mUi.cmdLeft->setParent(mUi.glwVisualizer);
+    */
 
     mCodeDrawer.setViewParser(&mViewParser);
     mProbeDrawer.setViewParser(&mProbeParser);
@@ -37,19 +39,25 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mToolDrawer.setToolPosition(QVector3D(0, 0, 0));
     mLastDrawnLineIndex = 0;
 
+    mOriginDrawer.setVisible(true);
+
     mUi.glwVisualizer->addDrawable(&mOriginDrawer);
     mUi.glwVisualizer->addDrawable(&mCodeDrawer);
-    mUi.glwVisualizer->addDrawable(&mProbeDrawer);
     mUi.glwVisualizer->addDrawable(&mToolDrawer);
+    mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
+    /*
+    mUi.glwVisualizer->addDrawable(&mProbeDrawer);
     mUi.glwVisualizer->addDrawable(&mHeightMapBorderDrawer);
     mUi.glwVisualizer->addDrawable(&mHeightMapGridDrawer);
     mUi.glwVisualizer->addDrawable(&mHeightMapInterpolationDrawer);
-    mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
+    */
     mUi.glwVisualizer->fitDrawable();
-
     placeVisualizerButtons();
-
     setupSignalSlots();
+
+    mToolAnimationTimer.start(250, this);
+    //mUi.cmdSpindle->setChecked(true);
+    emit spindleEnabledSignal(true);
 }
 
 VisualisationFormController::~VisualisationFormController()
@@ -59,28 +67,30 @@ VisualisationFormController::~VisualisationFormController()
 
 void VisualisationFormController::placeVisualizerButtons()
 {
+    /*
     qDebug() << "VisualisationFormController: placeVisualizerButtons";
-    int xPos = mUi.glwVisualizer->width() - mUi.cmdIsometric->width() + mButtonPadding;
-    mUi.cmdIsometric->move(xPos , mButtonPadding);
+    int xPos = mButtonPadding;
+    mUi.cmdIsometric->move(xPos,0); //mButtonPadding);
     mUi.cmdTop->move(xPos, mUi.cmdIsometric->geometry().bottom() + mButtonPadding);
     mUi.cmdLeft->move(xPos, mUi.cmdTop->geometry().bottom() + mButtonPadding);
     mUi.cmdFront->move(xPos, mUi.cmdLeft->geometry().bottom() + mButtonPadding);
     mUi.cmdFit->move(xPos, mUi.cmdFront->geometry().bottom() + mButtonPadding);
+    */
 }
 
-void VisualisationFormController::onCmdTopClicked()
+void VisualisationFormController::onTopButtonClicked()
 {
     qDebug() << "VisualisationFormController: onCmdTopClicked";
     mUi.glwVisualizer->setTopView();
 }
 
-void VisualisationFormController::onCmdFrontClicked()
+void VisualisationFormController::onFrontButtonClicked()
 {
     qDebug() << "VisualisationFormController: onCmdFrontClicked";
     mUi.glwVisualizer->setFrontView();
 }
 
-void VisualisationFormController::onCmdLeftClicked()
+void VisualisationFormController::onLeftButtonClicked()
 {
     qDebug() << "VisualisationFormController: onCmdLeftClicked";
     mUi.glwVisualizer->setLeftView();
@@ -106,14 +116,14 @@ QString VisualisationFormController::getParserStatus()
 
 void VisualisationFormController::onVisualizatorRotationChanged()
 {
-    qDebug() << "VisualisationFormController: noVisualizatorRotationChanged";
+    //qDebug() << "VisualisationFormController: onVisualizatorRotationChanged";
     mUi.cmdIsometric->setChecked(false);
 }
 
-void VisualisationFormController::onCmdFitClicked()
+void VisualisationFormController::onFitButtonClicked()
 {
     qDebug() << "VisualisationFormController: onCmdFitClicked";
-    mUi.glwVisualizer->fitDrawable(&mCurrentDrawer);
+    mUi.glwVisualizer->fitDrawable(&mCodeDrawer);
 }
 
 void VisualisationFormController::updateParser()
@@ -191,15 +201,36 @@ void VisualisationFormController::setupSignalSlots()
 {
     qDebug() << "VisualisationFormController: Setup Signals/Slots";
     connect
-    (
-        getVisualiser(), SIGNAL(rotationChanged()),
-        this, SLOT(onVisualizatorRotationChanged())
-    );
+            (
+                getVisualiser(), SIGNAL(rotationChanged()),
+                this, SLOT(onVisualizatorRotationChanged())
+                );
     connect
-    (
-        getVisualiser(), SIGNAL(resized()),
-        this, SLOT(placeVisualizerButtons())
-    );
+            (
+                getVisualiser(), SIGNAL(resized()),
+                this, SLOT(placeVisualizerButtons())
+                );
+    // Command Buttons
+    connect(
+                mUi.cmdFit, SIGNAL(clicked()),
+                this, SLOT(onFitButtonClicked())
+                );
+    connect(
+                mUi.cmdFront, SIGNAL(clicked()),
+                this, SLOT(onFrontButtonClicked())
+                );
+    connect(
+                mUi.cmdIsometric, SIGNAL(clicked()),
+                this, SLOT(onCmdIsometricClicked())
+                );
+    connect(
+                mUi.cmdLeft, SIGNAL(clicked()),
+                this, SLOT(onLeftButtonClicked())
+                );
+    connect(
+                mUi.cmdTop, SIGNAL(clicked()),
+                this, SLOT(onTopButtonClicked())
+                );
 }
 
 void VisualisationFormController::showEvent(QShowEvent *se)
@@ -219,9 +250,14 @@ void VisualisationFormController::hideEvent(QHideEvent *he)
 
 void VisualisationFormController::resizeEvent(QResizeEvent *re)
 {
-    qDebug() << "VisualisationFormController: resizeEvent";
+//    qDebug() << "VisualisationFormController: resizeEvent";
     Q_UNUSED(re)
     placeVisualizerButtons();
+}
+
+void VisualisationFormController::onGcodeFileLoadStarted()
+{
+
 }
 
 GLWidget* VisualisationFormController::getVisualiser()
@@ -232,31 +268,34 @@ GLWidget* VisualisationFormController::getVisualiser()
 
 void VisualisationFormController::setGLWBufferState(QString state)
 {
-    qDebug() << "VisualisationFormController: setGLWBufferState";
+    //qDebug() << "VisualisationFormController: setGLWBufferState";
     Q_UNUSED(state)
 }
 
 void VisualisationFormController::timerEvent(QTimerEvent *te)
 {
-    qDebug() << "VisualisationFormController: timerEvent";
-    Q_UNUSED(te)
-    /*
+    //qDebug() << "VisualisationFormController: timerEvent";
     if (te->timerId() == mToolAnimationTimer.timerId())
     {
-        mToolDrawer.rotate(
-            (mSpindleCW ? -40 : 40) *
-            (double)(mUi.txtSpindleSpeed->value()) /
-            (mUi.txtSpindleSpeed->maximum())
-        );
+        mToolDrawer.rotate(mSpindleClockwise ? -1 : 1);
+            /*(double)(mUi.txtSpindleSpeed->value()) / */
+            /*(mUi.txtSpindleSpeed->maximum())*/
     }
-    else
-    {
-        QMainWindow::timerEvent(te);
-    }
-    */
+    mUi.glwVisualizer->repaint();
+    mUi.glwVisualizer->timerEvent(te);
 }
 
-void VisualisationFormController::onGcodeFileLoadFinished()
+void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeItem> items)
 {
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
+}
+
+void VisualisationFormController::onGcodeParserUpdated(GcodeParser *parser)
+{
+    mViewParser.getLinesFromParser(parser,5.0,true);
+    mCodeDrawer.setViewParser(&mViewParser);
+    mCodeDrawer.update();
+    mUi.glwVisualizer->setUpdatesEnabled(true);
+    mUi.glwVisualizer->fitDrawable(&mCodeDrawer);
+    mCodeDrawer.setVisible(true);
 }

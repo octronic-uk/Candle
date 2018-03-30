@@ -1,4 +1,4 @@
-Cocoanut
+CocoanutCNC
 -----------
 GRBL controller application with G-Code visualizer written in Qt.
 
@@ -8,7 +8,7 @@ Supported functions:
 * Loading, editing, saving and sending of G-code files to cnc-machine.
 * Visualizing G-code files.
 
-System requirements for running "Cocoanut":
+System requirements for running "CocoanutCNC":
 -------------------
 * Windows/Linux x86
 * CPU with SSE2 instruction set support
@@ -23,12 +23,12 @@ Downloads:
 ----------
 For GRBL v1.1 firmware
 
-* Windows: [cocoanut_1.1.7.zip](https://github.com/Denvi/Cocoanut/releases/download/v1.1/Cocoanut_1.1.7.zip)
-* Linux: [cocoanut_1.1.7.tar.gz](https://github.com/Denvi/Cocoanut/releases/download/v1.1/Cocoanut_1.1.7.tar.gz)
+* Windows: [cocoanut_1.1.7.zip](https://github.com/Denvi/CocoanutCNC/releases/download/v1.1/CocoanutCNC_1.1.7.zip)
+* Linux: [cocoanut_1.1.7.tar.gz](https://github.com/Denvi/CocoanutCNC/releases/download/v1.1/CocoanutCNC_1.1.7.tar.gz)
 
-(for GRBL v0.9 and below use Cocoanut 1.0)
+(for GRBL v0.9 and below use CocoanutCNC 1.0)
 
-"Cocoanut" main window:
+"CocoanutCNC" main window:
 ![screenshot](/screenshots/screenshot_heightmap_original.png)
 
 --------------------

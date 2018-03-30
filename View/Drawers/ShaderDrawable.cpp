@@ -9,21 +9,24 @@
 
 ShaderDrawable::ShaderDrawable()
 {
+    //qDebug() << "ShaderDrawable: Constructing";
     m_needsUpdateGeometry = true;
     m_visible = true;
     m_lineWidth = 1.0;
     m_pointSize = 1.0;
-    m_texture = NULL;
+    m_texture = nullptr;
 }
 
 ShaderDrawable::~ShaderDrawable()
 {
+    //qDebug() << "ShaderDrawable: Destructing";
     if (!m_vao.isCreated()) m_vao.destroy();
     if (!m_vbo.isCreated()) m_vbo.destroy();
 }
 
 void ShaderDrawable::init()
 {
+    //qDebug() << "ShaderDrawable: init";
     // Init openGL functions
     initializeOpenGLFunctions();
     // Create buffers
@@ -38,6 +41,8 @@ void ShaderDrawable::update()
 
 void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
 {
+    //qDebug() << "ShaderDrawable: updateGeometry";
+
     // Init in context
     if (!m_vbo.isCreated()) init();
 
@@ -61,6 +66,7 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
     }
     else
     {
+        //qDebug() << "ShaderDrawable: Releasing VBO";
         m_vbo.release();
         if (m_vao.isCreated()) m_vao.release();
         m_needsUpdateGeometry = false;
@@ -69,6 +75,7 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
 
     if (m_vao.isCreated())
     {
+        //qDebug() << "ShaderDrawable: VAO is created";
         // Offset for position
         quintptr offset = 0;
 
@@ -124,27 +131,27 @@ bool ShaderDrawable::needsUpdateGeometry() const
 
 void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 {
-    qDebug() << "ShaderDrawable: draw";
+    //qDebug() << "ShaderDrawable: draw";
     if (!m_visible)
     {
-        qDebug() << "ShaderDrawable: Not Visible";
+        //qDebug() << "ShaderDrawable: Not Visible";
         return;
     }
 
     if (m_vao.isCreated())
     {
         // Prepare vao
-        qDebug() << "ShaderDrawable: Binding VAO";
+        //qDebug() << "ShaderDrawable: Binding VAO";
         m_vao.bind();
     }
     else
     {
-        qDebug() << "ShaderDrawable: Binding VBO";
         // Prepare vbo
+        //qDebug() << "ShaderDrawable: Binding VBO";
         m_vbo.bind();
 
-        qDebug() << "ShaderDrawable: Setting up shader";
         // Offset for position
+        //qDebug() << "ShaderDrawable: Setting up shader";
         quintptr offset = 0;
 
         // Tell OpenGL programmable pipeline how to locate vertex position data
@@ -172,7 +179,7 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
     // TODO: Add triangles
     if (!m_triangles.isEmpty())
     {
-        qDebug() << "ShaderDrawable: Add Triangles";
+        //qDebug() << "ShaderDrawable: Add Triangles";
         if (m_texture)
         {
             m_texture->bind();
@@ -183,25 +190,25 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 
     if (!m_lines.isEmpty())
     {
-        qDebug() << "ShaderDrawable: Add Lines";
+        //qDebug() << "ShaderDrawable: Add Lines";
         glLineWidth(m_lineWidth);
         glDrawArrays(GL_LINES, m_triangles.count(), m_lines.count());
     }
 
     if (!m_points.isEmpty())
     {
-        qDebug() << "ShaderDrawable: Add Points";
+        //qDebug() << "ShaderDrawable: Add Points";
         glDrawArrays(GL_POINTS, m_triangles.count() + m_lines.count(), m_points.count());
     }
 
     if (m_vao.isCreated())
     {
-        qDebug() << "ShaderDrawable: Release VAO";
+        //qDebug() << "ShaderDrawable: Release VAO";
         m_vao.release();
     }
     else
     {
-        qDebug() << "ShaderDrawable: Release VBO";
+        //qDebug() << "ShaderDrawable: Release VBO";
         m_vbo.release();
     }
 }

@@ -2,6 +2,12 @@
 
 OriginDrawer::OriginDrawer()
 {
+    m_lineWidth = 3;
+}
+
+OriginDrawer::~OriginDrawer()
+{
+
 }
 
 bool OriginDrawer::updateData()
@@ -48,4 +54,24 @@ bool OriginDrawer::updateData()
         {QVector3D(1, 1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
     };
     return true;
+}
+
+QVector3D OriginDrawer::getSizes()
+{
+   return QVector3D();
+}
+
+QVector3D OriginDrawer::getMinimumExtremes()
+{
+   return QVector3D();
+}
+
+QVector3D OriginDrawer::getMaximumExtremes()
+{
+   return QVector3D();
+}
+
+int OriginDrawer::getVertexCount()
+{
+   return m_lines.size();
 }

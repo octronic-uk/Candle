@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -25,7 +25,7 @@ public:
     ~GLWidget();
     void addDrawable(ShaderDrawable *drawable);
     void updateExtremes(ShaderDrawable *drawable);
-    void fitDrawable(ShaderDrawable *drawable = NULL);
+    void fitDrawable(ShaderDrawable *drawable = nullptr);
     bool antialiasing() const;
     void setAntialiasing(bool antialiasing);
 
@@ -72,6 +72,7 @@ public:
 
     bool vsync() const;
     void setVsync(bool vsync);
+    void timerEvent(QTimerEvent *);
 
 signals:
     void rotationChanged();
@@ -138,6 +139,5 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void wheelEvent(QWheelEvent *we);
 
-    void timerEvent(QTimerEvent *);
 };
 

@@ -1,4 +1,4 @@
-// This file is a part of "Cocoanut" application.
+// This file is a part of "CocoanutCNC" application.
 // This file was originally ported from "GcodeParser.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -17,7 +17,7 @@ class GcodeParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit GcodeParser(QObject *parent = 0);
+    explicit GcodeParser(QObject *parent = nullptr);
     ~GcodeParser();
 
     bool getConvertArcsToLines();
@@ -52,30 +52,29 @@ public slots:
 private:
 
     // Current state
-    bool m_isMetric;
-    bool m_inAbsoluteMode;
-    bool m_inAbsoluteIJKMode;
-    float m_lastGcodeCommand;
-    QVector3D m_currentPoint;
-    int m_commandNumber;
-    PointSegment::planes m_currentPlane;
+    bool mIsMetric;
+    bool mInAbsoluteMode;
+    bool mInAbsoluteIJKMode;
+    float mLastGcodeCommand;
+    QVector3D mCurrentPoint;
+    int mCommandNumber;
+    PointSegment::planes mCurrentPlane;
 
     // Settings
-    double m_speedOverride;
-    int m_truncateDecimalLength;
-    bool m_removeAllWhitespace;
-    bool m_convertArcsToLines;
-    double m_smallArcThreshold;
+    double mSpeedOverride;
+    int mTruncateDecimalLength;
+    bool mRemoveAllWhitespace;
+    bool mConvertArcsToLines;
+    double mSmallArcThreshold;
     // Not configurable outside, but maybe it should be.
-    double m_smallArcSegmentLength;
+    double mSmallArcSegmentLength;
 
-    double m_lastSpeed;
-    double m_traverseSpeed;
-    double m_lastSpindleSpeed;
+    double mLastSpeed;
+    double mTraverseSpeed;
+    double mLastSpindleSpeed;
 
     // The gcode.
-    QList<PointSegment*> m_points;
-
+    QList<PointSegment*> mPoints;
     PointSegment *processCommand(const QStringList &args);
     void handleMCode(float code, const QStringList &args);
     PointSegment *handleGCode(float code, const QStringList &args);

@@ -18,7 +18,7 @@
 
 #pragma once
 
-namespace Cocoanut
+namespace CocoanutCNC
 {
     enum MachineState
     {

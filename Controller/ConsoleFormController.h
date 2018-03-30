@@ -39,7 +39,6 @@ public slots:
     void onCmdCommandSendClicked();
 private:
     ConsoleForm mUi;
-    QMenu mSendMenu;
     int mStoredConsoleMinimumHeight;
     int mStoredConsoleHeight;
     int mConsolePureHeight;

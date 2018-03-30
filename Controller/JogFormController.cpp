@@ -20,7 +20,8 @@
 #include <QtDebug>
 
 JogFormController::JogFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mJogDelta(1.0)
 {
     qDebug() << "JogFormController: Constructing";
     mUi.setupUi(this);
@@ -33,7 +34,7 @@ JogFormController::~JogFormController()
     qDebug() << "JogFormController: Destructing";
 }
 
-void JogFormController::onCheckBoxKeyboardControlToggled(bool checked)
+void JogFormController::onKeyboardControlToggled(bool checked)
 {
     /*
     mUi.grpJog->setProperty("overrided", checked);
@@ -136,6 +137,26 @@ void JogFormController::onCmdJogStepClicked()
     */
 }
 
+double JogFormController::getJogDistance() const
+{
+    return mJogDistance;
+}
+
+void JogFormController::setJogDistance(double jogDistance)
+{
+    mJogDistance = jogDistance;
+}
+
+double JogFormController::getJogDelta() const
+{
+    return mJogDelta;
+}
+
+void JogFormController::setJogDelta(double jogDelta)
+{
+    mJogDelta = jogDelta;
+}
+
 
 void JogFormController::onJogTimer()
 {
@@ -151,7 +172,56 @@ bool JogFormController::keyIsMovement(int key)
 
 void JogFormController::setupSignalSlots()
 {
-
     qDebug() << "JogFormController: Setup Signals/Slots";
+
+    connect(
+        mUi.jogPreset_0_01,SIGNAL(toggled(bool)),
+        this, SLOT(onJogPresetButtonToggled(bool))
+    );
+    connect(
+        mUi.jogPreset_0_1,SIGNAL(toggled(bool)),
+        this, SLOT(onJogPresetButtonToggled(bool))
+    );
+    connect(
+        mUi.jogPreset_1,SIGNAL(toggled(bool)),
+        this, SLOT(onJogPresetButtonToggled(bool))
+    );
+    connect(
+        mUi.jogPreset_10,SIGNAL(toggled(bool)),
+        this, SLOT(onJogPresetButtonToggled(bool))
+    );
+    connect(
+        mUi.jogPreset_100,SIGNAL(toggled(bool)),
+        this, SLOT(onJogPresetButtonToggled(bool))
+    );
 }
 
+void JogFormController::onJogPresetButtonToggled(bool checked)
+{
+    Q_UNUSED(checked)
+
+    if (mUi.jogPreset_0_01->isChecked())
+    {
+        mJogDelta = 0.01;
+    }
+    else if (mUi.jogPreset_0_1->isChecked())
+    {
+        mJogDelta = 0.1;
+    }
+    else if (mUi.jogPreset_1->isChecked())
+    {
+        mJogDelta = 1.0;
+    }
+    else if (mUi.jogPreset_10->isChecked())
+    {
+        mJogDelta = 10.0;
+    }
+    else if (mUi.jogPreset_100->isChecked())
+    {
+        mJogDelta = 100.0;
+    }
+
+    mUi.jogStepSpinner->setSingleStep(mJogDelta);
+
+    emit statusUpdateSignal(QString("Jog by %1 mm").arg(mJogDelta));
+}

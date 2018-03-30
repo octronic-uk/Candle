@@ -45,15 +45,16 @@ public:
 
 signals:
     void setKeyboardControlSignal(bool);
+    void programAbortSignal();
+    void programPauseSignal(QString);
+    void programResetSignal();
 public slots:
     void onReserveGcodeRowsSignal(int);
-    void onActSendFromLineTriggered();
-    void onChkBoxTestModeClicked(bool checked);
-    void onCmdFileSendClicked();
-    void onCmdFileAbortClicked();
-    void onCmdCommandSendClicked();
-    void onCmdFilePauseClicked(bool checked);
-    void onCmdFileResetClicked();
+    void onTestModeButtonClicked(bool checked);
+    void onAbortButtonClicked();
+    void onSendButtonClicked();
+    void onPauseButtonClicked(bool checked);
+    void onResetButtonClicked();
 
     void onTableInsertLine();
     void onTableDeleteLines();
@@ -64,6 +65,8 @@ public slots:
     void onScrollBarAction(int action);
     void onGcodeFileLoadStarted();
     void onGcodeFileLoadFinished(QList<GcodeItem>);
+    void onSendActionTriggered();
+    void onSendFromCurrentLineActionTriggered();
 private:
     ProgramForm mUi;
     GcodeTableModel mProgramTableModel;
@@ -75,12 +78,17 @@ private:
     bool mProgramLoading;
 
     QMenu mTableMenu;
+
     QMenu mSendMenu;
+    QAction mSendAction;
+    QAction mSendFromCurrentLineAction;
 
     void clearTable();
     QByteArray mHeaderState;
 
     // AbstractFormController interface
+    void setupSendMenu();
+    void setupProgramTable();
 public:
     void setupSignalSlots() override;
 };

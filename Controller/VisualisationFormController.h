@@ -29,6 +29,7 @@
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapBorderDrawer.h"
 #include "View/Drawers/HeightMapInterpolationDrawer.h"
+#include "Model/GcodeItem.h"
 
 using namespace Ui;
 
@@ -37,13 +38,14 @@ class VisualisationFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit VisualisationFormController(QWidget *parent = nullptr);
-    ~VisualisationFormController();
+    ~VisualisationFormController() override;
 signals:
+    void spindleEnabledSignal(bool);
 public slots:
-    void onCmdFitClicked();
-    void onCmdTopClicked();
-    void onCmdFrontClicked();
-    void onCmdLeftClicked();
+    void onFitButtonClicked();
+    void onTopButtonClicked();
+    void onFrontButtonClicked();
+    void onLeftButtonClicked();
     void onCmdIsometricClicked();
     double toolZPosition();
     QString getParserStatus();
@@ -56,7 +58,9 @@ public slots:
     void showEvent(QShowEvent* se) override;
     void hideEvent(QHideEvent* he) override;
     void resizeEvent(QResizeEvent* re) override;
-    void onGcodeFileLoadFinished();
+    void onGcodeFileLoadStarted();
+    void onGcodeFileLoadFinished(QList<GcodeItem>);
+    void onGcodeParserUpdated(GcodeParser*);
 private slots:
 
 private:
@@ -66,7 +70,6 @@ private:
     // GL Drawers
     GcodeDrawer mCodeDrawer;
     GcodeDrawer mProbeDrawer;
-    GcodeDrawer mCurrentDrawer;
     OriginDrawer mOriginDrawer;
     ToolDrawer mToolDrawer;
     SelectionDrawer mSelectionDrawer;
@@ -77,12 +80,11 @@ private:
     // Parsers
     GcodeViewParse mViewParser;
     GcodeViewParse mProbeParser;
-
     QBasicTimer mToolAnimationTimer;
     int mLastDrawnLineIndex;
     void updateParser();
+    bool mSpindleClockwise;
 
-    // AbstractFormController interface
 public:
     void setupSignalSlots() override;
 };
