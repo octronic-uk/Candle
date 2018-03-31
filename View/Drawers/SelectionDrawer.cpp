@@ -3,20 +3,20 @@
 SelectionDrawer::SelectionDrawer()
 {
     m_endPosition = QVector3D(sNan, sNan, sNan);
-    m_pointSize = 6.0;
-    m_lineWidth = 3;
+    mPointSize = 6.0;
+    mLineWidth = 3;
     m_color = QColor("Purple");
 }
 
 bool SelectionDrawer::updateData()
 {
-    m_points.clear();
+    mPoints.clear();
 
     VertexData vertex;
-    vertex.color = Util::colorToVector(m_color);
+    vertex.color = Util::colorToVector4(m_color);
     vertex.position = m_endPosition;
-    vertex.start = QVector3D(sNan, sNan, m_pointSize);
-    m_points.append(vertex);
+    vertex.start = QVector3D(sNan, sNan, mPointSize);
+    mPoints.append(vertex);
 
     return true;
 }

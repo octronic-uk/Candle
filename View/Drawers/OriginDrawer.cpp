@@ -2,7 +2,7 @@
 
 OriginDrawer::OriginDrawer()
 {
-    m_lineWidth = 3;
+    mLineWidth = 3;
 }
 
 OriginDrawer::~OriginDrawer()
@@ -12,7 +12,7 @@ OriginDrawer::~OriginDrawer()
 
 bool OriginDrawer::updateData()
 {
-    m_lines = {
+    mLines = {
         // X-axis
         {QVector3D(0, 0, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
         {QVector3D(9, 0, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
@@ -73,5 +73,5 @@ QVector3D OriginDrawer::getMaximumExtremes()
 
 int OriginDrawer::getVertexCount()
 {
-   return m_lines.size();
+   return mLines.size();
 }

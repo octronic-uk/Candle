@@ -8,6 +8,7 @@
 #include <QImage>
 #include <QAbstractButton>
 #include <QVector3D>
+#include <QVector4D>
 #include <QEventLoop>
 #include <QTimer>
 
@@ -30,9 +31,9 @@ public:
         else return qQNaN();
     }
 
-    static QVector3D colorToVector(QColor color)
+    static QVector4D colorToVector4(QColor color)
     {
-        return QVector3D(color.redF(), color.greenF(), color.blueF());
+        return QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
     static void waitEvents(int ms)

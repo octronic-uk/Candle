@@ -27,6 +27,10 @@ contains(QT_CONFIG, opengles.) {
     target.path = /home/pi
 }
 
+unix {
+    QMAKE_CXXFLAGS += -std=c++0x
+}
+
 TARGET = CocoanutCNC
 TEMPLATE = app
 VERSION = 1.0.12
@@ -74,7 +78,6 @@ SOURCES +=\
     Controller/VisualisationFormController.cpp \
     Controller/AbstractFormController.cpp \
     Model/SerialPortModel.cpp \
-    Model/Settings/IniFileSettingsModel.cpp \
     Model/StatusModel.cpp \
     Model/GcodeFileModel.cpp \
     Model/HeightMapFileModel.cpp \
@@ -82,7 +85,9 @@ SOURCES +=\
     Model/RecentHeightMapFilesModel.cpp \
     Model/GcodeItem.cpp \
     View/Widgets/GLWidget.cpp \
-    Model/Settings/AbstractSettingsModel.cpp
+    Model/Settings/AbstractSettingsModel.cpp \
+    Model/Settings/IniFileSettingsModel.cpp \
+    View/Drawers/GridDrawer.cpp
 
 
 HEADERS  += \
@@ -132,7 +137,9 @@ HEADERS  += \
     Controller/CancelException.h \
     Model/GcodeItem.h \
     Model/GcodeItemState.h \
-    Model/Settings/AbstractSettingsModel.h
+    Model/Settings/AbstractSettingsModel.h \
+    View/Drawers/GridDrawer.h \
+    Model/SerialBaudRate.h
 
 FORMS    += \
     View/AboutForm.ui \

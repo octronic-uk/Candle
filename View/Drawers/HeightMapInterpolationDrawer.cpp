@@ -12,14 +12,14 @@ bool HeightMapInterpolationDrawer::updateData()
 {
     // Check if data is present
     if (!m_data || m_data->count() == 0) {
-        m_lines.clear();
+        mLines.clear();
         return true;
     }
 
     QColor color;
 
     // Clear data
-    m_lines.clear();
+    mLines.clear();
 
     // Prepare vertex
     VertexData vertex;
@@ -51,13 +51,13 @@ bool HeightMapInterpolationDrawer::updateData()
             vertex.color = QVector3D(color.redF(), color.greenF(), color.blueF());
 
             vertex.position = QVector3D(m_borderRect.x() + interpolationStepX * (j - 1), m_borderRect.y() + interpolationStepY * i, m_data->at(i).at(j - 1));
-            m_lines.append(vertex);
+            mLines.append(vertex);
 
             color.setHsvF(0.67 * (max - m_data->at(i).at(j)) / (max - min), 1.0, 1.0);
             vertex.color = QVector3D(color.redF(), color.greenF(), color.blueF());
 
             vertex.position = QVector3D(m_borderRect.x() + interpolationStepX * j, m_borderRect.y() + interpolationStepY * i, m_data->at(i).at(j));
-            m_lines.append(vertex);
+            mLines.append(vertex);
         }
     }
 
@@ -69,13 +69,13 @@ bool HeightMapInterpolationDrawer::updateData()
             vertex.color = QVector3D(color.redF(), color.greenF(), color.blueF());
 
             vertex.position = QVector3D(m_borderRect.x() + interpolationStepX * j, m_borderRect.y() + interpolationStepY * (i - 1), m_data->at(i - 1).at(j));
-            m_lines.append(vertex);
+            mLines.append(vertex);
 
             color.setHsvF(0.67 * (max - m_data->at(i).at(j)) / (max - min), 1.0, 1.0);
             vertex.color = QVector3D(color.redF(), color.greenF(), color.blueF());
 
             vertex.position = QVector3D(m_borderRect.x() + interpolationStepX * j, m_borderRect.y() + interpolationStepY * i, m_data->at(i).at(j));
-            m_lines.append(vertex);
+            mLines.append(vertex);
         }
     }
 

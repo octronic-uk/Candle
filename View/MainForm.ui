@@ -39,11 +39,24 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QSplitter" name="splitter">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="VisualisationFormController" name="visualisationFormController"/>
-      <widget class="ProgramFormController" name="programForm" native="true"/>
+      <widget class="ProgramFormController" name="programForm" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -152,8 +165,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -170,8 +183,8 @@
   <widget class="QDockWidget" name="consoleDockWidget">
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -194,8 +207,8 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="allowedAreas">
@@ -254,8 +267,8 @@
   <widget class="QDockWidget" name="stateDockWidget">
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="features">

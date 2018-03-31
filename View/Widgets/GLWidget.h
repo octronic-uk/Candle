@@ -9,9 +9,18 @@
 #include <QOpenGLWidget>
 #endif
 
+#include <QMetaType>
 #include <QTimer>
 #include <QTime>
 #include "View/Drawers/ShaderDrawable.h"
+
+enum class ProjectionMode
+{
+    ORTHO,
+    PERSPECTIVE
+};
+
+Q_DECLARE_METATYPE(ProjectionMode)
 
 #ifdef GLES
 class GLWidget : public QOpenGLWidget
@@ -23,9 +32,12 @@ class GLWidget : public QGLWidget, protected QOpenGLFunctions
 public:
     explicit GLWidget(QWidget *parent = 0);
     ~GLWidget();
+
+
     void addDrawable(ShaderDrawable *drawable);
     void updateExtremes(ShaderDrawable *drawable);
     void fitDrawable(ShaderDrawable *drawable = nullptr);
+
     bool antialiasing() const;
     void setAntialiasing(bool antialiasing);
 
@@ -90,6 +102,7 @@ private:
     void beginViewAnimation();
     void stopViewAnimation();
 
+    ProjectionMode mProjectionMode;
     double mXRot, mYRot, mXLastRot, mYLastRot;
     double mXPan, mYPan, mXLastPan, mYLastPan;
     double mXLookAt, mYLookAt, mZLookAt;

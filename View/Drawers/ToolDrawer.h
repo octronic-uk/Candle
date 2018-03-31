@@ -36,7 +36,7 @@ public:
     void setColor(const QColor &color);
 
 protected:
-    QVector<VertexData> createCircle(QVector3D center, double radius, int arcs, QVector3D color);
+    QVector<VertexData> createCircle(QVector3D center, double radius, int arcs, QVector4D color);
     double normalizeAngle(double angle);
     bool updateData() override;
 

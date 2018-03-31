@@ -10,18 +10,18 @@
 ShaderDrawable::ShaderDrawable()
 {
     //qDebug() << "ShaderDrawable: Constructing";
-    m_needsUpdateGeometry = true;
-    m_visible = true;
-    m_lineWidth = 1.0;
-    m_pointSize = 1.0;
-    m_texture = nullptr;
+    mNeedsUpdateGeometry = true;
+    mVisible = true;
+    mLineWidth = 1.0;
+    mPointSize = 1.0;
+    mTexture = nullptr;
 }
 
 ShaderDrawable::~ShaderDrawable()
 {
     //qDebug() << "ShaderDrawable: Destructing";
-    if (!m_vao.isCreated()) m_vao.destroy();
-    if (!m_vbo.isCreated()) m_vbo.destroy();
+    if (!mVAO.isCreated()) mVAO.destroy();
+    if (!mVBO.isCreated()) mVBO.destroy();
 }
 
 void ShaderDrawable::init()
@@ -30,13 +30,13 @@ void ShaderDrawable::init()
     // Init openGL functions
     initializeOpenGLFunctions();
     // Create buffers
-    m_vao.create();
-    m_vbo.create();
+    mVAO.create();
+    mVBO.create();
 }
 
 void ShaderDrawable::update()
 {
-    m_needsUpdateGeometry = true;
+    mNeedsUpdateGeometry = true;
 }
 
 void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
@@ -44,36 +44,39 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
     //qDebug() << "ShaderDrawable: updateGeometry";
 
     // Init in context
-    if (!m_vbo.isCreated()) init();
+    if (!mVBO.isCreated()) init();
 
-    if (m_vao.isCreated())
+    if (mVAO.isCreated())
     {
         // Prepare vao
-        m_vao.bind();
+        mVAO.bind();
     }
 
     // Prepare vbo
-    m_vbo.bind();
+    mVBO.bind();
 
     // Update vertex buffer
     if (updateData())
     {
         // Fill vertices buffer
-        QVector<VertexData> vertexData(m_triangles);
-        vertexData += m_lines;
-        vertexData += m_points;
-        m_vbo.allocate(vertexData.constData(), vertexData.count() * sizeof(VertexData));
+        QVector<VertexData> vertexData(mTriangles);
+        vertexData += mLines;
+        vertexData += mPoints;
+        mVBO.allocate(vertexData.constData(), vertexData.count() * sizeof(VertexData));
     }
     else
     {
         //qDebug() << "ShaderDrawable: Releasing VBO";
-        m_vbo.release();
-        if (m_vao.isCreated()) m_vao.release();
-        m_needsUpdateGeometry = false;
+        mVBO.release();
+        if (mVAO.isCreated())
+        {
+            mVAO.release();
+        }
+        mNeedsUpdateGeometry = false;
         return;
     }
 
-    if (m_vao.isCreated())
+    if (mVAO.isCreated())
     {
         //qDebug() << "ShaderDrawable: VAO is created";
         // Offset for position
@@ -90,28 +93,28 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
         // Tell OpenGL programmable pipeline how to locate vertex color data
         int color = shaderProgram->attributeLocation("a_color");
         shaderProgram->enableAttributeArray(color);
-        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 3, sizeof(VertexData));
+        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 4, sizeof(VertexData));
 
         // Offset for line start point
-        offset += sizeof(QVector3D);
+        offset += sizeof(QVector4D);
 
         // Tell OpenGL programmable pipeline how to locate vertex line start point
         int start = shaderProgram->attributeLocation("a_start");
         shaderProgram->enableAttributeArray(start);
         shaderProgram->setAttributeBuffer(start, GL_FLOAT, offset, 3, sizeof(VertexData));
 
-        m_vao.release();
+        mVAO.release();
     }
 
-    m_vbo.release();
+    mVBO.release();
 
-    m_needsUpdateGeometry = false;
+    mNeedsUpdateGeometry = false;
 }
 
 bool ShaderDrawable::updateData()
 {
     // Test data
-    m_lines =
+    mLines =
     {
         {QVector3D(0, 0, 0), QVector3D(1, 0, 0), QVector3D(sNan, 0, 0)},
         {QVector3D(10, 0, 0), QVector3D(1, 0, 0), QVector3D(sNan, 0, 0)},
@@ -126,29 +129,29 @@ bool ShaderDrawable::updateData()
 
 bool ShaderDrawable::needsUpdateGeometry() const
 {
-    return m_needsUpdateGeometry;
+    return mNeedsUpdateGeometry;
 }
 
 void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 {
     //qDebug() << "ShaderDrawable: draw";
-    if (!m_visible)
+    if (!mVisible)
     {
         //qDebug() << "ShaderDrawable: Not Visible";
         return;
     }
 
-    if (m_vao.isCreated())
+    if (mVAO.isCreated())
     {
         // Prepare vao
         //qDebug() << "ShaderDrawable: Binding VAO";
-        m_vao.bind();
+        mVAO.bind();
     }
     else
     {
         // Prepare vbo
         //qDebug() << "ShaderDrawable: Binding VBO";
-        m_vbo.bind();
+        mVBO.bind();
 
         // Offset for position
         //qDebug() << "ShaderDrawable: Setting up shader";
@@ -177,39 +180,39 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
     }
 
     // TODO: Add triangles
-    if (!m_triangles.isEmpty())
+    if (!mTriangles.isEmpty())
     {
         //qDebug() << "ShaderDrawable: Add Triangles";
-        if (m_texture)
+        if (mTexture)
         {
-            m_texture->bind();
+            mTexture->bind();
             shaderProgram->setUniformValue("texture", 0);
         }
-        glDrawArrays(GL_TRIANGLES, 0, m_triangles.count());
+        glDrawArrays(GL_TRIANGLES, 0, mTriangles.count());
     }
 
-    if (!m_lines.isEmpty())
+    if (!mLines.isEmpty())
     {
         //qDebug() << "ShaderDrawable: Add Lines";
-        glLineWidth(m_lineWidth);
-        glDrawArrays(GL_LINES, m_triangles.count(), m_lines.count());
+        glLineWidth(mLineWidth);
+        glDrawArrays(GL_LINES, mTriangles.count(), mLines.count());
     }
 
-    if (!m_points.isEmpty())
+    if (!mPoints.isEmpty())
     {
         //qDebug() << "ShaderDrawable: Add Points";
-        glDrawArrays(GL_POINTS, m_triangles.count() + m_lines.count(), m_points.count());
+        glDrawArrays(GL_POINTS, mTriangles.count() + mLines.count(), mPoints.count());
     }
 
-    if (m_vao.isCreated())
+    if (mVAO.isCreated())
     {
         //qDebug() << "ShaderDrawable: Release VAO";
-        m_vao.release();
+        mVAO.release();
     }
     else
     {
         //qDebug() << "ShaderDrawable: Release VBO";
-        m_vbo.release();
+        mVBO.release();
     }
 }
 
@@ -230,37 +233,37 @@ QVector3D ShaderDrawable::getMaximumExtremes()
 
 int ShaderDrawable::getVertexCount()
 {
-    return m_lines.count() + m_points.count() + m_triangles.count();
+    return mLines.count() + mPoints.count() + mTriangles.count();
 }
 
 double ShaderDrawable::lineWidth() const
 {
-    return m_lineWidth;
+    return mLineWidth;
 }
 
 void ShaderDrawable::setLineWidth(double lineWidth)
 {
-    m_lineWidth = lineWidth;
+    mLineWidth = lineWidth;
 }
 
 bool ShaderDrawable::visible() const
 {
-    return m_visible;
+    return mVisible;
 }
 
 void ShaderDrawable::setVisible(bool visible)
 {
-    m_visible = visible;
+    mVisible = visible;
 }
 
 double ShaderDrawable::pointSize() const
 {
-    return m_pointSize;
+    return mPointSize;
 }
 
 void ShaderDrawable::setPointSize(double pointSize)
 {
-    m_pointSize = pointSize;
+    mPointSize = pointSize;
 }
 
 

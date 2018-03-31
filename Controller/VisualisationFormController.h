@@ -25,6 +25,7 @@
 #include "View/Drawers/OriginDrawer.h"
 #include "View/Drawers/GcodeDrawer.h"
 #include "View/Drawers/ToolDrawer.h"
+#include "View/Drawers/GridDrawer.h"
 #include "View/Drawers/SelectionDrawer.h"
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapBorderDrawer.h"
@@ -71,6 +72,7 @@ private:
     GcodeDrawer mCodeDrawer;
     GcodeDrawer mProbeDrawer;
     OriginDrawer mOriginDrawer;
+    GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
     SelectionDrawer mSelectionDrawer;
     HeightMapBorderDrawer mHeightMapBorderDrawer;

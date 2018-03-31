@@ -31,7 +31,7 @@ public:
 public slots:
     void onLoadSettings() override;
     void onSaveSettings() override;
-private:
+   private:
     void preload();
     QDir mSettingsDirectory;
     const QString mFileName = "Settings.ini";

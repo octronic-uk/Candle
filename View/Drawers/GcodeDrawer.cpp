@@ -11,16 +11,16 @@ GcodeDrawer::GcodeDrawer()
     m_grayscaleCode(GcodeDrawer::S),
     m_grayscaleMin(0),
     m_grayscaleMax(255),
-    m_colorStart(QColor("White")),
-    m_colorNormal(QColor("White")),
-    m_colorEnd(QColor("White")),
-    m_colorDrawn(QColor("White")),
-    m_colorHighlight(QColor("White")),
-    m_colorZMovement(QColor("White")),
+    m_colorNormal(QColor(255,255,255,128)),
+    m_colorDrawn(QColor("Gray")),
+    m_colorHighlight(QColor("Yellow")),
+    m_colorZMovement(QColor("Blue")),
+    m_colorStart(QColor("Green")),
+    m_colorEnd(QColor("Red")),
     m_geometryUpdated(false)
 {
-    m_pointSize = 6;
-    m_lineWidth = 3;
+    mPointSize = 10;
+    mLineWidth = 3;
     connect(&m_timerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
     m_timerVertexUpdate.start(100);
 }
@@ -98,15 +98,15 @@ bool GcodeDrawer::prepareVectors()
     qDebug() << "GcodeDrawer: lines count" << list->count();
 
     // Clear all vertex data
-    m_lines.clear();
-    m_points.clear();
-    m_triangles.clear();
+    mLines.clear();
+    mPoints.clear();
+    mTriangles.clear();
 
     // Delete texture on mode change
-    if (m_texture) {
-        m_texture->destroy();
-        delete m_texture;
-        m_texture = nullptr;
+    if (mTexture) {
+        mTexture->destroy();
+        delete mTexture;
+        mTexture = nullptr;
     }
 
     bool drawFirstPoint = true;
@@ -122,11 +122,11 @@ bool GcodeDrawer::prepareVectors()
             if (qIsNaN(list->at(i)->getEnd().x()) || qIsNaN(list->at(i)->getEnd().y())) continue;
 
             // Draw first toolpath point
-            vertex.color = Util::colorToVector(m_colorStart);
+            vertex.color = Util::colorToVector4(m_colorStart);
             vertex.position = list->at(i)->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
-            vertex.start = QVector3D(sNan, sNan, m_pointSize);
-            m_points.append(vertex);
+            vertex.start = QVector3D(sNan, sNan, mPointSize);
+            mPoints.append(vertex);
 
             drawFirstPoint = false;
             continue;
@@ -145,7 +145,7 @@ bool GcodeDrawer::prepareVectors()
             bool straight = false;
 
             do {
-                list->at(i)->setVertexIndex(m_lines.count()); // Store vertex index
+                list->at(i)->setVertexIndex(mLines.count()); // Store vertex index
                 i++;
                 if (i < list->count() - 1) {
                     next = list->at(i)->getEnd() - list->at(i)->getStart();
@@ -157,7 +157,7 @@ bool GcodeDrawer::prepareVectors()
                      && getSegmentType(list->at(i)) == getSegmentType(list->at(j)));
             i--;
         } else {
-            list->at(i)->setVertexIndex(m_lines.count()); // Store vertex index
+            list->at(i)->setVertexIndex(mLines.count()); // Store vertex index
         }
 
         // Set color
@@ -166,20 +166,20 @@ bool GcodeDrawer::prepareVectors()
         // Line start
         vertex.position = list->at(j)->getStart();
         if (m_ignoreZ) vertex.position.setZ(0);
-        m_lines.append(vertex);
+        mLines.append(vertex);
 
         // Line end
         vertex.position = list->at(i)->getEnd();
         if (m_ignoreZ) vertex.position.setZ(0);
-        m_lines.append(vertex);
+        mLines.append(vertex);
 
         // Draw last toolpath point
         if (i == list->count() - 1) {
-            vertex.color = Util::colorToVector(m_colorEnd);
+            vertex.color = Util::colorToVector4(m_colorEnd);
             vertex.position = list->at(i)->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
-            vertex.start = QVector3D(sNan, sNan, m_pointSize);
-            m_points.append(vertex);
+            vertex.start = QVector3D(sNan, sNan, mPointSize);
+            mPoints.append(vertex);
         }
     }
     m_geometryUpdated = true;
@@ -193,7 +193,7 @@ bool GcodeDrawer::updateVectors()
     QList<LineSegment*> *list = m_viewParser->getLines();
 
     // Map buffer
-    VertexData *data = (VertexData*)m_vbo.map(QOpenGLBuffer::WriteOnly);
+    VertexData *data = (VertexData*)mVBO.map(QOpenGLBuffer::WriteOnly);
 
     // Update vertices for each line segment
     int vertexIndex;
@@ -207,14 +207,14 @@ bool GcodeDrawer::updateVectors()
                 data[vertexIndex].color = getSegmentColorVector(list->at(i));
                 data[vertexIndex + 1].color = data[vertexIndex].color;
             } else {
-                m_lines[vertexIndex].color = getSegmentColorVector(list->at(i));
-                m_lines[vertexIndex + 1].color = m_lines.at(vertexIndex).color;
+                mLines[vertexIndex].color = getSegmentColorVector(list->at(i));
+                mLines[vertexIndex + 1].color = mLines.at(vertexIndex).color;
             }
         }
     }
 
     m_indexes.clear();
-    if (data) m_vbo.unmap();
+    if (data) mVBO.unmap();
     return !data;
 }
 
@@ -249,21 +249,21 @@ bool GcodeDrawer::prepareRaster()
 
     // Create vertices array
     // Clear all vertex data
-    m_lines.clear();
-    m_points.clear();
-    m_triangles.clear();
+    mLines.clear();
+    mPoints.clear();
+    mTriangles.clear();
 
-    if (m_texture) {
-        m_texture->destroy();
-        delete m_texture;
-        m_texture = nullptr;
+    if (mTexture) {
+        mTexture->destroy();
+        delete mTexture;
+        mTexture = nullptr;
     }
 
     QVector<VertexData> vertices;
     VertexData vertex;
 
     // Set color
-    vertex.color = Util::colorToVector(Qt::red);
+    vertex.color = Util::colorToVector4(Qt::red);
 
     // Rect
     vertex.start = QVector3D(sNan, 0, 0);
@@ -291,12 +291,12 @@ bool GcodeDrawer::prepareRaster()
     vertices.append(vertex);
 
     if (!image.isNull()) {
-        m_texture = new QOpenGLTexture(image);
-        m_triangles += vertices;
+        mTexture = new QOpenGLTexture(image);
+        mTriangles += vertices;
         m_image = image;
     } else {
         for (int i = 0; i < vertices.count(); i++) vertices[i].start = QVector3D(sNan, sNan, sNan);
-        m_lines += vertices;
+        mLines += vertices;
         m_image = QImage();
     }
 
@@ -317,7 +317,7 @@ bool GcodeDrawer::updateRaster()
         foreach (int i, m_indexes) setImagePixelColor(m_image, (list->at(i)->getEnd().x() - origin.x()) / pixelSize,
                                                       (list->at(i)->getEnd().y() - origin.y()) / pixelSize, getSegmentColor(list->at(i)).rgb());
 
-        if (m_texture) m_texture->setData(QOpenGLTexture::RGB, QOpenGLTexture::UInt8, m_image.bits());
+        if (mTexture) mTexture->setData(QOpenGLTexture::RGB, QOpenGLTexture::UInt8, m_image.bits());
     }
 
     m_indexes.clear();
@@ -339,9 +339,9 @@ void GcodeDrawer::setImagePixelColor(QImage &image, double x, double y, QRgb col
     *(pixel + (int)x * 3 + 2) = qBlue(color);
 }
 
-QVector3D GcodeDrawer::getSegmentColorVector(LineSegment *segment)
+QVector4D GcodeDrawer::getSegmentColorVector(LineSegment *segment)
 {
-    return Util::colorToVector(getSegmentColor(segment));
+    return Util::colorToVector4(getSegmentColor(segment));
 }
 
 QColor GcodeDrawer::getSegmentColor(LineSegment *segment)

@@ -6,7 +6,7 @@
 HeightMapGridDrawer::HeightMapGridDrawer()
 {
     m_model = NULL;
-    m_pointSize = 4;
+    mPointSize = 4;
 }
 
 bool HeightMapGridDrawer::updateData()

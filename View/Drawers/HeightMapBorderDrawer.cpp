@@ -20,7 +20,7 @@ void HeightMapBorderDrawer::setBorderRect(const QRectF &borderRect)
 
 bool HeightMapBorderDrawer::updateData()
 {
-    m_lines = {
+    mLines = {
         {QVector3D(m_borderRect.x(), m_borderRect.y(), 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
         {QVector3D(m_borderRect.x(), m_borderRect.y() + m_borderRect.height(), 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
         {QVector3D(m_borderRect.x(), m_borderRect.y() + m_borderRect.height(), 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},

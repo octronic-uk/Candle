@@ -16,11 +16,17 @@
 #define ZOOMSTEP 1.1
 
 #ifdef GLES
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), mShaderProgram(0)
+GLWidget::GLWidget(QWidget *parent)
+    : QOpenGLWidget(parent),
+      mShaderProgram(nullptr),
 #else
-GLWidget::GLWidget(QWidget *parent) : QGLWidget(parent), mShaderProgram(0)
+GLWidget::GLWidget(QWidget *parent)
+    : QGLWidget(parent),
+      mShaderProgram(nullptr),
 #endif
-     ,mColorText(QColor("Purple"))
+     mColorText(QColor("White")),
+     mColorBackground(QColor("DarkGray")),
+     mProjectionMode(ProjectionMode::PERSPECTIVE)
 {
     mAnimateView = false;
     mUpdatesEnabled = false;
@@ -92,7 +98,7 @@ void GLWidget::fitDrawable(ShaderDrawable *drawable)
         double a = mYSize / 2 / 0.25 * 1.3
                 + (mZMax - mZMin) / 2;
         double b = mXSize / 2 / 0.25 * 1.3
-                / ((double)this->width() / this->height())
+                / ((double)width() / height())
                 + (mZMax - mZMin) / 2;
         m_distance = qMax(a, b);
 
@@ -424,14 +430,29 @@ void GLWidget::updateProjection()
     mProjectionMatrix.setToIdentity();
 
     double asp = (double)width() / height();
-    mProjectionMatrix.frustum(
-        (-0.5 + mXPan) * asp,
-        (0.5 + mXPan) * asp,
-        -0.5 + mYPan,
-        0.5 + mYPan,
-        2,
-        m_distance * 2
-    );
+    ;
+
+    switch (mProjectionMode)
+    {
+       case ProjectionMode::ORTHO:
+            mProjectionMatrix.ortho(
+                QRect(
+                    QPoint((-0.5 + mXPan) * asp, (0.5 + mXPan) * asp),
+                    QPoint(-0.5 + mYPan, 0.5 + mYPan)
+                )
+            );
+            break;
+        case ProjectionMode::PERSPECTIVE:
+            mProjectionMatrix.frustum(
+                (-0.5 + mXPan) * asp,
+                (0.5 + mXPan) * asp,
+                -0.5 + mYPan,
+                0.5 + mYPan,
+                2,
+                m_distance * 2
+            );
+            break;
+    }
 }
 
 void GLWidget::updateView()
@@ -549,11 +570,16 @@ void GLWidget::paintEvent(QPaintEvent *pe)
 
     painter.endNativePainting();
 
+    double x = 10;
+    double y = height() - 60;
+
+    QRect backBox(0,y-20, width(), height() - y + 20 );
+    QColor backBoxColor = QColor("Black");
+    backBoxColor.setAlphaF(0.5);
+    painter.fillRect(backBox,backBoxColor) ;
+
     QPen pen(mColorText);
     painter.setPen(pen);
-
-    double x = 10;
-    double y = this->height() - 60;
 
     painter.drawText(QPoint(x, y), QString("X: %1 ... %2").arg(mXMin, 0, 'f', 3).arg(mXMax, 0, 'f', 3));
     painter.drawText(QPoint(x, y + 15), QString("Y: %1 ... %2").arg(mYMin, 0, 'f', 3).arg(mYMax, 0, 'f', 3));
@@ -565,15 +591,15 @@ void GLWidget::paintEvent(QPaintEvent *pe)
     painter.drawText(QPoint(x, fm.height() + 10), mParserStatus);
 
     QString str = QString(tr("Vertices: %1")).arg(vertices);
-    painter.drawText(QPoint(this->width() - fm.width(str) - 10, y + 30), str);
+    painter.drawText(QPoint(width() - fm.width(str) - 10, y + 30), str);
     str = QString("FPS: %1").arg(mFps);
-    painter.drawText(QPoint(this->width() - fm.width(str) - 10, y + 45), str);
+    painter.drawText(QPoint(width() - fm.width(str) - 10, y + 45), str);
 
     str = mSpendTime.toString("hh:mm:ss") + " / " + mEstimatedTime.toString("hh:mm:ss");
-    painter.drawText(QPoint(this->width() - fm.width(str) - 10, y), str);
+    painter.drawText(QPoint(width() - fm.width(str) - 10, y), str);
 
     str = mBufferState;
-    painter.drawText(QPoint(this->width() - fm.width(str) - 10, y + 15), str);
+    painter.drawText(QPoint(width() - fm.width(str) - 10, y + 15), str);
 
     mFrames++;
 

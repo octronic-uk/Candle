@@ -33,6 +33,8 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.cmdLeft->setParent(mUi.glwVisualizer);
     */
 
+    mGridDrawer.setOpacity(0);
+
     mCodeDrawer.setViewParser(&mViewParser);
     mProbeDrawer.setViewParser(&mProbeParser);
     mProbeDrawer.setVisible(false);
@@ -40,7 +42,9 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mLastDrawnLineIndex = 0;
 
     mOriginDrawer.setVisible(true);
+    mGridDrawer.setVisible(true);
 
+    mUi.glwVisualizer->addDrawable(&mGridDrawer);
     mUi.glwVisualizer->addDrawable(&mOriginDrawer);
     mUi.glwVisualizer->addDrawable(&mCodeDrawer);
     mUi.glwVisualizer->addDrawable(&mToolDrawer);
