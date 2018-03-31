@@ -1,0 +1,4 @@
+- Cleaning up environment when opening another file
+- Saving Settings
+- Framerate control on visualiser (reduce cpu usage)
+- Applying/Saving settings & ui state
