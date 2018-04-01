@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
+    <width>444</width>
     <height>483</height>
    </rect>
   </property>
@@ -74,8 +74,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 up-left.png</normaloff>:/Images/chevron-circle-outline/32x32 up-left.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-up-left.svg</normaloff>:/Images/SVG/chevron-circle-up-left.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -118,8 +118,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 up.png</normaloff>:/Images/chevron-circle-outline/32x32 up.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-up.svg</normaloff>:/Images/SVG/chevron-circle-up.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -153,8 +153,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 up-right.png</normaloff>:/Images/chevron-circle-outline/32x32 up-right.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-up-right.svg</normaloff>:/Images/SVG/chevron-circle-up-right.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -191,8 +191,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 left.png</normaloff>:/Images/chevron-circle-outline/32x32 left.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-left.svg</normaloff>:/Images/SVG/chevron-circle-left.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -226,8 +226,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/home-var-outline/32x32.png</normaloff>:/Images/home-var-outline/32x32.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/origin.svg</normaloff>:/Images/SVG/origin.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -264,8 +264,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 right.png</normaloff>:/Images/chevron-circle-outline/32x32 right.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-right.svg</normaloff>:/Images/SVG/chevron-circle-right.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -299,8 +299,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 down-left.png</normaloff>:/Images/chevron-circle-outline/32x32 down-left.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-down-left.svg</normaloff>:/Images/SVG/chevron-circle-down-left.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -337,8 +337,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 down.png</normaloff>:/Images/chevron-circle-outline/32x32 down.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-down.svg</normaloff>:/Images/SVG/chevron-circle-down.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -372,8 +372,8 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 down-right.png</normaloff>:/Images/chevron-circle-outline/32x32 down-right.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-down-right.svg</normaloff>:/Images/SVG/chevron-circle-down-right.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -417,13 +417,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 up.png</normaloff>:/Images/chevron-circle-outline/32x32 up.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-up.svg</normaloff>:/Images/SVG/chevron-circle-up.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>28</width>
-                <height>28</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
              </widget>
@@ -455,13 +455,13 @@
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../Resources/images.qrc">
-                <normaloff>:/Images/chevron-circle-outline/32x32 down.png</normaloff>:/Images/chevron-circle-outline/32x32 down.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-down.svg</normaloff>:/Images/SVG/chevron-circle-down.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
-                <width>28</width>
-                <height>28</height>
+                <width>32</width>
+                <height>32</height>
                </size>
               </property>
              </widget>
@@ -577,6 +577,12 @@
       </item>
       <item>
        <widget class="QPushButton" name="keyboardControlPushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -584,7 +590,17 @@
          </size>
         </property>
         <property name="text">
-         <string>Keyboard Control</string>
+         <string> Keyboard Control</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/SVG/keyboard.svg</normaloff>:/Images/SVG/keyboard.svg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -594,7 +610,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QPushButton" name="jogPreset_0_01">
+         <widget class="QToolButton" name="jogPreset_0_01">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -606,6 +622,11 @@
             <width>0</width>
             <height>0</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>13</pointsize>
+           </font>
           </property>
           <property name="text">
            <string>0.01</string>
@@ -846,7 +867,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../Resources/images.qrc"/>
+  <include location="../Resources/Images.qrc"/>
  </resources>
  <connections/>
 </ui>

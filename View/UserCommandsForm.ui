@@ -68,8 +68,8 @@
          <string>Spindle on/off</string>
         </property>
         <property name="icon">
-         <iconset resource="../Resources/images.qrc">
-          <normaloff>:/Images/num1.png</normaloff>:/Images/num1.png</iconset>
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/PNG/num1.png</normaloff>:/Images/PNG/num1.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -100,8 +100,8 @@
          <string>Spindle on/off</string>
         </property>
         <property name="icon">
-         <iconset resource="../Resources/images.qrc">
-          <normaloff>:/Images/num2.png</normaloff>:/Images/num2.png</iconset>
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/PNG/num2.png</normaloff>:/Images/PNG/num2.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -132,8 +132,8 @@
          <string>Spindle on/off</string>
         </property>
         <property name="icon">
-         <iconset resource="../Resources/images.qrc">
-          <normaloff>:/Images/num3.png</normaloff>:/Images/num3.png</iconset>
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/PNG/num3.png</normaloff>:/Images/PNG/num3.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -164,8 +164,8 @@
          <string>Spindle on/off</string>
         </property>
         <property name="icon">
-         <iconset resource="../Resources/images.qrc">
-          <normaloff>:/Images/num4.png</normaloff>:/Images/num4.png</iconset>
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/PNG/num4.png</normaloff>:/Images/PNG/num4.png</iconset>
         </property>
         <property name="iconSize">
          <size>
@@ -181,7 +181,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../Resources/images.qrc"/>
+  <include location="../Resources/Images.qrc"/>
  </resources>
  <connections/>
 </ui>

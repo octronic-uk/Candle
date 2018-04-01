@@ -10,6 +10,12 @@
     <height>785</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
@@ -17,14 +23,20 @@
    <string>CocoanutCNC</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../Resources/images.qrc">
-    <normaloff>:/Images/cocoanut.png</normaloff>:/Images/cocoanut.png</iconset>
+   <iconset resource="../Resources/Images.qrc">
+    <normaloff>:/Images/PNG/Cocoanut.png</normaloff>:/Images/PNG/Cocoanut.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <property name="dockNestingEnabled">
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonTextUnderIcon</enum>
+  </property>
+  <property name="documentMode">
    <bool>true</bool>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>false</bool>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -125,7 +137,7 @@
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::AllDockWidgetAreas</set>
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Control</string>
@@ -166,8 +178,11 @@
    <property name="minimumSize">
     <size>
      <width>67</width>
-     <height>38</height>
+     <height>67</height>
     </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
@@ -181,14 +196,23 @@
    <widget class="SpindleFormController" name="spindleFormController"/>
   </widget>
   <widget class="QDockWidget" name="consoleDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>67</width>
-     <height>38</height>
+     <height>67</height>
     </size>
    </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Console</string>
@@ -208,14 +232,17 @@
    <property name="minimumSize">
     <size>
      <width>67</width>
-     <height>38</height>
+     <height>67</height>
     </size>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
    <property name="allowedAreas">
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>User Commands</string>
+    <string>User</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -253,8 +280,20 @@
    <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="feedDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas">
-    <set>Qt::AllDockWidgetAreas</set>
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>Feed Rate</string>
@@ -265,10 +304,16 @@
    <widget class="FeedFormController" name="feedFormController"/>
   </widget>
   <widget class="QDockWidget" name="stateDockWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>67</width>
-     <height>38</height>
+     <height>67</height>
     </size>
    </property>
    <property name="features">
@@ -278,7 +323,7 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Machine State</string>
+    <string>State</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -287,22 +332,26 @@
   </widget>
   <action name="actFileOpen">
    <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/folder-open-outline/32x32.png</normaloff>:/Images/folder-open-outline/32x32.png</iconset>
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/folder-open.svg</normaloff>:/Images/SVG/folder-open.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
    </property>
   </action>
   <action name="actFileExit">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/sign-out-alt.svg</normaloff>:/Images/SVG/sign-out-alt.svg</iconset>
+   </property>
    <property name="text">
     <string>E&amp;xit</string>
    </property>
   </action>
   <action name="actFileSettings">
    <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/settings-var-outline/256x256.png</normaloff>:/Images/settings-var-outline/256x256.png</iconset>
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/cogs.svg</normaloff>:/Images/SVG/cogs.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Settings</string>
@@ -313,8 +362,8 @@
   </action>
   <action name="actFileNew">
    <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/document-edit-outline/32x32.png</normaloff>:/Images/document-edit-outline/32x32.png</iconset>
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/file-alt.svg</normaloff>:/Images/SVG/file-alt.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;New</string>
@@ -322,19 +371,27 @@
   </action>
   <action name="actFileSave">
    <property name="icon">
-    <iconset resource="../Resources/images.qrc">
-     <normaloff>:/Images/document-download-outline/32x32.png</normaloff>:/Images/document-download-outline/32x32.png</iconset>
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/save.svg</normaloff>:/Images/SVG/save.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Save</string>
    </property>
   </action>
   <action name="actFileSaveAs">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/save_as.svg</normaloff>:/Images/SVG/save_as.svg</iconset>
+   </property>
    <property name="text">
     <string>Save &amp;as...</string>
    </property>
   </action>
   <action name="actAbout">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/info-circle.svg</normaloff>:/Images/SVG/info-circle.svg</iconset>
+   </property>
    <property name="text">
     <string>&amp;About</string>
    </property>
@@ -412,7 +469,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../Resources/images.qrc"/>
+  <include location="../Resources/Images.qrc"/>
  </resources>
  <connections/>
 </ui>

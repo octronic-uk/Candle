@@ -65,7 +65,17 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Override</string>
+         <string> Override</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../Resources/Images.qrc">
+          <normaloff>:/Images/SVG/exclamation-triangle.svg</normaloff>:/Images/SVG/exclamation-triangle.svg</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -124,6 +134,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resources/Images.qrc"/>
+ </resources>
  <connections/>
 </ui>

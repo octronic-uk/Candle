@@ -88,13 +88,13 @@ padding-right: 8;</string>
         <string>Send command</string>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/images.qrc">
-         <normaloff>:/Images/send_1.png</normaloff>:/Images/send_1.png</iconset>
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/SVG/paper-plane.svg</normaloff>:/Images/SVG/paper-plane.svg</iconset>
        </property>
        <property name="iconSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>24</width>
+         <height>24</height>
         </size>
        </property>
       </widget>
@@ -123,13 +123,13 @@ padding-right: 8;</string>
         <string>Clear console</string>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/images.qrc">
-         <normaloff>:/Images/erase_1.png</normaloff>:/Images/erase_1.png</iconset>
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/erase.png</normaloff>:/Images/PNG/erase.png</iconset>
        </property>
        <property name="iconSize">
         <size>
-         <width>16</width>
-         <height>16</height>
+         <width>24</width>
+         <height>24</height>
         </size>
        </property>
       </widget>
@@ -139,7 +139,7 @@ padding-right: 8;</string>
   </layout>
  </widget>
  <resources>
-  <include location="../Resources/images.qrc"/>
+  <include location="../Resources/Images.qrc"/>
  </resources>
  <connections/>
 </ui>

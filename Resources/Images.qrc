@@ -1,0 +1,100 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Images/PNG/axis_return.png</file>
+        <file>Images/PNG/axis_zero.png</file>
+        <file>Images/PNG/cocoanut.png</file>
+        <file>Images/PNG/cube_front.png</file>
+        <file>Images/PNG/cube_left.png</file>
+        <file>Images/PNG/cube_top.png</file>
+        <file>Images/PNG/cube.png</file>
+        <file>Images/PNG/cutter.png</file>
+        <file>Images/PNG/erase.png</file>
+        <file>Images/PNG/fit.png</file>
+        <file>Images/PNG/guard.png</file>
+        <file>Images/PNG/num1.png</file>
+        <file>Images/PNG/num2.png</file>
+        <file>Images/PNG/num3.png</file>
+        <file>Images/PNG/num4.png</file>
+        <file>Images/PNG/origin.png</file>
+        <file>Images/PNG/refresh.png</file>
+        <file>Images/PNG/restart.png</file>
+        <file>Images/PNG/run.png</file>
+        <file>Images/PNG/safe_z.png</file>
+        <file>Images/PNG/search_for_home.png</file>
+        <file>Images/PNG/search_for_z.png</file>
+        <file>Images/PNG/send.png</file>
+        <file>Images/PNG/unlock.png</file>
+        <file>Images/PNG/zero_z.png</file>
+        <file>Images/32/32x32 down-left.png</file>
+        <file>Images/32/32x32 down-right.png</file>
+        <file>Images/32/32x32 down.png</file>
+        <file>Images/32/32x32 left.png</file>
+        <file>Images/32/32x32 right.png</file>
+        <file>Images/32/32x32 up-left.png</file>
+        <file>Images/32/32x32 up-right.png</file>
+        <file>Images/32/32x32 up.png</file>
+        <file>Images/SVG/18-fruit-icons-Coconut-line-art.svg</file>
+        <file>Images/SVG/axis_return.svg</file>
+        <file>Images/SVG/axis_zero.svg</file>
+        <file>Images/SVG/chevron-circle-outline.svg</file>
+        <file>Images/SVG/chevron-circle-right.svg</file>
+        <file>Images/SVG/cogs.svg</file>
+        <file>Images/SVG/document-download-outline.svg</file>
+        <file>Images/SVG/document-edit-outline.svg</file>
+        <file>Images/SVG/eye-outline.svg</file>
+        <file>Images/SVG/file-alt.svg</file>
+        <file>Images/SVG/folder-open-outline.svg</file>
+        <file>Images/SVG/folder-open.svg</file>
+        <file>Images/SVG/guard.svg</file>
+        <file>Images/SVG/home-var-outline.svg</file>
+        <file>Images/SVG/home.svg</file>
+        <file>Images/SVG/icons_arrow.svg</file>
+        <file>Images/SVG/icons.svg</file>
+        <file>Images/SVG/info-circle-outline.svg</file>
+        <file>Images/SVG/laser.svg</file>
+        <file>Images/SVG/laser1.svg</file>
+        <file>Images/SVG/location-arrow-outline.svg</file>
+        <file>Images/SVG/minus-circle-outline.svg</file>
+        <file>Images/SVG/num1.svg</file>
+        <file>Images/SVG/origin.svg</file>
+        <file>Images/SVG/percent-circle-outline.svg</file>
+        <file>Images/SVG/plus-circle-outline.svg</file>
+        <file>Images/SVG/restart.svg</file>
+        <file>Images/SVG/run.svg</file>
+        <file>Images/SVG/safe_z.svg</file>
+        <file>Images/SVG/save.svg</file>
+        <file>Images/SVG/search_home.svg</file>
+        <file>Images/SVG/search_z.svg</file>
+        <file>Images/SVG/settings-var-outline.svg</file>
+        <file>Images/SVG/small_arrow.svg</file>
+        <file>Images/SVG/trash-alt.svg</file>
+        <file>Images/SVG/zero_z.svg</file>
+        <file>Images/SVG/save_as.svg</file>
+        <file>Images/SVG/eye.svg</file>
+        <file>Images/SVG/info-circle.svg</file>
+        <file>Images/SVG/sign-out-alt.svg</file>
+        <file>Images/SVG/chevron-circle-down-left.svg</file>
+        <file>Images/SVG/chevron-circle-down-right.svg</file>
+        <file>Images/SVG/chevron-circle-down.svg</file>
+        <file>Images/SVG/chevron-circle-left.svg</file>
+        <file>Images/SVG/chevron-circle-up-left.svg</file>
+        <file>Images/SVG/chevron-circle-up-right.svg</file>
+        <file>Images/SVG/chevron-circle-up.svg</file>
+        <file>Images/SVG/console.svg</file>
+        <file>Images/SVG/circle.svg</file>
+        <file>Images/SVG/crosshairs.svg</file>
+        <file>Images/SVG/dot-circle (1).svg</file>
+        <file>Images/SVG/dot-circle.svg</file>
+        <file>Images/SVG/exclamation-circle.svg</file>
+        <file>Images/SVG/exclamation-triangle.svg</file>
+        <file>Images/SVG/feed_rate.svg</file>
+        <file>Images/SVG/fire-extinguisher.svg</file>
+        <file>Images/SVG/hand-paper.svg</file>
+        <file>Images/SVG/keyboard.svg</file>
+        <file>Images/SVG/lock-open.svg</file>
+        <file>Images/SVG/lock.svg</file>
+        <file>Images/SVG/user.svg</file>
+        <file>Images/SVG/paper-plane.svg</file>
+        <file>Images/PNG/Cocoanut.png</file>
+    </qresource>
+</RCC>

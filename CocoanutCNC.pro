@@ -159,7 +159,7 @@ FORMS    += \
 DEFINES += _USE_MATH_DEFINES
 
 RESOURCES += \
-    Resources/shaders.qrc \
-    Resources/images.qrc
+    Resources/Shaders.qrc \
+    Resources/Images.qrc
 
 CONFIG += c++11

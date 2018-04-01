@@ -50,28 +50,8 @@ MainFormController::MainFormController(QWidget *parent) :
 
     mUi.splitter->setSizes(QList<int>() << 200 << 200);
 
-    /*
-    foreach (QPushButton* button, mUi.findChildren<StyledToolButton*>(QRegExp("cmdUser\\d")))
-    {
-        connect(button, SIGNAL(clicked(bool)), this, SLOT(onCmdUserClicked(bool)));
-    }
-    */
-
-    /* mSenderErrorBox.create(
-        QMessageBox::Warning,
-        qApp->applicationDisplayName(),
-        QString(),
-        QMessageBox::Ignore | QMessageBox::Abort,
-        &mMainWindow
-    );
-    */
-
-    //mSenderErrorBox->setCheckBox(new QCheckBox(tr("Don't show again")));
-
     // Loading settings
     mSettingsModel.onLoadSettings();
-
-    //mControlFormController->updateControlsState();
 
     mConnectionTimer.start(1000);
     mStateQueryTimer.start();
@@ -92,31 +72,31 @@ MainFormController::~MainFormController()
 void MainFormController::setupToolbarActions()
 {
     QAction *console = mUi.consoleDockWidget->toggleViewAction();
-    console->setIcon(QIcon(":/Images/info-circle-outline/32x32.png"));
+    console->setIcon(QIcon(":/Images/SVG/console.svg"));
     mUi.toolBar->addAction(console);
 
     QAction *control = mUi.controlDockWidget->toggleViewAction();
-    control->setIcon(QIcon(":/Images/origin.png"));
+    control->setIcon(QIcon(":/Images/SVG/origin.svg"));
     mUi.toolBar->addAction(control);
 
     QAction *feed = mUi.feedDockWidget->toggleViewAction();
-    feed->setIcon(QIcon(":/Images/percent-circle-outline/256x256.png"));
+    feed->setIcon(QIcon(":/Images/SVG/feed_rate.svg"));
     mUi.toolBar->addAction(feed);
 
     QAction *jog = mUi.jogDockWidget->toggleViewAction();
-    jog->setIcon(QIcon(":/Images/chevron-circle-outline/32x32 right.png"));
+    jog->setIcon(QIcon(":/Images/SVG/crosshairs.svg"));
     mUi.toolBar->addAction(jog);
 
     QAction *spindle = mUi.spindleDockWidget->toggleViewAction();
-    spindle->setIcon(QIcon(":/Images/cutter.png"));
+    spindle->setIcon(QIcon(":/Images/SVG/dot-circle.svg"));
     mUi.toolBar->addAction(spindle);
 
     QAction *state = mUi.stateDockWidget->toggleViewAction();
-    state->setIcon(QIcon(":/Images/eye-outline/256x256.png"));
+    state->setIcon(QIcon(":/Images/SVG/eye.svg"));
     mUi.toolBar->addAction(state);
 
     QAction *userCommands = mUi.userCommandsDockWidget->toggleViewAction();
-    userCommands->setIcon(QIcon(":/Images/num1.png"));
+    userCommands->setIcon(QIcon(":/Images/SVG/user.svg"));
     mUi.toolBar->addAction(userCommands);
 }
 

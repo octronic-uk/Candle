@@ -413,7 +413,7 @@ void GLWidget::initializeGL()
         mShaderProgram->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/Shaders/fshader.glsl");
         // Link shader pipeline
         mShaderProgram->link();
-        qDebug() << "shader program created";
+        qDebug() << "GLWidget: shader program created";
     }
 }
 

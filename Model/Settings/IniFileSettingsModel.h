@@ -34,5 +34,6 @@ public slots:
    private:
     void preload();
     QDir mSettingsDirectory;
-    const QString mFileName = "Settings.ini";
+    QString mSettingsFilePath;
+    const QString mFileName = "settings.ini";
 };

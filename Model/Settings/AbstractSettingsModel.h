@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <QSharedPointer>
 #include <QSettings>
 #include "Model/SerialBaudRate.h"
 
@@ -28,35 +29,24 @@ public:
     explicit AbstractSettingsModel(QObject *parent = nullptr);
     virtual ~AbstractSettingsModel() = 0;
 
-    static QVariant getDefault(QString setting);
-
 signals:
-    void settingChangedSignal(QString setting, QVariant value);
+    void settingChangedSignal(QString groupName, QString settingName, QVariant value);
 
 public slots:
     virtual void onSaveSettings() = 0;
     virtual void onLoadSettings() = 0;
 
-    void onSettingChanged(QString settingName, QVariant value);
+    void onSettingChanged(QString groupName, QString settingName, QVariant value);
 
 protected:
-    QSettings mSettings;
-    bool mSettingsLoading;
-    bool mSettingsChanged;
+    void initialiseDefaults();
 
-private:
-    static bool mDefaultsInitialised;
-    static void initialiseDefaults();
+    QSharedPointer<QSettings> mSettings;
+    bool mSettingsLoading;
 
 public:
-    static QString global(QString property);
-    static QString tool(QString property);
-    static QString ui(QString property);
-    static QString serial(QString property);
-    static QString graphics(QString property);
-    static QString visualiser(QString property);
-    static QString heightMap(QString property);
 
+    const static QString ORGANISATION;
 
     // Global
     const static QString GLOBAL;
@@ -143,7 +133,4 @@ public:
     const static QString HEIGHT_MAP_INTERPOLATION_STEP_Y;
     const static QString HEIGHT_MAP_INTERPOLATION_TYPE;
     const static QString HEIGHT_MAP_INTERPOLATION_SHOW;
-
-    // Default Settings
-    static QMap<QString,QVariant> mDefaultSettings;
 };

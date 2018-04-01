@@ -51,8 +51,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../Resources/images.qrc">
-           <normaloff>:/Images/fit_1.png</normaloff>:/Images/fit_1.png</iconset>
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/fit.png</normaloff>:/Images/PNG/fit.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -77,8 +77,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../Resources/images.qrc">
-           <normaloff>:/Images/cube.png</normaloff>:/Images/cube.png</iconset>
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/cube.png</normaloff>:/Images/PNG/cube.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -103,8 +103,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../Resources/images.qrc">
-           <normaloff>:/Images/cubeTop.png</normaloff>:/Images/cubeTop.png</iconset>
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/cube_top.png</normaloff>:/Images/PNG/cube_top.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -129,8 +129,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../Resources/images.qrc">
-           <normaloff>:/Images/cubeFront.png</normaloff>:/Images/cubeFront.png</iconset>
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/cube_front.png</normaloff>:/Images/PNG/cube_front.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -155,8 +155,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset resource="../Resources/images.qrc">
-           <normaloff>:/Images/cubeLeft.png</normaloff>:/Images/cubeLeft.png</iconset>
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/cube_left.png</normaloff>:/Images/PNG/cube_left.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -213,7 +213,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../Resources/images.qrc"/>
+  <include location="../Resources/Images.qrc"/>
  </resources>
  <connections/>
 </ui>
