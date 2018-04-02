@@ -13,282 +13,239 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,3">
-   <item row="0" column="2">
-    <widget class="QLabel" name="xLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>X</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="xLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>X</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="yLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Y</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="zLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Z</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="2" column="2">
-    <widget class="QLineEdit" name="txtWPosX">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>X</string>
-     </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1,1">
+     <item>
+      <widget class="QLabel" name="wLabel">
+       <property name="text">
+        <string>W</string>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtWPosX">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>X</string>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtWPosY">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Y</string>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtWPosZ">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Z</string>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="2" column="6">
-    <widget class="QLineEdit" name="txtWPosZ">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>Z</string>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,1,1">
+     <item>
+      <widget class="QLabel" name="mLabel">
+       <property name="text">
+        <string>M</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtMPosX">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>X</string>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtMPosY">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Y</string>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="txtMPosZ">
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Z</string>
+       </property>
+       <property name="text">
+        <string>0.0</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="yLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Y</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="6">
-    <widget class="QLabel" name="zLabel">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Z</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="mLabel">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>M</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="6">
-    <widget class="QLineEdit" name="txtMPosZ">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>Z</string>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="wLabel">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>W</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4">
-    <widget class="QLineEdit" name="txtWPosY">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>Y</string>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="4">
-    <widget class="QLineEdit" name="txtMPosY">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>Y</string>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="QLineEdit" name="txtMPosX">
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="cursor">
-      <cursorShape>ArrowCursor</cursorShape>
-     </property>
-     <property name="toolTip">
-      <string>X</string>
-     </property>
-     <property name="text">
-      <string>0.0</string>
-     </property>
-     <property name="frame">
-      <bool>false</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="3" colspan="3">
+   <item>
     <widget class="QLineEdit" name="statusText">
      <property name="enabled">
       <bool>false</bool>
@@ -298,13 +255,6 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>20</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLineEdit {color: palette(text);}</string>

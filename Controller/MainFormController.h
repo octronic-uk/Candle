@@ -35,7 +35,7 @@
 
 #include "Model/Tables/GcodeTableModel.h"
 #include "Model/Tables/HeightMapTableModel.h"
-#include "Model/SerialPortModel.h"
+#include "Model/GrblMachineModel.h"
 
 #include "Utils/Interpolation.h"
 
@@ -136,8 +136,6 @@ private:
     QTimer mStateQueryTimer;
     IniFileSettingsModel mSettingsModel;
     QMenu *mTableMenu;
-    QList<CommandAttributes> mCommandsList;
-    QList<CommandQueue> mCommandsQueue;
     QTime mStartTime;
     QSharedPointer<QMessageBox> mSenderErrorBox;
 
@@ -164,9 +162,7 @@ private:
 
     void updateParser();
 
-    bool dataIsFloating(QString data);
-    bool dataIsEnd(QString data);
-    bool dataIsReset(QString data);
+
 
     QTime updateProgramEstimatedTime(QList<LineSegment *> lines);
 
@@ -175,28 +171,40 @@ private:
     void resizeCheckBoxes();
     void updateLayouts();
     void updateRecentFilesMenu();
-
     void storeParserState();
     void restoreParserState();
-
     void storeOffsets();
     void restoreOffsets();
-
     bool saveChanges(bool heightMapMode);
-    int bufferLength();
+    void setFormActive(bool active) override;
+    int commandQueueLength();
+
+signals:
+   void sendNextFileCommandsSignal(GcodeFileModel&);
 
 private:
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;
     bool mHeightMapMode = false;
-    SerialPortModel mSerialPortModel;
+    GrblMachineModel mGrblMachineModel;
     void setFormMode(MainFormMode mode);
     void populateRecentGcodeFilesMenu();
     void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();
     void clearRecentHeightMapFilesMenu();
     void setupToolbarActions();
+    void setupToolbarSignals();
+    void setupSettingsModelSignals();
+    void setupMenuBarSignals();
+    void setupGcodeFileModelSignals();
+    void setupHeightMapFileModelSignals();
+    void setupRecentFilesModelsSignals();
+    void setupGrblMachineModelSignals();
+    void setupConsoleFormSignals();
+    void setupProgramFormSignals();
+    void setupJogFormSignals();
+    void setupTimerSignals();
 public:
     void setupSignalSlots() override;
     bool isInHeightMapMode();
@@ -204,10 +212,12 @@ public:
 public slots:
     void onRecentHeightMapFilesChanged();
     void onRecentGcodeFilesChanged();
-    void onStatusUpdate(QString status);
+    void onStatusBarUpdate(QString status);
+    void onStatusTextUpdate(QString status);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished();
+    void onGcodeFileLoadFinished(QList<GcodeItem> items);
     void onCommandSent(QString command, int len);
+    void onSendNextFileCommands();
 };
 
 

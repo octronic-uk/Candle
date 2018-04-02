@@ -17,11 +17,13 @@
  */
 #include "StateFormController.h"
 
+
 StateFormController::StateFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
     qDebug() << "StateFormController: Constructing";
     mUi.setupUi(this);
+    setMode(StateFormMode::PortClosed);
     setupSignalSlots();
 }
 
@@ -31,17 +33,33 @@ StateFormController::~StateFormController()
 
 }
 
+void StateFormController::setMode(StateFormMode mode)
+{
+    switch (mode)
+    {
+       case StateFormMode::PortOpen:
+            mUi.statusText->setBackgroundRole(QPalette::Highlight);
+            break;
+        case StateFormMode::PortClosed:
+            mUi.statusText->setBackgroundRole(QPalette::Dark);
+            break;
+    }
+}
+
+void StateFormController::setStatusText(QString text)
+{
+    mUi.statusText->setText(text);
+}
+
+void StateFormController::setFormActive(bool active)
+{
+
+}
+
 void StateFormController::setupSignalSlots()
 {
 
     qDebug() << "StateFormController: Setup Signals/Slots";
 }
 
-bool StateFormController::compareCoordinates(double x, double y, double z)
-{
-    qDebug() << "MainFormController: compareCoordinates";
-    return
-        mUi.txtMPosX->text().toDouble() == x &&
-        mUi.txtMPosY->text().toDouble() == y &&
-        mUi.txtMPosZ->text().toDouble() == z;
-}
+

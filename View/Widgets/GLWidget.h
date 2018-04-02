@@ -30,7 +30,7 @@ class GLWidget : public QGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    explicit GLWidget(QWidget *parent = 0);
+    explicit GLWidget(QWidget *parent = nullptr);
     ~GLWidget();
 
 
@@ -47,8 +47,8 @@ public:
     QTime estimatedTime() const;
     void setEstimatedTime(const QTime &estimatedTime);
 
-    double lineWidth() const;
-    void setLineWidth(double lineWidth);
+    float lineWidth() const;
+    void setLineWidth(float lineWidth);
 
     void setIsometricView();
     void setTopView();
@@ -79,8 +79,8 @@ public:
     QColor colorText() const;
     void setColorText(const QColor &colorText);
 
-    double pointSize() const;
-    void setPointSize(double pointSize);
+    float pointSize() const;
+    void setPointSize(float pointSize);
 
     bool vsync() const;
     void setVsync(bool vsync);
@@ -97,21 +97,22 @@ private slots:
     void viewAnimation();
 
 private:
-    double normalizeAngle(double angle);
-    double calculateVolume(QVector3D size);
+    float normalizeAngle(float angle);
+    float calculateVolume(QVector3D size);
     void beginViewAnimation();
     void stopViewAnimation();
 
     ProjectionMode mProjectionMode;
-    double mXRot, mYRot, mXLastRot, mYLastRot;
-    double mXPan, mYPan, mXLastPan, mYLastPan;
-    double mXLookAt, mYLookAt, mZLookAt;
+    float mXRot, mYRot, mXLastRot, mYLastRot;
+    float mXPan, mYPan, mXLastPan, mYLastPan;
+    float mXLookAt, mYLookAt, mZLookAt;
     QPoint mLastPos;
-    double mZoom;
-    double m_distance;
-    double mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mXSize, mYSize, mZSize;
-    double mLineWidth;
-    double mPointSize;
+    float mZoom;
+    float mDistance;
+    float mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mXSize, mYSize, mZSize;
+    float mLineWidth;
+    float mPointSize;
+    float mNearPlane;
     bool mAntialiasing;
     bool mMsaa;
     bool mVsync;
@@ -123,8 +124,8 @@ private:
     QTime mSpendTime;
     QTime mEstimatedTime;
     QBasicTimer mTimerPaint;
-    double mXRotTarget, mYRotTarget;
-    double mXRotStored, mYRotStored;
+    float mXRotTarget, mYRotTarget;
+    float mXRotStored, mYRotStored;
     bool mAnimateView;
     QString mParserStatus;
     QString mBufferState;

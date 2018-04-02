@@ -13,12 +13,13 @@ class AboutFormController : public AbstractFormController
     Q_OBJECT
 
 public:
-    explicit AboutFormController(QWidget *parent = 0);
-    ~AboutFormController();
+    explicit AboutFormController(QWidget *parent = nullptr);
+    ~AboutFormController() override;
+    void setFormActive(bool active) override;
 
 private slots:
-    void on_cmdOk_clicked();
-    void on_lblAbout_linkActivated(const QString &link);
+    void onCmdOkClicked();
+    void onLblAboutLinkActivated(const QString &link);
 private:
     QDialog mDialog;
     AboutForm mUi;

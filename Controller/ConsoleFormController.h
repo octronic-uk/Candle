@@ -29,14 +29,16 @@ class ConsoleFormController : public AbstractFormController
     Q_OBJECT
 public:
     ConsoleFormController(QWidget *parent = nullptr);
-    ~ConsoleFormController();
+    ~ConsoleFormController() override;
     void onCmdClearConsoleClicked();
     int getConsoleMinHeight();
+    void setFormActive(bool active) override;
 signals:
     void commandSentSignal(QString cmd, int len);
 public slots:
     void onComboBoxCommandReturnPressed();
     void onCmdCommandSendClicked();
+    void onAppendToConsole(QString text);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

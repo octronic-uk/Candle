@@ -675,6 +675,11 @@ void HeightMapFormController::setHeightMapMode(bool)
 
 }
 
+void HeightMapFormController::setFormActive(bool active)
+{
+
+}
+
 void HeightMapFormController::resetHeightmap()
 {
     /*

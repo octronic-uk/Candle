@@ -21,9 +21,8 @@
 AbstractFormController::AbstractFormController(QWidget *parent)
     : QWidget(parent)
 {
+    setFormActive(false);
 }
 
-AbstractFormController::~AbstractFormController()
-{
-
-}
+void AbstractFormController::setFormActive(bool) {}
+AbstractFormController::~AbstractFormController() {}

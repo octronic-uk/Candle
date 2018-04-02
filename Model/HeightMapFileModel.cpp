@@ -89,7 +89,7 @@ void HeightMapFileModel::load(QString fileName)
     mFile.setFileName(fileName);
     if (!mFile.open(QIODevice::ReadOnly))
     {
-        emit statusUpdateSignal(QString(tr("Can't open file:\n") + fileName));
+        emit statusBarUpdateSignal(QString(tr("Can't open file:\n") + fileName));
         return;
     }
     QTextStream textStream(&mFile);

@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include "AbstractFormController.h"
+#include "Model/Settings/Settings.h"
 #include "ui_SettingsForm.h"
 
 using namespace Ui;
@@ -143,20 +144,26 @@ public:
 
     bool autoLine();
     void setAutoLine(bool value);
+    void setFormActive(bool active) override;
 
-    void applySettings();
+public slots:
+    void onSettingChanged(QString group, QString param, QVariant value);
+
 signals:
-     void serialPortNameChangedSignal(QString);
-     void serialPortBaudRateChangedSignal(int);
+    void settingChangedSignal(QString group, QString param, QVariant value);
 
 protected:
     void showEvent(QShowEvent *se) override;
 private slots:
-    void onCmdRefreshClicked();
-    void onCmdOKClicked();
-    void onCmdCancelClicked();
-    void onCmdDefaultsClicked();
+    void onSerialPortRefreshClicked();
+    void onSerialPortNameChanged(QString);
+    void onSerialBaudRateChanged(QString);
+
+    void onCloseButtonClicked();
+    void onRestoreDefaultsButtonClicked();
+
     void onComboBoxToolTypeCurrentIndexChanged(int index);
+
     void onRadioBtnDrawModeVectorsToggled(bool checked);
     void onRadioBtnDrawModeRasterToggled(bool checked);
     void onRadioBtnGrayscaleSToggled(bool checked);
@@ -175,8 +182,6 @@ private:
     QString mSerialPortName;
     QString mSerialPortBaudRate;
 
-
-    // AbstractFormController interface
 public:
     void setupSignalSlots() override;
 };

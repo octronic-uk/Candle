@@ -25,11 +25,11 @@ GridDrawer::GridDrawer(float size, float major, float minor)
       mMinorSpacing(minor),
       mSize(size),
       mOpacity(128),
-      mMajorColor(QColor("blue")),
-      mMinorColor(QColor("darkBlue")),
-      mTextColor(QColor("white"))
+      mMajorColor(QColor("DarkBlue")),
+      mMinorColor(QColor("LightBlue")),
+      mTextColor(QColor(255,255,255))
 {
-    mLineWidth = 3;
+    mLineWidth = 1;
 }
 
 GridDrawer::~GridDrawer()
@@ -55,7 +55,7 @@ QVector3D GridDrawer::getMaximumExtremes()
 
 int GridDrawer::getVertexCount()
 {
-    return mLines.size();
+    return mLines.size()*2;
 }
 
 bool GridDrawer::updateData()
@@ -69,9 +69,9 @@ bool GridDrawer::updateData()
     // X Lines
     for (float yPos = start; yPos <= end; yPos += mMinorSpacing)
     {
-        QVector4D color =  fmod(abs(yPos), mMajorSpacing) == 0.0f ?
-            Util::colorToVector4(mMajorColor) :
-            Util::colorToVector4(mMinorColor);
+        QVector3D color = fmod(abs(yPos), mMajorSpacing) == 0.0f ?
+            Util::colorToVector(mMajorColor) :
+            Util::colorToVector(mMinorColor);
 
         mLines.append({QVector3D(start, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
         mLines.append({QVector3D(end, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
@@ -80,9 +80,9 @@ bool GridDrawer::updateData()
     // Y Lines
     for (float xPos = start; xPos <= end; xPos += mMinorSpacing)
     {
-        QVector4D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
-            Util::colorToVector4(mMajorColor) :
-            Util::colorToVector4(mMinorColor);
+        QVector3D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
+            Util::colorToVector(mMajorColor) :
+            Util::colorToVector(mMinorColor);
 
         mLines.append({QVector3D(xPos, start, 0),color,QVector3D(sNan, sNan, sNan)});
         mLines.append({QVector3D(xPos, end, 0),color,QVector3D(sNan, sNan, sNan)});
@@ -103,9 +103,9 @@ void GridDrawer::setOpacity(int opacity)
 
 void GridDrawer::updateOpacity()
 {
-    mMajorColor.setAlpha(mOpacity);
-    mMinorColor.setAlpha(mOpacity);
-    mTextColor.setAlpha(mOpacity);
+    //mMajorColor.setAlpha(mOpacity);
+    //mMinorColor.setAlpha(mOpacity);
+    //mTextColor.setAlpha(mOpacity);
 }
 
 float GridDrawer::getSize() const

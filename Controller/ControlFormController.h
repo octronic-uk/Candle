@@ -28,13 +28,14 @@ class ControlFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit ControlFormController(QWidget *parent = nullptr);
-    ~ControlFormController();
+    ~ControlFormController() override;
 
     void updateControlsState();
     bool isHoming();
     bool isResetCompleted();
     void onCmdZeroZClicked();
     void setupSignalSlots() override;
+    void setFormActive(bool active) override;
 signals:
 
 public slots:

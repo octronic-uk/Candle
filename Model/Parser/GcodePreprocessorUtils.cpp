@@ -22,10 +22,13 @@ QString GcodePreprocessorUtils::overrideSpeed(QString command, double speed, dou
 {
     static QRegExp re("[Ff]([0-9.]+)");
 
-    if (re.indexIn(command) != -1) {
+    if (re.indexIn(command) != -1)
+    {
         command.replace(re, QString("F%1").arg(re.cap(1).toDouble() / 100 * speed));
 
-        if (original) *original = re.cap(1).toDouble();
+        if (original) {
+            *original = re.cap(1).toDouble();
+        }
     }
 
     return command;

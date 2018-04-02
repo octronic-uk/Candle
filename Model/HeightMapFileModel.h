@@ -38,7 +38,7 @@ public:
 signals:
     void heightMapFileLoadStartedSignal();
     void heightMapFileLoadFinishedSignal();
-    void statusUpdateSignal(QString);
+    void statusBarUpdateSignal(QString);
 private:
     QFile mFile;
     bool mHeightMapChanged = false;

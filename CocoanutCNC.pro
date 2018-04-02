@@ -34,7 +34,7 @@ unix {
 TARGET = CocoanutCNC
 TEMPLATE = app
 VERSION = 1.0.12
-RC_ICONS += images/cocoanut.ico
+#RC_ICONS += images/cocoanut.ico
 
 DEFINES += sNan=\"65536\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
@@ -77,7 +77,6 @@ SOURCES +=\
     Controller/UserCommandsFormController.cpp \
     Controller/VisualisationFormController.cpp \
     Controller/AbstractFormController.cpp \
-    Model/SerialPortModel.cpp \
     Model/StatusModel.cpp \
     Model/GcodeFileModel.cpp \
     Model/HeightMapFileModel.cpp \
@@ -87,7 +86,10 @@ SOURCES +=\
     View/Widgets/GLWidget.cpp \
     Model/Settings/AbstractSettingsModel.cpp \
     Model/Settings/IniFileSettingsModel.cpp \
-    View/Drawers/GridDrawer.cpp
+    View/Drawers/GridDrawer.cpp \
+    Model/Settings/Settings.cpp \
+    Model/GrblMachineModel.cpp \
+    Utils/IndexOutOfBoundsException.cpp
 
 
 HEADERS  += \
@@ -125,7 +127,6 @@ HEADERS  += \
     Controller/UserCommandsFormController.h \
     Controller/VisualisationFormController.h \
     Controller/AbstractFormController.h \
-    Model/SerialPortModel.h \
     Model/Settings/IniFileSettingsModel.h \
     Model/StatusModel.h \
     Model/GcodeFileModel.h \
@@ -139,7 +140,10 @@ HEADERS  += \
     Model/GcodeItemState.h \
     Model/Settings/AbstractSettingsModel.h \
     View/Drawers/GridDrawer.h \
-    Model/SerialBaudRate.h
+    Model/SerialBaudRate.h \
+    Model/Settings/Settings.h \
+    Model/GrblMachineModel.h \
+    Utils/IndexOutOfBoundsException.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -160,6 +164,7 @@ DEFINES += _USE_MATH_DEFINES
 
 RESOURCES += \
     Resources/Shaders.qrc \
-    Resources/Images.qrc
+    Resources/Images.qrc \
+    Resources/Misc.qrc
 
 CONFIG += c++11

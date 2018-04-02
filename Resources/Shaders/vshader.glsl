@@ -40,11 +40,13 @@ void main()
         v_texture = a_start.yz;
 
         // set point size
-        if (isNan(a_start.y) && !isNan(a_start.z)) gl_PointSize = a_start.z;
+        if (isNan(a_start.y) && !isNan(a_start.z))
+        {
+            gl_PointSize = a_start.z;
+        }
     }
 
     // Calculate vertex position in screen space
     gl_Position = mvp_matrix * a_position;
-
     v_color = a_color;
 }

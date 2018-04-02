@@ -2,13 +2,14 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "SettingsFormController.h"
-#include "ui_SettingsForm.h"
 
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QDebug>
 #include <QScrollBar>
 #include <QColorDialog>
+#include "Model/SerialBaudRate.h"
+#include "ui_SettingsForm.h"
 
 SettingsFormController::SettingsFormController(QWidget *parent)
     : AbstractFormController(parent)
@@ -21,8 +22,8 @@ SettingsFormController::SettingsFormController(QWidget *parent)
 
     if (mSerialPortName != "")
     {
-        emit serialPortNameChangedSignal(getPortName());
-        emit serialPortBaudRateChangedSignal(getBaudRate());
+        emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_PORT_NAME, getPortName());
+        emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, getBaudRate());
     }
 }
 
@@ -33,33 +34,6 @@ SettingsFormController::~SettingsFormController()
 
 int SettingsFormController::exec()
 {
-    // Store settings to undo
-    mStoredValues.clear();
-    mStoredChecks.clear();
-    mStoredCombos.clear();
-    mStoredColors.clear();
-
-    foreach (QAbstractSpinBox* sb, this->findChildren<QAbstractSpinBox*>())
-    {
-        mStoredValues.append(sb->property("value").toDouble());
-    }
-
-    foreach (QAbstractButton* cb, this->findChildren<QAbstractButton*>())
-    {
-        mStoredChecks.append(cb->isChecked());
-    }
-
-    foreach (QComboBox* cb, this->findChildren<QComboBox*>())
-    {
-        mStoredCombos.append(cb->currentText());
-    }
-
-    /*foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
-    {
-        //mStoredColors.append(pick->color());
-    }
-    */
-
     return mDialog.exec();
 }
 
@@ -87,22 +61,22 @@ void SettingsFormController::undo()
 
 QString SettingsFormController::getPortName()
 {
-    return mUi.cboPort->currentText();
+    return mUi.serialPortNameBox->currentText();
 }
 
 void SettingsFormController::setPortName(QString port)
 {
-    mUi.cboPort->setCurrentText(port);
+    mUi.serialPortNameBox->setCurrentText(port);
 }
 
 int SettingsFormController::getBaudRate()
 {
-    return mUi.cboBaud->currentText().toInt();
+    return mUi.serialBaudRateBox->currentText().toInt();
 }
 
 void SettingsFormController::setBaudRate(int baud)
 {
-    mUi.cboBaud->setCurrentText(QString::number(baud));
+    mUi.serialBaudRateBox->setCurrentText(QString::number(baud));
 }
 
 double SettingsFormController::toolDiameter()
@@ -496,6 +470,60 @@ void SettingsFormController::setAutoLine(bool value)
     mUi.chkAutoLine->setChecked(value);
 }
 
+void SettingsFormController::setFormActive(bool active)
+{
+
+}
+
+void SettingsFormController::onSettingChanged(QString group, QString param, QVariant value)
+{
+    /*
+    qDebug() << "SettingsFormController: onSettingChanged"
+             << group
+             << param
+             << value;
+    */
+
+   if (group == Settings::GFX)
+   {
+
+   }
+   else if (group == Settings::GLOBAL)
+   {
+        if (param == Settings::GLOBAL_AUTO_LINE)
+        {
+           setAutoLine(value.toBool());
+        }
+        else if (param == Settings::GLOBAL_IGNORE_ERRORS)
+        {
+            setIgnoreErrors(value.toBool());
+        }
+   }
+   else if (group == Settings::HEIGHT_MAP)
+   {
+
+   }
+   else if (group == Settings::SERIAL)
+   {
+      if (param == Settings::SERIAL_BAUD_RATE)
+      {
+          setBaudRate(value.toInt());
+      }
+      else if (param == Settings::SERIAL_PORT_NAME)
+      {
+          setPortName(value.toString());
+      }
+   }
+   else if (group == Settings::TOOL)
+   {
+
+   }
+   else if (group == Settings::VISUALISER)
+   {
+
+   }
+}
+
 void SettingsFormController::showEvent(QShowEvent *se)
 {
     Q_UNUSED(se)
@@ -503,12 +531,18 @@ void SettingsFormController::showEvent(QShowEvent *se)
 
 void SettingsFormController::searchPorts()
 {
-    mUi.cboPort->clear();
+    mUi.serialPortNameBox->clear();
 
-    foreach (QSerialPortInfo info ,QSerialPortInfo::availablePorts())
+    foreach (QSerialPortInfo info, QSerialPortInfo::availablePorts())
     {
-        mUi.cboPort->addItem(info.portName());
-        mUi.cboPort->insertItem(0, info.portName());
+        mUi.serialPortNameBox->addItem(info.portName());
+    }
+
+    mUi.serialBaudRateBox->clear();
+
+    for (int baud : SERIAL_BAUD_RATES)
+    {
+        mUi.serialBaudRateBox->addItem(QString::number(baud),baud);
     }
 }
 
@@ -516,21 +550,37 @@ void SettingsFormController::setupSignalSlots()
 {
 
     qDebug() << "SettingsFormController: Setup Signals/Slots";
+    // Ok
+    connect(mUi.closeButton, SIGNAL(clicked()),SLOT(onCloseButtonClicked()));
+    // Defaults
+    connect(mUi.restoreDefaultsButton, SIGNAL(clicked()),SLOT(onRestoreDefaultsButtonClicked()));
+    // Serial Port
+    // Refresh
+    connect(mUi.serialPortRefreshButton, SIGNAL(clicked()), SLOT(onSerialPortRefreshClicked()));
+    // Port Name
+    connect(mUi.serialPortNameBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialPortNameChanged(QString)));
+    // Baud Rate
+    connect(mUi.serialBaudRateBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialBaudRateChanged(QString)));
 }
 
-void SettingsFormController::onCmdRefreshClicked()
+void SettingsFormController::onSerialPortRefreshClicked()
 {
     searchPorts();
 }
 
-void SettingsFormController::onCmdOKClicked()
+void SettingsFormController::onSerialPortNameChanged(QString port)
 {
-    mDialog.accept();
+   emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_PORT_NAME, port);
 }
 
-void SettingsFormController::onCmdCancelClicked()
+void SettingsFormController::onSerialBaudRateChanged(QString baud)
 {
-    mDialog.reject();
+   emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, baud.toInt());
+}
+
+void SettingsFormController::onCloseButtonClicked()
+{
+    mDialog.accept();
 }
 
 void SettingsFormController::onComboBoxToolTypeCurrentIndexChanged(int index)
@@ -539,26 +589,24 @@ void SettingsFormController::onComboBoxToolTypeCurrentIndexChanged(int index)
     mUi.txtToolAngle->setEnabled(index == 1);
 }
 
-void SettingsFormController::onCmdDefaultsClicked()
+void SettingsFormController::onRestoreDefaultsButtonClicked()
 {
     QMessageBox::StandardButton result = QMessageBox::warning
     (
         &mDialog,
         qApp->applicationDisplayName(),
-        tr("Reset settings to default values?"),
-        QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
+        tr("Restore Default Settings?"),
+        QMessageBox::Cancel | QMessageBox::Ok
     );
 
-    if (result != QMessageBox::Yes)
+    if (result != QMessageBox::Ok)
     {
         return;
     }
 
     setPortName("");
-    setBaudRate(115200);
-
+    setBaudRate(SerialBaudRate::BAUD_115200);
     setIgnoreErrors(false);
-
     setQueryStateTime(40);
     setRapidSpeed(2000);
     setAcceleration(100);
@@ -615,109 +663,5 @@ void SettingsFormController::onRadioBtnGrayscaleSToggled(bool checked)
 void SettingsFormController::onRadioBtnGrayscaleZToggled(bool checked)
 {
     mUi.radGrayscaleS->setChecked(!checked);
-}
-
-// Settings
-void SettingsFormController::applySettings()
-{
-//    mOriginDrawer->setLineWidth(mSettingsForm->lineWidth());
-//    m_toolDrawer.setToolDiameter(mSettingsForm->toolDiameter());
-//    m_toolDrawer.setToolLength(mSettingsForm->toolLength());
-//    m_toolDrawer.setLineWidth(mSettingsForm->lineWidth());
-//    mCodeDrawer->setLineWidth(mSettingsForm->lineWidth());
-//    m_heightMapBorderDrawer.setLineWidth(mSettingsForm->lineWidth());
-//    m_heightMapGridDrawer.setLineWidth(0.1);
-//    m_heightMapInterpolationDrawer.setLineWidth(mSettingsForm->lineWidth());
-//    mUi->glwVisualizer->setLineWidth(mSettingsForm->lineWidth());
-//    mStateQueryTimer.setInterval(mSettingsForm->queryStateTime());
-
-//    m_toolDrawer.setToolAngle(mSettingsForm->toolType() == 0 ? 180 : mSettingsForm->toolAngle());
-//    m_toolDrawer.setColor(mSettingsForm->colors("Tool"));
-//    m_toolDrawer.update();
-
-//    mUi->glwVisualizer->setAntialiasing(mSettingsForm->antialiasing());
-//    mUi->glwVisualizer->setMsaa(mSettingsForm->msaa());
-//    mUi->glwVisualizer->setZBuffer(mSettingsForm->zBuffer());
-//    mUi->glwVisualizer->setVsync(mSettingsForm->vsync());
-//    mUi->glwVisualizer->setFps(mSettingsForm->fps());
-//    mUi->glwVisualizer->setColorBackground(mSettingsForm->colors("VisualizerBackground"));
-//    mUi->glwVisualizer->setColorText(mSettingsForm->colors("VisualizerText"));
-
-//    mUi->txtSpindleSpeed->setMinimum(mSettingsForm->spindleSpeedMin());
-//    mUi->txtSpindleSpeed->setMaximum(mSettingsForm->spindleSpeedMax());
-//    mUi->sliSpindleSpeed->setMinimum(mUi->txtSpindleSpeed->minimum() / 100);
-//    mUi->sliSpindleSpeed->setMaximum(mUi->txtSpindleSpeed->maximum() / 100);
-
-//    mUi->scrollArea->setVisible(mSettingsForm->panelHeightmap() || mSettingsForm->panelFeed()
-//                                || mSettingsForm->panelJog() || mSettingsForm->panelSpindle());
-
-//    mUi->grpUserCommands->setVisible(mSettingsForm->panelUserCommands());
-//    mUi->grpHeightMap->setVisible(mSettingsForm->panelHeightmap());
-//    mUi->grpSpindle->setVisible(mSettingsForm->panelSpindle());
-//    mUi->grpFeed->setVisible(mSettingsForm->panelFeed());
-//    mUi->grpJog->setVisible(mSettingsForm->panelJog());
-
-//    mUi->cboCommand->setAutoCompletion(mSettingsForm->autoCompletion());
-
-//    mCodeDrawer->setSimplify(mSettingsForm->simplify());
-//    mCodeDrawer->setSimplifyPrecision(mSettingsForm->simplifyPrecision());
-//    mCodeDrawer->setColorNormal(mSettingsForm->colors("ToolpathNormal"));
-//    mCodeDrawer->setColorDrawn(mSettingsForm->colors("ToolpathDrawn"));
-//    mCodeDrawer->setColorHighlight(mSettingsForm->colors("ToolpathHighlight"));
-//    mCodeDrawer->setColorZMovement(mSettingsForm->colors("ToolpathZMovement"));
-//    mCodeDrawer->setColorStart(mSettingsForm->colors("ToolpathStart"));
-//    mCodeDrawer->setColorEnd(mSettingsForm->colors("ToolpathEnd"));
-//    mCodeDrawer->setIgnoreZ(mSettingsForm->grayscaleSegments() || !mSettingsForm->drawModeVectors());
-//    mCodeDrawer->setGrayscaleSegments(mSettingsForm->grayscaleSegments());
-//    mCodeDrawer->setGrayscaleCode(mSettingsForm->grayscaleSCode() ? GcodeDrawer::S : GcodeDrawer::Z);
-//    mCodeDrawer->setDrawMode(mSettingsForm->drawModeVectors() ? GcodeDrawer::Vectors : GcodeDrawer::Raster);
-//    mCodeDrawer->setGrayscaleMin(mSettingsForm->laserPowerMin());
-//    mCodeDrawer->setGrayscaleMax(mSettingsForm->laserPowerMax());
-//    mCodeDrawer->update();
-
-//    m_selectionDrawer.setColor(mSettingsForm->colors("ToolpathHighlight"));
-
-//    // Adapt visualizer buttons colors
-//    const int LIGHTBOUND = 127;
-//    const int NORMALSHIFT = 40;
-//    const int HIGHLIGHTSHIFT = 80;
-
-//    QColor base = mSettingsForm->colors("VisualizerBackground");
-//    bool light = base.value() > LIGHTBOUND;
-//    QColor normal, highlight;
-
-//    normal.setHsv(base.hue(), base.saturation(), base.value() + (light ? -NORMALSHIFT : NORMALSHIFT));
-//    highlight.setHsv(base.hue(), base.saturation(), base.value() + (light ? -HIGHLIGHTSHIFT : HIGHLIGHTSHIFT));
-
-//    mUi->glwVisualizer->setStyleSheet(
-//        QString("QToolButton {border: 1px solid %1; background-color: %3} QToolButton:hover {border: 1px solid %2;}")
-//            .arg(normal.name())
-//            .arg(highlight.name())
-//            .arg(base.name())
-//    );
-
-//    mUi->cmdFit->setIcon(QIcon(":/images/fit_1.png"));
-//    mUi->cmdIsometric->setIcon(QIcon(":/images/cube.png"));
-//    mUi->cmdFront->setIcon(QIcon(":/images/cubeFront.png"));
-//    mUi->cmdLeft->setIcon(QIcon(":/images/cubeLeft.png"));
-//    mUi->cmdTop->setIcon(QIcon(":/images/cubeTop.png"));
-
-//    if (!light) {
-//        Util::invertButtonIconColors(mUi->cmdFit);
-//        Util::invertButtonIconColors(mUi->cmdIsometric);
-//        Util::invertButtonIconColors(mUi->cmdFront);
-//        Util::invertButtonIconColors(mUi->cmdLeft);
-//        Util::invertButtonIconColors(mUi->cmdTop);
-//    }
-
-//    mUi->cboCommand->setMinimumHeight(mUi->cboCommand->height());
-//    mUi->cmdClearConsole->setFixedHeight(mUi->cboCommand->height());
-//    mUi->cmdCommandSend->setFixedHeight(mUi->cboCommand->height());
-
-//    foreach (StyledToolButton* button, this->findChildren<StyledToolButton*>(QRegExp("cmdUser\\d")))
-//    {
-//        button->setToolTip(mSettingsForm->userCommands(button->objectName().right(1).toInt()));
-//        button->setEnabled(!button->toolTip().isEmpty());
-//    }
 }
 

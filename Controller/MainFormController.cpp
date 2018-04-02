@@ -50,17 +50,16 @@ MainFormController::MainFormController(QWidget *parent) :
 
     mUi.splitter->setSizes(QList<int>() << 200 << 200);
 
-    // Loading settings
-    mSettingsModel.onLoadSettings();
-
     mConnectionTimer.start(1000);
-    mStateQueryTimer.start();
+    mStateQueryTimer.start(500);
 
     // Handle file drop
     if (qApp->arguments().count() > 1 && mGcodeFileModel.isGcodeFile(qApp->arguments().last()))
     {
         mGcodeFileModel.load(qApp->arguments().last());
     }
+
+    mSettingsModel.onLoadSettings();
 }
 
 MainFormController::~MainFormController()
@@ -95,18 +94,42 @@ void MainFormController::setupToolbarActions()
     state->setIcon(QIcon(":/Images/SVG/eye.svg"));
     mUi.toolBar->addAction(state);
 
-    QAction *userCommands = mUi.userCommandsDockWidget->toggleViewAction();
-    userCommands->setIcon(QIcon(":/Images/SVG/user.svg"));
-    mUi.toolBar->addAction(userCommands);
 }
 
-void MainFormController::setupSignalSlots()
+void MainFormController::setupToolbarSignals()
 {
-    qDebug() << "MainFormController: Setup Signals/Slots";
     // Preferences
     connect(
         mUi.actFileSettings, SIGNAL(triggered()),
         this, SLOT(onActSettingsTriggered())
+    );
+}
+
+void MainFormController::setupSettingsModelSignals()
+{
+    // Settings Model to Settings Form
+    connect(
+        &mSettingsModel, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
+        &mSettingsFormController, SLOT(onSettingChanged(QString, QString, QVariant))
+    );
+    // Settings Form to Settings Model
+    connect(
+        &mSettingsFormController, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
+        &mSettingsModel, SLOT(onSettingChanged(QString, QString, QVariant))
+    );
+    // Settings Model to SerialPort Model
+    connect(
+        &mSettingsModel, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
+        &mGrblMachineModel, SLOT(onSettingChanged(QString, QString, QVariant))
+    );
+}
+
+void MainFormController::setupMenuBarSignals()
+{
+    // About
+    connect(
+        mUi.actAbout, SIGNAL(triggered()),
+        this, SLOT(onActAboutTriggered())
     );
     // File->New
     connect(
@@ -133,91 +156,172 @@ void MainFormController::setupSignalSlots()
         mUi.actFileSaveTransformedAs, SIGNAL(triggered()),
         this, SLOT(onActFileSaveTransformedAsTriggered())
     );
+}
+
+void MainFormController::setupHeightMapFileModelSignals()
+{
     // On File Load Handlers
     connect(
-                &mHeightMapFileModel,SIGNAL(heightMapFileLoadStartedSignal()),
-                this, SLOT(onHeightMapFileLoadStarted())
-                );
+        &mHeightMapFileModel,SIGNAL(heightMapFileLoadStartedSignal()),
+        this, SLOT(onHeightMapFileLoadStarted())
+    );
     connect(
-                &mHeightMapFileModel,SIGNAL(heightMapFileLoadFinishedSignal()),
-                this, SLOT(onHeightMapFileLoadFinished())
-                );
-    // Recent files changed handlers
-    connect(
-                &mRecentFilesModel, SIGNAL(recentFilesChangedSignal()),
-                this, SLOT(onRecentGcodeFilesChanged())
-                );
-    connect(
-                &mRecentHeightMapFilesModel, SIGNAL(recentFilesChangedSignal()),
-                this, SLOT(onRecentHeightMapFilesChanged())
-                );
-    // Serial Port
-    connect(
-                &mSerialPortModel, SIGNAL(serialPortErrorSignal(QString)),
-                this, SLOT(onSerialPortError(QString))
-                );
-    connect(
-                &mSerialPortModel, SIGNAL(statusUpdateSignal(QString)),
-                this, SLOT(onStatusUpdate(QString))
-                );
-    // Gcode File Model
-    connect(
-                &mGcodeFileModel, SIGNAL(statusUpdateSignal(QString)),
-                this, SLOT(onStatusUpdate(QString))
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                this, SLOT(onGcodeFileLoadStarted())
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(reserveGcodeRowsSignal(int)),
-                mUi.programForm, SLOT(onReserveGcodeRowsSignal(int))
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                mUi.programForm, SLOT(onGcodeFileLoadStarted())
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeItem>)),
-                mUi.programForm, SLOT(onGcodeFileLoadFinished(QList<GcodeItem>))
-                );
-
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeItem>)),
-                mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeItem>))
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                mUi.visualisationFormController, SLOT(onGcodeFileLoadStarted())
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeParserUpdatedSignal(GcodeParser*)),
-                mUi.visualisationFormController, SLOT(onGcodeParserUpdated(GcodeParser*))
-                );
+        &mHeightMapFileModel,SIGNAL(heightMapFileLoadFinishedSignal()),
+        this, SLOT(onHeightMapFileLoadFinished())
+    );
     // HeightMap File Model
     connect(
-                &mHeightMapFileModel, SIGNAL(statusUpdateSignal(QString)),
-                this, SLOT(onStatusUpdate(QString))
-                );
+        &mHeightMapFileModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
+}
+
+void MainFormController::setupGcodeFileModelSignals()
+{
+    // Gcode File Model
+    connect(
+        &mGcodeFileModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        this, SLOT(onGcodeFileLoadStarted())
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(reserveGcodeRowsSignal(int)),
+        mUi.programFormController, SLOT(onReserveGcodeRowsSignal(int))
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        mUi.programFormController, SLOT(onGcodeFileLoadStarted())
+    );
+    // Gcode Loading Finished
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeItem>)),
+        mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeItem>))
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeItem>)),
+        mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeItem>))
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeItem>)),
+        this, SLOT(onGcodeFileLoadFinished(QList<GcodeItem>))
+    );
+    // Gcode Loading Finished
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        mUi.visualisationFormController, SLOT(onGcodeFileLoadStarted())
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        this, SLOT(onGcodeFileLoadStarted())
+    );
+    // Parser State
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeParserUpdatedSignal(GcodeParser*)),
+        mUi.visualisationFormController, SLOT(onGcodeParserUpdated(GcodeParser*))
+    );
+}
+
+void MainFormController::setupRecentFilesModelsSignals()
+{
+    // Recent files changed handlers
+    connect(
+        &mRecentFilesModel, SIGNAL(recentFilesChangedSignal()),
+        this, SLOT(onRecentGcodeFilesChanged())
+    );
+    connect(
+        &mRecentHeightMapFilesModel, SIGNAL(recentFilesChangedSignal()),
+        this, SLOT(onRecentHeightMapFilesChanged())
+    );
+}
+
+void MainFormController::setupGrblMachineModelSignals()
+{
+    // Serial Port
+    connect(
+        &mGrblMachineModel, SIGNAL(serialPortErrorSignal(QString)),
+        this, SLOT(onSerialPortError(QString))
+    );
+    connect(
+        &mGrblMachineModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
+    connect(
+        &mGrblMachineModel, SIGNAL(statusTextUpdateSignal(QString)),
+        this, SLOT(onStatusTextUpdate(QString))
+    );
+    connect(
+        this, SIGNAL(sendNextFileCommandsSignal(GcodeFileModel&)),
+        &mGrblMachineModel, SLOT(onSendNextFileCommands(GcodeFileModel&))
+    );
+}
+
+void MainFormController::setupJogFormSignals()
+{
     // Jog Form
     connect(
-                mUi.jogFormController, SIGNAL(statusUpdateSignal(QString)),
-                this, SLOT(onStatusUpdate(QString))
-                );
+        mUi.jogFormController, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
+}
+
+void MainFormController::setupTimerSignals()
+{
     // Timers
     connect(
-                &mConnectionTimer, SIGNAL(timeout()),
-                this, SLOT(onTimerConnection())
-                );
+        &mConnectionTimer, SIGNAL(timeout()),
+        this, SLOT(onTimerConnection())
+    );
     connect(
-                &mStateQueryTimer, SIGNAL(timeout()),
-                this, SLOT(onTimerStateQuery())
-                );
+        &mStateQueryTimer, SIGNAL(timeout()),
+        this, SLOT(onTimerStateQuery())
+    );
+}
+
+void MainFormController::setupConsoleFormSignals()
+{
     // Console Form
     connect(
-                mUi.consoleFormController, SIGNAL(commandSentSignal(QString,int)),
-                this, SLOT(onCommandSent(QString,int))
-                );
+        mUi.consoleFormController, SIGNAL(commandSentSignal(QString,int)),
+        this, SLOT(onCommandSent(QString,int))
+    );
+    // Grbl Machine to console
+    connect(
+        &mGrblMachineModel, SIGNAL(appendToConsoleSignal(QString)),
+        mUi.consoleFormController, SLOT(onAppendToConsole(QString))
+    );
+}
+
+void MainFormController::setupProgramFormSignals()
+{
+    // Program Form
+    connect(
+        mUi.programFormController, SIGNAL(sendNextFileCommandsSignal()),
+        this, SLOT(onSendNextFileCommands())
+    );
+}
+
+void MainFormController::onSendNextFileCommands()
+{
+    emit sendNextFileCommandsSignal(mGcodeFileModel);
+}
+
+void MainFormController::setupSignalSlots()
+{
+    qDebug() << "MainFormController: Setup Signals/Slots";
+    setupMenuBarSignals();
+    setupToolbarSignals();
+    setupSettingsModelSignals();
+    setupGcodeFileModelSignals();
+    setupHeightMapFileModelSignals();
+    setupRecentFilesModelsSignals();
+    setupGrblMachineModelSignals();
+    setupJogFormSignals();
+    setupTimerSignals();
+    setupConsoleFormSignals();
+    setupProgramFormSignals();
 }
 
 void MainFormController::showMainWindow()
@@ -275,17 +379,11 @@ bool MainFormController::saveChanges(bool heightMapMode)
     return true;
 }
 
-int MainFormController::bufferLength()
+
+
+void MainFormController::setFormActive(bool active)
 {
-    //qDebug() << "MainFormController: bufferLength";
-    int length = 0;
 
-    foreach (CommandAttributes ca, mCommandsList)
-    {
-        length += ca.length;
-    }
-
-    return length;
 }
 
 void MainFormController::setFormMode(MainFormMode mode)
@@ -297,58 +395,69 @@ void MainFormController::setFormMode(MainFormMode mode)
 void MainFormController::onTimerConnection()
 {
     //qDebug() << "MainFormController: onTimerConnection";
-    /*
+    if (!mGrblMachineModel.isPortOpen())
+    {
+        mGrblMachineModel.openPort();
+        return;
+    }
+
     if  (
-            !mControlFormController->isHoming() // && !m_reseting
+            !mUi.controlFormController->isHoming() // && !m_reseting
             &&
-            !mProgramFormController->isPauseChecked() &&
-            mCommandsQueue.length() == 0
+            !mUi.programFormController->isPauseChecked() &&
+            mGrblMachineModel.commandsQueueLength() == 0
         ) {
-        if (mSpindleFormController->isUpdatingSpindleSpeed())
+        // Send overridden spindle speed
+        if (mUi.spindleFormController->isUpdatingSpindleSpeed())
         {
-            mSpindleFormController->setUpdatingSpindleSpeed(false);
-            mSerialPortModel.sendCommand(
-                QString("S%1").arg(mSpindleFormController->getSpindleSpeed()),
-                -2, mSettingsFormController->showUICommands()
+            mUi.spindleFormController->setUpdatingSpindleSpeed(false);
+            mGrblMachineModel.sendCommand(
+                QString("S%1").arg(
+                    mUi.spindleFormController->getSpindleSpeed()),
+                    -2,
+                    true//mSettingsFormController.showUICommands()
             );
         }
+        // Send next command
         if (mIsUpdatingParserStatus)
         {
             mIsUpdatingParserStatus = false;
-            mSerialPortModel.sendCommand("$G", -3, false);
+            mGrblMachineModel.sendCommand("$G", -3, true);
         }
-        if (mFeedFormController->isUpdatingFeed())
+        // Use overridden feed rate
+        if (mUi.feedFormController->isUpdatingFeed())
         {
-            mFeedFormController->setUpdatingFeed(false);
-            double originalFeedRate = mFeedFormController->getOriginalFeedRate();
-            mSerialPortModel.sendCommand(
+            mUi.feedFormController->setUpdatingFeed(false);
+            double originalFeedRate = mUi.feedFormController->getOriginalFeedRate();
+            mGrblMachineModel.sendCommand(
                 QString("F%1").arg(
-                    mFeedFormController->isFeedOverrideChecked() ?
-                    originalFeedRate / 100 * mFeedFormController->getTxtFeedValue() :
+                    mUi.feedFormController->isFeedOverrideChecked() ?
+                    originalFeedRate * mUi.feedFormController->getFeedOverrideValue() :
                     originalFeedRate
                 ),
                 -1,
-                mSettingsFormController->showUICommands()
+                mSettingsFormController.showUICommands()
             );
         }
     }
-    */
 }
 
 void MainFormController::onTimerStateQuery()
 {
     //qDebug() << "MainFormController: onTimerStateQuery";
-    if (mSerialPortModel.isPortOpen() &&
+
+    if (mGrblMachineModel.isPortOpen() &&
         mUi.controlFormController->isResetCompleted() &&
-        mSerialPortModel.isStatusReceived()) {
-        mSerialPortModel.write(QByteArray(1, '?'));
-        mSerialPortModel.setStatusReceived(false);
+        mGrblMachineModel.isStatusReceived())
+    {
+        mGrblMachineModel.write(QByteArray(1, '?'));
+        mGrblMachineModel.setStatusReceived(false);
     }
 
     mUi.visualisationFormController->setGLWBufferState(
-        QString(tr("Buffer: %1 / %2")).arg(
-            bufferLength()).arg(mCommandsQueue.length()
-        )
+        QString(tr("Buffer: %1 / %2"))
+            .arg(mGrblMachineModel.bufferLength())
+            .arg(mGrblMachineModel.commandsQueueLength())
     );
 }
 
@@ -422,7 +531,6 @@ void MainFormController::closeEvent(QCloseEvent *ce)
 {
     Q_UNUSED(ce)
     qDebug() << "MainFormController: closeEvent";
-    /*
     bool mode = mHeightMapMode;
     mHeightMapMode = false;
 
@@ -441,21 +549,19 @@ void MainFormController::closeEvent(QCloseEvent *ce)
             QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
     {
         ce->ignore();
-        mHeightMapFormController->setHeightMapMode(mode);
         return;
     }
 
-    if (mSerialPortModel.isPortOpen())
+    if (mGrblMachineModel.isPortOpen())
     {
-        mSerialPortModel.closePort();
+        mGrblMachineModel.closePort();
     }
 
-    if (mCommandsQueue.length() > 0)
+    if (mGrblMachineModel.commandsQueueLength() > 0)
     {
-        mCommandsList.clear();
-        mCommandsQueue.clear();
+        mGrblMachineModel.clearCommandsList();
+        mGrblMachineModel.clearCommandsQueue();
     }
-    */
 }
 
 void MainFormController::dragEnterEvent(QDragEnterEvent *dee)
@@ -548,36 +654,9 @@ void MainFormController::storeParserState()
 void MainFormController::onActSettingsTriggered()
 {
     qDebug() << "MainFormController: onActSettingsTriggered";
-    if (mSettingsFormController.exec())
+    if(mSettingsFormController.exec())
     {
-        qDebug() << "MainFormController: Applying settings";
-        qDebug() << "Port:" << mSettingsFormController.getPortName()
-                 << "Baud:" << mSettingsFormController.getBaudRate();
-
-        if  (
-             mSettingsFormController.getPortName() != "" &&
-             (
-                 mSettingsFormController.getPortName() != mSerialPortModel.getPortName() ||
-                 mSettingsFormController.getBaudRate() != mSerialPortModel.getBaudRate()
-                 )
-             ) {
-
-            if (mSerialPortModel.isPortOpen())
-            {
-                mSerialPortModel.closePort();
-            }
-
-            mSerialPortModel.setPortName(mSettingsFormController.getPortName());
-            mSerialPortModel.setBaudRate(mSettingsFormController.getBaudRate());
-            mSerialPortModel.openPort();
-        }
-
-        mUi.controlFormController->updateControlsState();
-        mSettingsFormController.applySettings();
-    }
-    else
-    {
-        mSettingsFormController.undo();
+        qDebug() << "MainFormController: Settings should be applied here";
     }
 }
 
@@ -794,56 +873,7 @@ void MainFormController::onActAboutTriggered()
     mAboutFormController.exec();
 }
 
-bool MainFormController::dataIsEnd(QString data)
-{
-    qDebug() << "MainFormController: dataIsEnd";
-    QStringList ends;
 
-    ends << "ok";
-    ends << "error";
-    //    ends << "Reset to continue";
-    //    ends << "'$' for help";
-    //    ends << "'$H'|'$X' to unlock";
-    //    ends << "Caution: Unlocked";
-    //    ends << "Enabled";
-    //    ends << "Disabled";
-    //    ends << "Check Door";
-    //    ends << "Pgm End";
-
-    foreach (QString str, ends)
-    {
-        if (data.contains(str))
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool MainFormController::dataIsFloating(QString data)
-{
-    qDebug() << "MainFormController: dataIsFloating";
-    QStringList ends;
-
-    ends << "Reset to continue";
-    ends << "'$H'|'$X' to unlock";
-    ends << "ALARM: Soft limit";
-    ends << "ALARM: Hard limit";
-    ends << "Check Door";
-
-    foreach (QString str, ends)
-    {
-        if (data.contains(str)) return true;
-    }
-    return false;
-}
-
-bool MainFormController::dataIsReset(QString data)
-{
-    qDebug() << "MainFormController: dataIsReset";
-    return QRegExp("^GRBL|GCARVIN\\s\\d\\.\\d.").indexIn(data.toUpper()) != -1;
-}
 
 void MainFormController::onGripFeedToggled(bool checked)
 {
@@ -922,14 +952,9 @@ void MainFormController::onHeightMapFileLoadFinished()
 {
     qDebug() << "MainFormController: onHeightMapFileLoadFinished";
     setFormMode(MAIN_FORM_MODE_HEIGHTMAP);
-    qDebug() << "MainFormController: HeightMapFileModel says a new file \
-                has loaded, do appropriate things...";
-
-            onStatusUpdate(
-                QString("Opened HeightMap File %s").arg(
-                    mGcodeFileModel.getCurrentFileName()
-                    )
-                );
+    onStatusBarUpdate(
+        QString("Opened HeightMap File %s").arg(mGcodeFileModel.getCurrentFileName())
+    );
 }
 
 void MainFormController::showEvent(QShowEvent* se)
@@ -1209,8 +1234,6 @@ void MainFormController::onActRecentClearTriggered()
     */
 }
 
-
-
 void MainFormController::onRecentHeightMapFilesChanged()
 {
     qDebug() << "MainFormController: onRecentHeightMapFilesChanged";
@@ -1225,7 +1248,12 @@ void MainFormController::onRecentGcodeFilesChanged()
     populateRecentGcodeFilesMenu();
 }
 
-void MainFormController::onStatusUpdate(QString status)
+void MainFormController::onStatusTextUpdate(QString status)
+{
+   mUi.stateFormController->setStatusText(status);
+}
+
+void MainFormController::onStatusBarUpdate(QString status)
 {
     qDebug() << "MainFormController: onStatusUpdate";
     mUi.statusBar->showMessage(status);
@@ -1236,16 +1264,14 @@ void MainFormController::onGcodeFileLoadStarted()
     qDebug() << "MainFormController: onGcodeFileLoadStarted";
 }
 
-void MainFormController::onGcodeFileLoadFinished()
+void MainFormController::onGcodeFileLoadFinished(QList<GcodeItem> items)
 {
+    Q_UNUSED(items)
     qDebug() << "MainFormController: onGcodeFileLoadFinished";
     setFormMode(MAIN_FORM_MODE_GERBER);
-    qDebug() << "MainFormController: GcodeFileModel says a new file has loaded"
-             << ", do appropriate things...";
-
-    onStatusUpdate(
-                QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName())
-                );
+    onStatusBarUpdate(
+        QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName())
+    );
 }
 
 void MainFormController::onCommandSent(QString command, int len)

@@ -28,12 +28,13 @@ class JogFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit JogFormController(QWidget *parent = nullptr);
-    ~JogFormController();
+    ~JogFormController() override;
 
     void blockJogForRapidMovement(bool repeated = false);
+    void setFormActive(bool active) override;
 
 signals:
-    void statusUpdateSignal(QString);
+    void statusBarUpdateSignal(QString);
 public slots:
     // Jog
     void onCmdYPlusClicked();

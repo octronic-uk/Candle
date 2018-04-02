@@ -6,28 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>654</height>
+    <width>657</width>
+    <height>686</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Settings</string>
-  </property>
-  <property name="styleSheet">
-   <string notr="true">/*QWidget {
-	font-size: 9pt;
-}*/
-
-QSpinBox, QDoubleSpinBox {
-	padding-top: 1px;
-	padding-bottom: 1px;
-}
-
-QGroupBox {
-	border: none;
-	padding-top: 16;
-	font-weight: bold;
-}</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -38,7 +22,7 @@ QGroupBox {
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="Connection" native="true">
+     <widget class="QWidget" name="Connection">
       <attribute name="title">
        <string>Connection</string>
       </attribute>
@@ -65,7 +49,7 @@ QGroupBox {
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cboPort">
+             <widget class="QComboBox" name="serialPortNameBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -78,7 +62,7 @@ QGroupBox {
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="cmdRefresh">
+             <widget class="QToolButton" name="serialPortRefreshButton">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -98,8 +82,8 @@ QGroupBox {
                <string>...</string>
               </property>
               <property name="icon">
-               <iconset>
-                <normaloff>:/images/restart.png</normaloff>:/images/restart.png</iconset>
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/PNG/refresh.png</normaloff>:/Images/PNG/refresh.png</iconset>
               </property>
              </widget>
             </item>
@@ -115,7 +99,7 @@ QGroupBox {
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cboBaud">
+             <widget class="QComboBox" name="serialBaudRateBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -126,7 +110,7 @@ QGroupBox {
                <bool>true</bool>
               </property>
               <property name="currentText">
-               <string>9600</string>
+               <string notr="true"/>
               </property>
               <item>
                <property name="text">
@@ -352,11 +336,6 @@ QGroupBox {
               </item>
               <item>
                <widget class="QDoubleSpinBox" name="txtLineWidth">
-                <property name="font">
-                 <font>
-                  <pointsize>13</pointsize>
-                 </font>
-                </property>
                 <property name="alignment">
                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
@@ -891,11 +870,6 @@ QGroupBox {
            <layout class="QGridLayout" name="gridLayout_2" columnstretch="0,1,0,0,1">
             <item row="2" column="1">
              <widget class="QSpinBox" name="txtSpindleSpeedMin">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -916,11 +890,6 @@ QGroupBox {
             </item>
             <item row="0" column="1">
              <widget class="QSpinBox" name="txtQueryStateTime">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -984,11 +953,6 @@ QGroupBox {
             </item>
             <item row="1" column="1">
              <widget class="QSpinBox" name="txtRapidSpeed">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1009,11 +973,6 @@ QGroupBox {
             </item>
             <item row="1" column="4">
              <widget class="QSpinBox" name="txtAcceleration">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1041,11 +1000,6 @@ QGroupBox {
             </item>
             <item row="2" column="4">
              <widget class="QSpinBox" name="txtSpindleSpeedMax">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1066,11 +1020,6 @@ QGroupBox {
             </item>
             <item row="3" column="1">
              <widget class="QSpinBox" name="txtLaserPowerMin">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1091,11 +1040,6 @@ QGroupBox {
             </item>
             <item row="3" column="4">
              <widget class="QSpinBox" name="txtLaserPowerMax">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1380,11 +1324,6 @@ QGroupBox {
             </item>
             <item row="3" column="2">
              <widget class="QSpinBox" name="txtHeightMapProbingFeed">
-              <property name="font">
-               <font>
-                <pointsize>13</pointsize>
-               </font>
-              </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
               </property>
@@ -1421,9 +1360,9 @@ QGroupBox {
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="cmdDefaults">
+      <widget class="QPushButton" name="restoreDefaultsButton">
        <property name="text">
-        <string>Set to defaults</string>
+        <string>Restore Defaults</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -1444,19 +1383,9 @@ QGroupBox {
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="cmdOK">
+      <widget class="QPushButton" name="closeButton">
        <property name="text">
-        <string>OK</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="cmdCancel">
-       <property name="text">
-        <string>Cancel</string>
+        <string>Close</string>
        </property>
        <property name="autoDefault">
         <bool>false</bool>
@@ -1468,10 +1397,11 @@ QGroupBox {
   </layout>
  </widget>
  <tabstops>
-  <tabstop>cmdDefaults</tabstop>
-  <tabstop>cmdOK</tabstop>
-  <tabstop>cmdCancel</tabstop>
+  <tabstop>restoreDefaultsButton</tabstop>
+  <tabstop>closeButton</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../Resources/Images.qrc"/>
+ </resources>
  <connections/>
 </ui>

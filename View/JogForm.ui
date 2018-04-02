@@ -50,8 +50,116 @@
             <property name="verticalSpacing">
              <number>0</number>
             </property>
+            <item row="1" column="0">
+             <widget class="QToolButton" name="jogXMinus">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>X-</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-left.svg</normaloff>:/Images/SVG/chevron-circle-left.svg</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QToolButton" name="jogXPlusYPlus">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-up-right.svg</normaloff>:/Images/SVG/chevron-circle-up-right.svg</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QToolButton" name="jogXPlusYMinus">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>48</width>
+                <height>48</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../Resources/Images.qrc">
+                <normaloff>:/Images/SVG/chevron-circle-down-right.svg</normaloff>:/Images/SVG/chevron-circle-down-right.svg</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>32</width>
+                <height>32</height>
+               </size>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
-             <widget class="QPushButton" name="jogXMinuxYPlus">
+             <widget class="QToolButton" name="jogXMinuxYPlus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -86,7 +194,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QPushButton" name="jogYPlus">
+             <widget class="QToolButton" name="jogYPlus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -129,81 +237,8 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="jogXPlusYPlus">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Resources/Images.qrc">
-                <normaloff>:/Images/SVG/chevron-circle-up-right.svg</normaloff>:/Images/SVG/chevron-circle-up-right.svg</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QPushButton" name="jogXMinus">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="toolTip">
-               <string>X-</string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Resources/Images.qrc">
-                <normaloff>:/Images/SVG/chevron-circle-left.svg</normaloff>:/Images/SVG/chevron-circle-left.svg</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="1">
-             <widget class="QPushButton" name="jogOrigin">
+             <widget class="QToolButton" name="jogOrigin">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -238,7 +273,7 @@
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QPushButton" name="jogXPlus">
+             <widget class="QToolButton" name="jogXPlus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -266,41 +301,6 @@
               <property name="icon">
                <iconset resource="../Resources/Images.qrc">
                 <normaloff>:/Images/SVG/chevron-circle-right.svg</normaloff>:/Images/SVG/chevron-circle-right.svg</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>32</width>
-                <height>32</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QPushButton" name="jogXMinusYMinus">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="baseSize">
-               <size>
-                <width>48</width>
-                <height>48</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Resources/Images.qrc">
-                <normaloff>:/Images/SVG/chevron-circle-down-left.svg</normaloff>:/Images/SVG/chevron-circle-down-left.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -348,8 +348,8 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="2">
-             <widget class="QPushButton" name="jogXPlusYMinus">
+            <item row="2" column="0">
+             <widget class="QToolButton" name="jogXMinusYMinus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -373,7 +373,7 @@
               </property>
               <property name="icon">
                <iconset resource="../Resources/Images.qrc">
-                <normaloff>:/Images/SVG/chevron-circle-down-right.svg</normaloff>:/Images/SVG/chevron-circle-down-right.svg</iconset>
+                <normaloff>:/Images/SVG/chevron-circle-down-left.svg</normaloff>:/Images/SVG/chevron-circle-down-left.svg</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -391,7 +391,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QPushButton" name="jogZPlus">
+             <widget class="QToolButton" name="jogZPlus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -429,7 +429,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="jogZMinus">
+             <widget class="QToolButton" name="jogZMinus">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -576,7 +576,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QPushButton" name="keyboardControlPushButton">
+       <widget class="QToolButton" name="keyboardControlToolButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
           <horstretch>0</horstretch>
@@ -623,11 +623,6 @@
             <height>0</height>
            </size>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>13</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>0.01</string>
           </property>
@@ -640,7 +635,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="jogPreset_0_1">
+         <widget class="QToolButton" name="jogPreset_0_1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -665,7 +660,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="jogPreset_1">
+         <widget class="QToolButton" name="jogPreset_1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -687,13 +682,10 @@
           <property name="autoExclusive">
            <bool>true</bool>
           </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="jogPreset_10">
+         <widget class="QToolButton" name="jogPreset_10">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -718,7 +710,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="jogPreset_100">
+         <widget class="QToolButton" name="jogPreset_100">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -769,7 +761,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QToolButton" name="toolButton">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -805,7 +797,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QToolButton" name="toolButton_2">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -841,7 +833,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QToolButton" name="toolButton_3">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>

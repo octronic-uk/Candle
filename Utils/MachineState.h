@@ -18,18 +18,78 @@
 
 #pragma once
 
-namespace CocoanutCNC
+#include <QVector3D>
+#include <QMetaType>
+#include <QString>
+
+enum MachineStateEnum
 {
-    enum MachineState
+    Unknown = 0,
+    Idle,
+    Alarm,
+    Run,
+    Home,
+    Hold,
+    Queue,
+    Check,
+    Door
+};
+
+Q_DECLARE_METATYPE(MachineStateEnum)
+
+class MachineState
+{
+public:
+    MachineState()
+        : mStatus(Unknown),
+          mWorkPosition(QVector3D(0.0,0.0,0.0)),
+          mMachinePosition(QVector3D(0.0,0.0,0.0)) {}
+
+    ~MachineState() {}
+
+    QVector3D getMachinePosition() { return mMachinePosition;  }
+    float getMachinePositionX() { return mMachinePosition.x(); }
+    float getMachinePositionY() { return mMachinePosition.y(); }
+    float getMachinePositionZ() { return mMachinePosition.z(); }
+
+    QVector3D getWorkPosition() { return mWorkPosition; }
+    float getWorkPositionX() { return mWorkPosition.x(); }
+    float getWorkPositionY() { return mWorkPosition.y(); }
+    float getWorkPositionZ() { return mWorkPosition.z(); }
+
+    MachineStateEnum getStatus() { return mStatus; }
+    void setStatus(MachineStateEnum status) { mStatus = status; }
+
+    static QString enumToQString(MachineStateEnum status)
     {
-        MACHINE_STATE_UNKNOWN,
-        MACHINE_STATE_IDLE,
-        MACHINE_STATE_ALARM,
-        MACHINE_STATE_RUN,
-        MACHINE_STATE_HOME,
-        MACHINE_STATE_HOLD,
-        MACHINE_STATE_QUEUE,
-        MACHINE_STATE_CHECK,
-        MACHINE_STATE_DOOR
-    };
-}
+        switch (status)
+        {
+            case Unknown:
+                return QString("Unknown");
+            case Idle:
+                return QString("Idle");
+            case Alarm:
+                return QString("Alarm");
+            case Run:
+                return QString("Running");
+            case Home:
+                return QString("Home");
+            case Hold:
+                return QString("Hold");
+            case Queue:
+                return QString("Queue");
+            case Check:
+                return QString("Check");
+            case Door:
+                return QString("Door");
+        }
+        return QString("Invalid Status");
+    }
+
+private:
+    MachineStateEnum mStatus;
+    QVector3D mWorkPosition;
+    QVector3D mMachinePosition;
+};
+
+

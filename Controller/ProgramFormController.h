@@ -33,7 +33,7 @@ class ProgramFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit ProgramFormController(QWidget *parent = nullptr);
-    ~ProgramFormController();
+    ~ProgramFormController() override;
 
     bool isPauseChecked();
     void setPauseChecked(bool);
@@ -42,12 +42,14 @@ public:
     void setAutoScrollChecked(bool);
     int getChkTestModeWidth(); // sizehint->width
     int getChkAutoScrollWidth(); // sizehint->width
+    void setFormActive(bool active) override;
 
 signals:
     void setKeyboardControlSignal(bool);
     void programAbortSignal();
     void programPauseSignal(QString);
     void programResetSignal();
+    void sendNextFileCommandsSignal();
 public slots:
     void onReserveGcodeRowsSignal(int);
     void onTestModeButtonClicked(bool checked);

@@ -96,5 +96,6 @@
         <file>Images/SVG/user.svg</file>
         <file>Images/SVG/paper-plane.svg</file>
         <file>Images/PNG/Cocoanut.png</file>
+        <file>Images/SVG/grid.svg</file>
     </qresource>
 </RCC>

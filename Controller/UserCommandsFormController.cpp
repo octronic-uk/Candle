@@ -32,6 +32,11 @@ UserCommandsFormController::~UserCommandsFormController()
 
 }
 
+void UserCommandsFormController::setFormActive(bool active)
+{
+
+}
+
 void UserCommandsFormController::onCmdUserClicked(bool checked)
 {
     /*

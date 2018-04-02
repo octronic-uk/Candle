@@ -61,7 +61,7 @@
        <enum>Qt::Vertical</enum>
       </property>
       <widget class="VisualisationFormController" name="visualisationFormController"/>
-      <widget class="ProgramFormController" name="programForm" native="true">
+      <widget class="ProgramFormController" name="programFormController" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -181,6 +181,9 @@
      <height>67</height>
     </size>
    </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -221,33 +224,6 @@
     <number>2</number>
    </attribute>
    <widget class="ConsoleFormController" name="consoleFormController"/>
-  </widget>
-  <widget class="QDockWidget" name="userCommandsDockWidget">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>67</width>
-     <height>67</height>
-    </size>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>User</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="UserCommandsFormController" name="userCommandsFormController"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -442,12 +418,6 @@
    <class>ProgramFormController</class>
    <extends>QWidget</extends>
    <header>Controller/ProgramFormController.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>UserCommandsFormController</class>
-   <extends>QWidget</extends>
-   <header>Controller/UserCommandsFormController.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

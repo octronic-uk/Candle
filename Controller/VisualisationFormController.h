@@ -40,6 +40,7 @@ class VisualisationFormController : public AbstractFormController
 public:
     explicit VisualisationFormController(QWidget *parent = nullptr);
     ~VisualisationFormController() override;
+    void setFormActive(bool active) override;
 signals:
     void spindleEnabledSignal(bool);
 public slots:
@@ -62,6 +63,9 @@ public slots:
     void onGcodeFileLoadStarted();
     void onGcodeFileLoadFinished(QList<GcodeItem>);
     void onGcodeParserUpdated(GcodeParser*);
+
+    void onToggleGridButtonToggled(bool toggled);
+    void onToggleToolButtonToggled(bool toggled);
 private slots:
 
 private:

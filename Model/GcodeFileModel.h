@@ -20,6 +20,8 @@
 
 #include <QObject>
 #include <QFile>
+#include <QTime>
+
 #include "Model/Tables/GcodeTableModel.h"
 #include "Parser/GcodeParser.h"
 
@@ -40,9 +42,11 @@ public:
     void setFileChanged(bool changed);
     QTime updateProgramEstimatedTime(QList<LineSegment*> lines);
     QString getCurrentFileName();
+    GcodeItem getCommand(int index);
+    int countCommands();
 
 signals:
-    void statusUpdateSignal(QString);
+    void statusBarUpdateSignal(QString);
     void gcodeFileLoadStartedSignal();
     void gcodeFileLoadFinishedSignal(QList<GcodeItem>);
     void nextGcodeLineReadySignal(GcodeItem);

@@ -1,7 +1,7 @@
 /*
- * SettingsModel.h
+ * IndexOutOfBoundsException.h
  *
- * Created: 24 2018 by Ashley
+ * Created: 02 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -18,24 +18,13 @@
 
 #pragma once
 
-#include <QDir>
-#include "Model/Settings/AbstractSettingsModel.h"
+#include <exception>
 
-class IniFileSettingsModel : public AbstractSettingsModel
+class IndexOutOfBoundsException : public std::exception
 {
-    Q_OBJECT
 public:
-    IniFileSettingsModel(QObject *parent=nullptr);
-    ~IniFileSettingsModel() override;
-signals:
-    void settingChangedSignal(QString groupName, QString settingName, QVariant value);
-
-public slots:
-    void onLoadSettings() override;
-    void onSaveSettings() override;
+    IndexOutOfBoundsException(int index);
+    int getIndex();
 private:
-    void preload();
-    QDir mSettingsDirectory;
-    QString mSettingsFilePath;
-    const QString mFileName = "settings.ini";
+    int mIndex;
 };

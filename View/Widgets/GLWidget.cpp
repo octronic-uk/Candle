@@ -24,9 +24,10 @@ GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent),
       mShaderProgram(nullptr),
 #endif
+     mProjectionMode(ProjectionMode::PERSPECTIVE),
      mColorText(QColor("White")),
-     mColorBackground(QColor("DarkGray")),
-     mProjectionMode(ProjectionMode::PERSPECTIVE)
+     mColorBackground(QColor("LightGray")),
+     mNearPlane(2)
 {
     mAnimateView = false;
     mUpdatesEnabled = false;
@@ -41,7 +42,7 @@ GLWidget::GLWidget(QWidget *parent)
 
     mXPan = 0;
     mYPan = 0;
-    m_distance = 100;
+    mDistance = 100;
 
     mXLookAt = 0;
     mYLookAt = 0;
@@ -77,7 +78,7 @@ GLWidget::~GLWidget()
     }
 }
 
-double GLWidget::calculateVolume(QVector3D size)
+float GLWidget::calculateVolume(QVector3D size)
 {
     return size.x() * size.y() * size.z();
 }
@@ -91,26 +92,25 @@ void GLWidget::fitDrawable(ShaderDrawable *drawable)
 {
     stopViewAnimation();
 
-    if (drawable != NULL)
+    if (drawable != nullptr)
     {
         updateExtremes(drawable);
 
-        double a = mYSize / 2 / 0.25 * 1.3
-                + (mZMax - mZMin) / 2;
-        double b = mXSize / 2 / 0.25 * 1.3
-                / ((double)width() / height())
-                + (mZMax - mZMin) / 2;
-        m_distance = qMax(a, b);
+        float a = mYSize / 2 / 0.25 * 1.3 + (mZMax - mZMin) / 2;
+        float b = mXSize / 2 / 0.25 * 1.3 / ((float)width() / height()) + (mZMax - mZMin) / 2;
+        mDistance = qMax(a, b);
 
-        if (m_distance == 0) m_distance = 200;
-
+        if (mDistance == 0)
+        {
+            mDistance = 200;
+        }
         mXLookAt = (mXMax - mXMin) / 2 + mXMin;
         mZLookAt = -((mYMax - mYMin) / 2 + mYMin);
         mYLookAt = (mZMax - mZMin) / 2 + mZMin;
     }
     else
     {
-        m_distance = 200;
+        mDistance = 200;
         mXLookAt = 0;
         mYLookAt = 0;
         mZLookAt = 0;
@@ -217,15 +217,15 @@ void GLWidget::onFramesTimer()
 
 void GLWidget::viewAnimation()
 {
-    double t = (double)mAnimationFrame++ / (mFps * 0.2);
+    float t = (float)mAnimationFrame++ / (mFps * 0.2);
 
     if (t >= 1) stopViewAnimation();
 
     QEasingCurve ec(QEasingCurve::OutExpo);
-    double val = ec.valueForProgress(t);
+    float val = ec.valueForProgress(t);
 
-    mXRot = mXRotStored + double(mXRotTarget - mXRotStored) * val;
-    mYRot = mYRotStored + double(mYRotTarget - mYRotStored) * val;
+    mXRot = mXRotStored + float(mXRotTarget - mXRotStored) * val;
+    mYRot = mYRotStored + float(mYRotTarget - mYRotStored) * val;
 
     updateView();
 }
@@ -291,12 +291,12 @@ void GLWidget::setParserStatus(const QString &parserStatus)
 }
 
 
-double GLWidget::lineWidth() const
+float GLWidget::lineWidth() const
 {
     return mLineWidth;
 }
 
-void GLWidget::setLineWidth(double lineWidth)
+void GLWidget::setLineWidth(float lineWidth)
 {
     mLineWidth = lineWidth;
 }
@@ -429,30 +429,17 @@ void GLWidget::updateProjection()
     // Reset projection
     mProjectionMatrix.setToIdentity();
 
-    double asp = (double)width() / height();
-    ;
+    float asp = static_cast<float>(width()) / static_cast<float>(height());
 
-    switch (mProjectionMode)
-    {
-       case ProjectionMode::ORTHO:
-            mProjectionMatrix.ortho(
-                QRect(
-                    QPoint((-0.5 + mXPan) * asp, (0.5 + mXPan) * asp),
-                    QPoint(-0.5 + mYPan, 0.5 + mYPan)
-                )
-            );
-            break;
-        case ProjectionMode::PERSPECTIVE:
-            mProjectionMatrix.frustum(
-                (-0.5 + mXPan) * asp,
-                (0.5 + mXPan) * asp,
-                -0.5 + mYPan,
-                0.5 + mYPan,
-                2,
-                m_distance * 2
-            );
-            break;
-    }
+    mProjectionMatrix.frustum
+    (
+        (-0.5f + mXPan) * asp,
+        (0.5f + mXPan) * asp,
+        -0.5f + mYPan,
+        0.5f + mYPan,
+        mNearPlane,
+        mDistance * 2
+    );
 }
 
 void GLWidget::updateView()
@@ -460,9 +447,9 @@ void GLWidget::updateView()
     // Set view matrix
     mViewMatrix.setToIdentity();
 
-    double r = m_distance;
-    double angY = M_PI / 180 * mYRot;
-    double angX = M_PI / 180 * mXRot;
+    float r = mDistance;
+    float angY = M_PI / 180 * mYRot;
+    float angX = M_PI / 180 * mXRot;
 
     QVector3D eye(
         r * cos(angX) * sin(angY) + mXLookAt,
@@ -546,7 +533,12 @@ void GLWidget::paintEvent(QPaintEvent *pe)
 
         // Update geometries in current opengl context
         foreach (ShaderDrawable *drawable, mShaderDrawables)
-            if (drawable->needsUpdateGeometry()) drawable->updateGeometry(mShaderProgram);
+        {
+            if (drawable->needsUpdateGeometry())
+            {
+                drawable->updateGeometry(mShaderProgram);
+            }
+        }
 
         // Draw geometries
         foreach (ShaderDrawable *drawable, mShaderDrawables)
@@ -570,8 +562,8 @@ void GLWidget::paintEvent(QPaintEvent *pe)
 
     painter.endNativePainting();
 
-    double x = 10;
-    double y = height() - 60;
+    float x = 10;
+    float y = height() - 60;
 
     QRect backBox(0,y-20, width(), height() - y + 20 );
     QColor backBoxColor = QColor("Black");
@@ -651,8 +643,8 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
             event->buttons() & Qt::RightButton
          )
     {
-        mXPan = mXLastPan - (event->pos().x() - mLastPos.x()) * 1 / (double)width();
-        mYPan = mYLastPan + (event->pos().y() - mLastPos.y()) * 1 / (double)height();
+        mXPan = mXLastPan - (event->pos().x() - mLastPos.x()) * 1 / (float)width();
+        mYPan = mYLastPan + (event->pos().y() - mLastPos.y()) * 1 / (float)height();
 
         updateProjection();
     }
@@ -663,15 +655,15 @@ void GLWidget::wheelEvent(QWheelEvent *we)
 {
     if (mZoom > 0.1 && we->delta() < 0)
     {
-        mXPan -= ((double)we->pos().x() / width() - 0.5 + mXPan) * (1 - 1 / ZOOMSTEP);
-        mYPan += ((double)we->pos().y() / height() - 0.5 - mYPan) * (1 - 1 / ZOOMSTEP);
+        mXPan -= ((float)we->pos().x() / width() - 0.5 + mXPan) * (1 - 1 / ZOOMSTEP);
+        mYPan += ((float)we->pos().y() / height() - 0.5 - mYPan) * (1 - 1 / ZOOMSTEP);
 
         mZoom /= ZOOMSTEP;
     }
     else if (mZoom < 10 && we->delta() > 0)
     {
-        mXPan -= ((double)we->pos().x() / width() - 0.5 + mXPan) * (1 - ZOOMSTEP);
-        mYPan += ((double)we->pos().y() / height() - 0.5 - mYPan) * (1 - ZOOMSTEP);
+        mXPan -= ((float)we->pos().x() / width() - 0.5 + mXPan) * (1 - ZOOMSTEP);
+        mYPan += ((float)we->pos().y() / height() - 0.5 - mYPan) * (1 - ZOOMSTEP);
 
         mZoom *= ZOOMSTEP;
     }
@@ -702,7 +694,7 @@ void GLWidget::timerEvent(QTimerEvent *te)
     */
 }
 
-double GLWidget::normalizeAngle(double angle)
+float GLWidget::normalizeAngle(float angle)
 {
     while (angle < 0) angle += 360;
     while (angle > 360) angle -= 360;

@@ -2,7 +2,7 @@
 
 OriginDrawer::OriginDrawer()
 {
-    mLineWidth = 3;
+    mLineWidth = 10;
 }
 
 OriginDrawer::~OriginDrawer()
@@ -44,14 +44,14 @@ bool OriginDrawer::updateData()
         {QVector3D(0, 0, 10), QVector3D(0.0, 0.0, 1.0), QVector3D(sNan, sNan, sNan)},
 
         // 2x2 rect
-        {QVector3D(1, 1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(-1, 1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(-1, 1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(-1, -1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(-1, -1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(1, -1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(1, -1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
-        {QVector3D(1, 1, 0), QVector3D(1.0, 0.0, 0.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(1, 1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(-1, 1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(-1, 1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(-1, -1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(-1, -1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(1, -1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(1, -1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
+        {QVector3D(1, 1, 0), QVector3D(1.0, 1.0, 1.0), QVector3D(sNan, sNan, sNan)},
     };
     return true;
 }

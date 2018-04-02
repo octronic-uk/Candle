@@ -1,7 +1,7 @@
 /*
- * AbstractFormController.h
+ * IndexOutOfBoundsException.cpp
  *
- * Created: 24 2018 by Ashley
+ * Created: 02 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -15,20 +15,16 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#include "IndexOutOfBoundsException.h"
 
-#pragma once
-
-#include <QWidget>
-#include <QtDebug>
-
-class AbstractFormController : public QWidget
+IndexOutOfBoundsException::IndexOutOfBoundsException(int index)
+    : std::exception(),
+      mIndex(index)
 {
-    Q_OBJECT
-public:
-    explicit AbstractFormController(QWidget *parent = nullptr);
-    virtual ~AbstractFormController() = 0;
-    virtual void setupSignalSlots() = 0;
-    virtual void setFormActive(bool);
-signals:
-    void statusUpdateSignal(QString status);
-};
+
+}
+
+int IndexOutOfBoundsException::getIndex()
+{
+   return mIndex;
+}

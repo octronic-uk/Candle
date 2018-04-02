@@ -76,6 +76,11 @@ void ControlFormController::setupSignalSlots()
     qDebug() << "ControlFormController: Setup Signals/Slots";
 }
 
+void ControlFormController::setFormActive(bool active)
+{
+
+}
+
 void ControlFormController::onCmdRestoreOriginClicked()
 {
     /*

@@ -46,6 +46,11 @@ QString SpindleFormController::getSpindleSpeed()
 
 }
 
+void SpindleFormController::setFormActive(bool active)
+{
+
+}
+
 void SpindleFormController::onCmdSpindleToggled(bool checked)
 {
     /*

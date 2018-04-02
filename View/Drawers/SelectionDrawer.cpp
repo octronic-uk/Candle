@@ -11,9 +11,8 @@ SelectionDrawer::SelectionDrawer()
 bool SelectionDrawer::updateData()
 {
     mPoints.clear();
-
     VertexData vertex;
-    vertex.color = Util::colorToVector4(m_color);
+    vertex.color = Util::colorToVector(m_color);
     vertex.position = m_endPosition;
     vertex.start = QVector3D(sNan, sNan, mPointSize);
     mPoints.append(vertex);

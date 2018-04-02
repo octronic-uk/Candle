@@ -15,9 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include <QFile>
 #include <QDir>
-#include <QTime>
 
 #include <QtDebug>
 #include <QMessageBox> // TODO - Move these to view/controller
@@ -25,25 +25,24 @@
 
 #include "GcodeFileModel.h"
 #include "Model/Tables/GcodeTableModel.h"
+#include "Utils/IndexOutOfBoundsException.h"
 
 GcodeFileModel::GcodeFileModel(QObject *parent)
     : QObject(parent),
       mProgramLoading(false),
       mFileChanged(false)
 {
-    //qDebug() << "GcodeFileModel: Constructing";
+    qDebug() << "GcodeFileModel: Constructing";
 }
 
 GcodeFileModel::~GcodeFileModel()
 {
-    //qDebug() << "GcodeFileModel: Destructing";
+    qDebug() << "GcodeFileModel: Destructing";
 }
 
 void GcodeFileModel::load(QList<QString> data)
 {
-    //qDebug() << "GcodeFileModel: load(Qlist<QString>)";
-    QTime time;
-    time.start();
+    qDebug() << "GcodeFileModel: load(Qlist<QString>)";
 
     // Reset tables
     emit gcodeFileLoadStartedSignal();
@@ -74,9 +73,6 @@ void GcodeFileModel::load(QList<QString> data)
     // Prepare parser
     mGcodeParser.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
     //if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
-
-    //qDebug() << "GcodeFileModel: Prepared to load at time: " << time.elapsed();
-    time.start();
 
     // Block parser updates on table changes
     mProgramLoading = true;
@@ -145,12 +141,8 @@ void GcodeFileModel::load(QList<QString> data)
 //            if (progress.wasCanceled()) break;
 //        }
     }
+
     //progress.close();
-
-
-    //qDebug() << "GcodeFileModel: model filled at time " << time.elapsed();
-    time.start();
-
     //updateProgramEstimatedTime(mViewParser.getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
     //qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
 
@@ -158,22 +150,18 @@ void GcodeFileModel::load(QList<QString> data)
     emit gcodeFileLoadFinishedSignal(mData);
     emit gcodeParserUpdatedSignal(&mGcodeParser);
 
-    //  Update code drawer
-    //mCodeDrawer->update();
-    //mUi->glwVisualizer->fitDrawable(mCodeDrawer);
-
     //resetHeightmap();
     //updateControlsState();
 }
 
 void GcodeFileModel::load(QString fileName)
 {
-    //qDebug() << "GcodeFileModel: load(QString fileName)";
+    qDebug() << "GcodeFileModel: load(QString fileName)";
     mFile.setFileName(fileName);
 
     if (!mFile.open(QIODevice::ReadOnly))
     {
-        emit statusUpdateSignal(QString(tr("Can't open file") + fileName));
+        emit statusBarUpdateSignal(QString(tr("Can't open file") + fileName));
         return;
     }
 
@@ -237,8 +225,23 @@ QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
 
 QString GcodeFileModel::getCurrentFileName()
 {
-   //qDebug() << "GcodeFileModel: getCurrentFileName()";
+   qDebug() << "GcodeFileModel: getCurrentFileName()";
    return mFile.fileName();
+}
+
+GcodeItem GcodeFileModel::getCommand(int index)
+{
+    if (index < 0 || index > mData.count() -1)
+    {
+        throw new IndexOutOfBoundsException(index);
+    }
+
+    return mData.at(index);
+}
+
+int GcodeFileModel::countCommands()
+{
+   return mData.count();
 }
 
 
@@ -246,27 +249,32 @@ bool GcodeFileModel::save(QString fileName, GcodeTableModel *model)
 {
     Q_UNUSED(fileName)
     Q_UNUSED(model)
-   //qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
-    /*
+    qDebug() << "GcodeFileModel:save(QString, GcodeTableModel)";
+
     QFile file(fileName);
     QDir dir;
 
-    //qDebug() << "GcodeFileModel: Saving program";
+    qDebug() << "GcodeFileModel: Saving program";
 
-    if (file.exists()) dir.remove(file.fileName());
-    if (!file.open(QIODevice::WriteOnly)) return false;
+    if (file.exists())
+    {
+        dir.remove(file.fileName());
+    }
+
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        return false;
+    }
 
     QTextStream textStream(&file);
 
-    for (int i = 0; i < model->rowCount() - 1; i++) {
+    for (int i = 0; i < model->rowCount() - 1; i++)
+    {
         textStream << model->data(model->index(i, 1)).toString() << "\r\n";
     }
 
     file.close();
-
     return true;
-    */
-   return true;
 }
 
 
@@ -283,7 +291,7 @@ bool GcodeFileModel::isGcodeFile(QString fileName)
 
 bool GcodeFileModel::hasFileChanged()
 {
-    //qDebug() << "GcodeTableModel: hasFileChanged";
+    qDebug() << "GcodeTableModel: hasFileChanged";
     return mFileChanged;
 }
 

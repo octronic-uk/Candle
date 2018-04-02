@@ -35,7 +35,7 @@ class HeightMapFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit HeightMapFormController(QWidget *parent = nullptr);
-    ~HeightMapFormController();
+    ~HeightMapFormController() override;
     void updateHeightMapInterpolationDrawer(bool reset = false);
 
     void updateHeightMapGrid(double arg1);
@@ -44,6 +44,7 @@ public:
 
     void resizeTableHeightMapSections();
     void setHeightMapMode(bool);
+    void setFormActive(bool active) override;
 
 signals:
 public slots:

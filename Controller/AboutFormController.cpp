@@ -2,6 +2,9 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QDesktopServices>
+#include <QApplication>
+#include <QFile>
+#include <QUrl>
 #include "AboutFormController.h"
 
 AboutFormController::AboutFormController(QWidget *parent)
@@ -14,7 +17,7 @@ AboutFormController::AboutFormController(QWidget *parent)
          mUi.lblAbout->text().arg(qApp->applicationVersion())
     );
 
-    QFile file(qApp->applicationDirPath() + "/LICENSE");
+    QFile file(":/Misc/LICENSE");
 
     if (file.open(QIODevice::ReadOnly))
     {
@@ -29,23 +32,43 @@ AboutFormController::~AboutFormController()
     qDebug() << "AboutFormController: Destructing";
 }
 
+void AboutFormController::setFormActive(bool active)
+{
+   if (active)
+   {
+
+   }
+   else
+   {
+
+   }
+}
+
 void AboutFormController::exec()
 {
     mDialog.exec();
 }
 
-void AboutFormController::on_cmdOk_clicked()
+void AboutFormController::onCmdOkClicked()
 {
     mDialog.hide();
 }
 
-void AboutFormController::on_lblAbout_linkActivated(const QString &link)
+void AboutFormController::onLblAboutLinkActivated(const QString &link)
 {
     QDesktopServices::openUrl(link);
 }
 
 void AboutFormController::setupSignalSlots()
 {
-
     qDebug() << "AboutFormController: Setup Signals/Slots";
+    connect(
+        mUi.cmdOk, SIGNAL(clicked()),
+        this, SLOT(onCmdOkClicked())
+    );
+    connect(
+        mUi.lblAbout, SIGNAL(linkActivated(const QString&)),
+        this, SLOT(onLblAboutLinkActivated(const QString&))
+    );
+
 }

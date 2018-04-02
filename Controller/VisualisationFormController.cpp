@@ -69,6 +69,11 @@ VisualisationFormController::~VisualisationFormController()
     qDebug() << "VisualisationFormController: Destructing";
 }
 
+void VisualisationFormController::setFormActive(bool active)
+{
+
+}
+
 void VisualisationFormController::placeVisualizerButtons()
 {
     /*
@@ -204,37 +209,44 @@ void VisualisationFormController::updateParser()
 void VisualisationFormController::setupSignalSlots()
 {
     qDebug() << "VisualisationFormController: Setup Signals/Slots";
-    connect
-            (
-                getVisualiser(), SIGNAL(rotationChanged()),
-                this, SLOT(onVisualizatorRotationChanged())
-                );
-    connect
-            (
-                getVisualiser(), SIGNAL(resized()),
-                this, SLOT(placeVisualizerButtons())
-                );
+    connect(
+        getVisualiser(), SIGNAL(rotationChanged()),
+        this, SLOT(onVisualizatorRotationChanged())
+    );
+    connect(
+        getVisualiser(), SIGNAL(resized()),
+        this, SLOT(placeVisualizerButtons())
+    );
     // Command Buttons
     connect(
-                mUi.cmdFit, SIGNAL(clicked()),
-                this, SLOT(onFitButtonClicked())
-                );
+        mUi.cmdFit, SIGNAL(clicked()),
+        this, SLOT(onFitButtonClicked())
+    );
     connect(
-                mUi.cmdFront, SIGNAL(clicked()),
-                this, SLOT(onFrontButtonClicked())
-                );
+        mUi.cmdFront, SIGNAL(clicked()),
+        this, SLOT(onFrontButtonClicked())
+    );
     connect(
-                mUi.cmdIsometric, SIGNAL(clicked()),
-                this, SLOT(onCmdIsometricClicked())
-                );
+        mUi.cmdIsometric, SIGNAL(clicked()),
+        this, SLOT(onCmdIsometricClicked())
+    );
     connect(
-                mUi.cmdLeft, SIGNAL(clicked()),
-                this, SLOT(onLeftButtonClicked())
-                );
+        mUi.cmdLeft, SIGNAL(clicked()),
+        this, SLOT(onLeftButtonClicked())
+    );
     connect(
-                mUi.cmdTop, SIGNAL(clicked()),
-                this, SLOT(onTopButtonClicked())
-                );
+        mUi.cmdTop, SIGNAL(clicked()),
+        this, SLOT(onTopButtonClicked())
+    );
+    connect(
+        mUi.toggleGridButton, SIGNAL(toggled(bool)),
+        this, SLOT(onToggleGridButtonToggled(bool))
+    );
+    connect(
+        mUi.toggleToolButton, SIGNAL(toggled(bool)),
+        this, SLOT(onToggleToolButtonToggled(bool))
+    );
+
 }
 
 void VisualisationFormController::showEvent(QShowEvent *se)
@@ -302,4 +314,14 @@ void VisualisationFormController::onGcodeParserUpdated(GcodeParser *parser)
     mUi.glwVisualizer->setUpdatesEnabled(true);
     mUi.glwVisualizer->fitDrawable(&mCodeDrawer);
     mCodeDrawer.setVisible(true);
+}
+
+void VisualisationFormController::onToggleGridButtonToggled(bool toggled)
+{
+   mGridDrawer.setVisible(toggled);
+}
+
+void VisualisationFormController::onToggleToolButtonToggled(bool toggled)
+{
+   mToolDrawer.setVisible(toggled);
 }

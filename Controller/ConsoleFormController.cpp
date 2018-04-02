@@ -33,9 +33,8 @@ ConsoleFormController::ConsoleFormController(QWidget *parent)
 ConsoleFormController::~ConsoleFormController()
 {
     qDebug() << "Destructing ConsoleFormController";
-
-
 }
+
 void ConsoleFormController::onComboBoxCommandReturnPressed()
 {
     QString command = mUi.cboCommand->currentText();
@@ -46,12 +45,18 @@ void ConsoleFormController::onComboBoxCommandReturnPressed()
 
     mUi.cboCommand->setCurrentText("");
     emit commandSentSignal(command, -1);
-    //sendCommand(command, -1);
 }
 
 void ConsoleFormController::onCmdClearConsoleClicked()
 {
     mUi.txtConsole->clear();
+}
+
+void ConsoleFormController::setFormActive(bool active)
+{
+    mUi.cboCommand->setEnabled(active);
+    mUi.cmdClearConsole->setEnabled(active);
+    mUi.cmdCommandSend->setEnabled(active);
 }
 
 
@@ -64,18 +69,24 @@ void ConsoleFormController::onCmdCommandSendClicked()
         return;
     }
 
-    //mUi.cboCommand->storeText();
+    // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
     emit commandSentSignal(command,-1);
-    //sendCommand(command, -1);
+}
+
+void ConsoleFormController::onAppendToConsole(QString text)
+{
+    mUi.txtConsole->appendPlainText(text);
 }
 
 void ConsoleFormController::setupSignalSlots()
 {
     qDebug() << "ConsoleFormController: Setup Signals/Slots";
-    //connect(
-    //    mUi.cboCommand, SIGNAL(returnPressed()),
-    //    this, SLOT(onComboBoxCommandReturnPressed())
-    //);
+    /* Signal does not exist
+    connect(
+        mUi.cboCommand, SIGNAL(returnPressed()),
+        this, SLOT(onComboBoxCommandReturnPressed())
+    );
+    */
 }
 

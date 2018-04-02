@@ -23,7 +23,7 @@
 class GridDrawer : public ShaderDrawable
 {
 public:
-    GridDrawer(float size = 1000, float major = 100, float minor = 10);
+    GridDrawer(float size = 100, float major = 10, float minor = 1);
     virtual ~GridDrawer() override;
 
     // ShaderDrawable interface

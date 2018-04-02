@@ -167,6 +167,52 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="toggleToolButton">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/PNG/cutter.png</normaloff>:/Images/PNG/cutter.png</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toggleGridButton">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/SVG/grid.svg</normaloff>:/Images/SVG/grid.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

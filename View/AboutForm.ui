@@ -6,12 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>431</width>
+    <width>479</width>
     <height>500</height>
    </rect>
-  </property>
-  <property name="font">
-   <font/>
   </property>
   <property name="windowTitle">
    <string>About CocoanutCNC</string>
@@ -62,11 +59,8 @@
      </item>
      <item>
       <widget class="QLabel" name="lblAbout">
-       <property name="font">
-        <font/>
-       </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CocoanutCNC&lt;br/&gt;Version: %1&lt;br/&gt;License: GNU GENERAL PUBLIC LICENSE&lt;br/&gt;Visit: &lt;a href=&quot;https://github.com/Denvi/CocoanutCNC/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/octronic-uk/CocoanutCNC.git&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;© 2018 octronic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CocoanutCNC&lt;br/&gt;Version: %1&lt;br/&gt;License: GNU GENERAL PUBLIC LICENSE&lt;br/&gt;Visit: &lt;a href=&quot;https://github.com/octronic-uk/CocoanutCNC.git&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/octronic-uk/CocoanutCNC.git&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;© 2018 octronic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -90,11 +84,8 @@
    </item>
    <item>
     <widget class="QLabel" name="label_2">
-     <property name="font">
-      <font/>
-     </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;The program is provided AS IS without any guarantees or warranty. Use at your own risk.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span &gt;The program is provided AS IS without any guarantees or warranty. Use at your own risk.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -103,11 +94,6 @@
    </item>
    <item>
     <widget class="QPlainTextEdit" name="txtLicense">
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-      </font>
-     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>

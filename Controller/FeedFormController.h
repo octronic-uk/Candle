@@ -28,7 +28,7 @@ class FeedFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit FeedFormController(QWidget *parent = nullptr);
-    ~FeedFormController();
+    ~FeedFormController() override;
 
     bool isUpdatingFeed();
     void setUpdatingFeed(bool updating);
@@ -36,7 +36,8 @@ public:
     double getOriginalFeedRate();
     bool isFeedOverrideChecked();
 
-    double getTxtFeedValue();
+    double getFeedOverrideValue();
+    void setFormActive(bool active) override;
 signals:
 
 public slots:

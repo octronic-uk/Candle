@@ -12,8 +12,8 @@ ShaderDrawable::ShaderDrawable()
     //qDebug() << "ShaderDrawable: Constructing";
     mNeedsUpdateGeometry = true;
     mVisible = true;
-    mLineWidth = 1.0;
-    mPointSize = 1.0;
+    mLineWidth = 1.0f;
+    mPointSize = 1.0f;
     mTexture = nullptr;
 }
 
@@ -80,7 +80,7 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
     {
         //qDebug() << "ShaderDrawable: VAO is created";
         // Offset for position
-        quintptr offset = 0;
+        int offset = 0;
 
         // Tell OpenGL programmable pipeline how to locate vertex position data
         int vertexLocation = shaderProgram->attributeLocation("a_position");
@@ -93,10 +93,10 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
         // Tell OpenGL programmable pipeline how to locate vertex color data
         int color = shaderProgram->attributeLocation("a_color");
         shaderProgram->enableAttributeArray(color);
-        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 4, sizeof(VertexData));
+        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 3, sizeof(VertexData));
 
         // Offset for line start point
-        offset += sizeof(QVector4D);
+        offset += sizeof(QVector3D);
 
         // Tell OpenGL programmable pipeline how to locate vertex line start point
         int start = shaderProgram->attributeLocation("a_start");
@@ -155,7 +155,7 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 
         // Offset for position
         //qDebug() << "ShaderDrawable: Setting up shader";
-        quintptr offset = 0;
+        int offset = 0;
 
         // Tell OpenGL programmable pipeline how to locate vertex position data
         int vertexLocation = shaderProgram->attributeLocation("a_position");
@@ -236,12 +236,12 @@ int ShaderDrawable::getVertexCount()
     return mLines.count() + mPoints.count() + mTriangles.count();
 }
 
-double ShaderDrawable::lineWidth() const
+float ShaderDrawable::lineWidth() const
 {
     return mLineWidth;
 }
 
-void ShaderDrawable::setLineWidth(double lineWidth)
+void ShaderDrawable::setLineWidth(float lineWidth)
 {
     mLineWidth = lineWidth;
 }
@@ -256,12 +256,12 @@ void ShaderDrawable::setVisible(bool visible)
     mVisible = visible;
 }
 
-double ShaderDrawable::pointSize() const
+float ShaderDrawable::pointSize() const
 {
     return mPointSize;
 }
 
-void ShaderDrawable::setPointSize(double pointSize)
+void ShaderDrawable::setPointSize(float pointSize)
 {
     mPointSize = pointSize;
 }

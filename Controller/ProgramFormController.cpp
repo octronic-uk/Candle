@@ -124,6 +124,11 @@ void ProgramFormController::setAutoScrollChecked(bool checked)
     mUi.autoScrollButton->setChecked(checked);
 }
 
+void ProgramFormController::setFormActive(bool active)
+{
+
+}
+
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
 {
     qDebug() << "ProgramFormController: Reserving " << rows << " rows";
@@ -372,18 +377,17 @@ void ProgramFormController::onSendActionTriggered()
     mFileEndSent = false;
 
     emit setKeyboardControlSignal(false);
-    /*
-    if (!mUi.chkTestMode->isChecked())
-    {
-        storeOffsets(); // Allready stored on check
-    }
-    storeParserState();
 
-    updateControlsState();
+    if (!mUi.testModeButton->isChecked())
+    {
+        //storeOffsets(); // Allready stored on check
+    }
+    //storeParserState();
+
+    //updateControlsState();
     mUi.pauseButton->setFocus();
 
-    sendNextFileCommands();
-    */
+    emit sendNextFileCommandsSignal();
 }
 
 void ProgramFormController::onSendFromCurrentLineActionTriggered()

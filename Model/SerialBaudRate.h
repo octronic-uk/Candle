@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QMetaType>
+#include <QList>
 
 enum SerialBaudRate
 {
@@ -36,6 +37,25 @@ enum SerialBaudRate
     BAUD_115200 = 115200,
     BAUD_128000 = 128000,
     BAUD_256000 = 256000
+};
+
+static QList<int> SERIAL_BAUD_RATES =
+{
+    BAUD_110,
+    BAUD_300,
+    BAUD_600,
+    BAUD_1200,
+    BAUD_2400,
+    BAUD_4800,
+    BAUD_9600,
+    BAUD_14400,
+    BAUD_19200,
+    BAUD_38400,
+    BAUD_57600,
+    BAUD_115200,
+    BAUD_128000,
+    BAUD_256000
+
 };
 
 Q_DECLARE_METATYPE(SerialBaudRate)

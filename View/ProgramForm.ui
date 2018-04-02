@@ -15,7 +15,20 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTableView" name="programTable"/>
+    <widget class="QTableView" name="programTable">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">

@@ -85,6 +85,11 @@ void JogFormController::blockJogForRapidMovement(bool repeated)
     */
 }
 
+void JogFormController::setFormActive(bool active)
+{
+
+}
+
 
 void JogFormController::onCmdYPlusClicked()
 {

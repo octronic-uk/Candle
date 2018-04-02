@@ -28,11 +28,13 @@ class SpindleFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit SpindleFormController(QWidget *parent = nullptr);
-    ~SpindleFormController();
+    ~SpindleFormController() override;
 
     bool isUpdatingSpindleSpeed();
     void setUpdatingSpindleSpeed(bool);
     QString getSpindleSpeed();
+
+    void setFormActive(bool active) override;
 signals:
 public slots:
     void onCmdSpindleClicked(bool checked);

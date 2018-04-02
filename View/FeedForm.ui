@@ -40,24 +40,9 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2" stretch="4,2,1">
-      <property name="spacing">
-       <number>4</number>
-      </property>
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QPushButton" name="overrideButton">
+       <widget class="QToolButton" name="overrideButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
           <horstretch>0</horstretch>

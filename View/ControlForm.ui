@@ -6,348 +6,451 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>116</height>
+    <width>228</width>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_5">
-     <property name="spacing">
-      <number>4</number>
+    <widget class="QToolButton" name="cmdHome">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <item row="0" column="1">
-      <widget class="QPushButton" name="cmdHome">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Home</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/SVG/home.svg</normaloff>:/Images/SVG/home.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="flat">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="3">
-      <widget class="QPushButton" name="cmdReset">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Reset</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/SVG/restart.svg</normaloff>:/Images/SVG/restart.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="cmdRestoreOrigin">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Restore origin</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/SVG/dot-circle.svg</normaloff>:/Images/SVG/dot-circle.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="cmdSafePosition">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Safe position</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/PNG/axis_return.png</normaloff>:/Images/PNG/axis_return.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="cmdTouch">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Z-probe</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/PNG/search_for_z.png</normaloff>:/Images/PNG/search_for_z.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="4">
-      <widget class="QPushButton" name="cmdUnlock">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Unlock</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/SVG/lock-open.svg</normaloff>:/Images/SVG/lock-open.svg</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="cmdZeroXY">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Zero XY</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/PNG/axis_zero.png</normaloff>:/Images/PNG/axis_zero.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QPushButton" name="cmdZeroZ">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="baseSize">
-        <size>
-         <width>48</width>
-         <height>48</height>
-        </size>
-       </property>
-       <property name="toolTip">
-        <string>Zero Z</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="../Resources/Images.qrc">
-         <normaloff>:/Images/PNG/zero_z.png</normaloff>:/Images/PNG/zero_z.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Home</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/SVG/home.svg</normaloff>:/Images/SVG/home.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QToolButton" name="cmdTouch">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Z-probe</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/search_for_z.png</normaloff>:/Images/PNG/search_for_z.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QToolButton" name="cmdZeroXY">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Zero XY</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/axis_zero.png</normaloff>:/Images/PNG/axis_zero.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QToolButton" name="cmdZeroZ">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Zero Z</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/zero_z.png</normaloff>:/Images/PNG/zero_z.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QToolButton" name="cmdRestoreOrigin">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Restore origin</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/SVG/dot-circle.svg</normaloff>:/Images/SVG/dot-circle.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QToolButton" name="cmdSafePosition">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Safe position</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/axis_return.png</normaloff>:/Images/PNG/axis_return.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QToolButton" name="cmdReset">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Reset</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/SVG/restart.svg</normaloff>:/Images/SVG/restart.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QToolButton" name="cmdUnlock">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Unlock</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/SVG/lock-open.svg</normaloff>:/Images/SVG/lock-open.svg</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>32</width>
+       <height>32</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QToolButton" name="cmdUser1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Spindle on/off</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/num1.png</normaloff>:/Images/PNG/num1.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QToolButton" name="cmdUser2">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Spindle on/off</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/num2.png</normaloff>:/Images/PNG/num2.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QToolButton" name="cmdUser3">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Spindle on/off</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/num3.png</normaloff>:/Images/PNG/num3.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QToolButton" name="cmdUser4">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>48</width>
+       <height>48</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Spindle on/off</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Resources/Images.qrc">
+       <normaloff>:/Images/PNG/num4.png</normaloff>:/Images/PNG/num4.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

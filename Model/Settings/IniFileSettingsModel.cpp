@@ -28,18 +28,22 @@ IniFileSettingsModel::IniFileSettingsModel(QObject* parent)
     mSettings.reset(
         new QSettings(
             QSettings::IniFormat, QSettings::UserScope,
-            ORGANISATION, qApp->applicationName()
+            Settings::ORGANISATION, qApp->applicationName()
         )
     );
+
+    mSettings->setIniCodec("UTF-8");
+
     qDebug() << "IniFileSettingsModel: Constructing for"
              << mSettings->fileName();
 
     if (!QDir().exists(mSettings->fileName()))
     {
-       initialiseDefaults();
+        qDebug() << "IniFileSettingsModel: Settings file not found"
+                 << mSettings->fileName();
+        initialiseDefaults();
     }
 
-    mSettings->setIniCodec("UTF-8");
 }
 
 IniFileSettingsModel::~IniFileSettingsModel()
@@ -59,78 +63,93 @@ void IniFileSettingsModel::preload()
 void IniFileSettingsModel::onLoadSettings()
 {
     qDebug() << "IniFileSettingsModel: onLoadSettings()";
-    // Global
-    emit settingChangedSignal(GLOBAL, GLOBAL_IGNORE_ERRORS, mSettings->value(GLOBAL_IGNORE_ERRORS).toBool());
-    emit settingChangedSignal(GLOBAL, GLOBAL_AUTO_LINE, mSettings->value(GLOBAL_AUTO_LINE).toBool());
-    // Serial
-    emit settingChangedSignal(SERIAL, SERIAL_PORT_NAME, mSettings->value(SERIAL_PORT_NAME).toString());
-    emit settingChangedSignal(SERIAL, SERIAL_BAUD_RATE, mSettings->value(SERIAL_BAUD_RATE).toInt());
-    // Tool
-    emit settingChangedSignal(TOOL, TOOL_DIAMETER, mSettings->value(TOOL_DIAMETER).toDouble());
-    emit settingChangedSignal(TOOL, TOOL_LENGTH, mSettings->value(TOOL_LENGTH).toDouble());
-    emit settingChangedSignal(TOOL, TOOL_ANGLE, mSettings->value(TOOL_ANGLE).toDouble());
-    emit settingChangedSignal(TOOL, TOOL_TYPE, mSettings->value(TOOL_TYPE).toInt());
-    // Gfx
-    emit settingChangedSignal(GFX, GFX_ANTIALIASING, mSettings->value(GFX_ANTIALIASING).toBool());
-    emit settingChangedSignal(GFX, GFX_MSAA, mSettings->value(GFX_MSAA).toBool());
-    emit settingChangedSignal(GFX, GFX_VSYNC, mSettings->value(GFX_VSYNC).toBool());
-    emit settingChangedSignal(GFX, GFX_ZBUFFER, mSettings->value(GFX_ZBUFFER).toBool());
-    emit settingChangedSignal(GFX, GFX_SIMPLIFY, mSettings->value(GFX_SIMPLIFY).toBool());
-    emit settingChangedSignal(GFX, GFX_SIMPLIFY_PRECISION, mSettings->value(GFX_SIMPLIFY_PRECISION).toDouble());
-    emit settingChangedSignal(GFX, GFX_GRAYSCALE_SEGMENTS, mSettings->value(GFX_GRAYSCALE_SEGMENTS).toBool());
-    emit settingChangedSignal(GFX, GFX_GRAYSCALE_S_CODE, mSettings->value(GFX_GRAYSCALE_S_CODE).toBool());
-    emit settingChangedSignal(GFX, GFX_DRAW_MODE_VECTORS, mSettings->value(GFX_DRAW_MODE_VECTORS).toBool());
-    // Ui
-    emit settingChangedSignal(UI, UI_JOG_STEP, mSettings->value(UI_JOG_STEP).toDouble());
-    emit settingChangedSignal(UI, UI_SPINDLE_SPEED, mSettings->value(UI_SPINDLE_SPEED).toInt());
-    emit settingChangedSignal(UI, UI_MOVE_ON_RESTORE, mSettings->value(UI_MOVE_ON_RESTORE).toBool());
-    emit settingChangedSignal(UI, UI_RESTORE_MODE, mSettings->value(UI_RESTORE_MODE).toInt());
-    emit settingChangedSignal(UI, UI_SHOW_PROGRAM_COMMANDS, mSettings->value(UI_SHOW_PROGRAM_COMMANDS).toBool());
-    emit settingChangedSignal(UI, UI_CONSOLE_SHOW_UI_CMDS, mSettings->value(UI_CONSOLE_SHOW_UI_CMDS).toBool());
-    emit settingChangedSignal(UI, UI_SPINDLE_SPEED_MIN, mSettings->value(UI_SPINDLE_SPEED_MIN).toInt());
-    emit settingChangedSignal(UI, UI_SPINDLE_SPEED_MAX, mSettings->value(UI_SPINDLE_SPEED_MAX).toInt());
-    emit settingChangedSignal(UI, UI_LASER_POWER_MIN, mSettings->value(UI_LASER_POWER_MIN).toInt());
-    emit settingChangedSignal(UI, UI_LASER_POWER_MAX, mSettings->value(UI_LASER_POWER_MAX).toInt());
-    emit settingChangedSignal(UI, UI_PANEL_SHOW_USER_CMDS, mSettings->value(UI_PANEL_SHOW_USER_CMDS).toBool());
-    emit settingChangedSignal(UI, UI_PANEL_SHOW_SPINDLE, mSettings->value(UI_PANEL_SHOW_SPINDLE).toBool());
-    emit settingChangedSignal(UI, UI_PANEL_SHOW_FEED, mSettings->value(UI_PANEL_SHOW_FEED).toBool());
-    emit settingChangedSignal(UI, UI_PANEL_SHOW_JOG, mSettings->value(UI_PANEL_SHOW_JOG).toBool());
-    emit settingChangedSignal(UI, UI_AUTOSCROLL_CHECKED, mSettings->value(UI_AUTOSCROLL_CHECKED).toBool());
-    emit settingChangedSignal(UI, UI_FEED_OVERRIDE, mSettings->value(UI_FEED_OVERRIDE).toBool());
-    emit settingChangedSignal(UI, UI_UNITS, mSettings->value(UI_UNITS).toInt());
-    emit settingChangedSignal(UI, UI_LAST_FOLDER , mSettings->value(UI_LAST_FOLDER).toString());
-    emit settingChangedSignal(UI, UI_KEYBOARD_CONTROL,mSettings->value(UI_KEYBOARD_CONTROL).toBool());
-    emit settingChangedSignal(UI, UI_AUTO_COMPLETION, mSettings->value(UI_AUTO_COMPLETION).toBool());
-    emit settingChangedSignal(UI, UI_TOUCH_COMMAND, mSettings->value(UI_TOUCH_COMMAND).toString());
-    emit settingChangedSignal(UI, UI_SAFE_POSITION, mSettings->value(UI_SAFE_POSITION).toString());
-    emit settingChangedSignal(UI, UI_PRG_TABLE_HEADER, mSettings->value(UI_PRG_TABLE_HEADER).toByteArray());
-    emit settingChangedSignal(UI, UI_COMMAND_ITEMS, mSettings->value(UI_COMMAND_ITEMS).toStringList());
-    emit settingChangedSignal(UI, UI_COMMAND_INDEX, mSettings->value(UI_COMMAND_INDEX).toInt());
-    // Visualiser
-    emit settingChangedSignal(VISUALISER, VISUALISER_LINE_WIDTH, mSettings->value(VISUALISER_LINE_WIDTH).toDouble());
-    emit settingChangedSignal(VISUALISER, VISUALISER_ARC_LENGTH, mSettings->value(VISUALISER_ARC_LENGTH).toDouble());
-    emit settingChangedSignal(VISUALISER, VISUALISER_ARC_DEGREE, mSettings->value(VISUALISER_ARC_DEGREE).toDouble());
-    emit settingChangedSignal(VISUALISER, VISUALISER_ARC_DEGREE_MODE, mSettings->value(VISUALISER_ARC_DEGREE_MODE).toBool());
-    emit settingChangedSignal(VISUALISER, VISUALISER_RAPID_SPEED, mSettings->value(VISUALISER_RAPID_SPEED).toInt());
-    emit settingChangedSignal(VISUALISER, VISUALISER_ACCELERATION, mSettings->value(VISUALISER_ACCELERATION).toInt());
-    emit settingChangedSignal(VISUALISER, VISUALISER_FPS, mSettings->value(VISUALISER_FPS).toInt());
-    emit settingChangedSignal(VISUALISER, VISUALISER_QUERY_STATE_TIME, mSettings->value(VISUALISER_QUERY_STATE_TIME).toInt());
+
+    // Settings::GLOBAL
+    mSettings->beginGroup(Settings::GLOBAL);
+    emit settingChangedSignal(Settings::GLOBAL, Settings::GLOBAL_IGNORE_ERRORS, mSettings->value(Settings::GLOBAL_IGNORE_ERRORS).toBool());
+    emit settingChangedSignal(Settings::GLOBAL, Settings::GLOBAL_AUTO_LINE, mSettings->value(Settings::GLOBAL_AUTO_LINE).toBool());
+    mSettings->endGroup();
+    // Settings::SERIAL
+    mSettings->beginGroup(Settings::SERIAL);
+    emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_PORT_NAME, mSettings->value(Settings::SERIAL_PORT_NAME).toString());
+    emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, mSettings->value(Settings::SERIAL_BAUD_RATE).toInt());
+    mSettings->endGroup();
+    // Settings::TOOL
+    mSettings->beginGroup(Settings::TOOL);
+    emit settingChangedSignal(Settings::TOOL, Settings::TOOL_DIAMETER, mSettings->value(Settings::TOOL_DIAMETER).toDouble());
+    emit settingChangedSignal(Settings::TOOL, Settings::TOOL_LENGTH, mSettings->value(Settings::TOOL_LENGTH).toDouble());
+    emit settingChangedSignal(Settings::TOOL, Settings::TOOL_ANGLE, mSettings->value(Settings::TOOL_ANGLE).toDouble());
+    emit settingChangedSignal(Settings::TOOL, Settings::TOOL_TYPE, mSettings->value(Settings::TOOL_TYPE).toInt());
+    mSettings->endGroup();
+    // Settings::GFX
+    mSettings->beginGroup(Settings::GFX);
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_ANTIALIASING, mSettings->value(Settings::GFX_ANTIALIASING).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_MSAA, mSettings->value(Settings::GFX_MSAA).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_VSYNC, mSettings->value(Settings::GFX_VSYNC).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_ZBUFFER, mSettings->value(Settings::GFX_ZBUFFER).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY, mSettings->value(Settings::GFX_SIMPLIFY).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY_PRECISION, mSettings->value(Settings::GFX_SIMPLIFY_PRECISION).toDouble());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_SEGMENTS, mSettings->value(Settings::GFX_GRAYSCALE_SEGMENTS).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_S_CODE, mSettings->value(Settings::GFX_GRAYSCALE_S_CODE).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_DRAW_MODE_VECTORS, mSettings->value(Settings::GFX_DRAW_MODE_VECTORS).toBool());
+    mSettings->endGroup();
+    // Settings::UI
+    mSettings->beginGroup(Settings::UI);
+    emit settingChangedSignal(Settings::UI, Settings::UI_JOG_STEP, mSettings->value(Settings::UI_JOG_STEP).toDouble());
+    emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED, mSettings->value(Settings::UI_SPINDLE_SPEED).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_MOVE_ON_RESTORE, mSettings->value(Settings::UI_MOVE_ON_RESTORE).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_RESTORE_MODE, mSettings->value(Settings::UI_RESTORE_MODE).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_SHOW_PROGRAM_COMMANDS, mSettings->value(Settings::UI_SHOW_PROGRAM_COMMANDS).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_CONSOLE_SHOW_UI_CMDS, mSettings->value(Settings::UI_CONSOLE_SHOW_UI_CMDS).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MIN, mSettings->value(Settings::UI_SPINDLE_SPEED_MIN).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MAX, mSettings->value(Settings::UI_SPINDLE_SPEED_MAX).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_LASER_POWER_MIN, mSettings->value(Settings::UI_LASER_POWER_MIN).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_LASER_POWER_MAX, mSettings->value(Settings::UI_LASER_POWER_MAX).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_USER_CMDS, mSettings->value(Settings::UI_PANEL_SHOW_USER_CMDS).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_SPINDLE, mSettings->value(Settings::UI_PANEL_SHOW_SPINDLE).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_FEED, mSettings->value(Settings::UI_PANEL_SHOW_FEED).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_JOG, mSettings->value(Settings::UI_PANEL_SHOW_JOG).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_AUTOSCROLL_CHECKED, mSettings->value(Settings::UI_AUTOSCROLL_CHECKED).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_FEED_OVERRIDE, mSettings->value(Settings::UI_FEED_OVERRIDE).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_UNITS, mSettings->value(Settings::UI_UNITS).toInt());
+    emit settingChangedSignal(Settings::UI, Settings::UI_LAST_FOLDER , mSettings->value(Settings::UI_LAST_FOLDER).toString());
+    emit settingChangedSignal(Settings::UI, Settings::UI_KEYBOARD_CONTROL,mSettings->value(Settings::UI_KEYBOARD_CONTROL).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_AUTO_COMPLETION, mSettings->value(Settings::UI_AUTO_COMPLETION).toBool());
+    emit settingChangedSignal(Settings::UI, Settings::UI_TOUCH_COMMAND, mSettings->value(Settings::UI_TOUCH_COMMAND).toString());
+    emit settingChangedSignal(Settings::UI, Settings::UI_SAFE_POSITION, mSettings->value(Settings::UI_SAFE_POSITION).toString());
+    emit settingChangedSignal(Settings::UI, Settings::UI_PRG_TABLE_HEADER, mSettings->value(Settings::UI_PRG_TABLE_HEADER).toByteArray());
+    emit settingChangedSignal(Settings::UI, Settings::UI_COMMAND_ITEMS, mSettings->value(Settings::UI_COMMAND_ITEMS).toStringList());
+    emit settingChangedSignal(Settings::UI, Settings::UI_COMMAND_INDEX, mSettings->value(Settings::UI_COMMAND_INDEX).toInt());
+    mSettings->endGroup();
+    // Settings::VISUALISER
+    mSettings->beginGroup(Settings::VISUALISER);
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_LINE_WIDTH, mSettings->value(Settings::VISUALISER_LINE_WIDTH).toDouble());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_ARC_LENGTH, mSettings->value(Settings::VISUALISER_ARC_LENGTH).toDouble());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_ARC_DEGREE, mSettings->value(Settings::VISUALISER_ARC_DEGREE).toDouble());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_ARC_DEGREE_MODE, mSettings->value(Settings::VISUALISER_ARC_DEGREE_MODE).toBool());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_RAPID_SPEED, mSettings->value(Settings::VISUALISER_RAPID_SPEED).toInt());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_ACCELERATION, mSettings->value(Settings::VISUALISER_ACCELERATION).toInt());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_FPS, mSettings->value(Settings::VISUALISER_FPS).toInt());
+    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_QUERY_STATE_TIME, mSettings->value(Settings::VISUALISER_QUERY_STATE_TIME).toInt());
+    mSettings->endGroup();
     // HeightMap
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_PROBING_FEED, mSettings->value(HEIGHT_MAP_PROBING_FEED).toInt());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_BORDER_X, mSettings->value(HEIGHT_MAP_BORDER_X).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_BORDER_Y, mSettings->value(HEIGHT_MAP_BORDER_Y).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_BORDER_WIDTH, mSettings->value(HEIGHT_MAP_BORDER_WIDTH).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_BORDER_HEIGHT, mSettings->value(HEIGHT_MAP_BORDER_HEIGHT).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_BORDER_SHOW, mSettings->value(HEIGHT_MAP_BORDER_SHOW).toBool());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_GRID_X, mSettings->value(HEIGHT_MAP_GRID_X).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_GRID_Y, mSettings->value(HEIGHT_MAP_GRID_Y).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_GRID_Z_TOP, mSettings->value(HEIGHT_MAP_GRID_Z_TOP).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_GRID_Z_BOTTOM, mSettings->value(HEIGHT_MAP_GRID_Z_BOTTOM).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_GRID_SHOW, mSettings->value(HEIGHT_MAP_GRID_SHOW).toBool());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_INTERPOLATION_STEP_X, mSettings->value(HEIGHT_MAP_INTERPOLATION_STEP_X).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_INTERPOLATION_STEP_Y, mSettings->value(HEIGHT_MAP_INTERPOLATION_STEP_Y).toDouble());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_INTERPOLATION_TYPE, mSettings->value(HEIGHT_MAP_INTERPOLATION_TYPE).toInt());
-    emit settingChangedSignal(HEIGHT_MAP, HEIGHT_MAP_INTERPOLATION_SHOW, mSettings->value(HEIGHT_MAP_INTERPOLATION_SHOW).toBool());
+    mSettings->beginGroup(Settings::HEIGHT_MAP);
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_PROBING_FEED, mSettings->value(Settings::HEIGHT_MAP_PROBING_FEED).toInt());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_BORDER_X, mSettings->value(Settings::HEIGHT_MAP_BORDER_X).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_BORDER_Y, mSettings->value(Settings::HEIGHT_MAP_BORDER_Y).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_BORDER_WIDTH, mSettings->value(Settings::HEIGHT_MAP_BORDER_WIDTH).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_BORDER_HEIGHT, mSettings->value(Settings::HEIGHT_MAP_BORDER_HEIGHT).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_BORDER_SHOW, mSettings->value(Settings::HEIGHT_MAP_BORDER_SHOW).toBool());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_GRID_X, mSettings->value(Settings::HEIGHT_MAP_GRID_X).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_GRID_Y, mSettings->value(Settings::HEIGHT_MAP_GRID_Y).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_GRID_Z_TOP, mSettings->value(Settings::HEIGHT_MAP_GRID_Z_TOP).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_GRID_Z_BOTTOM, mSettings->value(Settings::HEIGHT_MAP_GRID_Z_BOTTOM).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_GRID_SHOW, mSettings->value(Settings::HEIGHT_MAP_GRID_SHOW).toBool());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_INTERPOLATION_STEP_X, mSettings->value(Settings::HEIGHT_MAP_INTERPOLATION_STEP_X).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_INTERPOLATION_STEP_Y, mSettings->value(Settings::HEIGHT_MAP_INTERPOLATION_STEP_Y).toDouble());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_INTERPOLATION_TYPE, mSettings->value(Settings::HEIGHT_MAP_INTERPOLATION_TYPE).toInt());
+    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_INTERPOLATION_SHOW, mSettings->value(Settings::HEIGHT_MAP_INTERPOLATION_SHOW).toBool());
+    mSettings->endGroup();
 }
 
 void IniFileSettingsModel::onSaveSettings()

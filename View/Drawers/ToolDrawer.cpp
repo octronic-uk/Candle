@@ -6,12 +6,12 @@
 ToolDrawer::ToolDrawer()
 {
     qDebug() << "ToolDrawer: Constructing";
-    mToolDiameter = 3;
-    mToolLength = 15;
+    mToolDiameter = 3.0f;
+    mToolLength = 15.0f;
     mToolPosition = QVector3D(0, 0, 0);
-    mRotationAngle = 0;
+    mRotationAngle = 0.0f;
     setColor(QColor("Orange"));
-    mLineWidth = 3;
+    mLineWidth = 1.0f;
 }
 
 ToolDrawer::~ToolDrawer()
@@ -21,7 +21,7 @@ ToolDrawer::~ToolDrawer()
 
 bool ToolDrawer::updateData()
 {
-    const int arcs = 4;
+    const int arcs = 8;
 
     // Clear data
     mLines.clear();
@@ -29,16 +29,14 @@ bool ToolDrawer::updateData()
 
     // Prepare vertex
     VertexData vertex;
-    vertex.color = Util::colorToVector4(mColor);
+    vertex.color = Util::colorToVector(mColor);
     vertex.start = QVector3D(sNan, sNan, sNan);
 
     // Draw lines
     for (int i = 0; i < arcs; i++)
     {
-        double x = mToolPosition.x() + mToolDiameter / 2 *
-                cos(mRotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
-        double y = mToolPosition.y() + mToolDiameter / 2 *
-                sin(mRotationAngle / 180 * M_PI + (2 * M_PI / arcs) * i);
+        float x = mToolPosition.x() + mToolDiameter / 2.0f * cos(mRotationAngle / 180.0f * M_PI + (2.0f * M_PI / arcs) * i);
+        float y = mToolPosition.y() + mToolDiameter / 2.0f * sin(mRotationAngle / 180.0f * M_PI + (2.0f * M_PI / arcs) * i);
 
         // Side lines
         vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
@@ -115,7 +113,7 @@ void ToolDrawer::setColor(const QColor &color)
 }
 
 
-QVector<VertexData> ToolDrawer::createCircle(QVector3D center, double radius, int arcs, QVector4D color)
+QVector<VertexData> ToolDrawer::createCircle(QVector3D center, float radius, int arcs, QVector3D color)
 {
     // Vertices
     QVector<VertexData> circle;
@@ -128,9 +126,9 @@ QVector<VertexData> ToolDrawer::createCircle(QVector3D center, double radius, in
     // Create line loop
     for (int i = 0; i <= arcs; i++)
     {
-        double angle = 2 * M_PI * i / arcs;
-        double x = center.x() + radius * cos(angle);
-        double y = center.y() + radius * sin(angle);
+        float angle = 2 * M_PI * i / arcs;
+        float x = center.x() + radius * cos(angle);
+        float y = center.y() + radius * sin(angle);
 
         if (i > 1)
         {
@@ -148,12 +146,12 @@ QVector<VertexData> ToolDrawer::createCircle(QVector3D center, double radius, in
     return circle;
 }
 
-double ToolDrawer::toolDiameter() const
+float ToolDrawer::toolDiameter() const
 {
     return mToolDiameter;
 }
 
-void ToolDrawer::setToolDiameter(double toolDiameter)
+void ToolDrawer::setToolDiameter(float toolDiameter)
 {
     if (mToolDiameter != toolDiameter)
     {
@@ -161,12 +159,13 @@ void ToolDrawer::setToolDiameter(double toolDiameter)
         update();
     }
 }
-double ToolDrawer::toolLength() const
+
+float ToolDrawer::toolLength() const
 {
     return mToolLength;
 }
 
-void ToolDrawer::setToolLength(double toolLength)
+void ToolDrawer::setToolLength(float toolLength)
 {
     if (mToolLength != toolLength)
     {
@@ -187,12 +186,13 @@ void ToolDrawer::setToolPosition(const QVector3D &toolPosition)
         update();
     }
 }
-double ToolDrawer::rotationAngle() const
+
+float ToolDrawer::rotationAngle() const
 {
     return mRotationAngle;
 }
 
-void ToolDrawer::setRotationAngle(double rotationAngle)
+void ToolDrawer::setRotationAngle(float rotationAngle)
 {
     if (mRotationAngle != rotationAngle)
     {
@@ -201,17 +201,17 @@ void ToolDrawer::setRotationAngle(double rotationAngle)
     }
 }
 
-void ToolDrawer::rotate(double angle)
+void ToolDrawer::rotate(float angle)
 {
     setRotationAngle(normalizeAngle(mRotationAngle + angle));
 }
 
-double ToolDrawer::toolAngle() const
+float ToolDrawer::toolAngle() const
 {
     return mToolAngle;
 }
 
-void ToolDrawer::setToolAngle(double toolAngle)
+void ToolDrawer::setToolAngle(float toolAngle)
 {
     if (mToolAngle != toolAngle)
     {
@@ -225,7 +225,7 @@ void ToolDrawer::setToolAngle(double toolAngle)
     }
 }
 
-double ToolDrawer::normalizeAngle(double angle)
+float ToolDrawer::normalizeAngle(float angle)
 {
     while (angle < 0)
     {

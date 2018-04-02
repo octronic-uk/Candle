@@ -11,16 +11,17 @@ GcodeDrawer::GcodeDrawer()
     m_grayscaleCode(GcodeDrawer::S),
     m_grayscaleMin(0),
     m_grayscaleMax(255),
-    m_colorNormal(QColor(255,255,255,128)),
-    m_colorDrawn(QColor("Gray")),
+    m_colorNormal(QColor("White")),
+    m_colorDrawn(QColor("Orange")),
     m_colorHighlight(QColor("Yellow")),
     m_colorZMovement(QColor("Blue")),
     m_colorStart(QColor("Green")),
     m_colorEnd(QColor("Red")),
-    m_geometryUpdated(false)
+    m_geometryUpdated(false),
+    m_simplify(false)
 {
     mPointSize = 10;
-    mLineWidth = 3;
+    mLineWidth = 4;
     connect(&m_timerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
     m_timerVertexUpdate.start(100);
 }
@@ -43,7 +44,6 @@ GcodeDrawer::GcodeDrawer(const GcodeDrawer& other)
     m_colorZMovement = other.m_colorZMovement;
     m_colorStart = other.m_colorStart;
     m_colorEnd = other.m_colorEnd;
-    //m_timerVertexUpdate = other.m_timerVertexUpdate;
     m_image = other.m_image;
     m_indexes = other.m_indexes;
     m_geometryUpdated = other.m_geometryUpdated;
@@ -122,7 +122,7 @@ bool GcodeDrawer::prepareVectors()
             if (qIsNaN(list->at(i)->getEnd().x()) || qIsNaN(list->at(i)->getEnd().y())) continue;
 
             // Draw first toolpath point
-            vertex.color = Util::colorToVector4(m_colorStart);
+            vertex.color = Util::colorToVector(m_colorStart);
             vertex.position = list->at(i)->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
             vertex.start = QVector3D(sNan, sNan, mPointSize);
@@ -138,7 +138,8 @@ bool GcodeDrawer::prepareVectors()
 
         // Simplify geometry
         int j = i;
-        if (m_simplify && i < list->count() - 1) {
+        if (m_simplify && i < list->count() - 1)
+        {
             QVector3D start = list->at(i)->getEnd() - list->at(i)->getStart();
             QVector3D next;
             double length = start.length();
@@ -156,7 +157,9 @@ bool GcodeDrawer::prepareVectors()
             } while ((length < m_simplifyPrecision || straight) && i < list->count()
                      && getSegmentType(list->at(i)) == getSegmentType(list->at(j)));
             i--;
-        } else {
+        }
+        else
+        {
             list->at(i)->setVertexIndex(mLines.count()); // Store vertex index
         }
 
@@ -175,7 +178,7 @@ bool GcodeDrawer::prepareVectors()
 
         // Draw last toolpath point
         if (i == list->count() - 1) {
-            vertex.color = Util::colorToVector4(m_colorEnd);
+            vertex.color = Util::colorToVector(m_colorEnd);
             vertex.position = list->at(i)->getEnd();
             if (m_ignoreZ) vertex.position.setZ(0);
             vertex.start = QVector3D(sNan, sNan, mPointSize);
@@ -263,7 +266,7 @@ bool GcodeDrawer::prepareRaster()
     VertexData vertex;
 
     // Set color
-    vertex.color = Util::colorToVector4(Qt::red);
+    vertex.color = Util::colorToVector(Qt::red);
 
     // Rect
     vertex.start = QVector3D(sNan, 0, 0);
@@ -339,9 +342,9 @@ void GcodeDrawer::setImagePixelColor(QImage &image, double x, double y, QRgb col
     *(pixel + (int)x * 3 + 2) = qBlue(color);
 }
 
-QVector4D GcodeDrawer::getSegmentColorVector(LineSegment *segment)
+QVector3D GcodeDrawer::getSegmentColorVector(LineSegment *segment)
 {
-    return Util::colorToVector4(getSegmentColor(segment));
+    return Util::colorToVector(getSegmentColor(segment));
 }
 
 QColor GcodeDrawer::getSegmentColor(LineSegment *segment)

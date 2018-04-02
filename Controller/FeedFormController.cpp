@@ -55,16 +55,30 @@ bool FeedFormController::isFeedOverrideChecked()
     return mUi.overrideButton->isChecked();
 }
 
+double FeedFormController::getFeedOverrideValue()
+{
+    return mUi.feedSlider->value();
+}
+
+void FeedFormController::setFormActive(bool active)
+{
+
+}
+
 void FeedFormController::onFeedOverrideToggled(bool checked)
 {
     if (!checked)
     {
         mUi.feedSlider->setValue(100);
+        mUi.feedSlider->setEnabled(false);
+
         mUi.feedProgress->setValue(100);
+        mUi.feedProgress->setEnabled(false);
     }
     else
     {
-
+        mUi.feedSlider->setEnabled(true);
+        mUi.feedProgress->setEnabled(true);
     }
     /*
     updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
@@ -77,21 +91,7 @@ void FeedFormController::onFeedOverrideToggled(bool checked)
     */
 }
 
-QString FeedFormController::feedOverride(QString command)
-{
-    /*
-    // Feed override if not in heightmap probing mode
-    if (!mUi.cmdHeightMapMode->isChecked())
-    {
-        command = GcodePreprocessorUtils::overrideSpeed(
-            command,
-            mUi.chkFeedOverride->isChecked() ? mUi.txtFeed->value() : 100,
-            &mOriginalFeedRate
-        );
-    }
-    return command;
-    */
-}
+
 
 void FeedFormController::setupSignalSlots()
 {

@@ -11,7 +11,7 @@
 struct VertexData
 {
     QVector3D position;
-    QVector4D color;
+    QVector3D color;
     QVector3D start;
 };
 
@@ -31,22 +31,22 @@ public:
     virtual QVector3D getMaximumExtremes();
     virtual int getVertexCount();
 
-    double lineWidth() const;
-    void setLineWidth(double lineWidth);
+    float lineWidth() const;
+    void setLineWidth(float lineWidth);
 
     bool visible() const;
     void setVisible(bool visible);
 
-    double pointSize() const;
-    void setPointSize(double pointSize);
+    float pointSize() const;
+    void setPointSize(float pointSize);
 
 signals:
 
 public slots:
 
 protected:
-    double mLineWidth;
-    double mPointSize;
+    float mLineWidth;
+    float mPointSize;
     bool mVisible;
     QVector<VertexData> mLines;
     QVector<VertexData> mPoints;

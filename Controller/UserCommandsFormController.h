@@ -28,7 +28,9 @@ class UserCommandsFormController : public AbstractFormController
     Q_OBJECT
 public:
     explicit UserCommandsFormController(QWidget *parent = nullptr);
-    ~UserCommandsFormController();
+    ~UserCommandsFormController() override;
+
+    void setFormActive(bool active) override;
 signals:
 public slots:
 

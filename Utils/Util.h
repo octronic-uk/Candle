@@ -31,9 +31,9 @@ public:
         else return qQNaN();
     }
 
-    static QVector4D colorToVector4(QColor color)
+    static QVector3D colorToVector(QColor color)
     {
-        return QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF());
+        return QVector3D(color.redF(), color.greenF(), color.blueF());
     }
 
     static void waitEvents(int ms)
@@ -60,6 +60,11 @@ public:
     static double toMetric(double value)
     {
         return value * 25.4;
+    }
+
+    static bool compareCoordinates(QVector3D machine, double x, double y, double z)
+    {
+        return machine.x() == x && machine.y() == y && machine.z() == z;
     }
 };
 
