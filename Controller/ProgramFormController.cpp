@@ -175,7 +175,7 @@ void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
     // Inserting new line at end
     if (i1.row() == (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() != "")
     {
-        model->setData(model->index(model->rowCount() - 1, 2), GCODE_ITEM_STATE_IN_QUEUE);
+        model->setData(model->index(model->rowCount() - 1, 2), InQueue);
         model->insertRow(model->rowCount());
 
         if (!mProgramLoading)
@@ -289,7 +289,7 @@ void ProgramFormController::onTableInsertLine()
     int row = mUi.programTable->selectionModel()->selectedRows()[0].row();
 
     mProgramTableModel.insertRow(row);
-    mProgramTableModel.setData(mProgramTableModel.index(row, 2), GCODE_ITEM_STATE_IN_QUEUE);
+    mProgramTableModel.setData(mProgramTableModel.index(row, 2), InQueue);
 
     //updateParser();
     mCellChanged = true;
@@ -353,7 +353,7 @@ void ProgramFormController::setupSignalSlots()
     );
 }
 
-void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeItem> items)
+void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeCommand> items)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
     mProgramTableModel.insertRows(0,items.count(),QModelIndex());
@@ -481,7 +481,7 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
 
     for (int i = 0; i < mProgramTableModel.data().count() - 1; i++)
     {
-        mProgramTableModel.data()[i].state = i < commandIndex ? GCodeItem::Skipped : GCodeItem::InQueue;
+        mProgramTableModel.data()[i].state = i < commandIndex ? GcodeCommand::Skipped : GcodeCommand::InQueue;
         mProgramTableModel.data()[i].response = QString();
     }
     mUi->programTable->setUpdatesEnabled(true);
@@ -575,7 +575,7 @@ void ProgramFormController::onResetButtonClicked()
         mUi->programTable->setUpdatesEnabled(false);
 
         for (int i = 0; i < mCurrentGCodeTableModel->data().count() - 1; i++) {
-            mCurrentGCodeTableModel->data()[i].state = GCodeItem::InQueue;
+            mCurrentGCodeTableModel->data()[i].state = GcodeCommand::InQueue;
             mCurrentGCodeTableModel->data()[i].response = QString();
         }
         mUi->programTable->setUpdatesEnabled(true);

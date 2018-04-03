@@ -74,6 +74,7 @@ void ControlFormController::setupSignalSlots()
 {
 
     qDebug() << "ControlFormController: Setup Signals/Slots";
+    connect(mUi.cmdUnlock, SIGNAL(clicked()),this,SLOT(onCmdUnlockClicked()));
 }
 
 void ControlFormController::setFormActive(bool active)
@@ -116,10 +117,7 @@ void ControlFormController::onCmdResetClicked()
 
 void ControlFormController::onCmdUnlockClicked()
 {
-    /*
-    mUpdateSpindleSpeed = true;
-    sendCommand("$X", -1, mSettingsForm->showUICommands());
-    */
+    emit gcodeCommandSendSignal(GcodeCommand::UnlockCommand());
 }
 
 void ControlFormController::onCmdSafePositionClicked()

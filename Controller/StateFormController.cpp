@@ -23,8 +23,8 @@ StateFormController::StateFormController(QWidget *parent)
 {
     qDebug() << "StateFormController: Constructing";
     mUi.setupUi(this);
-    setMode(StateFormMode::PortClosed);
     setupSignalSlots();
+    mUi.statusText->setBackgroundRole(QPalette::Background);
 }
 
 StateFormController::~StateFormController()
@@ -33,22 +33,14 @@ StateFormController::~StateFormController()
 
 }
 
-void StateFormController::setMode(StateFormMode mode)
+void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QColor bgColor)
 {
-    switch (mode)
-    {
-       case StateFormMode::PortOpen:
-            mUi.statusText->setBackgroundRole(QPalette::Highlight);
-            break;
-        case StateFormMode::PortClosed:
-            mUi.statusText->setBackgroundRole(QPalette::Dark);
-            break;
-    }
-}
-
-void StateFormController::setStatusText(QString text)
-{
+    qDebug() << "StateFormController:" << text << textColor << bgColor;
     mUi.statusText->setText(text);
+    QPalette p = mUi.statusText->palette();
+    p.setColor(QPalette::Text, textColor);
+    p.setColor(QPalette::Base, bgColor);
+    mUi.statusText->setPalette(p);
 }
 
 void StateFormController::setFormActive(bool active)

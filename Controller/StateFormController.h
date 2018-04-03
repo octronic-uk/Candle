@@ -21,16 +21,9 @@
 #include "AbstractFormController.h"
 #include "ui_StateForm.h"
 #include <QMetaType>
+#include <QColor>
 
 using namespace Ui;
-
-enum class StateFormMode
-{
-    PortOpen,
-    PortClosed,
-};
-
-Q_DECLARE_METATYPE(StateFormMode)
 
 class StateFormController : public AbstractFormController
 {
@@ -38,16 +31,15 @@ class StateFormController : public AbstractFormController
 public:
     explicit StateFormController(QWidget *parent = nullptr);
     ~StateFormController() override;
-    void setStatusText(QString text);
 
     void setFormActive(bool active) override;
 signals:
 public slots:
+    void onStatusTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));
 private:
     StateForm mUi;
 
     // AbstractFormController interface
 public:
     void setupSignalSlots() override;
-    void setMode(StateFormMode mode);
 };

@@ -1,7 +1,7 @@
 /*
- * CommandQueue.h
+ * GrblResponse.h
  *
- * Created: 25 2018 by Ashley
+ * Created: 03 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -16,11 +16,41 @@
  * this file belongs to.
  */
 #pragma once
-#include <QString>
 
-struct CommandQueue
+#include <QString>
+#include <QMetaType>
+
+enum class GrblResponseType
 {
-    QString command;
-    int tableIndex;
-    bool showInConsole;
+    Startup,
+    Ok,
+    Error,
+    Alarm,
+    Locked,
+    Unlocked,
+    Enabled,
+    Disabled,
+    Probe,
+    ParserState,
+    SpindleSpeed,
+    Status,
+    Help
 };
+
+
+class GrblResponse
+{
+public:
+    GrblResponse();
+    GrblResponse(QString response);
+    ~GrblResponse();
+    GrblResponseType getType();
+    QString getData();
+private:
+    void identifyType();
+    QString mData;
+    GrblResponseType mType;
+};
+
+Q_DECLARE_METATYPE(GrblResponse)
+Q_DECLARE_METATYPE(GrblResponseType)

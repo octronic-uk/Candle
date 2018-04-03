@@ -61,7 +61,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="cmdCommandSend">
+      <widget class="QToolButton" name="commandSendButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -96,7 +96,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="cmdClearConsole">
+      <widget class="QToolButton" name="consoleClearButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>

@@ -56,7 +56,6 @@ SOURCES +=\
     Model/Tables/HeightMapTableModel.cpp \
     Model/Parser/ArcProperties.cpp \
     Model/Parser/GcodeParser.cpp \
-    Model/Parser/GcodePreprocessorUtils.cpp \
     Model/Parser/GcodeViewParse.cpp \
     Model/Parser/LineSegment.cpp \
     Model/Parser/PointSegment.cpp \
@@ -82,14 +81,15 @@ SOURCES +=\
     Model/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
     Model/RecentHeightMapFilesModel.cpp \
-    Model/GcodeItem.cpp \
     View/Widgets/GLWidget.cpp \
     Model/Settings/AbstractSettingsModel.cpp \
     Model/Settings/IniFileSettingsModel.cpp \
     View/Drawers/GridDrawer.cpp \
     Model/Settings/Settings.cpp \
     Model/GrblMachineModel.cpp \
-    Utils/IndexOutOfBoundsException.cpp
+    Utils/IndexOutOfBoundsException.cpp \
+    Model/GcodeCommand.cpp \
+    Model/GrblResponse.cpp
 
 
 HEADERS  += \
@@ -100,7 +100,6 @@ HEADERS  += \
     Controller/MainFormController.h \
     Model/Parser/ArcProperties.h \
     Model/Parser/GcodeParser.h \
-    Model/Parser/GcodePreprocessorUtils.h \
     Model/Parser/GcodeViewParse.h \
     Model/Parser/LineSegment.h \
     Model/Parser/PointSegment.h \
@@ -133,17 +132,15 @@ HEADERS  += \
     Model/HeightMapFileModel.h \
     Model/RecentFilesModel.h \
     Model/RecentHeightMapFilesModel.h \
-    Controller/CommandAttributes.h \
-    Controller/CommandQueue.h \
     Controller/CancelException.h \
-    Model/GcodeItem.h \
-    Model/GcodeItemState.h \
     Model/Settings/AbstractSettingsModel.h \
     View/Drawers/GridDrawer.h \
     Model/SerialBaudRate.h \
     Model/Settings/Settings.h \
     Model/GrblMachineModel.h \
-    Utils/IndexOutOfBoundsException.h
+    Utils/IndexOutOfBoundsException.h \
+    Model/GcodeCommand.h \
+    Model/GrblResponse.h
 
 FORMS    += \
     View/AboutForm.ui \

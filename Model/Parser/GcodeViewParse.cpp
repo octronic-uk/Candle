@@ -114,7 +114,8 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
     m_lineIndexes.resize(psl.count());
 
     int lineIndex = 0;
-    foreach (PointSegment *segment, psl) {
+    foreach (PointSegment *segment, psl)
+    {
         PointSegment *ps = segment;
         bool isMetric = ps->isMetric();
         ps->convertToMetric();
@@ -126,7 +127,7 @@ QList<LineSegment*> GcodeViewParse::getLinesFromParser(GcodeParser *gp, double a
             // Expand arc for graphics.
             if (ps->isArc()) {
                 QList<QVector3D> points =
-                    GcodePreprocessorUtils::generatePointsAlongArcBDring(ps->plane(),
+                    GcodeParser::generatePointsAlongArcBDring(ps->plane(),
                     *start, *end, *ps->center(), ps->isClockwise(), ps->getRadius(), minArcLength, arcPrecision, arcDegreeMode);
                 // Create line segments from points.
                 if (points.length() > 0) {

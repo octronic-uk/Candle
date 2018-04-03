@@ -51,25 +51,25 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
 
             switch (mData.at(index.row()).getState())
             {
-                case GcodeItemState::GCODE_ITEM_STATE_IN_QUEUE:
+                case GcodeCommandState::InQueue:
                     return tr("In Queue");
-                case GcodeItemState::GCODE_ITEM_STATE_SENT:
+                case GcodeCommandState::Sent:
                     return tr("Sent");
-                case GcodeItemState::GCODE_ITEM_STATE_PROCESSED:
+                case GcodeCommandState::Processed:
                     return tr("Processed");
-                case GcodeItemState::GCODE_ITEM_STATE_SKIPPED:
+                case GcodeCommandState::Skipped:
                     return tr("Skipped");
                 default:
                     return tr("Unknown");
             }
         case 2: // Response
-            if (mData.at(index.row()).getResponse() == "")
+            if (mData.at(index.row()).getResponse().getData() == "")
             {
                 return QVariant("---");
             }
             else
             {
-                return QVariant(mData.at(index.row()).getResponse());
+                return QVariant(mData.at(index.row()).getResponse().getData());
             }
         case 3: // Line
             return QVariant(mData.at(index.row()).getLine());
@@ -94,7 +94,7 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
         {
             case 2:
                 // Center empty responses
-                if (mData.at(index.row()).getResponse() == "")
+                if (mData.at(index.row()).getResponse().getData() == "")
                 {
                     return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
                 }
@@ -107,7 +107,7 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue(Qt::AlignLeft | Qt::AlignVCenter);
     }
 
-    //qDebug() << "GcodeTableModel: Returning empty GcodeItem for role" << role;
+    //qDebug() << "GcodeTableModel: Returning empty GcodeCommand for role" << role;
     return QVariant();
 }
 
@@ -126,10 +126,10 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
             mData[index.row()].setCommand(value.toString());
             break;
         case 1:
-            mData[index.row()].setState(value.value<GcodeItemState>());
+            mData[index.row()].setState(value.value<GcodeCommandState>());
             break;
         case 2:
-            mData[index.row()].setResponse(value.toString());
+            mData[index.row()].setResponse(value.value<GrblResponse>());
             break;
         case 3:
             mData[index.row()].setLine(value.toInt());
@@ -152,7 +152,7 @@ bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
         return false;
     }
     beginInsertRows(parent, row, row);
-    mData.insert(row, GcodeItem());
+    mData.insert(row, GcodeCommand());
     endInsertRows();
     return true;
 }
@@ -233,13 +233,13 @@ Qt::ItemFlags GcodeTableModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index);
 }
 
-QList<GcodeItem> &GcodeTableModel::data()
+QList<GcodeCommand> &GcodeTableModel::data()
 {
     //qDebug() << "GcodeTableModel: data()";
     return mData;
 }
 
-void GcodeTableModel::append(QList<GcodeItem> &items)
+void GcodeTableModel::append(QList<GcodeCommand> &items)
 {
     //qDebug() << "GcodeTableModel: append" << items.count() << "to mData ONLY";
     mData << items;

@@ -5,9 +5,7 @@
 
 #include <QAbstractTableModel>
 #include <QString>
-#include "../GcodeItem.h"
-
-
+#include "../GcodeCommand.h"
 
 class GcodeTableModel : public QAbstractTableModel
 {
@@ -24,14 +22,14 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QList<GcodeItem> &data();
-    void append(QList<GcodeItem> &items);
+    QList<GcodeCommand> &data();
+    void append(QList<GcodeCommand> &items);
     void clear();
 signals:
 
 public slots:
 
 private:
-    QList<GcodeItem> mData;
+    QList<GcodeCommand> mData;
     QStringList mHeaders;
 };

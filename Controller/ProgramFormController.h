@@ -66,7 +66,7 @@ public slots:
 
     void onScrollBarAction(int action);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeItem>);
+    void onGcodeFileLoadFinished(QList<GcodeCommand>);
     void onSendActionTriggered();
     void onSendFromCurrentLineActionTriggered();
 private:

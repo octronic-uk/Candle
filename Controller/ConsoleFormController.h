@@ -20,6 +20,8 @@
 
 #include "AbstractFormController.h"
 #include "ui_ConsoleForm.h"
+#include "Model/GcodeCommand.h"
+#include "Model/GrblResponse.h"
 #include <QMenu>
 
 using namespace Ui;
@@ -34,11 +36,11 @@ public:
     int getConsoleMinHeight();
     void setFormActive(bool active) override;
 signals:
-    void commandSentSignal(QString cmd, int len);
+    void gcodeCommandSendSignal(GcodeCommand);
 public slots:
-    void onComboBoxCommandReturnPressed();
-    void onCmdCommandSendClicked();
-    void onAppendToConsole(QString text);
+    void onCommandSendAction();
+    void onAppendResponseToConsole(GrblResponse);
+    void onAppendCommandToConsole(GcodeCommand);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

@@ -35,18 +35,6 @@ ConsoleFormController::~ConsoleFormController()
     qDebug() << "Destructing ConsoleFormController";
 }
 
-void ConsoleFormController::onComboBoxCommandReturnPressed()
-{
-    QString command = mUi.cboCommand->currentText();
-    if (command.isEmpty())
-    {
-        return;
-    }
-
-    mUi.cboCommand->setCurrentText("");
-    emit commandSentSignal(command, -1);
-}
-
 void ConsoleFormController::onCmdClearConsoleClicked()
 {
     mUi.txtConsole->clear();
@@ -55,38 +43,50 @@ void ConsoleFormController::onCmdClearConsoleClicked()
 void ConsoleFormController::setFormActive(bool active)
 {
     mUi.cboCommand->setEnabled(active);
-    mUi.cmdClearConsole->setEnabled(active);
-    mUi.cmdCommandSend->setEnabled(active);
+    mUi.consoleClearButton->setEnabled(active);
+    mUi.commandSendButton->setEnabled(active);
 }
 
 
 // Console
-void ConsoleFormController::onCmdCommandSendClicked()
+void ConsoleFormController::onCommandSendAction()
 {
-    QString command = mUi.cboCommand->currentText();
-    if (command.isEmpty())
+    QString commandText = mUi.cboCommand->currentText();
+    if (commandText.isEmpty())
     {
         return;
     }
+    GcodeCommand command(commandText);
 
     // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
-    emit commandSentSignal(command,-1);
+    //onAppendCommandToConsole(command);
+    emit gcodeCommandSendSignal(command);
 }
 
-void ConsoleFormController::onAppendToConsole(QString text)
+void ConsoleFormController::onAppendResponseToConsole(GrblResponse response)
 {
-    mUi.txtConsole->appendPlainText(text);
+    QString txt = response.getData();
+    if (txt.isEmpty())
+    {
+        return;
+    }
+    qDebug() << "ConsoleFormController: Appending Response:" << txt;
+    mUi.txtConsole->appendPlainText("CNC --> "+txt);
+}
+
+void ConsoleFormController::onAppendCommandToConsole(GcodeCommand command)
+{
+    QString cmd = command.getCommand();
+    qDebug() << "ConsoleFormController: Appending Command:" << cmd;
+    mUi.txtConsole->appendPlainText("CNC <-- "+cmd);
 }
 
 void ConsoleFormController::setupSignalSlots()
 {
     qDebug() << "ConsoleFormController: Setup Signals/Slots";
-    /* Signal does not exist
     connect(
-        mUi.cboCommand, SIGNAL(returnPressed()),
-        this, SLOT(onComboBoxCommandReturnPressed())
+        mUi.commandSendButton, SIGNAL(clicked()),
+        this, SLOT(onCommandSendAction())
     );
-    */
 }
-

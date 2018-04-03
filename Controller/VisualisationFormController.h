@@ -30,7 +30,7 @@
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapBorderDrawer.h"
 #include "View/Drawers/HeightMapInterpolationDrawer.h"
-#include "Model/GcodeItem.h"
+#include "Model/GcodeCommand.h"
 
 using namespace Ui;
 
@@ -61,7 +61,7 @@ public slots:
     void hideEvent(QHideEvent* he) override;
     void resizeEvent(QResizeEvent* re) override;
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeItem>);
+    void onGcodeFileLoadFinished(QList<GcodeCommand>);
     void onGcodeParserUpdated(GcodeParser*);
 
     void onToggleGridButtonToggled(bool toggled);

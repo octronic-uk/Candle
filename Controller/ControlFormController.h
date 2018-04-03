@@ -20,6 +20,7 @@
 
 #include "AbstractFormController.h"
 #include "ui_ControlForm.h"
+#include "Model/GcodeCommand.h"
 
 using namespace Ui;
 
@@ -37,6 +38,7 @@ public:
     void setupSignalSlots() override;
     void setFormActive(bool active) override;
 signals:
+    void gcodeCommandSendSignal(GcodeCommand);
 
 public slots:
     void onCmdResetClicked();

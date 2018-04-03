@@ -52,8 +52,6 @@
 #include "Controller/UserCommandsFormController.h"
 #include "Controller/VisualisationFormController.h"
 #include "ui_MainForm.h"
-#include "CommandAttributes.h"
-#include "CommandQueue.h"
 #include "CancelException.h"
 
 #ifdef WINDOWS
@@ -76,18 +74,9 @@ public:
     explicit MainFormController(QWidget *parent = nullptr);
     ~MainFormController() override;
 
-    double toolZPosition();
     void showMainWindow();
 
-    bool getHoming() const;
-    void setHoming(bool homing);
-
 private slots:
-
-    void onTimerConnection();
-    void onTimerStateQuery();
-    void onPanelsSizeChanged(QSize size);
-
     // Main Menu Actions
     void onActFileExitTriggered();
     void onActFileOpenTriggered();
@@ -95,37 +84,22 @@ private slots:
     void onActFileSaveAsTriggered();
     void onActFileSaveTriggered();
     void onActFileSaveTransformedAsTriggered();
-
     void onActSettingsTriggered();
     void onActAboutTriggered();
-    void onActRecentClearTriggered();
     void onActRecentFileTriggered();
-
-    void onGripFeedToggled(bool checked);
-    void onGripSpindleToggled(bool checked);
-    void onGripJogToggled(bool checked);
-    void onGripUserCommandsToggled(bool checked);
-
     void onHeightMapFileLoadStarted();
     void onHeightMapFileLoadFinished();
-
-    void onSerialPortError(QString error);
 
 protected:
     void showEvent(QShowEvent *se) override;
     void hideEvent(QHideEvent *he) override;
     void resizeEvent(QResizeEvent *re) override;
-    void timerEvent(QTimerEvent *) override;
     void closeEvent(QCloseEvent *ce) override;
     void dragEnterEvent(QDragEnterEvent *dee) override;
     void dropEvent(QDropEvent *de) override;
-    void onSplitterSplitterMoved(int pos, int index);
 
 private:
-    const int BUFFERLENGTH = 127;
     Ui::MainForm mUi;
-
-    // Dialog Controllers
     AboutFormController mAboutFormController;
     SettingsFormController mSettingsFormController;
     RecentFilesModel mRecentFilesModel;
@@ -135,49 +109,12 @@ private:
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
     IniFileSettingsModel mSettingsModel;
-    QMenu *mTableMenu;
-    QTime mStartTime;
-    QSharedPointer<QMessageBox> mSenderErrorBox;
-
-    // Stored origin
-    double mStoredOriginX = 0;
-    double mStoredOriginY = 0;
-    double mStoredOriginZ = 0;
-
-    QString mStoredParserStatus;
-    bool mIsUpdatingParserStatus = false;
-    bool mStatusReceived = false;
-    bool mIsProcessingFile = false;
-    bool mIsTransferCompleted = false;
-    bool mIsFileEndSent = false;
-    bool mCellChanged;
-
-    // Indices
-    int mFileCommandIndex;
-    int mFileProcessedCommandIndex;
-    int mProbeIndex;
-
-    // Current values
-    int mLastGrblStatus;
-
-    void updateParser();
-
-
-
-    QTime updateProgramEstimatedTime(QList<LineSegment *> lines);
 
     bool eventFilter(QObject *obj, QEvent *event) override;
     bool keyIsMovement(int key);
-    void resizeCheckBoxes();
-    void updateLayouts();
     void updateRecentFilesMenu();
-    void storeParserState();
-    void restoreParserState();
-    void storeOffsets();
-    void restoreOffsets();
     bool saveChanges(bool heightMapMode);
     void setFormActive(bool active) override;
-    int commandQueueLength();
 
 signals:
    void sendNextFileCommandsSignal(GcodeFileModel&);
@@ -193,6 +130,7 @@ private:
     void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();
     void clearRecentHeightMapFilesMenu();
+
     void setupToolbarActions();
     void setupToolbarSignals();
     void setupSettingsModelSignals();
@@ -202,9 +140,9 @@ private:
     void setupRecentFilesModelsSignals();
     void setupGrblMachineModelSignals();
     void setupConsoleFormSignals();
+    void setupControlFormSignals();
     void setupProgramFormSignals();
     void setupJogFormSignals();
-    void setupTimerSignals();
 public:
     void setupSignalSlots() override;
     bool isInHeightMapMode();
@@ -215,9 +153,9 @@ public slots:
     void onStatusBarUpdate(QString status);
     void onStatusTextUpdate(QString status);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeItem> items);
-    void onCommandSent(QString command, int len);
+    void onGcodeFileLoadFinished(QList<GcodeCommand> items);
     void onSendNextFileCommands();
+    void onSerialPortError(QString error);
 };
 
 

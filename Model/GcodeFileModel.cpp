@@ -100,7 +100,7 @@ void GcodeFileModel::load(QList<QString> data)
         QString cmd_no_comment;
         QString trimmed;
         QList<QString> args;
-        GcodeItem item;
+        GcodeCommand item;
 
         command = data.takeFirst();
 
@@ -110,9 +110,9 @@ void GcodeFileModel::load(QList<QString> data)
         if (!trimmed.isEmpty())
         {
             // Split command
-            QStringList cmdAndComment =GcodePreprocessorUtils::removeComment(command);
+            QStringList cmdAndComment = GcodeParser::removeComment(command);
             cmd_no_comment = cmdAndComment.at(0);
-            args = GcodePreprocessorUtils::splitCommand(cmd_no_comment);
+            args = GcodeParser::splitCommand(cmd_no_comment);
 
             PointSegment *ps = mGcodeParser.addCommand(args);
 
@@ -125,7 +125,7 @@ void GcodeFileModel::load(QList<QString> data)
             }
 
             item.setCommand(trimmed);
-            item.setState(GcodeItemState::GCODE_ITEM_STATE_IN_QUEUE);
+            item.setState(GcodeCommandState::InQueue);
             item.setLine(mGcodeParser.getCommandNumber());
             item.setArgs(args);
 
@@ -229,7 +229,7 @@ QString GcodeFileModel::getCurrentFileName()
    return mFile.fileName();
 }
 
-GcodeItem GcodeFileModel::getCommand(int index)
+GcodeCommand GcodeFileModel::getCommand(int index)
 {
     if (index < 0 || index > mData.count() -1)
     {
