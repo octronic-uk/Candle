@@ -157,3 +157,9 @@ void IniFileSettingsModel::onSaveSettings()
     qDebug() << "IniFileSettingsModel: onSaveSettings()";
     mSettings->sync();
 }
+
+void IniFileSettingsModel::onSettingChanged(QString groupName, QString settingName, QVariant value)
+{
+    AbstractSettingsModel::onSettingChanged(groupName,settingName,value);
+    emit settingChangedSignal(groupName, settingName, value);
+}

@@ -61,7 +61,7 @@ public slots:
     void hideEvent(QHideEvent* he) override;
     void resizeEvent(QResizeEvent* re) override;
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand>);
+    void onGcodeFileLoadFinished(QList<GcodeCommand*>&);
     void onGcodeParserUpdated(GcodeParser*);
 
     void onToggleGridButtonToggled(bool toggled);

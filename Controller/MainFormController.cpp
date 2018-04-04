@@ -25,7 +25,7 @@
 #include <QtDebug>
 #include <QErrorMessage>
 
-#include "Utils/MachineState.h"
+#include "Model/GrblMachineState.h"
 #include "AbstractFormController.h"
 #include "MainFormController.h"
 #include "ui_MainForm.h"
@@ -33,12 +33,14 @@
 
 MainFormController::MainFormController(QWidget *parent) :
     AbstractFormController(parent),
-    mFormMode(MAIN_FORM_MODE_NONE),
-    mLastFolder(QDir::homePath())
+    mFormMode(MainFormMode::Idle),
+    mLastFolder(QDir::homePath()),
+    mOldStatusBarLayout(nullptr)
 {
     qDebug() << "MainFormController: Constructing";
     mUi.setupUi(&mMainWindow);
     setupToolbarActions();
+    setupCompletionAndBufferProgressBars();
     setupSignalSlots();
 
     mUi.splitter->setSizes(QList<int>() << 200 << 200);
@@ -187,17 +189,17 @@ void MainFormController::setupGcodeFileModelSignals()
                 );
     // Gcode Loading Finished
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>)),
-                mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>))
+                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand*>&)),
+                mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand*>&))
                 );
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>)),
-                mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>))
+                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand*>&)),
+                mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand*>&))
                 );
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>)),
-                this, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>))
-                );
+            &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand*>&)),
+            this, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand*>&))
+    );
     // Gcode Loading Finished
     connect(
                 &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
@@ -229,70 +231,118 @@ void MainFormController::setupRecentFilesModelsSignals()
 
 void MainFormController::setupGrblMachineModelSignals()
 {
-    // Serial Port
+    // Grbl Machine Model
     connect(
-                &mGrblMachineModel, SIGNAL(serialPortErrorSignal(QString)),
-                this, SLOT(onSerialPortError(QString))
-                );
+        &mGrblMachineModel, SIGNAL(serialPortErrorSignal(QString)),
+        this, SLOT(onSerialPortError(QString))
+    );
     connect(
-                &mGrblMachineModel, SIGNAL(statusBarUpdateSignal(QString)),
-                this, SLOT(onStatusBarUpdate(QString))
-                );
+        &mGrblMachineModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
     connect(
-                &mGrblMachineModel, SIGNAL(statusTextUpdateSignal(QString,QColor,QColor)),
-                mUi.stateFormController, SLOT(onStatusTextUpdate(QString,QColor,QColor))
-                );
+        &mGrblMachineModel, SIGNAL(setCompletionProgressSignal(int)),
+        this, SLOT(onSetCompletionProgressValue(int))
+    );
     connect(
-                this, SIGNAL(sendNextFileCommandsSignal(GcodeFileModel&)),
-                &mGrblMachineModel, SLOT(onSendNextFileCommands(GcodeFileModel&))
-                );
+        &mGrblMachineModel, SIGNAL(setBufferProgressSignal(int)),
+        this, SLOT(onSetBufferProgressValue(int))
+    );
+    connect(
+        &mGrblMachineModel, SIGNAL(statusTextUpdateSignal(QString,QColor,QColor)),
+        mUi.stateFormController, SLOT(onStatusTextUpdate(QString,QColor,QColor))
+    );
+    connect(
+        this, SIGNAL(sendProgramSignal(GcodeFileModel&)),
+        &mGrblMachineModel, SLOT(onSendProgram(GcodeFileModel&))
+    );
+    connect(
+        this, SIGNAL(sendProgramFromLineSignal(GcodeFileModel&,long)),
+        &mGrblMachineModel, SLOT(onSendProgramFromLine(GcodeFileModel&,long))
+    );
 }
 
 void MainFormController::setupJogFormSignals()
 {
     // Jog Form
     connect(
-                mUi.jogFormController, SIGNAL(statusBarUpdateSignal(QString)),
-                this, SLOT(onStatusBarUpdate(QString))
-                );
+        mUi.jogFormController, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
 }
 
 void MainFormController::setupConsoleFormSignals()
 {
     // Console Form
     connect(
-        &mGrblMachineModel, SIGNAL(appendCommandToConsoleSignal(GcodeCommand)),
-        mUi.consoleFormController, SLOT(onAppendCommandToConsole(GcodeCommand))
+        &mGrblMachineModel, SIGNAL(appendCommandToConsoleSignal(GcodeCommand*)),
+        mUi.consoleFormController, SLOT(onAppendCommandToConsole(GcodeCommand*))
     );
     connect(
-        &mGrblMachineModel, SIGNAL(appendResponseToConsoleSignal(GrblResponse)),
-        mUi.consoleFormController, SLOT(onAppendResponseToConsole(GrblResponse))
+        &mGrblMachineModel, SIGNAL(appendResponseToConsoleSignal(const GrblResponse&)),
+        mUi.consoleFormController, SLOT(onAppendResponseToConsole(const GrblResponse&))
     );
     connect(
-        mUi.consoleFormController, SIGNAL(gcodeCommandSendSignal(GcodeCommand)),
-        &mGrblMachineModel, SLOT(onGcodeCommandSend(GcodeCommand)));
+        mUi.consoleFormController, SIGNAL(gcodeCommandSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*)));
 }
 
 void MainFormController::setupProgramFormSignals()
 {
     // Program Form
-    connect(
-        mUi.programFormController, SIGNAL(sendNextFileCommandsSignal()),
-        this, SLOT(onSendNextFileCommands())
+    connect
+    (
+        mUi.programFormController, SIGNAL(sendProgramSignal()),
+        this, SLOT(onSendProgram())
     );
+    connect
+    (
+        mUi.programFormController, SIGNAL(sendProgramFromLineSignal(long)),
+        this, SLOT(onSendProgramFromLine(long))
+    );
+    connect
+    (
+        &mGrblMachineModel,SIGNAL(machineStateUpdatedSignal(const GrblMachineState&)),
+        this, SLOT(onMachineStateUpdated(const GrblMachineState&))
+    );
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(updateProgramTableStatusSignal(GcodeCommand*)),
+        mUi.programFormController, SLOT(onUpdateProgramTableStatus(GcodeCommand*))
+    );
+}
+
+void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
+{
+   switch (state)
+   {
+       case GrblMachineState::Unlocked:
+            mUi.programFormController->setFormActive(true);
+            break;
+        case GrblMachineState::Locked:
+            mUi.programFormController->setFormActive(false);
+            break;
+   }
 }
 
 void MainFormController::setupControlFormSignals()
 {
     connect(
-        mUi.controlFormController, SIGNAL(gcodeCommandSendSignal(GcodeCommand)),
-        &mGrblMachineModel, SLOT(onGcodeCommandSend(GcodeCommand))
+        mUi.controlFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
     );
 }
 
-void MainFormController::onSendNextFileCommands()
+void MainFormController::onSendProgram()
 {
-    emit sendNextFileCommandsSignal(mGcodeFileModel);
+    onSetFormMode(MainFormMode::RunningGerber);
+    emit sendProgramSignal(mGcodeFileModel);
+}
+
+void MainFormController::onSendProgramFromLine(long line)
+{
+    onSetFormMode(MainFormMode::RunningGerber);
+    emit sendProgramFromLineSignal(mGcodeFileModel, line);
 }
 
 void MainFormController::onSerialPortError(QString error)
@@ -333,10 +383,27 @@ void MainFormController::setFormActive(bool active)
 
 }
 
-void MainFormController::setFormMode(MainFormMode mode)
+void MainFormController::onSetFormMode(MainFormMode mode)
 {
     qDebug() << "MainFormController: setFormMode";
     mFormMode = mode;
+    switch (mFormMode)
+    {
+        case MainFormMode::Idle:
+            mUi.jogFormController->setFormActive(true);
+            mUi.consoleFormController->setFormActive(true);
+            mUi.controlFormController->setFormActive(true);
+            break;
+        case MainFormMode::Gerber:
+            break;
+        case MainFormMode::HeightMap:
+            break;
+        case MainFormMode::RunningGerber:
+            mUi.jogFormController->setFormActive(false);
+            mUi.consoleFormController->setFormActive(false);
+            mUi.controlFormController->setFormActive(false);
+            break;
+    }
 }
 
 void MainFormController::resizeEvent(QResizeEvent *re)
@@ -430,13 +497,13 @@ void MainFormController::onActFileOpenTriggered()
 bool MainFormController::isInHeightMapMode()
 {
     qDebug() << "MainFormController: isInHeightMapMode";
-    return mFormMode == MAIN_FORM_MODE_HEIGHTMAP;
+    return mFormMode == MainFormMode::HeightMap;
 }
 
 bool MainFormController::isInGerberMode()
 {
     qDebug() << "MainFormController: isInGerberMode";
-    return mFormMode == MAIN_FORM_MODE_GERBER;
+    return mFormMode == MainFormMode::Gerber;
 }
 
 void MainFormController::onActFileNewTriggered()
@@ -484,7 +551,7 @@ void MainFormController::onHeightMapFileLoadStarted()
 void MainFormController::onHeightMapFileLoadFinished()
 {
     qDebug() << "MainFormController: onHeightMapFileLoadFinished";
-    setFormMode(MAIN_FORM_MODE_HEIGHTMAP);
+    onSetFormMode(MainFormMode::HeightMap);
     onStatusBarUpdate(
                 QString("Opened HeightMap File %s").arg(mGcodeFileModel.getCurrentFileName())
                 );
@@ -552,14 +619,12 @@ void MainFormController::onGcodeFileLoadStarted()
     qDebug() << "MainFormController: onGcodeFileLoadStarted";
 }
 
-void MainFormController::onGcodeFileLoadFinished(QList<GcodeCommand> items)
+void MainFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& items)
 {
     Q_UNUSED(items)
     qDebug() << "MainFormController: onGcodeFileLoadFinished";
-    setFormMode(MAIN_FORM_MODE_GERBER);
-    onStatusBarUpdate(
-        QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName())
-    );
+    onSetFormMode(MainFormMode::Gerber);
+    onStatusBarUpdate(QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName()));
 }
 
 void MainFormController::populateRecentGcodeFilesMenu()
@@ -620,4 +685,30 @@ void MainFormController::clearRecentHeightMapFilesMenu()
             delete action;
         }
     }
+}
+
+void MainFormController::onSetBufferProgressValue(int value)
+{
+    qDebug() << "MainFormController: setBufferProgressValue" << value;
+    mBufferProgressBar.setValue(value);
+}
+
+void MainFormController::onSetCompletionProgressValue(int value)
+{
+    qDebug() << "MainFormController: setCompletionProgressValue" << value;
+    mCompletionProgressBar.setValue(value);
+}
+
+void MainFormController::setupCompletionAndBufferProgressBars()
+{
+    mUi.statusBar->addPermanentWidget(new QLabel("Progress"));
+    mCompletionProgressBar.setMinimum(0);
+    mCompletionProgressBar.setMaximum(100);
+    mCompletionProgressBar.setTextVisible(false);
+    mUi.statusBar->addPermanentWidget(&mCompletionProgressBar);
+    mUi.statusBar->addPermanentWidget(new QLabel("Buffer"));
+    mBufferProgressBar.setMinimum(0);
+    mBufferProgressBar.setMaximum(100);
+    mBufferProgressBar.setTextVisible(false);
+    mUi.statusBar->addPermanentWidget(&mBufferProgressBar);
 }

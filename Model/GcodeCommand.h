@@ -64,24 +64,28 @@ class GcodeCommand
 public:
     GcodeCommand(
         QString cmd = "",
-        int length = -1,
         int tableIndex = -1,
         bool showInConsole = true,
-        int consoleIndex = -1
+        int consoleIndex = -1,
+        GcodeCommandState state = GcodeCommandState::InQueue
     );
 
     GcodeCommand(const GcodeCommand& other);
     ~GcodeCommand();
 
-    static GcodeCommand AbsoluteCoordinatesCommand();
-    static GcodeCommand ControlXCommand();
-    static GcodeCommand UnlockCommand();
+    static long ID;
+    static GcodeCommand* AbsoluteCoordinatesCommand();
+    static GcodeCommand* ControlXCommand();
+    static GcodeCommand* UnlockCommand();
+
+    bool operator==(const GcodeCommand& other);
+
+    bool isEmpty();
+
+    int getCommandLength() const;
 
     QString getCommand() const;
     void setCommand(const QString& command);
-
-    int getLength() const;
-    void setLength(int length);
 
     int getTableIndex() const;
     void setTableIndex(int tableIndex);
@@ -104,7 +108,6 @@ public:
     int getLine() const;
     void setLine(int line);
 
-
     bool isParserStateResponse();
     bool isParametersResponse();
     bool isCtrlXResponse();
@@ -118,12 +121,17 @@ public:
     bool isSpindleCounterClockwiseCommand();
     bool isFileEndCommand();
     bool isFeedRateCommand();
+    bool isProbeCommand();
 
     int getSpindleSpeed();
     int getFeedRate();
 
+    long getID();
+    bool hasID(long id);
 
 private:
+    static long nextID();
+
     const static QRegExp spindleSpeedExpression;
     const static QRegExp fileEndExpression;
     const static QRegExp feedRateExpression;
@@ -132,8 +140,8 @@ private:
     GrblResponse mResponse;
     GcodeCommandState mState;
     QStringList mArgs;
+    long mID;
     int mLine;
-    int mLength;
     int mTableIndex;
     int mConsoleIndex;
     bool mShowInConsole;

@@ -51,11 +51,6 @@ public:
     float getSize() const;
     void setSize(float size);
 
-    int getOpacity() const;
-    void setOpacity(int opacity);
-
-    void updateOpacity();
-
 protected:
     bool updateData() override;
 
@@ -63,7 +58,6 @@ private:
     float mMajorSpacing;
     float mMinorSpacing;
     float mSize;
-    int mOpacity;
     QColor mMajorColor;
     QColor mMinorColor;
     QColor mTextColor;

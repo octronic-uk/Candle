@@ -33,7 +33,8 @@ ProgramFormController::ProgramFormController(QWidget *parent)
     qDebug() << "ProgramFormController: Contructing";
     mUi.setupUi(this);
     setupSignalSlots();
-
+    setFormActive(false);
+    mUi.programTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 ProgramFormController::~ProgramFormController()
@@ -126,7 +127,11 @@ void ProgramFormController::setAutoScrollChecked(bool checked)
 
 void ProgramFormController::setFormActive(bool active)
 {
-
+    mUi.sendButton->setEnabled(active);
+    mUi.resetButton->setEnabled(active);
+    mUi.abortButton->setEnabled(active);
+    mUi.testModeButton->setEnabled(active);
+    mUi.pauseButton->setEnabled(active);
 }
 
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
@@ -161,6 +166,7 @@ void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoin
 
 void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 {
+    /*
     qDebug() << "ProgramFormController: Table Cell Changed" << i1 << i2;
     Q_UNUSED(i2)
 
@@ -168,7 +174,9 @@ void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 
     if (i1.column() != 0)
     {
-        qDebug() << "ProgramFormController: Not an editable column??";
+        qDebug() << "ProgramFormController: No need to edit that there column"
+                 << i1.column()
+                 << "here sonny";
         return;
     }
 
@@ -198,6 +206,7 @@ void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
         // Update visualizer
         //updateParser();
     }
+    */
 }
 
 void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2)
@@ -353,41 +362,26 @@ void ProgramFormController::setupSignalSlots()
     );
 }
 
-void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeCommand> items)
+void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& items)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
     mProgramTableModel.insertRows(0,items.count(),QModelIndex());
-    mProgramTableModel.append(items);
+    mProgramTableModel.setCommandData(items);
 }
 
 void ProgramFormController::onSendActionTriggered()
 {
     qDebug() << "ProgramFormController: onSendActionTriggered";
 
-    if (mProgramTableModel.rowCount() == 1)
+    if (mProgramTableModel.rowCount() == 0)
     {
         return;
     }
-
     onResetButtonClicked();
-
     mStartTime.start();
-    mTransferCompleted = false;
-    mProcessingFile = true;
-    mFileEndSent = false;
-
     emit setKeyboardControlSignal(false);
-
-    if (!mUi.testModeButton->isChecked())
-    {
-        //storeOffsets(); // Allready stored on check
-    }
-    //storeParserState();
-
-    //updateControlsState();
     mUi.pauseButton->setFocus();
-
-    emit sendNextFileCommandsSignal();
+    emit sendProgramSignal();
 }
 
 void ProgramFormController::onSendFromCurrentLineActionTriggered()
@@ -400,7 +394,9 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
     }
 
     //Line to start from
-    int commandIndex = mUi.programTable->currentIndex().row();
+    int row = mUi.programTable->currentIndex().row();
+    GcodeCommand *startingAt = mProgramTableModel.data().at(row);
+    emit sendProgramFromLineSignal(startingAt->getID());
 
     /*
     // Set parser state
@@ -510,6 +506,26 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
     */
 }
 
+void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
+{
+    qDebug() << "ProgramFormController: onUpdateProgramTableStatus"
+             << "C" << command->getCommand()
+             << "L" << command->getLine()
+             << "I" << command->getTableIndex();
+
+    QModelIndex stateIndex = mProgramTableModel.index(command->getTableIndex(),1);
+    QModelIndex responseIndex = mProgramTableModel.index(command->getTableIndex(),2);
+
+    mProgramTableModel.setData(stateIndex, QVariant::fromValue(command->getState()));
+    mProgramTableModel.setData(responseIndex, QVariant::fromValue(command->getResponse()));
+
+    if (isAutoScrollChecked())
+    {
+        mUi.programTable->selectRow(stateIndex.row());
+        mUi.programTable->scrollTo(stateIndex);
+    }
+}
+
 void ProgramFormController::onTestModeButtonClicked(bool checked)
 {
     Q_UNUSED(checked)
@@ -520,22 +536,6 @@ void ProgramFormController::onAbortButtonClicked()
 {
     qDebug() << "ProgramFormController: onCmdFileAbortClicked";
     emit programAbortSignal();
-    /*
-    mAborting = true;
-    if (!mUi->chkTestMode->isChecked())
-    {
-        mSerialPort.write("!");
-    }
-    else
-    {
-        grblReset();
-    }
-    */
-}
-
-void ProgramFormController::onSendButtonClicked()
-{
-    qDebug() << "ProgramFormController: onCmdCommandSendClicked";
 }
 
 void ProgramFormController::onPauseButtonClicked(bool checked)
@@ -548,68 +548,12 @@ void ProgramFormController::onResetButtonClicked()
 {
     qDebug() << "ProgramFormController: onCmdFileResetClicked";
     emit programResetSignal();
-    /*
-    mFileCommandIndex = 0;
-    mFileProcessedCommandIndex = 0;
-    mLastDrawnLineIndex = 0;
-    mProbeIndex = -1;
-
-    if (!mHeightMapMode) {
-        QTime time;
-
-        time.start();
-
-        QList<LineSegment*> list = mViewParser.getLineSegmentList();
-
-        QList<int> indexes;
-        for (int i = 0; i < list.count(); i++) {
-            list[i]->setDrawn(false);
-            indexes.append(i);
-        }
-        mCodeDrawer->update(indexes);
-
-        qDebug() << "drawn false:" << time.elapsed();
-
-        time.start();
-
-        mUi->programTable->setUpdatesEnabled(false);
-
-        for (int i = 0; i < mCurrentGCodeTableModel->data().count() - 1; i++) {
-            mCurrentGCodeTableModel->data()[i].state = GcodeCommand::InQueue;
-            mCurrentGCodeTableModel->data()[i].response = QString();
-        }
-        mUi->programTable->setUpdatesEnabled(true);
-
-        qDebug() << "table updated:" << time.elapsed();
-
-        mUi->programTable->scrollTo(mCurrentGCodeTableModel->index(0, 0));
-        mUi->programTable->clearSelection();
-        mUi->programTable->selectRow(0);
-
-        mUi->glwVisualizer->setSpendTime(QTime(0, 0, 0));
-    } else {
-        mUi->txtHeightMapGridX->setEnabled(true);
-        mUi->txtHeightMapGridY->setEnabled(true);
-        mUi->txtHeightMapGridZBottom->setEnabled(true);
-        mUi->txtHeightMapGridZTop->setEnabled(true);
-
-        delete mHeightMapInterpolationDrawer.data();
-        mHeightMapInterpolationDrawer.setData(NULL);
-
-        mHeightMapModel.clear();
-        updateHeightMapGrid();
-    }
-    */
 }
 
 void ProgramFormController::onScrollBarAction(int action)
 {
-    qDebug() << "ProgramFormController: onScrollBarAction";
     Q_UNUSED(action)
-    if (mProcessingFile)
-    {
-        mUi.autoScrollButton->setChecked(false);
-    }
+    mUi.autoScrollButton->setChecked(false);
 }
 
 void ProgramFormController::onGcodeFileLoadStarted()
@@ -617,3 +561,4 @@ void ProgramFormController::onGcodeFileLoadStarted()
     qDebug() << "ProgramFormController: onGcodeFileLoadStarted";
     clearTable();
 }
+

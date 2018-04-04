@@ -573,19 +573,31 @@ void GLWidget::paintEvent(QPaintEvent *pe)
     QPen pen(mColorText);
     painter.setPen(pen);
 
-    painter.drawText(QPoint(x, y), QString("X: %1 ... %2").arg(mXMin, 0, 'f', 3).arg(mXMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 15), QString("Y: %1 ... %2").arg(mYMin, 0, 'f', 3).arg(mYMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 30), QString("Z: %1 ... %2").arg(mZMin, 0, 'f', 3).arg(mZMax, 0, 'f', 3));
-    painter.drawText(QPoint(x, y + 45), QString("%1 / %2 / %3").arg(mXSize, 0, 'f', 3).arg(mYSize, 0, 'f', 3).arg(mZSize, 0, 'f', 3));
+    painter.drawText(QPoint(x, y), QString("X | %1mm <--> %2mm")
+        .arg(mXMin, 0, 'f', 2)
+        .arg(mXMax, 0, 'f', 2));
+    painter.drawText(QPoint(x, y + 15), QString("Y | %1mm <--> %2mm")
+        .arg(mYMin, 0, 'f', 2)
+        .arg(mYMax, 0, 'f', 2));
+    painter.drawText(QPoint(x, y + 30), QString("Z | %1mm <--> %2mm")
+        .arg(mZMin, 0, 'f', 2)
+        .arg(mZMax, 0, 'f', 2));
+    painter.drawText(QPoint(x, y + 45), QString("S | %1mm x %2mm x %3mm")
+        .arg(mXSize, 0, 'f', 2)
+        .arg(mYSize, 0, 'f', 2)
+        .arg(mZSize, 0, 'f', 2));
 
     QFontMetrics fm(painter.font());
 
     painter.drawText(QPoint(x, fm.height() + 10), mParserStatus);
+    QString str;
 
-    QString str = QString(tr("Vertices: %1")).arg(vertices);
+    /*
+    str = QString(tr("Vertices: %1")).arg(vertices);
     painter.drawText(QPoint(width() - fm.width(str) - 10, y + 30), str);
     str = QString("FPS: %1").arg(mFps);
     painter.drawText(QPoint(width() - fm.width(str) - 10, y + 45), str);
+    */
 
     str = mSpendTime.toString("hh:mm:ss") + " / " + mEstimatedTime.toString("hh:mm:ss");
     painter.drawText(QPoint(width() - fm.width(str) - 10, y), str);

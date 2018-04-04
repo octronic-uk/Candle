@@ -56,15 +56,12 @@ void ConsoleFormController::onCommandSendAction()
     {
         return;
     }
-    GcodeCommand command(commandText);
-
     // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
-    //onAppendCommandToConsole(command);
-    emit gcodeCommandSendSignal(command);
+    emit gcodeCommandSendSignal(new GcodeCommand(commandText));
 }
 
-void ConsoleFormController::onAppendResponseToConsole(GrblResponse response)
+void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& response)
 {
     QString txt = response.getData();
     if (txt.isEmpty())
@@ -72,14 +69,16 @@ void ConsoleFormController::onAppendResponseToConsole(GrblResponse response)
         return;
     }
     qDebug() << "ConsoleFormController: Appending Response:" << txt;
-    mUi.txtConsole->appendPlainText("CNC --> "+txt);
+    mUi.txtConsole->setTextColor(QColor("Black"));
+    mUi.txtConsole->append("CNC --> "+txt);
 }
 
-void ConsoleFormController::onAppendCommandToConsole(GcodeCommand command)
+void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
 {
-    QString cmd = command.getCommand();
+    QString cmd = command->getCommand();
     qDebug() << "ConsoleFormController: Appending Command:" << cmd;
-    mUi.txtConsole->appendPlainText("CNC <-- "+cmd);
+    mUi.txtConsole->setTextColor(QColor("Gray"));
+    mUi.txtConsole->append("CNC <-- "+cmd);
 }
 
 void ConsoleFormController::setupSignalSlots()

@@ -1,7 +1,7 @@
 /*
- * GrblResponse.h
+ * MachineState.h
  *
- * Created: 03 2018 by Ashley
+ * Created: 22 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -15,44 +15,24 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #pragma once
 
-#include <QString>
 #include <QMetaType>
 
-enum class GrblResponseType
+enum class GrblMachineState
 {
-    Startup,
-    Ok,
-    Error,
+    Unknown = 0,
+    Idle,
     Alarm,
+    Run,
+    Home,
+    Hold,
+    Queue,
+    Check,
+    Door,
     Locked,
-    Unlocked,
-    Enabled,
-    Disabled,
-    Probe,
-    ParserState,
-    SpindleSpeed,
-    Status,
-    Help,
-    None
+    Unlocked
 };
 
-
-class GrblResponse
-{
-public:
-    GrblResponse();
-    GrblResponse(QString response);
-    GrblResponse(const GrblResponse& other);
-    ~GrblResponse();
-    GrblResponseType getType() const;
-    QString getData() const;
-private:
-    void identifyType();
-    QString mData;
-    GrblResponseType mType;
-};
-
-Q_DECLARE_METATYPE(GrblResponse)
-Q_DECLARE_METATYPE(GrblResponseType)
+Q_DECLARE_METATYPE(GrblMachineState)

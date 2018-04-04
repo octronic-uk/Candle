@@ -79,7 +79,19 @@ void ControlFormController::setupSignalSlots()
 
 void ControlFormController::setFormActive(bool active)
 {
-
+    mUi.cmdHome->setEnabled(active);
+    mUi.cmdTouch->setEnabled(active);
+    mUi.cmdZeroXY->setEnabled(active);
+    mUi.cmdZeroZ->setEnabled(active);
+    mUi.cmdRestoreOrigin->setEnabled(active);
+    mUi.cmdSafePosition->setEnabled(active);
+    mUi.cmdUser1->setEnabled(active);
+    mUi.cmdUser2->setEnabled(active);
+    mUi.cmdUser3->setEnabled(active);
+    mUi.cmdUser4->setEnabled(active);
+    // Always enabled
+    mUi.cmdReset->setEnabled(true);
+    mUi.cmdUnlock->setEnabled(true);
 }
 
 void ControlFormController::onCmdRestoreOriginClicked()
@@ -117,7 +129,7 @@ void ControlFormController::onCmdResetClicked()
 
 void ControlFormController::onCmdUnlockClicked()
 {
-    emit gcodeCommandSendSignal(GcodeCommand::UnlockCommand());
+    emit gcodeCommandManualSendSignal(GcodeCommand::UnlockCommand());
 }
 
 void ControlFormController::onCmdSafePositionClicked()

@@ -49,12 +49,12 @@ signals:
     void programAbortSignal();
     void programPauseSignal(QString);
     void programResetSignal();
-    void sendNextFileCommandsSignal();
+    void sendProgramSignal();
+    void sendProgramFromLineSignal(long);
 public slots:
     void onReserveGcodeRowsSignal(int);
     void onTestModeButtonClicked(bool checked);
     void onAbortButtonClicked();
-    void onSendButtonClicked();
     void onPauseButtonClicked(bool checked);
     void onResetButtonClicked();
 
@@ -66,9 +66,10 @@ public slots:
 
     void onScrollBarAction(int action);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand>);
+    void onGcodeFileLoadFinished(QList<GcodeCommand*>&);
     void onSendActionTriggered();
     void onSendFromCurrentLineActionTriggered();
+    void onUpdateProgramTableStatus(GcodeCommand* command);
 private:
     ProgramForm mUi;
     GcodeTableModel mProgramTableModel;
@@ -93,4 +94,4 @@ private:
     void setupProgramTable();
 public:
     void setupSignalSlots() override;
-};
+    };

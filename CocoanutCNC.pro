@@ -116,7 +116,6 @@ HEADERS  += \
     View/Widgets/GLWidget.h \
     Utils/Interpolation.h \
     Utils/Util.h \
-    Utils/MachineState.h \
     Controller/ControlFormController.h \
     Controller/FeedFormController.h \
     Controller/HeightMapFormController.h \
@@ -140,7 +139,8 @@ HEADERS  += \
     Model/GrblMachineModel.h \
     Utils/IndexOutOfBoundsException.h \
     Model/GcodeCommand.h \
-    Model/GrblResponse.h
+    Model/GrblResponse.h \
+    Model/GrblMachineState.h
 
 FORMS    += \
     View/AboutForm.ui \

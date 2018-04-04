@@ -42,14 +42,16 @@ public:
     void setFileChanged(bool changed);
     QTime updateProgramEstimatedTime(QList<LineSegment*> lines);
     QString getCurrentFileName();
-    GcodeCommand getCommand(int index);
+    GcodeCommand* getCommand(int index) const;
+    GcodeCommand* getCommandByID(long );
     int countCommands();
+    QList<GcodeCommand*>& getData();
 
 signals:
     void statusBarUpdateSignal(QString);
     void gcodeFileLoadStartedSignal();
-    void gcodeFileLoadFinishedSignal(QList<GcodeCommand>);
-    void nextGcodeLineReadySignal(GcodeCommand);
+    void gcodeFileLoadFinishedSignal(QList<GcodeCommand*>&);
+    void nextGcodeLineReadySignal(GcodeCommand*);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
     void gcodeParserUpdatedSignal(GcodeParser*);
@@ -58,6 +60,6 @@ private:
     bool mProgramLoading;
     bool mFileChanged;
     QFile mFile;
-    QList<GcodeCommand> mData;
+    QList<GcodeCommand*> mData;
     GcodeParser mGcodeParser;
 };

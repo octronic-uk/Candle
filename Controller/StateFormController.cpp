@@ -24,7 +24,11 @@ StateFormController::StateFormController(QWidget *parent)
     qDebug() << "StateFormController: Constructing";
     mUi.setupUi(this);
     setupSignalSlots();
-    mUi.statusText->setBackgroundRole(QPalette::Background);
+    mUi.statusText->setAutoFillBackground(false);
+
+    QFont font(mUi.statusText->font());
+    font.setBold(true);
+    mUi.statusText->setFont(font);
 }
 
 StateFormController::~StateFormController()
@@ -38,8 +42,8 @@ void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QCo
     qDebug() << "StateFormController:" << text << textColor << bgColor;
     mUi.statusText->setText(text);
     QPalette p = mUi.statusText->palette();
-    p.setColor(QPalette::Text, textColor);
-    p.setColor(QPalette::Base, bgColor);
+    p.setColor(mUi.statusText->foregroundRole(), textColor);
+    p.setColor(mUi.statusText->backgroundRole(), bgColor);
     mUi.statusText->setPalette(p);
 }
 

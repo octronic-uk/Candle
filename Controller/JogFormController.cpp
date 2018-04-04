@@ -56,7 +56,6 @@ void JogFormController::onKeyboardControlToggled(bool checked)
     */
 }
 
-
 void JogFormController::blockJogForRapidMovement(bool repeated)
 {
     Q_UNUSED(repeated)
@@ -87,7 +86,11 @@ void JogFormController::blockJogForRapidMovement(bool repeated)
 
 void JogFormController::setFormActive(bool active)
 {
-
+    QList<QWidget*> children = mUi.jogWidget->findChildren<QWidget*>();
+    for (QWidget* child : children)
+    {
+        child->setEnabled(active);
+    }
 }
 
 

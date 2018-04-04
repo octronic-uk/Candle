@@ -38,6 +38,10 @@ GcodeFileModel::GcodeFileModel(QObject *parent)
 GcodeFileModel::~GcodeFileModel()
 {
     qDebug() << "GcodeFileModel: Destructing";
+    for (int i=0; i<mData.length(); i++)
+    {
+        delete mData[i];
+    }
 }
 
 void GcodeFileModel::load(QList<QString> data)
@@ -46,30 +50,6 @@ void GcodeFileModel::load(QList<QString> data)
 
     // Reset tables
     emit gcodeFileLoadStartedSignal();
-
-    //clearTable();
-    //mProbeModel.clear();
-    //mProgramHeightmapModel.clear();
-    //mCurrentModel = &mProgramModel;
-
-    // Reset parsers
-    //mViewParser.reset();
-    //mProbeParser.reset();
-
-    // Reset code drawer
-    //mCurrentDrawer = mCodeDrawer;
-    //mCodeDrawer->update();
-    //mUi->glwVisualizer->fitDrawable(mCodeDrawer);
-    //updateProgramEstimatedTime(QList<LineSegment*>());
-
-    // Update interface
-    //mUi->chkHeightMapUse->setChecked(false);
-    //mUi->grpHeightMap->setProperty("overrided", false);
-    //style()->unpolish(mUi->grpHeightMap);
-    //mUi->grpHeightMap->ensurePolished();
-
-
-
     // Prepare parser
     mGcodeParser.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
     //if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
@@ -82,17 +62,8 @@ void GcodeFileModel::load(QList<QString> data)
     mData.clear();
     emit clearExistingGcodeFileSignal();
     emit reserveGcodeRowsSignal(data.count());
-    //mProgramModel.data().reserve(data.count());
 
-//    QProgressDialog progress(tr("Opening file..."), tr("Abort"), 0, data.count(), nullptr);//parent);
-//    progress.setWindowModality(Qt::WindowModal);
-//    progress.setFixedSize(progress.sizeHint());
-//    if (data.count() > PROGRESS_MIN_LINES)
-//    {
-//        progress.show();
-//       progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
-//    }
-
+    int index = 0;
     while (!data.isEmpty())
     {
         //qDebug() << "GcodeFileModel: Next Line";
@@ -100,7 +71,7 @@ void GcodeFileModel::load(QList<QString> data)
         QString cmd_no_comment;
         QString trimmed;
         QList<QString> args;
-        GcodeCommand item;
+        GcodeCommand* item = new GcodeCommand();
 
         command = data.takeFirst();
 
@@ -113,45 +84,19 @@ void GcodeFileModel::load(QList<QString> data)
             QStringList cmdAndComment = GcodeParser::removeComment(command);
             cmd_no_comment = cmdAndComment.at(0);
             args = GcodeParser::splitCommand(cmd_no_comment);
-
-            PointSegment *ps = mGcodeParser.addCommand(args);
-
-            if  (
-                ps && (qIsNaN(ps->point()->x()) ||
-                qIsNaN(ps->point()->y()) ||
-                qIsNaN(ps->point()->z()))
-            ) {
-                //qDebug() << "GcodeFileModel: nan point segment added:" << *ps->point();
-            }
-
-            item.setCommand(trimmed);
-            item.setState(GcodeCommandState::InQueue);
-            item.setLine(mGcodeParser.getCommandNumber());
-            item.setArgs(args);
-
-            //emit nextGcodeLineReadySignal(item);
-            //qDebug() << "GcodeFileModel: Appending to mData";
+            mGcodeParser.addCommand(args);
+            item->setCommand(trimmed);
+            item->setState(GcodeCommandState::InQueue);
+            item->setLine(mGcodeParser.getCommandNumber());
+            item->setArgs(args);
+            item->setTableIndex(index);
+            index++;
             mData.append(item);
-
         }
-
-//        if (progress.isVisible() && (data.count() % PROGRESS_STEP == 0)) {
-//            progress.setValue(progress.maximum() - data.count());
-//            qApp->processEvents();
-//            if (progress.wasCanceled()) break;
-//        }
     }
-
-    //progress.close();
-    //updateProgramEstimatedTime(mViewParser.getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
-    //qDebug() << "GcodeFileModel: view parser filled at time" << time.elapsed();
-
     mProgramLoading = false;
     emit gcodeFileLoadFinishedSignal(mData);
     emit gcodeParserUpdatedSignal(&mGcodeParser);
-
-    //resetHeightmap();
-    //updateControlsState();
 }
 
 void GcodeFileModel::load(QString fileName)
@@ -176,11 +121,7 @@ void GcodeFileModel::load(QString fileName)
     }
 
     mFile.close();
-
-    // Load lines
     load(data);
-    //qDebug() << "GcodeFileModel: Loaded Gcode File "
-             //<< fileName;
 }
 
 QTime GcodeFileModel::updateProgramEstimatedTime(QList<LineSegment*> lines)
@@ -229,11 +170,23 @@ QString GcodeFileModel::getCurrentFileName()
    return mFile.fileName();
 }
 
-GcodeCommand GcodeFileModel::getCommand(int index)
+GcodeCommand* GcodeFileModel::getCommandByID(long id)
+{
+   for (GcodeCommand* next : mData)
+   {
+       if (next->hasID(id))
+       {
+           return next;
+       }
+   }
+   return nullptr;
+}
+
+GcodeCommand* GcodeFileModel::getCommand(int index) const
 {
     if (index < 0 || index > mData.count() -1)
     {
-        throw new IndexOutOfBoundsException(index);
+        return nullptr;
     }
 
     return mData.at(index);
@@ -241,7 +194,12 @@ GcodeCommand GcodeFileModel::getCommand(int index)
 
 int GcodeFileModel::countCommands()
 {
-   return mData.count();
+    return mData.count();
+}
+
+QList<GcodeCommand*>& GcodeFileModel::getData()
+{
+   return mData;
 }
 
 

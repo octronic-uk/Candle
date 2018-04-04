@@ -17,29 +17,35 @@
  */
 #include "Model/Settings/Settings.h"
 #include "GrblMachineModel.h"
-#include "Utils/MachineState.h"
+#include "Model/GrblMachineState.h"
 #include "Utils/Util.h"
 #include "Utils/IndexOutOfBoundsException.h"
 #include <QMetaType>
 
-const int GrblMachineModel::BUFFER_LENGTH = 128;
+const int GrblMachineModel::BUFFER_LENGTH_LIMIT = 127;
 
 GrblMachineModel::GrblMachineModel(QObject *parent)
     : QObject(parent),
-      mLastGrblStatus(Unknown),
+      mState(GrblMachineState::Unknown),
+      mLastState(GrblMachineState::Unknown),
       mMachinePosition(QVector3D(0.0,0.0,0.0)),
       mWorkPosition(QVector3D(0.0,0.0,0.0)),
-      mHoming(false),
-      mPortNameSet(false),
-      mBaudRateSet(false),
-      mResetting(false),
+      mFileEndSent(false),
       mFeedOverrideRate(100.0), // 100% of feed
-      mCommandIndex(0),
       mProcessingFile(false),
       mTransferCompleted(false),
-      mAborting(false)
+      mAborting(false),
+      mProgramSendInterval(100),
+      mCountProcessedCommands(0)
 {
     setupSerialPort();
+    // Setup timer
+    connect(
+        &mProgramSendTimer, SIGNAL(timeout()),
+         this, SLOT(onProgramSendTimerTimeout())
+    );
+
+    startProgramSendTimer();
 }
 
 GrblMachineModel::~GrblMachineModel()
@@ -54,18 +60,20 @@ void GrblMachineModel::setupSerialPort()
     mSerialPort.setDataBits(QSerialPort::Data8);
     mSerialPort.setFlowControl(QSerialPort::NoFlowControl);
     mSerialPort.setStopBits(QSerialPort::OneStop);
+
     mConnectionTimer.start(1000);
+
     connect(&mConnectionTimer,SIGNAL(timeout()),
             this, SLOT(onConnectionTimer()));
     connect(
-                &mSerialPort, SIGNAL(readyRead()),
-                this, SLOT(onSerialPortReadyRead()),
-                Qt::QueuedConnection
-                );
+        &mSerialPort, SIGNAL(readyRead()),
+        this, SLOT(onSerialPortReadyRead()),
+        Qt::QueuedConnection
+    );
     connect(
-                &mSerialPort, SIGNAL(error(QSerialPort::SerialPortError)),
-                this, SLOT(onSerialPortError(QSerialPort::SerialPortError))
-                );
+        &mSerialPort, SIGNAL(error(QSerialPort::SerialPortError)),
+        this, SLOT(onSerialPortError(QSerialPort::SerialPortError))
+    );
 }
 
 void GrblMachineModel::onConnectionTimer()
@@ -76,7 +84,7 @@ void GrblMachineModel::onConnectionTimer()
     }
 }
 
-void GrblMachineModel::updateMachineCoordinates(GrblResponse response)
+void GrblMachineModel::updateMachineCoordinates(const GrblResponse& response)
 {
     // Update machine coordinates
     QString data = response.getData();
@@ -92,28 +100,25 @@ void GrblMachineModel::updateMachineCoordinates(GrblResponse response)
     }
 }
 
-void GrblMachineModel::updateStatus(GrblResponse resp)
+void GrblMachineModel::updateStatus(const GrblResponse& resp)
 {
-    MachineStateEnum status = Unknown;
-
     // Status
     static QRegExp statusExpression("<([^,^>]*)");
     if (statusExpression.indexIn(resp.getData()) != -1)
     {
-
         mStatusReceived = true;
         QString stxThing = statusExpression.cap(1);
         qDebug() << "GrblMachineModel: STX Thing is " << stxThing;
-        status = Unknown ; //MachineStatus::enumIndexOf(stxThing);
+        mState = GrblMachineState::Unknown ; //MachineStatus::enumIndexOf(stxThing);
 
         // Update status
-        if (status != mLastGrblStatus)
+        if (mState != mLastState)
         {
-            emit statusTextUpdateSignal(MachineState::enumToQString(status),QColor("White"),QColor("Black"));
+            emit statusTextUpdateSignal(stateToString(mState),QColor("White"),QColor("Black"));
         }
 
         // Update controls
-        emit setInterfaceLockSignal(status == MachineStateEnum::Idle);
+        emit machineStateUpdatedSignal(mState);
 
         /*
         // Update "elapsed time" timer
@@ -126,12 +131,11 @@ void GrblMachineModel::updateStatus(GrblResponse resp)
         */
 
         // Test for job complete
-        if  (
-             mProcessingFile &&
-             mTransferCompleted &&
-             ((status == Idle && mLastGrblStatus == Run) || status == Check)
-             ){
-            qDebug() << "GrblMachineModel: Job Completed @" << mCommandIndex ;// << m_currentModel->rowCount() - 1;
+        if  (mProcessingFile && mTransferCompleted &&
+             ((mState == GrblMachineState::Idle && mLastState == GrblMachineState::Run) ||
+              mState == GrblMachineState::Check))
+        {
+            qDebug() << "GrblMachineModel: Job Completed";
 
             // Shadow last segment
             /*
@@ -146,7 +150,6 @@ void GrblMachineModel::updateStatus(GrblResponse resp)
 
             // Update state
             mProcessingFile = false;
-            mCommandIndex = 0;
             //mLastDrawnLineIndex = 0;
             //m_storedParserStatus.clear();
 
@@ -170,9 +173,9 @@ void GrblMachineModel::updateStatus(GrblResponse resp)
         }
 
         // Store status
-        if (status != mLastGrblStatus)
+        if (mState != mLastState)
         {
-            mLastGrblStatus = status;
+            mLastState = mState;
         }
 
         /* TODO - Somethings Funky with coords here
@@ -212,7 +215,7 @@ void GrblMachineModel::updateStatus(GrblResponse resp)
     }
 }
 
-void GrblMachineModel::updateWorkCoordinates(GrblResponse resp)
+void GrblMachineModel::updateWorkCoordinates(const GrblResponse& resp)
 {
     // Update work coordinates
     static QRegExp workPositionExpression("WPos:([^,]*),([^,]*),([^,^>]*)");
@@ -225,459 +228,61 @@ void GrblMachineModel::updateWorkCoordinates(GrblResponse resp)
     emit updateWorkPositionSignal(mWorkPosition);
 }
 
-void GrblMachineModel::updateToolCoordinates(GrblResponse response)
-{
-    QVector3D toolPosition;
-
-    // Update tool position
-    if (!(mLastGrblStatus == Check && mCommandIndex < mCommandsHistoryList.count()))
-    {
-        toolPosition = QVector3D(mWorkPosition);
-        emit toolPositionChangedSignal(toolPosition);
-        //m_toolDrawer.setToolPosition(mCodeDrawer->getIgnoreZ() ? QVector3D(toolPosition.x(), toolPosition.y(), 0) : toolPosition);
-    }
-
-    // toolpath shadowing
-    if (mProcessingFile && mLastGrblStatus != Check)
-    {
-        /*
-        GcodeViewParse *parser = mCurrentDrawer->viewParser();
-
-        bool toolOntoolpath = false;
-
-        QList<int> drawnLines;
-        QList<LineSegment*> list = parser->getLineSegmentList();
-
-        for (
-             int i = mLastDrawnLineIndex;
-             i < list.count() && list.at(i)->getLineNumber() <= (m_currentModel->data(m_currentModel->index(mFileProcessedCommandIndex, 4)).toInt() + 1);
-             i++
-             )
-        {
-            if (list.at(i)->contains(toolPosition))
-            {
-                toolOntoolpath = true;
-                mLastDrawnLineIndex = i;
-                break;
-            }
-            drawnLines << i;
-        }
-
-        if (toolOntoolpath)
-        {
-            foreach (int i, drawnLines)
-            {
-                list.at(i)->setDrawn(true);
-            }
-            if (!drawnLines.isEmpty()) mCurrentDrawer->update(drawnLines);
-        }
-        else if (mLastDrawnLineIndex < list.count())
-        {
-            qDebug() << "tool missed:" << list.at(mLastDrawnLineIndex)->getLineNumber()
-                     << m_currentModel->data(m_currentModel->index(mFileProcessedCommandIndex, 4)).toInt()
-                     << mFileProcessedCommandIndex;
-        }
-        */
-    }
-}
-
-void GrblMachineModel::processResponse(GrblResponse response)
+void GrblMachineModel::processResponse(const GrblResponse& response)
 {
     qDebug() << "GrblMachineModel: Process Response";
 
-    emit appendResponseToConsoleSignal(response.getData());
+    emit appendResponseToConsoleSignal(response);
+    mLastState = mState;
+    GcodeCommand *next;
 
     switch (response.getType())
     {
         case GrblResponseType::Startup:
-            mResetting = false;
             emit statusTextUpdateSignal("Found Machine",QColor("Black"),QColor("DarkGreen"));
             break;
         case GrblResponseType::Locked:
-            mLocked = true;
+            mState = GrblMachineState::Locked;
             emit statusTextUpdateSignal("Locked",QColor("Black"),QColor("Orange"));
             break;
         case GrblResponseType::Unlocked:
-            mLocked = false;
-            emit statusTextUpdateSignal("Unlocked",QColor("Black"),QColor("Green"));
+            mState = GrblMachineState::Unlocked;
+            emit statusTextUpdateSignal("Unlocked",QColor("White"),QColor("Green"));
+            break;
+        case GrblResponseType::Status:
+            updateMachineCoordinates(response);
+            updateWorkCoordinates(response);
+            break;
+        case GrblResponseType::Ok:
+            if (!mCommandBuffer.isEmpty())
+            {
+                next = mCommandBuffer.takeFirst();
+                if (next)
+                {
+                    qDebug() << "Popping" << next->getID() << "from the buffer";
+                    next->setResponse(response);
+                    next->setState(GcodeCommandState::Processed);
+                    emit updateProgramTableStatusSignal(next);
+                }
+            }
+            mCountProcessedCommands++;
+            emit setCompletionProgressSignal((int)getProcessedPercent());
             break;
     };
-    /*
-    updateMachineCoordinates(response);
-    updateStatus(response);
-    updateWorkCoordinates(response);
-    updateToolCoordinates();
-    * /
-}
 
-void GrblMachineModel::onSerialResponseProcessed(GcodeCommand response)
-{
-    /*
-    qDebug() << "GrblMachineModel: ProcessResponse 1";
-
-    if  (
-            (!mCommandsHistoryList[0].isCtrlXResponse() && response.isEndResponse()) ||
-            (mCommandsHistoryList[0].isCtrlXResponse() && response.isResetResponse())
-        )
-        {
-
-            // Take command from buffer
-            GcodeCommand ca = mCommandsHistoryList.takeFirst();
-
-            // Restore absolute/relative coordinate system after jog
-            if (ca.isParserStateResponse())
-            {
-                mAbsoluteCoordinates = response.isAbsoluteCoordinatesResponse();
-                sendCommand(GcodeCommand::AbsoluteCoordinatesCommand());
-            }
-
-            // Process parser status
-            if (ca.isParserStatusResponse())
-            {
-                // Update status in visualizer window
-                //mUi->glwVisualizer->setParserStatus(response.left(response.indexOf("; ")));
-
-                // Store parser status
-                if (mProcessingFile)
-                {
-                    //storeParserState();
-                }
-
-                // Process spindle state
-                if (!response.isSpindleStopCommand("M5"))
-                {
-                    mSpindleCW = response.isSpindleClockwiseCommand();
-                    mTimerToolAnimation.start(25, this);
-                    //mUi->cmdSpindle->setChecked(true);
-                }
-                else
-                {
-                    m_timerToolAnimation.stop();
-                    mUi->cmdSpindle->setChecked(false);
-                }
-
-                // Spindle speed
-                QRegExp rx(".*S([\\d\\.]+)");
-                if (rx.indexIn(response) != -1)
-                {
-                    double speed = toMetric(rx.cap(1).toDouble()); //RPM in imperial?
-                    if (fabs(mUi->txtSpindleSpeed->value() - speed) < 2.54)
-                        mUi->txtSpindleSpeed->setStyleSheet("color: palette(text);");
-                }
-
-                // Feed
-                rx.setPattern(".*F([\\d\\.]+)");
-                if (rx.indexIn(response) != -1)
-                {
-                    double feed = toMetric(rx.cap(1).toDouble());
-                    double set = mUi->chkFeedOverride->isChecked() ? m_originalFeed / 100 * mUi->txtFeed->value()
-                                                                  : m_originalFeed;
-                    if (response.contains("G20"))
-                        set *= 25.4;
-                    if (fabs(feed - set) < 2.54)
-                        mUi->txtFeed->setStyleSheet("color: palette(text);");
-                }
-
-                mUpdateParserStatus = true;
-            }
-
-            // Store origin
-            if (ca.getCommand() == "$#" && ca.tableIndex == -2)
-            {
-                qDebug() << "Received offsets:" << response;
-                QRegExp rx(".*G92:([^,]*),([^,]*),([^\\]]*)");
-
-                if (rx.indexIn(response) != -1)
-                {
-                    if (m_settingZeroXY)
-                    {
-                        m_settingZeroXY = false;
-                        m_storedX = toMetric(rx.cap(1).toDouble());
-                        m_storedY = toMetric(rx.cap(2).toDouble());
-                    }
-                    else if (m_settingZeroZ)
-                    {
-                        m_settingZeroZ = false;
-                        m_storedZ = toMetric(rx.cap(3).toDouble());
-                    }
-                    mUi->cmdRestoreOrigin->setToolTip(QString(tr("Restore origin:\n%1, %2, %3")).arg(m_storedX).arg(m_storedY).arg(m_storedZ));
-                }
-            }
-
-            // Homing response
-            if ((ca.getCommand().toUpper() == "$H" || ca.getCommand().toUpper() == "$T") && mHoming)
-                mHoming = false;
-
-            // Reset complete
-            if (ca.getCommand() == "[CTRL+X]")
-            {
-                mResetCompleted = true;
-                mUpdateParserStatus = true;
-            }
-
-            // Clear command buffer on "M2" & "M30" command (old firmwares)
-            if ((ca.getCommand().contains("M2") || ca.getCommand().contains("M30")) && response.contains("ok") && !response.contains("[Pgm End]"))
-            {
-                mCommands.clear();
-                mQueue.clear();
-            }
-
-            // Process probing on heightmap mode only from table commands
-            if (ca.getCommand().contains("G38.2") && m_heightMapMode && ca.tableIndex > -1)
-            {
-                // Get probe Z coordinate
-                // "[PRB:0.000,0.000,0.000:0];ok"
-                QRegExp rx(".*PRB:([^,]*),([^,]*),([^]^:]*)");
-                double z = qQNaN();
-                if (rx.indexIn(response) != -1)
-                {
-                    qDebug() << "probing coordinates:" << rx.cap(1) << rx.cap(2) << rx.cap(3);
-                    z = toMetric(rx.cap(3).toDouble());
-                }
-
-                static double firstZ;
-                if (mProbeIndex == -1)
-                {
-                    firstZ = z;
-                    z = 0;
-                }
-                else
-                {
-                    // Calculate delta Z
-                    z -= firstZ;
-
-                    // Calculate table indexes
-                    int row = trunc(mProbeIndex / m_heightMapModel.columnCount());
-                    int column = mProbeIndex - row * m_heightMapModel.columnCount();
-                    if (row % 2) column = m_heightMapModel.columnCount() - 1 - column;
-
-                    // Store Z in table
-                    m_heightMapModel.setData(m_heightMapModel.index(row, column), z, Qt::UserRole);
-                    mUi->tblHeightMap->update(m_heightMapModel.index(m_heightMapModel.rowCount() - 1 - row, column));
-                    updateHeightMapInterpolationDrawer();
-                }
-
-                mProbeIndex++;
-            }
-
-            // Change state query time on check mode on
-            if (ca.getCommand().contains(QRegExp("$[cC]")))
-            {
-                m_timerStateQuery.setInterval(response.contains("Enable") ? 1000 : mSettingsForm->queryStateTime());
-            }
-
-            // Add response to console
-            if (tb.isValid() && tb.text() == ca.getCommand())
-            {
-
-                bool scrolledDown = mUi->txtConsole->verticalScrollBar()->value() == mUi->txtConsole->verticalScrollBar()->maximum();
-
-                // Update text block numbers
-                int blocksAdded = response.count("; ");
-
-                if (blocksAdded > 0) for (int i = 0; i < mCommands.count(); i++)
-                {
-                    if (mCommands[i].consoleIndex != -1) mCommands[i].consoleIndex += blocksAdded;
-                }
-
-                tc.beginEditBlock();
-                tc.movePosition(QTextCursor::EndOfBlock);
-
-                tc.insertText(" < " + QString(response).replace("; ", "\r\n"));
-                tc.endEditBlock();
-
-                if (scrolledDown) mUi->txtConsole->verticalScrollBar()->setValue(mUi->txtConsole->verticalScrollBar()->maximum());
-            }
-
-            // Check queue
-            if (mQueue.length() > 0)
-            {
-                CommandQueue cq = mQueue.takeFirst();
-                while ((bufferLength() + cq.getCommand().length() + 1) <= BUFFERLENGTH)
-                {
-                    sendCommand(cq.getCommand(), cq.tableIndex, cq.showInConsole);
-                    if (mQueue.isEmpty())
-                        break;
-                    else
-                        cq = m_queue.takeFirst();
-                }
-            }
-
-            // Add response to table, send next program commands
-            if (mProcessingFile)
-            {
-                // Only if command from table
-                if (ca.tableIndex > -1)
-                {
-                    m_currentModel->setData(m_currentModel->index(ca.tableIndex, 2), GcodeCommand::Processed);
-                    m_currentModel->setData(m_currentModel->index(ca.tableIndex, 3), response);
-
-                    mFileProcessedCommandIndex = ca.tableIndex;
-
-                    if (mUi->chkAutoScroll->isChecked() && ca.tableIndex != -1)
-                    {
-                        mUi->tblProgram->scrollTo(m_currentModel->index(ca.tableIndex + 1, 0));
-                        mUi->tblProgram->setCurrentIndex(m_currentModel->index(ca.tableIndex, 1));
-                    }
-                }
-
-                // Process error messages
-                static bool holding = false;
-                static QString errors;
-
-                if (ca.tableIndex > -1 && response.toUpper().contains("ERROR") && !mSettingsForm->ignoreErrors())
-                {
-                    errors.append(QString::number(ca.tableIndex + 1) + ": " + ca.getCommand()
-
-                    m_senderErrorBox->setText(tr("Error message(s) received:\n") + errors);
-
-                    if (!holding)
-                    {
-                        holding = true;         // Hold transmit while messagebox is visible
-                        response.clear();
-
-                        mSerialPort.write("!");
-                        m_senderErrorBox->checkBox()->setChecked(false);
-                        qApp->beep();
-                        int result = m_senderErrorBox->exec();
-
-                        holding = false;
-                        errors.clear();
-                        if (m_senderErrorBox->checkBox()->isChecked()) mSettingsForm->setIgnoreErrors(true);
-                        if (result == QMessageBox::Ignore) mSerialPort.write("~"); else on_cmdFileAbort_clicked();
-                    }
-                }
-
-                // Check transfer complete (last row always blank, last command row = rowcount - 2)
-                if (mFileProcessedCommandIndex == m_currentModel->rowCount() - 2
-                        || ca.getCommand().contains(QRegExp("M0*2|M30")))
-                    mTransferCompleted = true;
-                // Send next program commands
-                else if (!mFileEndSent && (mFileCommandIndex < m_currentModel->rowCount()) && !holding)
-                    sendNextFileCommands();
-            }
-
-            // Scroll to first line on "M30" command
-            if (ca.getCommand().contains("M30"))
-                mUi->tblProgram->setCurrentIndex(m_currentModel->index(0, 1));
-
-            // Toolpath shadowing on check mode
-            if (mStatusCaptions.indexOf(mUi->txtStatus->text()) == CHECK)
-            {
-                GcodeViewParse *parser = mCurrentDrawer->viewParser();
-                QList<LineSegment*> list = parser->getLineSegmentList();
-
-                if (!mTransferCompleted && mFileProcessedCommandIndex < m_currentModel->rowCount() - 1)
-                {
-                    int i;
-                    QList<int> drawnLines;
-
-                    for (i = mLastDrawnLineIndex; i < list.count()
-                         && list.at(i)->getLineNumber()
-                         <= (m_currentModel->data(m_currentModel->index(mFileProcessedCommandIndex, 4)).toInt()); i++)
-                    {
-                        drawnLines << i;
-                    }
-
-                    if (!drawnLines.isEmpty() && (i < list.count()))
-                    {
-                        mLastDrawnLineIndex = i;
-                        QVector3D vec = list.at(i)->getEnd();
-                        m_toolDrawer.setToolPosition(vec);
-                    }
-
-                    foreach (int i, drawnLines)
-                    {
-                        list.at(i)->setDrawn(true);
-                    }
-                    if (!drawnLines.isEmpty())
-                        mCurrentDrawer->update(drawnLines);
-                }
-                else
-                {
-                    foreach (LineSegment* s, list)
-                    {
-                        if (!qIsNaN(s->getEnd().length()))
-                        {
-                            m_toolDrawer.setToolPosition(s->getEnd());
-                            break;
-                        }
-                    }
-                }
-            }
-
-            response.clear();
-        }
-        else
-        {
-            response.append(data + "; ");
-        }
-    }
-    */
-}
-
-void GrblMachineModel::onSerialResponseUnprocessed(QString data)
-{
-    /*
-    // Unprocessed responses
-    qDebug() << "GrblMachineModel: onSerialResponseUnprocessed" << data;
-    // Handle hardware reset
-    if (dataIsReset(data))
+    if (mState != mLastState)
     {
-        qDebug() << "GrblMachineModel: Hardware Reset";
-
-        mProcessingFile = false;
-        mTransferCompleted = true;
-        mCommandIndex = 0;
-
-        mResetting = false;
-        mHoming = false;
-        mLastGrblStatus = Unknown;
-
-        //mUpdateParserStatus = true;
-        mStatusReceived = true;
-
-        mCommandsHistoryList.clear();
-        mCommandsQueue.clear();
-
-        //updateControlsState();
+        emit machineStateUpdatedSignal(mState);
     }
-    emit appendToConsoleSignal(data);
-    */
 }
 
-/*
-void GrblMachineModel::processResponse(GrblResponse resp)
+double GrblMachineModel::getProcessedPercent()
 {
-    /*
-    qDebug() << "GrblMachineModel: processSerialResponse" << data;
-    SerialResponseType responseType = SerialResponseType::Unknown;
-    // Status response
-    if (data[0] == '<')
-    {
-        responseType = SerialResponseType::Status;
-    }
-    else if (data.length() > 0)
-    {
-        // Processed commands
-        if  (
-                mCommandsHistoryList.length() > 0 &&                       // Commands in list
-                !dataIsFloating(data) &&                            // Data is not floating
-                !(
-                    mCommandsHistoryList[0].getCommand() != "[CTRL+X]" &&  // Next command is not c^X
-                    dataIsReset(data)                               // Data is reset
-                 )
-            )
-        {
-            responseType = SerialResponseType::Processed;
-        }
-        else
-        {
-            responseType = SerialResponseType::Unprocessed;
-        }
-    }
+    if (mCommandQueue.count() > 0)
+        return (double)mCountProcessedCommands / (double)mCommandQueue.count() * 100;
+    else
+        return 100;
 }
-    */
 
 void GrblMachineModel::onSerialPortReadyRead()
 {
@@ -707,12 +312,17 @@ void GrblMachineModel::onSerialPortError(QSerialPort::SerialPortError error)
     }
 }
 
+void GrblMachineModel::onProgramSendTimerTimeout()
+{
+   sendNextCommandFromQueue();
+}
+
 bool GrblMachineModel::openPort()
 {
     if (mSerialPort.open(QIODevice::ReadWrite))
     {
         emit statusBarUpdateSignal(QString("Connected on Serial Port %1 @ %2 baud").arg(getPortName()).arg(getBaudRate()));
-        emit statusTextUpdateSignal(QString("Port Open"),QColor("Green"));
+        emit statusTextUpdateSignal(QString("Port Open"),QColor("White"),QColor("Green"));
         //grblReset();
         return true;
     }
@@ -729,9 +339,17 @@ bool GrblMachineModel::closePort()
     return true;
 }
 
-bool GrblMachineModel::sendCommand(GcodeCommand command)
+bool GrblMachineModel::sendNextCommandFromQueue()
 {
-    qDebug() << "GrblMachineModel: sendCommand" << command.getCommand() ;
+    // Get the next queued command but don't remove it yet
+    if (mCommandQueue.isEmpty())
+    {
+        return false;
+    }
+
+    GcodeCommand *command = mCommandQueue.first();
+
+    qDebug() << "GrblMachineModel: Attempting to send queued command" << command->getCommand();
 
     if (!mSerialPort.isOpen())
     {
@@ -739,128 +357,109 @@ bool GrblMachineModel::sendCommand(GcodeCommand command)
         return false;
     }
 
-    if (mResetting)
-    {
-        qDebug() << "GrblMachineModel: sendCommand FAILED -> Reset still in progress";
-        return false;
-    }
-
     // Buffer full, append to queue
-    if ((bufferLength() + command.getLength() + 1) > BUFFER_LENGTH)
+    if (!isSpaceInBuffer(command))
     {
-        qDebug() << "GrblMachineModel: Buffer full, Queue up:" << command.getCommand();
-        mCommandsQueue.append(command);
+        qDebug() << "GrblMachineModel: Buffer full, waiting... " << command->getCommand();
+        return false;
     }
     // Buffer space available
     else
     {
+        // Take the command off the queue for processing
+        command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
+
         emit appendCommandToConsoleSignal(command);
-
-        command.setLength(command.getLength() + 1);
-        mCommandsHistoryList.append(command);
-
-        // Processing spindle speed only from g-code program
+        mCommandBuffer.append(command);
 
         // Look for spindle speed in gcode
-        if (command.isSpindleSpeedCommand())
+        if (command->isSpindleSpeedCommand())
         {
-            int speed = command.getSpindleSpeed();
+            int speed = command->getSpindleSpeed();
             emit spindleSpeedChangedSignal(speed);
         }
 
         // Set M2 & M30 commands sent flag
-        if (command.isFileEndCommand())
+        if (command->isFileEndCommand())
         {
             qDebug() << "GrblMachineModel: Detected end of program "
-                     << command.getCommand();
+                     << command->getCommand();
             mFileEndSent = true;
         }
 
-        mSerialPort.write((command.getCommand() + "\r").toLatin1());
+        mSerialPort.write((command->getCommand() + "\r").toLatin1());
+        command->setState(GcodeCommandState::Sent);
         return true;
     }
-    return false;
 }
 
 void GrblMachineModel::grblReset()
 {
     qDebug() << "GrblMachineModel: Grbl Reset";
     mProcessingFile = false;
-    mCommandIndex = 0;
-    mResetting = true;
-    mHoming = true;
     mStatusReceived = false;
     // Drop all remaining commands in buffer
-    mCommandsHistoryList.clear();
-    mCommandsQueue.clear();
+    clearCommandBuffer();
+    clearCommandQueue();
     // Prepare reset response catch
-    GcodeCommand cX = GcodeCommand::ControlXCommand();
-    cX.setLength(cX.getCommand().length() + 1);
-    emit appendCommandToConsoleSignal(cX.getCommand());
-    mCommandsHistoryList.append(cX);
+    GcodeCommand* cX = GcodeCommand::ControlXCommand();
+    emit appendCommandToConsoleSignal(cX);
+    mCommandBuffer.append(cX);
     // Write the C^X
     mSerialPort.write(QByteArray(1, static_cast<char>(24)));
     mSerialPort.flush();
 }
 
-QString GrblMachineModel::getNextCommand(GcodeFileModel &gcodeFile)
+void GrblMachineModel::onSendProgram(GcodeFileModel &gcodeFile)
 {
-    try
+    qDebug() << "GrblMachineModel: onSendProgram()";
+
+    clearCommandBuffer();
+    clearCommandQueue();
+    mCountProcessedCommands = 0;
+
+    for (GcodeCommand* next : gcodeFile.getData())
     {
-        QString command =
-                feedOverride(gcodeFile.getCommand(mCommandIndex),mFeedOverrideRate);
-        return command;
+        queueCommand(next);
     }
-    catch (IndexOutOfBoundsException ex)
-    {
-        qDebug() << "GrblMachineModel: Unable to get command at index"
-                 << mCommandIndex
-                 << "Out of bounds!!";
-    }
-    return QString();
+
 }
 
-void GrblMachineModel::onSendNextFileCommands(GcodeFileModel &gcodeFile)
+void GrblMachineModel::onSendProgramFromLine(GcodeFileModel &gcodeFile, long id)
 {
-    qDebug() << "GrblMachineModel: SendNextFileCommands()";
+    qDebug() << "GrblMachineModel: onSendProgramFromLine @ id" << id;
 
-    if (mCommandsQueue.length() > 0)
+    clearCommandBuffer();
+    clearCommandQueue();
+    mCountProcessedCommands = 0;
+
+    int index = gcodeFile.getCommandByID(id)->getLine();
+    int size = gcodeFile.getData().count();
+
+    for (; index < size; index++)
     {
-        return;
-    }
-
-    //QString command = feedOverride(mCurrentGCodeTableModel->data(mCurrentGCodeTableModel->index(mFileCommandIndex, 1)).toString());
-    // Get the command at index mFileCommandIndex, (column 1 from table)
-    // and scale it to the overridden (or not) feed rate
-
-    QString command = getNextCommand(gcodeFile);
-
-    if (command.isEmpty())
-    {
-        return;
-    }
-
-    while (
-           (bufferLength() + command.length() + 1) <= BUFFER_LENGTH &&
-           mCommandIndex < gcodeFile.countCommands() - 1 &&
-           !(!mCommandsHistoryList.isEmpty() && mCommandsHistoryList.last().getCommand().contains(QRegExp("M0*2|M30")))
-           )
-    {
-        sendCommand(command);
-        mCommandIndex++;
-        emit updateProgramTableStatusSignal(command);
-        command = getNextCommand(gcodeFile);
+        queueCommand(gcodeFile.getData()[index]);
     }
 }
 
-void GrblMachineModel::clearCommandsQueue()
+void GrblMachineModel::startProgramSendTimer()
 {
-    mCommandsQueue.clear();
+    mProgramSendTimer.start(mProgramSendInterval);
 }
 
-void GrblMachineModel::clearCommandsList()
+void GrblMachineModel::stopProgramSendTimer()
 {
-    mCommandsHistoryList.clear();
+    mProgramSendTimer.stop();
+}
+
+void GrblMachineModel::clearCommandQueue()
+{
+    mCommandQueue.clear();
+}
+
+void GrblMachineModel::clearCommandBuffer()
+{
+    mCommandBuffer.clear();
 }
 
 bool GrblMachineModel::isPortOpen()
@@ -885,7 +484,7 @@ void GrblMachineModel::write(QByteArray data)
 
 int GrblMachineModel::commandsQueueLength()
 {
-    return mCommandsQueue.count();
+    return mCommandQueue.count();
 }
 
 QString GrblMachineModel::getPortName()
@@ -896,13 +495,11 @@ QString GrblMachineModel::getPortName()
 void GrblMachineModel::setPortName(QString name)
 {
     mSerialPort.setPortName(name);
-    mPortNameSet = true;
 }
 
 void GrblMachineModel::setBaudRate(int baud)
 {
     mSerialPort.setBaudRate(baud);
-    mBaudRateSet = true;
 }
 
 int GrblMachineModel::getBaudRate()
@@ -931,42 +528,107 @@ void GrblMachineModel::onSettingChanged(QString group, QString param, QVariant v
     }
 }
 
-void GrblMachineModel::onGcodeCommandSend(GcodeCommand command)
+void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
 {
-    sendCommand(command);
+    queueCommand(command);
 }
 
-int GrblMachineModel::bufferLength()
+void GrblMachineModel::queueCommand(GcodeCommand* command)
+{
+   mCommandQueue.append(command);
+}
+
+int GrblMachineModel::bufferLengthInUse()
 {
     int length = 0;
 
-    foreach (GcodeCommand ca, mCommandsHistoryList)
+    for (GcodeCommand *gc : mCommandBuffer)
     {
-        length += ca.getLength();
+        length += gc->getCommandLength()+1;
     }
 
+    qDebug() << "GrblMachineModel: Buffer in use:" << length;
     return length;
 }
 
-QString GrblMachineModel::feedOverride(GcodeCommand command, double overridePercent)
+bool GrblMachineModel::isSpaceInBuffer(GcodeCommand* cmd)
 {
-    QString command_ovr = GcodeParser::overrideSpeed(command.getCommand(),overridePercent);
-    return command_ovr;
+   int bufferLeft = BUFFER_LENGTH_LIMIT - bufferLengthInUse();
+   int bufferUsed = BUFFER_LENGTH_LIMIT - bufferLeft;
+   emit setBufferProgressSignal(((float)bufferUsed/BUFFER_LENGTH_LIMIT)*100);
+   return (bufferLeft) > (cmd->getCommandLength()+1);
 }
 
-void GrblMachineModel::resetCommandIndex()
+GcodeCommand* GrblMachineModel::feedOverride(GcodeCommand* command, double overridePercent)
 {
-    setCommandIndex(0);
+    return GcodeParser::overrideSpeed(command,overridePercent);
 }
 
-void GrblMachineModel::setCommandIndex(int index)
+QVector3D GrblMachineModel::getMachinePosition()
 {
-    mCommandIndex = index;
+    return mMachinePosition;
 }
 
-int GrblMachineModel::getCommandIndex()
+float GrblMachineModel::getMachinePositionX()
 {
-    return mCommandIndex;
+    return mMachinePosition.x();
 }
 
+float GrblMachineModel::getMachinePositionY()
+{
+    return mMachinePosition.y();
+}
 
+float GrblMachineModel::getMachinePositionZ()
+{
+    return mMachinePosition.z();
+}
+
+QVector3D GrblMachineModel::getWorkPosition()
+{
+    return mWorkPosition;
+}
+
+float GrblMachineModel::getWorkPositionX()
+{
+    return mWorkPosition.x();
+}
+
+float GrblMachineModel::getWorkPositionY()
+{
+    return mWorkPosition.y();
+}
+
+float GrblMachineModel::getWorkPositionZ()
+{
+    return mWorkPosition.z();
+}
+
+QString GrblMachineModel::stateToString(GrblMachineState state)
+{
+    switch (state)
+    {
+        case GrblMachineState::Unknown:
+            return QString("Unknown");
+        case GrblMachineState::Idle:
+            return QString("Idle");
+        case GrblMachineState::Alarm:
+            return QString("Alarm");
+        case GrblMachineState::Run:
+            return QString("Running");
+        case GrblMachineState::Home:
+            return QString("Home");
+        case GrblMachineState::Hold:
+            return QString("Hold");
+        case GrblMachineState::Queue:
+            return QString("Queue");
+        case GrblMachineState::Check:
+            return QString("Check");
+        case GrblMachineState::Door:
+            return QString("Door");
+        case GrblMachineState::Locked:
+            return QString("Locked");
+        case GrblMachineState::Unlocked:
+            return QString("Unlocked");
+    }
+}

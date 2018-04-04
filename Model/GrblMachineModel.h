@@ -22,11 +22,12 @@
 #include <QtSerialPort>
 #include <QTimer>
 #include <QColor>
-#include "Utils/MachineState.h"
+#include "Model/GrblMachineState.h"
 #include <QVector3D>
 #include "Model/GcodeFileModel.h"
 #include "Model/GcodeCommand.h"
 #include "Model/GrblResponse.h"
+
 
 class GrblMachineModel : public QObject
 {
@@ -38,8 +39,8 @@ public:
     bool openPort();
     bool closePort();
 
-    int bufferLength();
-    bool sendCommand(GcodeCommand command);
+    int bufferLengthInUse();
+    bool sendNextCommandFromQueue();
     void grblReset();
     bool isPortOpen();
     bool isStatusReceived();
@@ -50,83 +51,85 @@ public:
     void setPortName(QString name);
     void setBaudRate(int baud);
     int getBaudRate();
-    void restoreOffsets(MachineState& state);
-    void storeOffsets(MachineState& state);
+    void restoreOffsets(GrblMachineState& state);
+    void storeOffsets(GrblMachineState& state);
     void restoreParserState();
-    void clearCommandsQueue();
-    void clearCommandsList();
-    void resetCommandIndex();
-    void setCommandIndex(int index);
-    int getCommandIndex();
+    void clearCommandQueue();
+    void clearCommandBuffer();
+
+    QVector3D getMachinePosition();
+    float getMachinePositionX();
+    float getMachinePositionY();
+    float getMachinePositionZ();
+    QVector3D getWorkPosition();
+    float getWorkPositionX();
+    float getWorkPositionY();
+    float getWorkPositionZ();
+
+    void queueCommand(GcodeCommand* command);
+    static QString stateToString(GrblMachineState state);
 
 signals:
-    void updateProgramTableStatusSignal(GcodeCommand state);
+    void updateProgramTableStatusSignal(GcodeCommand* state);
     void serialPortErrorSignal(QString errorMessage);
     void statusBarUpdateSignal(QString status);
     void statusTextUpdateSignal(QString status, QColor = QColor("Black"), QColor = QColor("White"));
-    void processingFileSignal(bool);
-    void transferCompletedSignal(bool);
-    void fileCommandIndexSignal(int);
-    void resetingSignal(bool);
-    void homingSignal(bool);
-    void resetCompletedSignal(bool);
-    void updateSpindleSpeedSignal(bool);
-    void grblStatusSignal(int);
-    void statusReceivedSignal(bool);
-    void appendResponseToConsoleSignal(GrblResponse);
-    void appendCommandToConsoleSignal(GcodeCommand);
-    void updateMachinePositionSignal(QVector3D);
-    void updateWorkPositionSignal(QVector3D);
+    void appendResponseToConsoleSignal(const GrblResponse&);
+    void appendCommandToConsoleSignal(GcodeCommand*);
+    void updateMachinePositionSignal(const QVector3D);
+    void updateWorkPositionSignal(const QVector3D);
     void spindleSpeedChangedSignal(int speed);
-    void setInterfaceLockSignal(bool locked);
     void jobCompletedSignal();
     void toolPositionChangedSignal(QVector3D);
+    void commandResponseSignal(const GrblResponse&);
+    void machineStateUpdatedSignal(const GrblMachineState&);
+    void setCompletionProgressSignal(int);
+    void setBufferProgressSignal(int);
 
 public slots:
-    void onSendNextFileCommands(GcodeFileModel &gcodeFile);
+    void onSendProgram(GcodeFileModel &gcodeFile);
+    void onSendProgramFromLine(GcodeFileModel &gcodeFile,long);
     void onSettingChanged(QString group, QString param, QVariant value);
-    void onGcodeCommandSend(GcodeCommand);
+    void onGcodeCommandManualSend(GcodeCommand*);
 
 private slots:
     void onConnectionTimer();
     void onSerialPortReadyRead();
     void onSerialPortError(QSerialPort::SerialPortError);
+    void onProgramSendTimerTimeout();
 
 private: // Members
-    const static int BUFFER_LENGTH;
+    const static int BUFFER_LENGTH_LIMIT;
     QSerialPort mSerialPort;
-    QList<GcodeCommand> mCommandsHistoryList;
-    QList<GcodeCommand> mCommandsQueue;
-    MachineStateEnum mLastGrblStatus;
+    QList<GcodeCommand*> mCommandBuffer;
+    QList<GcodeCommand*> mCommandQueue;
+    GrblMachineState mState;
+    GrblMachineState mLastState;
     QVector3D mMachinePosition;
     QVector3D mWorkPosition;
-    bool mHoming;
     bool mStatusReceived;
-    bool mPortNameSet;
-    bool mBaudRateSet;
-    bool mResetting;
     bool mFileEndSent;
     double mFeedOverrideRate;
-    int  mCommandIndex;
     bool mProcessingFile;
     bool mTransferCompleted;
     bool mAborting;
     bool mAbsoluteCoordinates;
-    bool mLocked;
     QTimer mConnectionTimer;
+    QTimer mProgramSendTimer;
+    int mProgramSendInterval;
+    int mCountProcessedCommands;
 
 private: // Member Functions
-    QString feedOverride(GcodeCommand command, double overridePercent);
-    QString getNextCommand(GcodeFileModel& gcodeFile);
-
-    void processResponse(GrblResponse data);
-    void updateMachineCoordinates(GrblResponse data);
-    void updateWorkCoordinates(GrblResponse data);
-    void updateStatus(GrblResponse data);
-    void updateToolCoordinates(GrblResponse);
-
+    GcodeCommand* feedOverride(GcodeCommand *command, double overridePercent);
+    GcodeCommand* getNextCommand(GcodeFileModel& gcodeFile);
+    void processResponse(const GrblResponse& data);
+    void updateMachineCoordinates(const GrblResponse& data);
+    void updateWorkCoordinates(const GrblResponse& data);
+    void updateStatus(const GrblResponse& data);
+    void updateToolCoordinates();
     void setupSerialPort();
-    void onSerialResponseUnprocessed(QString data);
-    void onSerialResponseProcessed(GcodeCommand response);
-    void onSerialResponseStatus(QString data);
+    bool isSpaceInBuffer(GcodeCommand* cmd);
+    void startProgramSendTimer();
+    void stopProgramSendTimer();
+    double getProcessedPercent();
 };

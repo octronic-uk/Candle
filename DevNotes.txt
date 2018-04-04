@@ -2,3 +2,5 @@
 - Saving Settings
 - Framerate control on visualiser (reduce cpu usage)
 - Applying/Saving settings & ui state
+- ProgressBar for %complete and %buffer
+- Highlight current line

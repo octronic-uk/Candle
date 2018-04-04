@@ -33,6 +33,7 @@ signals:
 public slots:
     void onLoadSettings() override;
     void onSaveSettings() override;
+    void onSettingChanged(QString groupName, QString settingName, QVariant value);
 private:
     void preload();
     QDir mSettingsDirectory;

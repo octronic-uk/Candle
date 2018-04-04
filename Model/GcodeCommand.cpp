@@ -21,52 +21,67 @@
 GcodeCommand::GcodeCommand
 (
     QString cmd,
-    int length,
     int tableIndex,
     bool showInConsole,
-    int consoleIndex
+    int consoleIndex,
+    GcodeCommandState state
 )
-    : mCommand(cmd),
-      mLength(length),
+    :
+      mCommand(cmd),
+      mResponse(GrblResponse()),
+      mState(state),
+      mArgs(QStringList()),
+      mID(nextID()),
+      mLine(-1),
       mTableIndex(tableIndex),
-      mShowInConsole(showInConsole),
-      mConsoleIndex(consoleIndex)
-{
-
-}
+      mConsoleIndex(consoleIndex),
+      mShowInConsole(showInConsole) {}
 
 GcodeCommand::GcodeCommand(const GcodeCommand& other)
     : mCommand(other.mCommand),
-      mLength(other.mLength),
+      mResponse(other.mResponse),
+      mState(other.mState),
+      mArgs(other.mArgs),
+      mID(other.mID),
+      mLine(other.mLine),
       mTableIndex(other.mTableIndex),
-      mShowInConsole(other.mShowInConsole),
-      mConsoleIndex(other.mConsoleIndex)
-{
+      mConsoleIndex(other.mConsoleIndex),
+      mShowInConsole(other.mShowInConsole) {}
 
+GcodeCommand::~GcodeCommand() {}
+
+GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
+{
+    static GcodeCommand gc("G90");
+    return &gc;
 }
 
-GcodeCommand::~GcodeCommand()
+GcodeCommand* GcodeCommand::ControlXCommand()
 {
-
-}
-
-GcodeCommand GcodeCommand::AbsoluteCoordinatesCommand()
-{
-    GcodeCommand gc("G90");
-    return gc;
-}
-
-GcodeCommand GcodeCommand::ControlXCommand()
-{
-   GcodeCommand gc("[CTRL+X]");
-   return gc;
+   static GcodeCommand gc("[CTRL+X]");
+   return &gc;
 }
 
 
-GcodeCommand GcodeCommand::UnlockCommand()
+GcodeCommand* GcodeCommand::UnlockCommand()
 {
-    GcodeCommand gc("$X");
-    return gc;
+    static GcodeCommand gc("$X");
+    return &gc;
+}
+
+bool GcodeCommand::operator==(const GcodeCommand& other)
+{
+   return mID == other.mID;
+}
+
+bool GcodeCommand::isEmpty()
+{
+    return mCommand.isEmpty();
+}
+
+int GcodeCommand::getCommandLength() const
+{
+   return mCommand.length();
 }
 
 QString GcodeCommand::getCommand() const
@@ -77,16 +92,6 @@ QString GcodeCommand::getCommand() const
 void GcodeCommand::setCommand(const QString& command)
 {
     mCommand = command.toUpper();
-}
-
-int GcodeCommand::getLength() const
-{
-    return mLength;
-}
-
-void GcodeCommand::setLength(int length)
-{
-    mLength = length;
 }
 
 int GcodeCommand::getTableIndex() const
@@ -146,6 +151,21 @@ int GcodeCommand::getSpindleSpeed()
         return spindleSpeedExpression.cap(1).toInt();
     }
     return 0;
+}
+
+long GcodeCommand::getID()
+{
+   return mID;
+}
+
+bool GcodeCommand::hasID(long id)
+{
+   return mID == id;
+}
+
+long GcodeCommand::nextID()
+{
+   return ID++;
 }
 
 bool GcodeCommand::isCtrlXResponse()
@@ -213,6 +233,12 @@ void GcodeCommand::setState(const GcodeCommandState state)
     mState = state;
 }
 
+bool GcodeCommand::isProbeCommand()
+{
+    return mCommand.contains("G38.2");
+}
+
 const QRegExp GcodeCommand::spindleSpeedExpression = QRegExp("[Ss]0*(\\d+)");
 const QRegExp GcodeCommand::fileEndExpression = QRegExp("M0*2|M30");
 const QRegExp GcodeCommand::feedRateExpression = QRegExp(".*F([\\d\\.]+)");
+long GcodeCommand::ID = 0;

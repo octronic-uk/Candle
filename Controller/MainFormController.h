@@ -13,8 +13,9 @@
 #include <QMenu>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QProgressDialog>
+#include <QProgressBar>
 #include <exception>
+#include <QHBoxLayout>
 
 #include "Model/Parser/GcodeViewParse.h"
 #include "Model/Settings/IniFileSettingsModel.h"
@@ -59,11 +60,12 @@
 #include "shobjidl.h" // What the quadralateral fuck is this Microsoft?
 #endif
 
-enum MainFormMode
+enum class MainFormMode
 {
-    MAIN_FORM_MODE_NONE,
-    MAIN_FORM_MODE_GERBER,
-    MAIN_FORM_MODE_HEIGHTMAP
+    Idle,
+    Gerber,
+    RunningGerber,
+    HeightMap
 };
 
 class MainFormController : public AbstractFormController
@@ -75,6 +77,27 @@ public:
     ~MainFormController() override;
 
     void showMainWindow();
+    void setupSignalSlots() override;
+    bool isInHeightMapMode();
+    bool isInGerberMode();
+
+signals:
+   void sendProgramSignal(GcodeFileModel&);
+   void sendProgramFromLineSignal(GcodeFileModel&, long);
+
+public slots:
+    void onRecentHeightMapFilesChanged();
+    void onRecentGcodeFilesChanged();
+    void onStatusBarUpdate(QString status);
+    void onStatusTextUpdate(QString status);
+    void onGcodeFileLoadStarted();
+    void onGcodeFileLoadFinished(QList<GcodeCommand*>& items);
+    void onSendProgram();
+    void onSendProgramFromLine(long);
+    void onSerialPortError(QString error);
+    void onSetBufferProgressValue(int);
+    void onSetCompletionProgressValue(int);
+    void onSetFormMode(MainFormMode mode);
 
 private slots:
     // Main Menu Actions
@@ -89,6 +112,7 @@ private slots:
     void onActRecentFileTriggered();
     void onHeightMapFileLoadStarted();
     void onHeightMapFileLoadFinished();
+    void onMachineStateUpdated(const GrblMachineState& state);
 
 protected:
     void showEvent(QShowEvent *se) override;
@@ -98,7 +122,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *dee) override;
     void dropEvent(QDropEvent *de) override;
 
-private:
+private: // Members
     Ui::MainForm mUi;
     AboutFormController mAboutFormController;
     SettingsFormController mSettingsFormController;
@@ -109,28 +133,27 @@ private:
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
     IniFileSettingsModel mSettingsModel;
-
-    bool eventFilter(QObject *obj, QEvent *event) override;
-    bool keyIsMovement(int key);
-    void updateRecentFilesMenu();
-    bool saveChanges(bool heightMapMode);
-    void setFormActive(bool active) override;
-
-signals:
-   void sendNextFileCommandsSignal(GcodeFileModel&);
-
-private:
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;
     bool mHeightMapMode = false;
     GrblMachineModel mGrblMachineModel;
-    void setFormMode(MainFormMode mode);
+    QProgressBar mCompletionProgressBar;
+    QProgressBar mBufferProgressBar;
+    QHBoxLayout mStatusProgressBarsHLayout;
+    QLayout* mOldStatusBarLayout;
+
+
+private: // Member Functions
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    bool keyIsMovement(int key);
+    void updateRecentFilesMenu();
+    bool saveChanges(bool heightMapMode);
+    void setFormActive(bool active) override;
     void populateRecentGcodeFilesMenu();
     void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();
     void clearRecentHeightMapFilesMenu();
-
     void setupToolbarActions();
     void setupToolbarSignals();
     void setupSettingsModelSignals();
@@ -143,19 +166,7 @@ private:
     void setupControlFormSignals();
     void setupProgramFormSignals();
     void setupJogFormSignals();
-public:
-    void setupSignalSlots() override;
-    bool isInHeightMapMode();
-    bool isInGerberMode();
-public slots:
-    void onRecentHeightMapFilesChanged();
-    void onRecentGcodeFilesChanged();
-    void onStatusBarUpdate(QString status);
-    void onStatusTextUpdate(QString status);
-    void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand> items);
-    void onSendNextFileCommands();
-    void onSerialPortError(QString error);
+    void setupCompletionAndBufferProgressBars();
 };
 
 

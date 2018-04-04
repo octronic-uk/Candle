@@ -36,11 +36,11 @@ public:
     int getConsoleMinHeight();
     void setFormActive(bool active) override;
 signals:
-    void gcodeCommandSendSignal(GcodeCommand);
+    void gcodeCommandSendSignal(GcodeCommand*);
 public slots:
     void onCommandSendAction();
-    void onAppendResponseToConsole(GrblResponse);
-    void onAppendCommandToConsole(GcodeCommand);
+    void onAppendResponseToConsole(const GrblResponse&);
+    void onAppendCommandToConsole(GcodeCommand*);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

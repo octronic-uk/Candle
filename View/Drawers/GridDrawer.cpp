@@ -24,9 +24,8 @@ GridDrawer::GridDrawer(float size, float major, float minor)
       mMajorSpacing(major),
       mMinorSpacing(minor),
       mSize(size),
-      mOpacity(128),
-      mMajorColor(QColor("DarkBlue")),
-      mMinorColor(QColor("LightBlue")),
+      mMajorColor(QColor("Black")),
+      mMinorColor(QColor("DarkGray")),
       mTextColor(QColor(255,255,255))
 {
     mLineWidth = 1;
@@ -61,7 +60,6 @@ int GridDrawer::getVertexCount()
 bool GridDrawer::updateData()
 {
     mLines.clear();
-    updateOpacity();
 
     float start = -(mSize/2);
     float end = (mSize/2);
@@ -89,23 +87,6 @@ bool GridDrawer::updateData()
     }
 
    return true;
-}
-
-int GridDrawer::getOpacity() const
-{
-    return mOpacity;
-}
-
-void GridDrawer::setOpacity(int opacity)
-{
-    mOpacity = opacity;
-}
-
-void GridDrawer::updateOpacity()
-{
-    //mMajorColor.setAlpha(mOpacity);
-    //mMinorColor.setAlpha(mOpacity);
-    //mTextColor.setAlpha(mOpacity);
 }
 
 float GridDrawer::getSize() const

@@ -38,7 +38,7 @@ public:
     void setupSignalSlots() override;
     void setFormActive(bool active) override;
 signals:
-    void gcodeCommandSendSignal(GcodeCommand);
+    void gcodeCommandManualSendSignal(GcodeCommand*);
 
 public slots:
     void onCmdResetClicked();

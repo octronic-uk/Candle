@@ -10,8 +10,8 @@ ToolDrawer::ToolDrawer()
     mToolLength = 15.0f;
     mToolPosition = QVector3D(0, 0, 0);
     mRotationAngle = 0.0f;
-    setColor(QColor("Orange"));
-    mLineWidth = 1.0f;
+    setColor(QColor("DarkGray"));
+    mLineWidth = 3.0f;
 }
 
 ToolDrawer::~ToolDrawer()

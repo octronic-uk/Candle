@@ -11,6 +11,7 @@
 #include <QVector3D>
 #include <cmath>
 #include "PointSegment.h"
+#include "Model/GcodeCommand.h"
 
 class GcodeParser : public QObject
 {
@@ -67,7 +68,7 @@ public:
     static bool isDigit(char c);
     static bool isLetter(char c);
     static char toUpper(char c);
-
+    static GcodeCommand* overrideSpeed(const GcodeCommand* command, double speed);
 signals:
 
 public slots:

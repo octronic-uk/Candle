@@ -525,6 +525,27 @@ QString GcodeParser::overrideSpeed(QString command, double speed)
 }
 
 /**
+* Searches the command string for an 'f' and replaces the speed value
+* between the 'f' and the next space with a percentage of that speed.
+* In that way all speed values become a ratio of the provided speed
+* and don't get overridden with just a fixed speed.
+*/
+GcodeCommand* GcodeParser::overrideSpeed(const GcodeCommand *command, double speed)
+{
+    QString cmd = command->getCommand();
+    static QRegExp re("[Ff]([0-9.]+)");
+
+    if (re.indexIn(cmd) != -1)
+    {
+        double speedMagnitude = (speed/100); // from percentage to magnitude
+        cmd.replace(re, QString("F%1").arg(re.cap(1).toDouble() * speedMagnitude));
+    }
+    GcodeCommand* overriddenFR = new GcodeCommand(*command);
+    overriddenFR->setCommand(cmd);
+    return overriddenFR;
+}
+
+/**
 * Removes any comments within parentheses or beginning with a semi-colon.
 */
 QStringList GcodeParser::removeComment(QString command)

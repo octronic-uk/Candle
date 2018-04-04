@@ -33,8 +33,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.cmdLeft->setParent(mUi.glwVisualizer);
     */
 
-    mGridDrawer.setOpacity(0);
-
     mCodeDrawer.setViewParser(&mViewParser);
     mProbeDrawer.setViewParser(&mProbeParser);
     mProbeDrawer.setVisible(false);
@@ -301,8 +299,9 @@ void VisualisationFormController::timerEvent(QTimerEvent *te)
     mUi.glwVisualizer->timerEvent(te);
 }
 
-void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand> items)
+void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& items)
 {
+    Q_UNUSED(items)
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
 }
 

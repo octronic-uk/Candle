@@ -17,23 +17,27 @@
  */
 #include "GrblResponse.h"
 
-GrblResponse::GrblResponse()
-{
+// Default Constructor
+GrblResponse::GrblResponse() :
+    mData(QString()),
+    mType(GrblResponseType::None) {}
 
-}
-
+// Response Constructor
 GrblResponse::GrblResponse(QString response)
     : mData(response)
 {
     identifyType();
 }
 
-GrblResponse::~GrblResponse()
-{
+// Copy Constructor
+GrblResponse::GrblResponse(const GrblResponse& other)
+    : mData(other.mData),
+      mType(other.mType) {}
 
-}
+// Default Destructor
+GrblResponse::~GrblResponse(){}
 
-GrblResponseType GrblResponse::getType()
+GrblResponseType GrblResponse::getType() const
 {
    return mType;
 }
@@ -97,7 +101,7 @@ void GrblResponse::identifyType()
     mType = GrblResponseType::ParserState;
 }
 
-QString GrblResponse::getData()
+QString GrblResponse::getData() const
 {
     return mData;
 }
