@@ -2,6 +2,9 @@ CocoanutCNC
 -----------
 G-Code Controller and Visualiser Written in C++/Qt
 
+![Screenshot](github/s1.png "Screenshot")
+
+
 Supported functions:
 ------------------------
 * Manual control of your CNC via console commands, buttons on form, num-pad.
