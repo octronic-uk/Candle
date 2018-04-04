@@ -1,16 +1,23 @@
+![Screenshot](github/s1.png "Screenshot")
+
 CocoanutCNC
 -----------
 G-Code Controller and Visualiser Written in C++/Qt
 
-![Screenshot](github/s1.png "Screenshot")
-
-
-Supported functions:
+Key Functions:
 ------------------------
-* Manual control of your CNC via console commands, buttons on form, num-pad.
-* Monitoring Machine State.
+* Customisable User Interface. Taylor to a Touch/Mouse driven experience.
+* Manual Control of Your CNC via Commands, Jog Buttons and Num-Pad.
+* Monitoring CNC State.
 * Loading, Editing, Saving and Sending of G-code Files to CNC Machine.
-* Visualising G-code Tool Paths in 3D.
+* Visualising G-code Tool Paths in 3D. 
+
+Features Planned
+------------------
+* Accurate Tool Models in Visualiser
+* Stock & Fixtures in Visualiser
+* Tool Change Alerts/Management
+* Tool Path Crash Prediction (Intersecting Stock/Fixtures During Rapids)
 
 System Requirements for Running CocoanutCNC:
 -------------------
@@ -27,5 +34,5 @@ GRBL:
 
 Credits:
 ------------
-* Huge Thanks go to the developers/contributers of Candle, the bases of CocoanutCNC. https://github.com/Denvi/Candle.git
+* Huge Thanks go to the developers/contributers of Candle, the basis of CocoanutCNC. https://github.com/Denvi/Candle.git
 * Using Icons from FontAwesome https://fontawesome.com
