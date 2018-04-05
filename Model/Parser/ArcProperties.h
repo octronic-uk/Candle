@@ -5,8 +5,7 @@
 
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#ifndef ARCPROPERTIES_H
-#define ARCPROPERTIES_H
+#pragma once
 
 #include <QVector3D>
 
@@ -14,9 +13,8 @@ class ArcProperties
 {
 public:
     explicit ArcProperties();
+    ArcProperties(const ArcProperties& other);
     bool isClockwise;
     double radius;
-    QVector3D *center;
+    QVector3D center;
 };
-
-#endif // ARCPROPERTIES_H

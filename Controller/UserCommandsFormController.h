@@ -31,6 +31,7 @@ public:
     ~UserCommandsFormController() override;
 
     void setFormActive(bool active) override;
+    void initialise() override;
 signals:
 public slots:
 

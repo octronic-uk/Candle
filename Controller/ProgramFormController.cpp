@@ -134,6 +134,11 @@ void ProgramFormController::setFormActive(bool active)
     mUi.pauseButton->setEnabled(active);
 }
 
+void ProgramFormController::initialise()
+{
+
+}
+
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
 {
     qDebug() << "ProgramFormController: Reserving " << rows << " rows";
@@ -511,7 +516,8 @@ void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
     qDebug() << "ProgramFormController: onUpdateProgramTableStatus"
              << "C" << command->getCommand()
              << "L" << command->getLine()
-             << "I" << command->getTableIndex();
+             << "I" << command->getTableIndex()
+             << "RData" << command->getResponse().getData();
 
     QModelIndex stateIndex = mProgramTableModel.index(command->getTableIndex(),1);
     QModelIndex responseIndex = mProgramTableModel.index(command->getTableIndex(),2);

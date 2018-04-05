@@ -5,8 +5,7 @@
 
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-#ifndef POINTSEGMENT_H
-#define POINTSEGMENT_H
+#pragma once
 
 #include <QVector3D>
 
@@ -15,42 +14,56 @@
 class PointSegment
 {
 public:
-    enum planes {
+    enum planes
+    {
         XY,
         ZX,
         YZ
     };
 
     PointSegment();
-    PointSegment(PointSegment *ps);
-    PointSegment(const QVector3D *b, int num);
-    PointSegment(QVector3D *point, int num, QVector3D *center, double radius, bool clockwise);
+    PointSegment(const PointSegment &ps);
+    PointSegment(const QVector3D &b, int num);
+    PointSegment(const QVector3D &point, int num, const QVector3D &center, double radius, bool clockwise);
     ~PointSegment();
-    void setPoint(QVector3D m_point);
-    QVector3D* point();
 
-    QVector<double> points();
+    void setPoint(const QVector3D &mPoint);
+    QVector3D point() const;
+
+    QVector<double> points() const;
+
     void setToolHead(int head);
-    int getToolhead();
+    int getToolhead() const;
+
     void setLineNumber(int num);
-    int getLineNumber();
+    int getLineNumber() const;
+
     void setSpeed(double s);
-    double getSpeed();
+    double getSpeed() const;
+
     void setIsZMovement(bool isZ);
-    bool isZMovement();
-    void setIsMetric(bool m_isMetric);
-    bool isMetric();
+    bool isZMovement() const;
+
+    void setIsMetric(bool mIsMetric);
+    bool isMetric() const;
+
     void setIsArc(bool isA);
-    bool isArc();
+    bool isArc() const;
+
     void setIsFastTraverse(bool isF);
-    bool isFastTraverse();
-    void setArcCenter(QVector3D *center);
-    QVector<double> centerPoints();
-    QVector3D *center();
+    bool isFastTraverse() const;
+
+    void setArcCenter(const QVector3D &center);
+
+    QVector<double> centerPoints() const;
+    QVector3D center() const;
+
     void setIsClockwise(bool clockwise);
-    bool isClockwise();
+    bool isClockwise() const;
+
     void setRadius(double rad);
-    double getRadius();
+    double getRadius() const;
+
     void convertToMetric();
 
     bool isAbsolute() const;
@@ -66,19 +79,17 @@ public:
     void setDwell(double dwell);
 
 private:
-    ArcProperties *m_arcProperties;
-    int m_toolhead;
-    double m_speed;
-    double m_spindleSpeed;
-    double m_dwell;
-    QVector3D *m_point;
-    bool m_isMetric;
-    bool m_isZMovement;
-    bool m_isArc;
-    bool m_isFastTraverse;
-    bool m_isAbsolute;
-    int m_lineNumber;
-    planes m_plane;
+    ArcProperties mArcProperties;
+    int mToolhead;
+    double mSpeed;
+    double mSpindleSpeed;
+    double mDwell;
+    QVector3D mPoint;
+    bool mIsMetric;
+    bool mIsZMovement;
+    bool mIsArc;
+    bool mIsFastTraverse;
+    bool mIsAbsolute;
+    int mLineNumber;
+    planes mPlane;
 };
-
-#endif // POINTSEGMENT_H

@@ -38,6 +38,9 @@ public:
 
     double getFeedOverrideValue();
     void setFormActive(bool active) override;
+
+    void initialise() override;
+
 signals:
 
 public slots:

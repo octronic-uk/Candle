@@ -65,6 +65,11 @@ void FeedFormController::setFormActive(bool active)
 
 }
 
+void FeedFormController::initialise()
+{
+
+}
+
 void FeedFormController::onFeedOverrideToggled(bool checked)
 {
     if (!checked)

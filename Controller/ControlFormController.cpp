@@ -94,6 +94,21 @@ void ControlFormController::setFormActive(bool active)
     mUi.cmdUnlock->setEnabled(true);
 }
 
+void ControlFormController::initialise()
+{
+
+}
+
+void ControlFormController::highlightUnlock(bool highlight)
+{
+   if (highlight)
+   {
+       QPalette p = mUi.cmdUnlock->palette();
+       p.setColor(QPalette::Background,QColor("200,40,40"));
+       mUi.cmdUnlock->setPalette(p);
+   }
+}
+
 void ControlFormController::onCmdRestoreOriginClicked()
 {
     /*

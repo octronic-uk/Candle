@@ -17,6 +17,8 @@ public:
     ~AboutFormController() override;
     void setFormActive(bool active) override;
 
+    void initialise() override;
+
 private slots:
     void onCmdOkClicked();
     void onLblAboutLinkActivated(const QString &link);

@@ -21,6 +21,7 @@
 #include <QObject>
 #include <QFile>
 #include <QTime>
+#include <QSharedPointer>
 
 #include "Model/Tables/GcodeTableModel.h"
 #include "Parser/GcodeParser.h"
@@ -34,6 +35,7 @@ public:
     GcodeFileModel(QObject *parent = nullptr);
     ~GcodeFileModel();
 
+    void initialise();
     void load(QList<QString> data);
     void load(QString fileName);
     bool save(QString fileName, GcodeTableModel *model);
@@ -54,12 +56,12 @@ signals:
     void nextGcodeLineReadySignal(GcodeCommand*);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
-    void gcodeParserUpdatedSignal(GcodeParser*);
+    void gcodeParserUpdatedSignal(QSharedPointer<GcodeParser>);
 
 private:
     bool mProgramLoading;
     bool mFileChanged;
     QFile mFile;
     QList<GcodeCommand*> mData;
-    GcodeParser mGcodeParser;
+    QSharedPointer<GcodeParser> mGcodeParser;
 };

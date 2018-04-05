@@ -46,6 +46,8 @@ public:
     void setHeightMapMode(bool);
     void setFormActive(bool active) override;
 
+    void initialise() override;
+
 signals:
 public slots:
     void onCheckBoxHeightMapBorderShowToggled(bool checked);

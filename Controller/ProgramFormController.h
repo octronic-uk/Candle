@@ -44,6 +44,8 @@ public:
     int getChkAutoScrollWidth(); // sizehint->width
     void setFormActive(bool active) override;
 
+    void initialise() override;
+
 signals:
     void setKeyboardControlSignal(bool);
     void programAbortSignal();

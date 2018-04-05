@@ -93,6 +93,11 @@ void JogFormController::setFormActive(bool active)
     }
 }
 
+void JogFormController::initialise()
+{
+
+}
+
 
 void JogFormController::onCmdYPlusClicked()
 {

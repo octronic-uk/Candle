@@ -33,6 +33,8 @@ public:
     void blockJogForRapidMovement(bool repeated = false);
     void setFormActive(bool active) override;
 
+    void initialise() override;
+
 signals:
     void statusBarUpdateSignal(QString);
 public slots:

@@ -8,7 +8,17 @@
 #include "ArcProperties.h"
 
 ArcProperties::ArcProperties()
+    : isClockwise(false) ,
+      radius(0),
+      center(QVector3D())
 {
-    radius = 0;
-    center = NULL;
+
+}
+
+ArcProperties::ArcProperties(const ArcProperties& other)
+    : isClockwise(other.isClockwise),
+      radius(other.radius),
+      center(other.center)
+{
+
 }

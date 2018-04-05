@@ -47,6 +47,11 @@ void ConsoleFormController::setFormActive(bool active)
     mUi.commandSendButton->setEnabled(active);
 }
 
+void ConsoleFormController::initialise()
+{
+
+}
+
 
 // Console
 void ConsoleFormController::onCommandSendAction()
@@ -69,7 +74,7 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
         return;
     }
     qDebug() << "ConsoleFormController: Appending Response:" << txt;
-    mUi.txtConsole->setTextColor(QColor("Black"));
+    mUi.txtConsole->setTextColor(QColor("Gray"));
     mUi.txtConsole->append("CNC --> "+txt);
 }
 
@@ -77,7 +82,7 @@ void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
 {
     QString cmd = command->getCommand();
     qDebug() << "ConsoleFormController: Appending Command:" << cmd;
-    mUi.txtConsole->setTextColor(QColor("Gray"));
+    mUi.txtConsole->setTextColor(QColor("Black"));
     mUi.txtConsole->append("CNC <-- "+cmd);
 }
 

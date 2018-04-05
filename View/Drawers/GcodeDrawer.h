@@ -15,26 +15,28 @@ class GcodeDrawer : public QObject, public ShaderDrawable
 public:
     enum GrayscaleCode
     {
-        S, Z
+        S,
+        Z
     };
     enum DrawMode
     {
-        Vectors, Raster
+        Vectors,
+        Raster
     };
 
     explicit GcodeDrawer();
     GcodeDrawer(const GcodeDrawer& other);
 
     void update();
-    void update(QList<int> indexes);
-    bool updateData();
+    void update(const QList<int>& indexes);
+    bool updateData() override;
 
-    QVector3D getSizes();
-    QVector3D getMinimumExtremes();
-    QVector3D getMaximumExtremes();
+    QVector3D getSizes() const;
+    QVector3D getMinimumExtremes() const;
+    QVector3D getMaximumExtremes() const;
 
-    void setViewParser(GcodeViewParse *viewParser);
-    GcodeViewParse* viewParser();
+    void setViewParser(const QSharedPointer<GcodeViewParse>& viewParser);
+    QSharedPointer<GcodeViewParse> viewParser();
 
     bool simplify() const;
     void setSimplify(bool simplify);
@@ -91,33 +93,33 @@ private slots:
     void onTimerVertexUpdate();
 
 private:
-    GcodeViewParse *m_viewParser;
-    DrawMode m_drawMode;
-    bool m_simplify;
-    double m_simplifyPrecision;
-    bool m_ignoreZ;
-    bool m_grayscaleSegments;
-    GrayscaleCode m_grayscaleCode;
-    int m_grayscaleMin;
-    int m_grayscaleMax;
-    QColor m_colorNormal;
-    QColor m_colorDrawn;
-    QColor m_colorHighlight;
-    QColor m_colorZMovement;
-    QColor m_colorStart;
-    QColor m_colorEnd;
-    QTimer m_timerVertexUpdate;
-    QImage m_image;
-    QList<int> m_indexes;
-    bool m_geometryUpdated;
+    QSharedPointer<GcodeViewParse> mViewParser;
+    DrawMode mDrawMode;
+    bool mSimplify;
+    double mSimplifyPrecision;
+    bool mIgnoreZ;
+    bool mGrayscaleSegments;
+    GrayscaleCode mGrayscaleCode;
+    int mGrayscaleMin;
+    int mGrayscaleMax;
+    QColor mColorNormal;
+    QColor mColorDrawn;
+    QColor mColorHighlight;
+    QColor mColorZMovement;
+    QColor mColorStart;
+    QColor mColorEnd;
+    QTimer mTimerVertexUpdate;
+    QImage mImage;
+    QList<int> mIndexes;
+    bool mGeometryUpdated;
 
     bool prepareVectors();
     bool updateVectors();
     bool prepareRaster();
     bool updateRaster();
 
-    int getSegmentType(LineSegment *segment);
-    QVector3D getSegmentColorVector(LineSegment *segment);
-    QColor getSegmentColor(LineSegment *segment);
-    void setImagePixelColor(QImage &image, double x, double y, QRgb color) const;
+    int getSegmentType(const LineSegment& segment);
+    QVector3D getSegmentColorVector(const LineSegment& segment);
+    QColor getSegmentColor(const LineSegment& segment);
+    void setImagePixelColor(QImage &image, double x, double y, const QRgb color) const;
 };

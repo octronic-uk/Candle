@@ -35,6 +35,8 @@ public:
     void onCmdClearConsoleClicked();
     int getConsoleMinHeight();
     void setFormActive(bool active) override;
+
+    void initialise() override;
 signals:
     void gcodeCommandSendSignal(GcodeCommand*);
 public slots:

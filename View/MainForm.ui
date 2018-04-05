@@ -260,6 +260,7 @@
    <addaction name="actFileNew"/>
    <addaction name="actFileOpen"/>
    <addaction name="actFileSave"/>
+   <addaction name="actionClearAll"/>
    <addaction name="separator"/>
    <addaction name="actFileSettings"/>
    <addaction name="separator"/>
@@ -397,6 +398,15 @@
   <action name="clearRecentHeightMapFilesAction">
    <property name="text">
     <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionClearAll">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/trash-alt-solid.svg</normaloff>:/Images/SVG/trash-alt-solid.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Clear All</string>
    </property>
   </action>
  </widget>

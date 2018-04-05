@@ -32,16 +32,26 @@ GcodeFileModel::GcodeFileModel(QObject *parent)
       mProgramLoading(false),
       mFileChanged(false)
 {
-    qDebug() << "GcodeFileModel: Constructing";
+    qDebug() << "GcodeFileModel: +++++ Constructing";
+    mGcodeParser = QSharedPointer<GcodeParser>::create(this);
 }
 
 GcodeFileModel::~GcodeFileModel()
 {
-    qDebug() << "GcodeFileModel: Destructing";
+    qDebug() << "GcodeFileModel: ----- Destructing";
+    initialise();
+}
+
+void GcodeFileModel::initialise()
+{
     for (int i=0; i<mData.length(); i++)
     {
         delete mData[i];
     }
+    mData.clear();
+    mProgramLoading = false;
+    mFileChanged = false;
+    mGcodeParser->initialise();
 }
 
 void GcodeFileModel::load(QList<QString> data)
@@ -51,7 +61,7 @@ void GcodeFileModel::load(QList<QString> data)
     // Reset tables
     emit gcodeFileLoadStartedSignal();
     // Prepare parser
-    mGcodeParser.setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
+    mGcodeParser->setTraverseSpeed(1);//mSettingsForm->rapidSpeed());
     //if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
 
     // Block parser updates on table changes
@@ -63,17 +73,23 @@ void GcodeFileModel::load(QList<QString> data)
     emit clearExistingGcodeFileSignal();
     emit reserveGcodeRowsSignal(data.count());
 
+
+    // TODO - This should probably be moved to GcodeParser
+
     int index = 0;
     while (!data.isEmpty())
     {
-        //qDebug() << "GcodeFileModel: Next Line";
+
+
         QString command;
-        QString cmd_no_comment;
+        QString stripped;
         QString trimmed;
         QList<QString> args;
         GcodeCommand* item = new GcodeCommand();
 
         command = data.takeFirst();
+
+        qDebug() << "GcodeFileModel: Next Line" << command;
 
         // Trim command
         trimmed = command.trimmed();
@@ -81,13 +97,12 @@ void GcodeFileModel::load(QList<QString> data)
         if (!trimmed.isEmpty())
         {
             // Split command
-            QStringList cmdAndComment = GcodeParser::removeComment(command);
-            cmd_no_comment = cmdAndComment.at(0);
-            args = GcodeParser::splitCommand(cmd_no_comment);
-            mGcodeParser.addCommand(args);
+            stripped = GcodeParser::removeComment(command);
+            args = GcodeParser::splitCommand(stripped);
+            mGcodeParser->addCommand(args);
             item->setCommand(trimmed);
             item->setState(GcodeCommandState::InQueue);
-            item->setLine(mGcodeParser.getCommandNumber());
+            item->setLine(mGcodeParser->getCommandNumber());
             item->setArgs(args);
             item->setTableIndex(index);
             index++;
@@ -96,7 +111,7 @@ void GcodeFileModel::load(QList<QString> data)
     }
     mProgramLoading = false;
     emit gcodeFileLoadFinishedSignal(mData);
-    emit gcodeParserUpdatedSignal(&mGcodeParser);
+    emit gcodeParserUpdatedSignal(mGcodeParser);
 }
 
 void GcodeFileModel::load(QString fileName)

@@ -51,6 +51,11 @@ void SpindleFormController::setFormActive(bool active)
 
 }
 
+void SpindleFormController::initialise()
+{
+
+}
+
 void SpindleFormController::onCmdSpindleToggled(bool checked)
 {
     /*

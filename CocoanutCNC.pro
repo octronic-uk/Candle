@@ -158,6 +158,7 @@ FORMS    += \
     View/VisualisationForm.ui
 
 DEFINES += _USE_MATH_DEFINES
+DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS
 
 RESOURCES += \
     Resources/Shaders.qrc \

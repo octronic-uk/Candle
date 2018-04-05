@@ -52,6 +52,11 @@ void StateFormController::setFormActive(bool active)
 
 }
 
+void StateFormController::initialise()
+{
+
+}
+
 void StateFormController::setupSignalSlots()
 {
 

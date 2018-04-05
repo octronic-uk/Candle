@@ -38,6 +38,7 @@ public:
 
     bool openPort();
     bool closePort();
+    void initialise();
 
     int bufferLengthInUse();
     bool sendNextCommandFromQueue();
@@ -87,8 +88,8 @@ signals:
     void setBufferProgressSignal(int);
 
 public slots:
-    void onSendProgram(GcodeFileModel &gcodeFile);
-    void onSendProgramFromLine(GcodeFileModel &gcodeFile,long);
+    void onSendProgram(QSharedPointer<GcodeFileModel> gcodeFile);
+    void onSendProgramFromLine(QSharedPointer<GcodeFileModel> gcodeFile,long);
     void onSettingChanged(QString group, QString param, QVariant value);
     void onGcodeCommandManualSend(GcodeCommand*);
 
@@ -118,10 +119,11 @@ private: // Members
     QTimer mProgramSendTimer;
     int mProgramSendInterval;
     int mCountProcessedCommands;
+    int mCommandQueueInitialSize;
 
 private: // Member Functions
-    GcodeCommand* feedOverride(GcodeCommand *command, double overridePercent);
-    GcodeCommand* getNextCommand(GcodeFileModel& gcodeFile);
+    GcodeCommand feedOverride(GcodeCommand& command, double overridePercent);
+    GcodeCommand getNextCommand(GcodeFileModel& gcodeFile);
     void processResponse(const GrblResponse& data);
     void updateMachineCoordinates(const GrblResponse& data);
     void updateWorkCoordinates(const GrblResponse& data);

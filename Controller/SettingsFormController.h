@@ -23,6 +23,8 @@ public:
     int exec();
     void undo();
 
+    void initialise() override;
+
     QString getPortName();
     void setPortName(QString port);
 

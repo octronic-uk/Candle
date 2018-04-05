@@ -35,6 +35,9 @@ public:
     QString getSpindleSpeed();
 
     void setFormActive(bool active) override;
+
+    void initialise() override;
+
 signals:
 public slots:
     void onCmdSpindleClicked(bool checked);

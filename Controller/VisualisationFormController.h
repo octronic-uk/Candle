@@ -41,6 +41,7 @@ public:
     explicit VisualisationFormController(QWidget *parent = nullptr);
     ~VisualisationFormController() override;
     void setFormActive(bool active) override;
+    void initialise() override;
 signals:
     void spindleEnabledSignal(bool);
 public slots:
@@ -62,7 +63,7 @@ public slots:
     void resizeEvent(QResizeEvent* re) override;
     void onGcodeFileLoadStarted();
     void onGcodeFileLoadFinished(QList<GcodeCommand*>&);
-    void onGcodeParserUpdated(GcodeParser*);
+    void onGcodeParserUpdated(QSharedPointer<GcodeParser>);
 
     void onToggleGridButtonToggled(bool toggled);
     void onToggleToolButtonToggled(bool toggled);
@@ -84,8 +85,8 @@ private:
     HeightMapInterpolationDrawer mHeightMapInterpolationDrawer;
 
     // Parsers
-    GcodeViewParse mViewParser;
-    GcodeViewParse mProbeParser;
+    QSharedPointer<GcodeViewParse> mViewParser;
+    QSharedPointer<GcodeViewParse> mProbeParser;
     QBasicTimer mToolAnimationTimer;
     int mLastDrawnLineIndex;
     void updateParser();

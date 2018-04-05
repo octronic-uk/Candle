@@ -33,6 +33,7 @@ public:
     ~StateFormController() override;
 
     void setFormActive(bool active) override;
+    void initialise() override;
 signals:
 public slots:
     void onStatusTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));

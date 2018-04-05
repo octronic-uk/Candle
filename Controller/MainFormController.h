@@ -81,9 +81,11 @@ public:
     bool isInHeightMapMode();
     bool isInGerberMode();
 
+    void initialise() override;
+
 signals:
-   void sendProgramSignal(GcodeFileModel&);
-   void sendProgramFromLineSignal(GcodeFileModel&, long);
+   void sendProgramSignal(QSharedPointer<GcodeFileModel>);
+   void sendProgramFromLineSignal(QSharedPointer<GcodeFileModel>, long);
 
 public slots:
     void onRecentHeightMapFilesChanged();
@@ -101,6 +103,7 @@ public slots:
 
 private slots:
     // Main Menu Actions
+    void onJobCompleted();
     void onActFileExitTriggered();
     void onActFileOpenTriggered();
     void onActFileNewTriggered();
@@ -113,6 +116,7 @@ private slots:
     void onHeightMapFileLoadStarted();
     void onHeightMapFileLoadFinished();
     void onMachineStateUpdated(const GrblMachineState& state);
+    void onActionClearAllTriggered();
 
 protected:
     void showEvent(QShowEvent *se) override;
@@ -134,7 +138,7 @@ private: // Members
     QTimer mStateQueryTimer;
     IniFileSettingsModel mSettingsModel;
     QMainWindow mMainWindow;
-    GcodeFileModel mGcodeFileModel;
+    QSharedPointer<GcodeFileModel> mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;
     bool mHeightMapMode = false;
     GrblMachineModel mGrblMachineModel;

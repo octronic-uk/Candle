@@ -37,6 +37,10 @@ public:
     void onCmdZeroZClicked();
     void setupSignalSlots() override;
     void setFormActive(bool active) override;
+
+    void initialise() override;
+
+    void highlightUnlock(bool highlight);
 signals:
     void gcodeCommandManualSendSignal(GcodeCommand*);
 

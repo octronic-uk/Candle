@@ -29,6 +29,7 @@ public:
     virtual ~AbstractFormController() = 0;
     virtual void setupSignalSlots() = 0;
     virtual void setFormActive(bool);
+    virtual void initialise() = 0;
 signals:
     void statusUpdateSignal(QString status);
 };

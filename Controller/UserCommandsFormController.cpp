@@ -37,6 +37,11 @@ void UserCommandsFormController::setFormActive(bool active)
 
 }
 
+void UserCommandsFormController::initialise()
+{
+
+}
+
 void UserCommandsFormController::onCmdUserClicked(bool checked)
 {
     /*

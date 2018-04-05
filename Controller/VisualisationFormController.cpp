@@ -25,6 +25,8 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     qDebug() << "VisualisationFormController: Constructing ";
 
     mUi.setupUi(this);
+    mViewParser = QSharedPointer<GcodeViewParse>::create(this);
+    mProbeParser = QSharedPointer<GcodeViewParse>::create(this);
     /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
@@ -33,8 +35,8 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.cmdLeft->setParent(mUi.glwVisualizer);
     */
 
-    mCodeDrawer.setViewParser(&mViewParser);
-    mProbeDrawer.setViewParser(&mProbeParser);
+    mCodeDrawer.setViewParser(mViewParser);
+    mProbeDrawer.setViewParser(mProbeParser);
     mProbeDrawer.setVisible(false);
     mToolDrawer.setToolPosition(QVector3D(0, 0, 0));
     mLastDrawnLineIndex = 0;
@@ -68,6 +70,11 @@ VisualisationFormController::~VisualisationFormController()
 }
 
 void VisualisationFormController::setFormActive(bool active)
+{
+
+}
+
+void VisualisationFormController::initialise()
 {
 
 }
@@ -305,10 +312,10 @@ void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& 
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
 }
 
-void VisualisationFormController::onGcodeParserUpdated(GcodeParser *parser)
+void VisualisationFormController::onGcodeParserUpdated(QSharedPointer<GcodeParser> parser)
 {
-    mViewParser.getLinesFromParser(parser,5.0,true);
-    mCodeDrawer.setViewParser(&mViewParser);
+    mViewParser->getLinesFromParser(parser,5.0,true);
+    mCodeDrawer.setViewParser(mViewParser);
     mCodeDrawer.update();
     mUi.glwVisualizer->setUpdatesEnabled(true);
     mUi.glwVisualizer->fitDrawable(&mCodeDrawer);

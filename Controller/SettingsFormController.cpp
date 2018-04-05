@@ -59,6 +59,11 @@ void SettingsFormController::undo()
     */
 }
 
+void SettingsFormController::initialise()
+{
+
+}
+
 QString SettingsFormController::getPortName()
 {
     return mUi.serialPortNameBox->currentText();

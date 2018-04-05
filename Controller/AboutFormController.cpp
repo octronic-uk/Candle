@@ -44,6 +44,11 @@ void AboutFormController::setFormActive(bool active)
    }
 }
 
+void AboutFormController::initialise()
+{
+
+}
+
 void AboutFormController::exec()
 {
     mDialog.exec();
