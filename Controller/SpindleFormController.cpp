@@ -31,83 +31,59 @@ SpindleFormController::~SpindleFormController()
 
 }
 
-bool SpindleFormController::isUpdatingSpindleSpeed()
-{
-
-}
-
-void SpindleFormController::setUpdatingSpindleSpeed(bool)
-{
-
-}
-
-QString SpindleFormController::getSpindleSpeed()
-{
-
-}
-
 void SpindleFormController::setFormActive(bool active)
 {
+    mUi.cmdSpindle->setEnabled(active);
+    mUi.rpmSlider->setEnabled(active);
+    if (!active)
+    {
+        mUi.rpmSlider->setValue(100);
+    }
 
 }
 
 void SpindleFormController::initialise()
 {
-
-}
-
-void SpindleFormController::onCmdSpindleToggled(bool checked)
-{
-    /*
-    mUi->grpSpindle->setProperty("overrided", checked);
-    style()->unpolish(mUi->grpSpindle);
-    mUi->grpSpindle->ensurePolished();
-
-    if (checked) {
-        if (!mUi->grpSpindle->isChecked()) mUi->grpSpindle->setTitle(tr("Spindle") + QString(tr(" (%1)")).arg(mUi->txtSpindleSpeed->text()));
-    } else {
-        mUi->grpSpindle->setTitle(tr("Spindle"));
-    }
-    */
+    mUi.cmdSpindle->setEnabled(true);
+    mUi.cmdSpindle->setChecked(false);
+    mUi.rpmSlider->setValue(100);
+    mUi.rpmSlider->setEnabled(false);
 }
 
 void SpindleFormController::onCmdSpindleClicked(bool checked)
 {
-    //sendCommand(checked ? QString("M3 S%1").arg(mUi->txtSpindleSpeed->text()) : "M5", -1, mSettingsForm->showUICommands());
+    mUi.rpmSlider->setEnabled(checked);
+    if (!checked)
+    {
+        mUi.rpmSlider->setValue(100);
+    }
+    emit updateSpindleSpeedSignal(mUi.rpmSlider->value());
 }
 
-void SpindleFormController::onTextSpindleSpeedEditingFinished()
+void SpindleFormController::onSliderValueChanged(int value)
 {
-    /*
-    mUi->txtSpindleSpeed->setStyleSheet("color: red;");
-    mUi->sliSpindleSpeed->setValue(mUi->txtSpindleSpeed->value() / 100);
-    m_updateSpindleSpeed = true;
-    */
+    emit updateSpindleSpeedSignal(value);
 }
 
-void SpindleFormController::onSliderSpindleSpeedValueChanged(int value)
+void SpindleFormController::onUpdateSpindleSpeed(float speed)
 {
-    /*
-    Q_UNUSED(value)
-
-    mUi->txtSpindleSpeed->setStyleSheet("color: red;");
-
-    if (!mUi->grpSpindle->isChecked() && mUi->cmdSpindle->isChecked())
-        mUi->grpSpindle->setTitle(tr("Spindle") + QString(tr(" (%1)")).arg(mUi->txtSpindleSpeed->text()));
-        */
-}
-
-void SpindleFormController::onSliderSpindleSpeedActionTriggered(int action)
-{
-    /*
-    mUi->txtSpindleSpeed->setValue(mUi->sliSpindleSpeed->sliderPosition() * 100);
-    m_updateSpindleSpeed = true;
-    */
+    bool enabled = speed != 100;
+    mUi.cmdSpindle->setChecked(enabled);
+    mUi.rpmSlider->setValue(speed);
 }
 
 void SpindleFormController::setupSignalSlots()
 {
-
     qDebug() << "SpindleFormController: Setup Signals/Slots";
+    connect
+    (
+        mUi.rpmSlider, SIGNAL(valueChanged(int)),
+        this, SLOT(onSliderValueChanged(int))
+    );
+    connect
+    (
+        mUi.cmdSpindle, SIGNAL(toggled(bool)),
+        this, SLOT(onCmdSpindleClicked(bool))
+    );
 }
 

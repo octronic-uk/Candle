@@ -49,7 +49,7 @@ void ConsoleFormController::setFormActive(bool active)
 
 void ConsoleFormController::initialise()
 {
-
+    mUi.txtConsole->clear();
 }
 
 
@@ -63,7 +63,7 @@ void ConsoleFormController::onCommandSendAction()
     }
     // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
-    emit gcodeCommandSendSignal(new GcodeCommand(commandText));
+    emit gcodeCommandSendSignal(GcodeCommand(commandText));
 }
 
 void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& response)
@@ -78,9 +78,9 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
     mUi.txtConsole->append("CNC --> "+txt);
 }
 
-void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
+void ConsoleFormController::onAppendCommandToConsole(const GcodeCommand& command)
 {
-    QString cmd = command->getCommand();
+    QString cmd = command.getCommand();
     qDebug() << "ConsoleFormController: Appending Command:" << cmd;
     mUi.txtConsole->setTextColor(QColor("Black"));
     mUi.txtConsole->append("CNC <-- "+cmd);

@@ -68,10 +68,10 @@ public slots:
 
     void onScrollBarAction(int action);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand*>&);
+    void onGcodeFileLoadFinished(QList<GcodeCommand>&);
     void onSendActionTriggered();
     void onSendFromCurrentLineActionTriggered();
-    void onUpdateProgramTableStatus(GcodeCommand* command);
+    void onUpdateProgramTableStatus(const GcodeCommand& command);
 private:
     ProgramForm mUi;
     GcodeTableModel mProgramTableModel;

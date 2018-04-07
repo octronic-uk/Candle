@@ -14,8 +14,8 @@
    <string>About CocoanutCNC</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>:/Images/cocoanut.png</normaloff>:/Images/cocoanut.png</iconset>
+   <iconset resource="../Resources/Images.qrc">
+    <normaloff>:/Images/PNG/Cocoanut.png</normaloff>:/Images/PNG/Cocoanut.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -125,6 +125,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../Resources/Images.qrc"/>
+ </resources>
  <connections/>
 </ui>

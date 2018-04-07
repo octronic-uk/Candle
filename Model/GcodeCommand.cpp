@@ -20,13 +20,13 @@
 
 GcodeCommand::GcodeCommand
 (
-    QString cmd,
-    int tableIndex,
-    bool showInConsole,
-    int consoleIndex,
-    GcodeCommandState state
-)
-    :
+        QString cmd,
+        int tableIndex,
+        bool showInConsole,
+        int consoleIndex,
+        GcodeCommandState state
+        )
+    : mRawCommand(0),
       mCommand(cmd),
       mResponse(GrblResponse()),
       mState(state),
@@ -38,7 +38,8 @@ GcodeCommand::GcodeCommand
       mShowInConsole(showInConsole) {}
 
 GcodeCommand::GcodeCommand(const GcodeCommand& other)
-    : mCommand(other.mCommand),
+    : mRawCommand(other.mRawCommand),
+      mCommand(other.mCommand),
       mResponse(other.mResponse),
       mState(other.mState),
       mArgs(other.mArgs),
@@ -48,30 +49,62 @@ GcodeCommand::GcodeCommand(const GcodeCommand& other)
       mConsoleIndex(other.mConsoleIndex),
       mShowInConsole(other.mShowInConsole) {}
 
+GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
+
 GcodeCommand::~GcodeCommand() {}
 
-GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
+GcodeCommand GcodeCommand::AbsoluteCoordinatesCommand()
 {
     static GcodeCommand gc("G90");
-    return &gc;
+    return gc;
 }
 
-GcodeCommand* GcodeCommand::ControlXCommand()
+GcodeCommand GcodeCommand::ControlXCommand()
 {
-   static GcodeCommand gc("[CTRL+X]");
-   return &gc;
+    static GcodeCommand gc("[CTRL+X]");
+    return gc;
 }
 
 
-GcodeCommand* GcodeCommand::UnlockCommand()
+GcodeCommand GcodeCommand::UnlockCommand()
 {
     static GcodeCommand gc("$X");
-    return &gc;
+    return gc;
+}
+
+GcodeCommand GcodeCommand::ResetCommand()
+{
+    static GcodeCommand gc(0x18);
+    return gc;
+}
+
+GcodeCommand GcodeCommand::StatusUpdateCommand()
+{
+    static GcodeCommand gc("?");
+    return gc;
+}
+
+GcodeCommand GcodeCommand::SpindleCounterClockwiseCommand()
+{
+    static GcodeCommand gc("M4");
+    return gc;
+}
+
+GcodeCommand GcodeCommand::SpindleClockwiseCommand()
+{
+    static GcodeCommand gc("M3");
+    return gc;
+}
+
+GcodeCommand GcodeCommand::SpindleStopCommand()
+{
+    static GcodeCommand gc("M5");
+    return gc;
 }
 
 bool GcodeCommand::operator==(const GcodeCommand& other)
 {
-   return mID == other.mID;
+    return mID == other.mID;
 }
 
 bool GcodeCommand::isEmpty()
@@ -81,7 +114,7 @@ bool GcodeCommand::isEmpty()
 
 int GcodeCommand::getCommandLength() const
 {
-   return mCommand.length();
+    return mCommand.length();
 }
 
 QString GcodeCommand::getCommand() const
@@ -124,73 +157,19 @@ void GcodeCommand::setConsoleIndex(int consoleIndex)
     mConsoleIndex = consoleIndex;
 }
 
-bool GcodeCommand::isParserStateResponse()
-{
-    return mCommand == "$G";
-}
-
-bool GcodeCommand::isParametersResponse()
-{
-    return mCommand == "$#";
-}
-
-bool GcodeCommand::isSpindleSpeedCommand()
-{
-    return spindleSpeedExpression.indexIn(mCommand) != -1;
-}
-
-bool GcodeCommand::isFileEndCommand()
-{
-    return mCommand.contains(fileEndExpression);
-}
-
-int GcodeCommand::getSpindleSpeed()
-{
-    if (spindleSpeedExpression.indexIn(mCommand) != -1)
-    {
-        return spindleSpeedExpression.cap(1).toInt();
-    }
-    return 0;
-}
-
 long GcodeCommand::getID()
 {
-   return mID;
+    return mID;
 }
 
 bool GcodeCommand::hasID(long id)
 {
-   return mID == id;
+    return mID == id;
 }
 
 long GcodeCommand::nextID()
 {
-   return ID++;
-}
-
-bool GcodeCommand::isCtrlXResponse()
-{
-    return mCommand == "[CTRL+X]";
-}
-
-bool GcodeCommand::isAbsoluteCoordinatesResponse()
-{
-    return mCommand.contains("G90");
-}
-
-bool GcodeCommand::isSpindleCounterClockwiseCommand()
-{
-    return mCommand.contains("M4");
-}
-
-bool GcodeCommand::isSpindleClockwiseCommand()
-{
-    return mCommand.contains("M3");
-}
-
-bool GcodeCommand::isSpindleStopCommand()
-{
-    return mCommand.contains("M5");
+    return ID++;
 }
 
 GrblResponse GcodeCommand::getResponse() const
@@ -213,6 +192,11 @@ void GcodeCommand::setLine(int line)
     mLine = line;
 }
 
+bool GcodeCommand::isRawCommand()
+{
+    return mRawCommand > 0;
+}
+
 QStringList GcodeCommand::getArgs() const
 {
     return mArgs;
@@ -233,12 +217,9 @@ void GcodeCommand::setState(const GcodeCommandState state)
     mState = state;
 }
 
-bool GcodeCommand::isProbeCommand()
+char GcodeCommand::getRawCommand()
 {
-    return mCommand.contains("G38.2");
+    return mRawCommand;
 }
 
-const QRegExp GcodeCommand::spindleSpeedExpression = QRegExp("[Ss]0*(\\d+)");
-const QRegExp GcodeCommand::fileEndExpression = QRegExp("M0*2|M30");
-const QRegExp GcodeCommand::feedRateExpression = QRegExp(".*F([\\d\\.]+)");
 long GcodeCommand::ID = 0;

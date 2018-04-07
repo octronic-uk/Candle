@@ -38,11 +38,11 @@ public:
 
     void initialise() override;
 signals:
-    void gcodeCommandSendSignal(GcodeCommand*);
+    void gcodeCommandSendSignal(const GcodeCommand&);
 public slots:
     void onCommandSendAction();
     void onAppendResponseToConsole(const GrblResponse&);
-    void onAppendCommandToConsole(GcodeCommand*);
+    void onAppendCommandToConsole(const GcodeCommand&);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

@@ -22,14 +22,14 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
-    QList<GcodeCommand*>& data();
-    void setCommandData(QList<GcodeCommand*> &items);
+    QList<GcodeCommand>& data();
+    void setCommandData(QList<GcodeCommand> &items);
     void clear();
 signals:
 
 public slots:
 
 private:
-    QList<GcodeCommand*> mData;
+    QList<GcodeCommand> mData;
     QStringList mHeaders;
 };

@@ -22,7 +22,7 @@ GcodeDrawer::GcodeDrawer()
 {
     mPointSize = 10;
     mLineWidth = 4;
-    mViewParser.create();
+    mViewParser = QSharedPointer<GcodeViewParser>::create();
     connect(&mTimerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
     mTimerVertexUpdate.start(100);
 }
@@ -57,7 +57,6 @@ GcodeDrawer::GcodeDrawer(const GcodeDrawer& other)
 
 void GcodeDrawer::update()
 {
-
     mIndexes.clear();
     mGeometryUpdated = false;
     ShaderDrawable::update();
@@ -481,12 +480,35 @@ QVector3D GcodeDrawer::getMaximumExtremes() const
     return v;
 }
 
-void GcodeDrawer::setViewParser(const QSharedPointer<GcodeViewParse>& viewParser)
+void GcodeDrawer::initialise()
+{
+    mViewParser = QSharedPointer<GcodeViewParser>::create();
+    mDrawMode = DrawMode::Vectors;
+    mSimplify = false;
+    mSimplifyPrecision = 1.0;
+    mIgnoreZ = false;
+    mGrayscaleSegments = false;
+    mGrayscaleCode = GcodeDrawer::S;
+    mGrayscaleMin = 0;
+    mGrayscaleMax = 255;
+    mColorNormal = QColor("Blue");
+    mColorDrawn = QColor("Black");
+    mColorHighlight = QColor("Red");
+    mColorZMovement = QColor("Yellow");
+    mColorStart = QColor("Green");
+    mColorEnd = QColor("Red");
+    mGeometryUpdated = false;
+    mPointSize = 10;
+    mLineWidth = 4;
+    update();
+}
+
+void GcodeDrawer::setViewParser(const QSharedPointer<GcodeViewParser>& viewParser)
 {
     mViewParser = viewParser;
 }
 
-QSharedPointer<GcodeViewParse> GcodeDrawer::viewParser()
+QSharedPointer<GcodeViewParser> GcodeDrawer::viewParser()
 {
     return mViewParser;
 }

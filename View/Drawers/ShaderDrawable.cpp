@@ -221,12 +221,12 @@ QVector3D ShaderDrawable::getSizes()
     return QVector3D(0, 0, 0);
 }
 
-QVector3D ShaderDrawable::getMinimumExtremes()
+QVector3D ShaderDrawable::getMinimumExtremes() const
 {
     return QVector3D(0, 0, 0);
 }
 
-QVector3D ShaderDrawable::getMaximumExtremes()
+QVector3D ShaderDrawable::getMaximumExtremes() const
 {
     return QVector3D(0, 0, 0);
 }

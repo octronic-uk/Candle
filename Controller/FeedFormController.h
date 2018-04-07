@@ -29,28 +29,19 @@ class FeedFormController : public AbstractFormController
 public:
     explicit FeedFormController(QWidget *parent = nullptr);
     ~FeedFormController() override;
-
-    bool isUpdatingFeed();
-    void setUpdatingFeed(bool updating);
-
-    double getOriginalFeedRate();
-    bool isFeedOverrideChecked();
-
-    double getFeedOverrideValue();
     void setFormActive(bool active) override;
-
+    void setupSignalSlots() override;
     void initialise() override;
 
 signals:
+    void feedOverrideChangedSignal(float);
+    void updateFeedRateSignal(float);
 
 public slots:
+    void onFeedRateUpdate(float val);
     void onFeedSliderValueChanged(int value);
     void onFeedOverrideToggled(bool checked);
+
 private:
     FeedForm mUi;
-    bool mIsUpdatingFeed = false;
-    double mOriginalFeedRate;
-    QString feedOverride(QString command);
-public:
-    void setupSignalSlots() override;
 };

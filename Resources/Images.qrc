@@ -2,7 +2,6 @@
     <qresource prefix="/">
         <file>Images/PNG/axis_return.png</file>
         <file>Images/PNG/axis_zero.png</file>
-        <file>Images/PNG/cocoanut.png</file>
         <file>Images/PNG/cube_front.png</file>
         <file>Images/PNG/cube_left.png</file>
         <file>Images/PNG/cube_top.png</file>
@@ -98,5 +97,10 @@
         <file>Images/PNG/Cocoanut.png</file>
         <file>Images/SVG/grid.svg</file>
         <file>Images/SVG/trash-alt-solid.svg</file>
+        <file>Images/SVG/wrench.svg</file>
+        <file>Images/SVG/plug.svg</file>
+        <file>Images/SVG/desktop.svg</file>
+        <file>Images/SVG/sliders-h.svg</file>
+        <file>Images/SVG/tachometer-alt.svg</file>
     </qresource>
 </RCC>

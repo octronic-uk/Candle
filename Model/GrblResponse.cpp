@@ -62,6 +62,7 @@ void GrblResponse::identifyType()
     if (mData.contains("error"))
     {
         mType = GrblResponseType::Error;
+        return;
     }
     if (mData.contains("ALARM"))
     {

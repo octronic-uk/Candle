@@ -29,8 +29,8 @@ public:
     // ShaderDrawable interface
 public:
     QVector3D getSizes() override;
-    QVector3D getMinimumExtremes() override;
-    QVector3D getMaximumExtremes() override;
+    QVector3D getMinimumExtremes() const override;
+    QVector3D getMaximumExtremes() const override;
     int getVertexCount() override;
 
     QColor getMajorColor() const;

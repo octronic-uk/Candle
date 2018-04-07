@@ -22,6 +22,7 @@
 #include "ui_StateForm.h"
 #include <QMetaType>
 #include <QColor>
+#include <QVector3D>
 
 using namespace Ui;
 
@@ -37,6 +38,8 @@ public:
 signals:
 public slots:
     void onStatusTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));
+    void onUpdateMachinePosition(const QVector3D);
+    void onUpdateWorkPosition(const QVector3D);
 private:
     StateForm mUi;
 

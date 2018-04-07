@@ -27,8 +27,8 @@ public:
     void updateGeometry(QOpenGLShaderProgram *shaderProgram = nullptr);
 
     virtual QVector3D getSizes();
-    virtual QVector3D getMinimumExtremes();
-    virtual QVector3D getMaximumExtremes();
+    virtual QVector3D getMinimumExtremes() const;
+    virtual QVector3D getMaximumExtremes() const;
     virtual int getVertexCount();
 
     float lineWidth() const;

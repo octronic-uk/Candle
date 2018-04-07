@@ -25,8 +25,8 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     qDebug() << "VisualisationFormController: Constructing ";
 
     mUi.setupUi(this);
-    mViewParser = QSharedPointer<GcodeViewParse>::create(this);
-    mProbeParser = QSharedPointer<GcodeViewParse>::create(this);
+    mViewParser = QSharedPointer<GcodeViewParser>::create(this);
+    mProbeParser = QSharedPointer<GcodeViewParser>::create(this);
     /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
@@ -55,7 +55,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.glwVisualizer->addDrawable(&mHeightMapGridDrawer);
     mUi.glwVisualizer->addDrawable(&mHeightMapInterpolationDrawer);
     */
-    mUi.glwVisualizer->fitDrawable();
+    mUi.glwVisualizer->fitDrawable(mCodeDrawer);
     placeVisualizerButtons();
     setupSignalSlots();
 
@@ -71,11 +71,23 @@ VisualisationFormController::~VisualisationFormController()
 
 void VisualisationFormController::setFormActive(bool active)
 {
-
+    mUi.cmdFit->setEnabled(active);
+    mUi.cmdFront->setEnabled(active);
+    mUi.cmdIsometric->setEnabled(active);
+    mUi.cmdLeft->setEnabled(active);
+    mUi.cmdTop->setEnabled(active);
 }
 
 void VisualisationFormController::initialise()
 {
+    mCodeDrawer.initialise();
+    mProbeDrawer.initialise();
+    //mSelectionDrawer.initialise();
+    mViewParser = QSharedPointer<GcodeViewParser>::create();
+    mProbeParser = QSharedPointer<GcodeViewParser>::create();
+//    mHeightMapBorderDrawer.initialise();
+//    mHeightMapGridDrawer.initialise();
+//    mHeightMapInterpolationDrawer.initialise();
 
 }
 
@@ -137,7 +149,7 @@ void VisualisationFormController::onVisualizatorRotationChanged()
 void VisualisationFormController::onFitButtonClicked()
 {
     qDebug() << "VisualisationFormController: onCmdFitClicked";
-    mUi.glwVisualizer->fitDrawable(&mCodeDrawer);
+    mUi.glwVisualizer->fitDrawable(mCodeDrawer);
 }
 
 void VisualisationFormController::updateParser()
@@ -306,7 +318,7 @@ void VisualisationFormController::timerEvent(QTimerEvent *te)
     mUi.glwVisualizer->timerEvent(te);
 }
 
-void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& items)
+void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
 {
     Q_UNUSED(items)
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
@@ -314,11 +326,12 @@ void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*>& 
 
 void VisualisationFormController::onGcodeParserUpdated(QSharedPointer<GcodeParser> parser)
 {
-    mViewParser->getLinesFromParser(parser,5.0,true);
+    qDebug() << "VisualisationFormController: onGcodeParserUpdated";
+    mViewParser->setLinesFromParser(parser,1.0,true);
     mCodeDrawer.setViewParser(mViewParser);
     mCodeDrawer.update();
     mUi.glwVisualizer->setUpdatesEnabled(true);
-    mUi.glwVisualizer->fitDrawable(&mCodeDrawer);
+    mUi.glwVisualizer->fitDrawable(mCodeDrawer);
     mCodeDrawer.setVisible(true);
 }
 

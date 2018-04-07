@@ -6,7 +6,7 @@
 #include <QObject>
 #include <QVector3D>
 #include "../../Model/Parser/LineSegment.h"
-#include "../../Model/Parser/GcodeViewParse.h"
+#include "../../Model/Parser/GcodeViewParser.h"
 #include "ShaderDrawable.h"
 
 class GcodeDrawer : public QObject, public ShaderDrawable
@@ -32,11 +32,13 @@ public:
     bool updateData() override;
 
     QVector3D getSizes() const;
-    QVector3D getMinimumExtremes() const;
-    QVector3D getMaximumExtremes() const;
+    QVector3D getMinimumExtremes() const override;
+    QVector3D getMaximumExtremes() const override;
 
-    void setViewParser(const QSharedPointer<GcodeViewParse>& viewParser);
-    QSharedPointer<GcodeViewParse> viewParser();
+    void initialise();
+
+    void setViewParser(const QSharedPointer<GcodeViewParser>& viewParser);
+    QSharedPointer<GcodeViewParser> viewParser();
 
     bool simplify() const;
     void setSimplify(bool simplify);
@@ -93,7 +95,7 @@ private slots:
     void onTimerVertexUpdate();
 
 private:
-    QSharedPointer<GcodeViewParse> mViewParser;
+    QSharedPointer<GcodeViewParser> mViewParser;
     DrawMode mDrawMode;
     bool mSimplify;
     double mSimplifyPrecision;

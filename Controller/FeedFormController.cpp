@@ -22,11 +22,6 @@ FeedFormController::FeedFormController(QWidget *parent)
 {
     qDebug() << "FeedFormController: Constructing";
     mUi.setupUi(this);
-    mUi.feedProgress->setMinimum(mUi.feedSlider->minimum());
-    mUi.feedProgress->setMaximum(mUi.feedSlider->maximum());
-    onFeedSliderValueChanged(mUi.feedSlider->value());
-    // TODO - Think about this one
-    //mUi.overrideButton->setStyleSheet("QPushButton:checked { font-weight: bold; window-color: rgb(255, 0,0 ) }");
     setupSignalSlots();
 }
 
@@ -35,37 +30,21 @@ FeedFormController::~FeedFormController()
     qDebug() << "FeedFormController: Destructing";
 }
 
-bool FeedFormController::isUpdatingFeed()
-{
-    return mIsUpdatingFeed;
-}
-
-void FeedFormController::setUpdatingFeed(bool updating)
-{
-    mIsUpdatingFeed = updating;
-}
-
-double FeedFormController::getOriginalFeedRate()
-{
-    return 100;
-}
-
-bool FeedFormController::isFeedOverrideChecked()
-{
-    return mUi.overrideButton->isChecked();
-}
-
-double FeedFormController::getFeedOverrideValue()
-{
-    return mUi.feedSlider->value();
-}
-
 void FeedFormController::setFormActive(bool active)
 {
-
+    mUi.overrideButton->setEnabled(active);
+    mUi.overrideButton->setChecked(false);
+    mUi.feedSlider->setEnabled(active);
+    mUi.feedSlider->setValue(100);
 }
 
 void FeedFormController::initialise()
+{
+    mUi.overrideButton->setChecked(false);
+    mUi.feedSlider->setValue(100);
+}
+
+void FeedFormController::onFeedRateUpdate(float val)
 {
 
 }
@@ -75,25 +54,12 @@ void FeedFormController::onFeedOverrideToggled(bool checked)
     if (!checked)
     {
         mUi.feedSlider->setValue(100);
-        mUi.feedSlider->setEnabled(false);
-
-        mUi.feedProgress->setValue(100);
-        mUi.feedProgress->setEnabled(false);
+        emit feedOverrideChangedSignal(100);
     }
     else
     {
-        mUi.feedSlider->setEnabled(true);
-        mUi.feedProgress->setEnabled(true);
+        emit feedOverrideChangedSignal(mUi.feedSlider->value());
     }
-    /*
-    updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
-
-    if (mIsProcessingFile)
-    {
-        mUi.txtFeed->setStyleSheet("color: red;");
-        mIsUpdatingFeed = true;
-    }
-    */
 }
 
 
@@ -113,18 +79,8 @@ void FeedFormController::setupSignalSlots()
 
 void FeedFormController::onFeedSliderValueChanged(int value)
 {
-    mUi.feedProgress->setValue(value);
-    if (value != 100)
-    {
-        mUi.overrideButton->setChecked(true);
-    }
-
-    /*updateProgramEstimatedTime(mCurrentDrawer->viewParser()->getLineSegmentList());
-    if (mIsProcessingFile && mUi.chkFeedOverride->isChecked())
-    {
-        mUi.txtFeed->setStyleSheet("color: red;");
-        mIsUpdatingFeed = true;
-    }
-    */
+    mUi.overrideButton->setChecked(value != 100);
+    emit feedOverrideChangedSignal(value);
 }
+
 

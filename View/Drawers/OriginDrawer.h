@@ -13,7 +13,7 @@ protected:
     // ShaderDrawable interface
 public:
     QVector3D getSizes() override;
-    QVector3D getMinimumExtremes() override;
-    QVector3D getMaximumExtremes() override;
+    QVector3D getMinimumExtremes();
+    QVector3D getMaximumExtremes();
     int getVertexCount() override;
 };

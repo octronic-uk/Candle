@@ -12,7 +12,7 @@
 
 PointSegment::PointSegment()
 {
-    qDebug() << "PointSegment: Constructor";
+    //qDebug() << "PointSegment: Constructor";
     mToolhead = 0;
     mIsMetric = true;
     mIsAbsolute = true;
@@ -38,10 +38,10 @@ PointSegment::PointSegment(const PointSegment &ps)
       mIsAbsolute(ps.isAbsolute()),
       mLineNumber(ps.mLineNumber)
 {
-    qDebug() << "PointSegment: Copy Constructor, isZMovement" << mIsZMovement;
+    //qDebug() << "PointSegment: Copy Constructor, isZMovement" << mIsZMovement;
     if (isArc())
     {
-        qDebug() << "PointSegment: isArc";
+        //qDebug() << "PointSegment: isArc";
         setArcCenter(ps.center());
         setRadius(ps.getRadius());
         setIsClockwise(ps.isClockwise());

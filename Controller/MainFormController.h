@@ -17,7 +17,7 @@
 #include <exception>
 #include <QHBoxLayout>
 
-#include "Model/Parser/GcodeViewParse.h"
+#include "Model/Parser/GcodeViewParser.h"
 #include "Model/Settings/IniFileSettingsModel.h"
 #include "Model/HeightMapFileModel.h"
 
@@ -84,8 +84,8 @@ public:
     void initialise() override;
 
 signals:
-   void sendProgramSignal(QSharedPointer<GcodeFileModel>);
-   void sendProgramFromLineSignal(QSharedPointer<GcodeFileModel>, long);
+   void sendProgramSignal(const GcodeFileModel&);
+   void sendProgramFromLineSignal(const GcodeFileModel&, long);
 
 public slots:
     void onRecentHeightMapFilesChanged();
@@ -93,13 +93,14 @@ public slots:
     void onStatusBarUpdate(QString status);
     void onStatusTextUpdate(QString status);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand*>& items);
+    void onGcodeFileLoadFinished(QList<GcodeCommand>& items);
     void onSendProgram();
     void onSendProgramFromLine(long);
     void onSerialPortError(QString error);
     void onSetBufferProgressValue(int);
     void onSetCompletionProgressValue(int);
     void onSetFormMode(MainFormMode mode);
+    void onGrblMachineError(QString error);
 
 private slots:
     // Main Menu Actions
@@ -138,7 +139,7 @@ private: // Members
     QTimer mStateQueryTimer;
     IniFileSettingsModel mSettingsModel;
     QMainWindow mMainWindow;
-    QSharedPointer<GcodeFileModel> mGcodeFileModel;
+    GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;
     bool mHeightMapMode = false;
     GrblMachineModel mGrblMachineModel;

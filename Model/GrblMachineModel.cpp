@@ -22,8 +22,6 @@
 #include "Utils/IndexOutOfBoundsException.h"
 #include <QMetaType>
 
-const int GrblMachineModel::BUFFER_LENGTH_LIMIT = 127;
-
 GrblMachineModel::GrblMachineModel(QObject *parent)
     : QObject(parent),
       mState(GrblMachineState::Unknown),
@@ -37,7 +35,12 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mAborting(false),
       mProgramSendInterval(100),
       mCountProcessedCommands(0),
-      mCommandQueueInitialSize(0)
+      mCommandQueueInitialSize(0),
+      mUpdateRate(2),
+      mCurrentFeedRate(0),
+      mCurrentSpindleSpeed(0),
+      mError(false),
+      mErrorCode(-1)
 {
     setupSerialPort();
     // Setup timer
@@ -89,131 +92,30 @@ void GrblMachineModel::updateMachineCoordinates(const GrblResponse& response)
 {
     // Update machine coordinates
     QString data = response.getData();
-    static QRegExp machinePositionExpression("MPos:([^,]*),([^,]*),([^,^>]*)");
-    if (machinePositionExpression.indexIn(data) != -1)
+    static QRegExp machinePositionExpression("MPos:([^,]*),([^,]*),([^,]*)\\|FS:([^,]*),([^,>]*)");
+    int caps = machinePositionExpression.indexIn(data);
+    if (caps != -1)
     {
+        for (int ix=0; ix<caps+1; ix++)
+        {
+            qDebug() << "GrblMachineModel: Status Cap"
+                     << ix
+                     <<  machinePositionExpression.cap(ix);
+        }
         mMachinePosition = QVector3D
-                (
-                    machinePositionExpression.cap(1).toFloat(),
-                    machinePositionExpression.cap(2).toFloat(),
-                    machinePositionExpression.cap(3).toFloat()
-                    );
+        (
+            machinePositionExpression.cap(1).toFloat(),
+            machinePositionExpression.cap(2).toFloat(),
+            machinePositionExpression.cap(3).toFloat()
+        );
+        qDebug() << "GrblMachineModel: got MPos" << mMachinePosition;
+
+        mCurrentFeedRate = machinePositionExpression.cap(4).toFloat();
+        mCurrentSpindleSpeed = machinePositionExpression.cap(5).toFloat();
+
         emit updateMachinePositionSignal(mMachinePosition);
-    }
-}
-
-void GrblMachineModel::updateStatus(const GrblResponse& resp)
-{
-    // Status
-    static QRegExp statusExpression("<([^,^>]*)");
-    if (statusExpression.indexIn(resp.getData()) != -1)
-    {
-        mStatusReceived = true;
-        QString stxThing = statusExpression.cap(1);
-        qDebug() << "GrblMachineModel: STX Thing is " << stxThing;
-        mState = GrblMachineState::Unknown ; //MachineStatus::enumIndexOf(stxThing);
-
-        // Update status
-        if (mState != mLastState)
-        {
-            emit statusTextUpdateSignal(stateToString(mState),QColor("White"),QColor("Black"));
-        }
-
-        // Update controls
-        emit machineStateUpdatedSignal(mState);
-
-        /*
-        // Update "elapsed time" timer
-        if (mProcessingFile)
-        {
-            QTime time(0, 0, 0);
-            int elapsed = m_startTime.elapsed();
-            mUi->glwVisualizer->setSpendTime(time.addMSecs(elapsed));
-        }
-        */
-
-        // Test for job complete
-        if  (mProcessingFile && mTransferCompleted &&
-             ((mState == GrblMachineState::Idle && mLastState == GrblMachineState::Run) ||
-              mState == GrblMachineState::Check))
-        {
-            qDebug() << "GrblMachineModel: Job Completed";
-            emit jobCompletedSignal();
-
-            // Shadow last segment
-            /*
-            GcodeViewParse *parser = mCurrentDrawer->viewParser();
-            QList<LineSegment*> list = parser->getLineSegmentList();
-            if (mLastDrawnLineIndex < list.count())
-            {
-                list[mLastDrawnLineIndex]->setDrawn(true);
-                mCurrentDrawer->update(QList<int>() << mLastDrawnLineIndex);
-            }
-            */
-
-            // Update state
-            mProcessingFile = false;
-            //mLastDrawnLineIndex = 0;
-            //m_storedParserStatus.clear();
-
-            //updateControlsState();
-
-            //qApp->beep();
-
-            //m_timerStateQuery.stop();
-            //m_timerConnection.stop();
-
-            /*
-            QMessageBox::information(this, qApp->applicationDisplayName(), tr("Job done.\nTime elapsed: %1")
-                                     .arg(mUi->glwVisualizer->spendTime().toString("hh:mm:ss")));
-
-            m_timerStateQuery.setInterval(mSettingsForm->queryStateTime());
-            m_timerConnection.start();
-            m_timerStateQuery.start();
-            */
-
-        }
-
-        // Store status
-        if (mState != mLastState)
-        {
-            mLastState = mState;
-        }
-
-        /* TODO - Somethings Funky with coords here
-        if (mAborting)
-        {
-            switch (status)
-            {
-            case Idle: // Idle
-                if (!mProcessingFile && mResetCompleted)
-                {
-                    mAborting = false;
-                    //restoreOffsets();
-                    //restoreParserState();
-                    return;
-                }
-                break;
-            case Hold: // Hold
-            case Queue:
-                if (!mResetting && Util::compareCoordinates(mMachinePosition, x, y, z))
-                {
-                    mMachinePosition.setX(sNan);
-                    mMachinePosition.setY(sNan);
-                    mMachinePosition.setZ(sNan);
-                    grblReset();
-                }
-                else
-                {
-
-                    x = mUi->txtMPosX->text().toDouble();
-                    y = mUi->txtMPosY->text().toDouble();
-                    z = mUi->txtMPosZ->text().toDouble();
-                }
-                break;
-            }
-        }
-        */
+        emit updateFeedRateSignal(mCurrentFeedRate);
+        emit updateSpindleSpeedSignal(mCurrentSpindleSpeed);
     }
 }
 
@@ -221,6 +123,7 @@ void GrblMachineModel::updateWorkCoordinates(const GrblResponse& resp)
 {
     // Update work coordinates
     static QRegExp workPositionExpression("WPos:([^,]*),([^,]*),([^,^>]*)");
+
     if (workPositionExpression.indexIn(resp.getData()) != -1)
     {
         mWorkPosition.setX(workPositionExpression.cap(1).toFloat());
@@ -230,18 +133,30 @@ void GrblMachineModel::updateWorkCoordinates(const GrblResponse& resp)
     emit updateWorkPositionSignal(mWorkPosition);
 }
 
+void GrblMachineModel::parseGrblVersion(const GrblResponse& response)
+{
+    static QRegExp grblVersionRegex("Grbl ([\\w.]+)");
+
+    if (grblVersionRegex.indexIn(response.getData().trimmed()) != -1)
+    {
+        mGrblVersion = grblVersionRegex.cap(1);
+        qDebug() << "GrblMachineModel: Grbl Version" << mGrblVersion;
+    }
+}
+
 void GrblMachineModel::processResponse(const GrblResponse& response)
 {
     qDebug() << "GrblMachineModel: Process Response";
 
-    emit appendResponseToConsoleSignal(response);
     mLastState = mState;
-    GcodeCommand *next;
+    GcodeCommand next;
 
     switch (response.getType())
     {
         case GrblResponseType::Startup:
-            emit statusTextUpdateSignal("Found Machine",QColor("Black"),QColor("DarkGreen"));
+            qDebug() << "GrblMachineModel: Got a Startup Message";
+            parseGrblVersion(response);
+            emit statusTextUpdateSignal("Found Machine",QColor("White"),QColor("Green"));
             break;
         case GrblResponseType::Locked:
             mState = GrblMachineState::Locked;
@@ -249,7 +164,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             break;
         case GrblResponseType::Unlocked:
             mState = GrblMachineState::Unlocked;
-            emit statusTextUpdateSignal("Unlocked",QColor("White"),QColor("Green"));
+            emit statusTextUpdateSignal("Unlocked & Ready",QColor("White"),QColor("Green"));
             break;
         case GrblResponseType::Status:
             updateMachineCoordinates(response);
@@ -259,33 +174,64 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             if (!mCommandBuffer.isEmpty())
             {
                 next = mCommandBuffer.takeFirst();
-                if (next)
-                {
-                    qDebug() << "GrblMachineModel: Popping"
-                             << next->getID() << "/" << next->getLine()
-                             << "from the buffer";
-                    next->setResponse(response);
-                    next->setState(GcodeCommandState::Processed);
-                    emit updateProgramTableStatusSignal(next);
-                }
-                else
-                {
-                    qDebug() << "GrblMachineModel: Job Completed";
-                    emit jobCompletedSignal();
-                }
+                qDebug() << "GrblMachineModel: Popping"
+                         << next.getID() << "/" << next.getLine()
+                         << "from the buffer";
+                next.setResponse(response);
+                next.setState(GcodeCommandState::Processed);
+                emit updateProgramTableStatusSignal(next);
+                mCountProcessedCommands++;
             }
-            else {
-                qDebug() <<
-                            "GrblMachineModel: Command Buffer is Empty";
+            else
+            {
+                qDebug() << "GrblMachineModel: Command Buffer is Empty";
+                qDebug() << "GrblMachineModel: Job Completed";
+                stopProgramSendTimer();
+                emit setCompletionProgressSignal((int)getProcessedPercent());
+                emit jobCompletedSignal();
             }
-            mCountProcessedCommands++;
-            emit setCompletionProgressSignal((int)getProcessedPercent());
+            break;
+        case GrblResponseType::Error:
+            parseError(response);
+            mError = true;
+            qDebug() << "GrblMachineModel: Error" << response.getData();
+            stopProgramSendTimer();
+            emit errorSignal(mErrorString);
             break;
     };
 
     if (mState != mLastState)
     {
         emit machineStateUpdatedSignal(mState);
+    }
+
+    if (response.getType() != GrblResponseType::Status)
+    {
+        emit appendResponseToConsoleSignal(response);
+    }
+}
+
+void GrblMachineModel::parseError(const GrblResponse& error)
+{
+    if (!mError)
+    {
+        QString trimmedError = error.getData().trimmed();
+        static QRegExp errorNumRegex("error:(\\d+)$");
+        static QRegExp errorStrRegex("error:(.+)$");
+
+        if (errorNumRegex.indexIn(trimmedError) != -1)
+        {
+            mErrorCode = errorNumRegex.cap(1).toInt();
+            mErrorString = ERROR_STRINGS.at(mErrorCode);
+        }
+        else if (errorStrRegex.indexIn(trimmedError) != -1)
+        {
+            mErrorString = errorStrRegex.cap(1);
+        }
+        else
+        {
+            qDebug() << "GrblMachineModel: Error code not found in regex pattern";
+        }
     }
 }
 
@@ -365,9 +311,14 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
-    GcodeCommand *command = mCommandQueue.first();
+    GcodeCommand command = mCommandQueue.first();
 
-    qDebug() << "GrblMachineModel: Attempting to send queued command" << command->getCommand();
+    qDebug() << "GrblMachineModel: Attempting to send queued command"
+             << (
+                    command.getRawCommand() > 0 ?
+                    QString::number(command.getRawCommand(),16) :
+                    command.getCommand()
+                );
 
     if (!mSerialPort.isOpen())
     {
@@ -378,7 +329,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
     // Buffer full, append to queue
     if (!isSpaceInBuffer(command))
     {
-        qDebug() << "GrblMachineModel: Buffer full, waiting... " << command->getCommand();
+        qDebug() << "GrblMachineModel: Buffer full, waiting... " << command.getCommand();
         return false;
     }
     // Buffer space available
@@ -387,26 +338,40 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         // Take the command off the queue for processing
         command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
 
-        emit appendCommandToConsoleSignal(command);
+        if (command.getRawCommand() > 0)
+        {
+            emit appendCommandToConsoleSignal(command);
+        }
+        else if (command.getCommand() != "?")
+        {
+            emit appendCommandToConsoleSignal(command);
+        }
+
         mCommandBuffer.append(command);
 
-        // Look for spindle speed in gcode
-        if (command->isSpindleSpeedCommand())
+        if (!mError)
         {
-            int speed = command->getSpindleSpeed();
-            emit spindleSpeedChangedSignal(speed);
+            if (command.getRawCommand() > 0)
+            {
+                char c = command.getRawCommand();
+                qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
+                mSerialPort.write(&c ,1);
+                mSerialPort.write("\r");
+            }
+            else
+            {
+                mSerialPort.write((command.getCommand() + "\r").toLatin1());
+                command.setState(GcodeCommandState::Sent);
+            }
+        }
+        else if (command.getRawCommand() > 0) // for real-time commands
+        {
+            char c = command.getRawCommand();
+            qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
+            mSerialPort.write(&c, 1);
+            mSerialPort.write("\r");
         }
 
-        // Set M2 & M30 commands sent flag
-        if (command->isFileEndCommand())
-        {
-            qDebug() << "GrblMachineModel: Detected end of program "
-                     << command->getCommand();
-            mFileEndSent = true;
-        }
-
-        mSerialPort.write((command->getCommand() + "\r").toLatin1());
-        command->setState(GcodeCommandState::Sent);
         return true;
     }
 }
@@ -420,7 +385,7 @@ void GrblMachineModel::grblReset()
     clearCommandBuffer();
     clearCommandQueue();
     // Prepare reset response catch
-    GcodeCommand* cX = GcodeCommand::ControlXCommand();
+    GcodeCommand cX = GcodeCommand::ControlXCommand();
     emit appendCommandToConsoleSignal(cX);
     mCommandBuffer.append(cX);
     // Write the C^X
@@ -428,7 +393,7 @@ void GrblMachineModel::grblReset()
     mSerialPort.flush();
 }
 
-void GrblMachineModel::onSendProgram(QSharedPointer<GcodeFileModel> gcodeFile)
+void GrblMachineModel::onSendProgram(const GcodeFileModel& gcodeFile)
 {
     qDebug() << "GrblMachineModel: onSendProgram()";
 
@@ -436,15 +401,21 @@ void GrblMachineModel::onSendProgram(QSharedPointer<GcodeFileModel> gcodeFile)
     clearCommandQueue();
     mCountProcessedCommands = 0;
 
-    for (GcodeCommand* next : gcodeFile->getData())
+    int index = 0;
+    for (GcodeCommand next : gcodeFile.getData())
     {
+        if (index != 0 && (index % mUpdateRate) == 0)
+        {
+            queueCommand(GcodeCommand::StatusUpdateCommand());
+        }
         queueCommand(next);
+        index++;
     }
 
     mCommandQueueInitialSize = mCommandQueue.count();
 }
 
-void GrblMachineModel::onSendProgramFromLine(QSharedPointer<GcodeFileModel> gcodeFile, long id)
+void GrblMachineModel::onSendProgramFromLine(const GcodeFileModel& gcodeFile, long id)
 {
     qDebug() << "GrblMachineModel: onSendProgramFromLine @ id" << id;
 
@@ -452,12 +423,16 @@ void GrblMachineModel::onSendProgramFromLine(QSharedPointer<GcodeFileModel> gcod
     clearCommandQueue();
     mCountProcessedCommands = 0;
 
-    int index = gcodeFile->getCommandByID(id)->getLine();
-    int size = gcodeFile->getData().count();
+    int index = gcodeFile.getCommandByID(id).getLine();
+    int size = gcodeFile.getData().count();
 
     for (; index < size; index++)
     {
-        queueCommand(gcodeFile->getData()[index]);
+        if (index != 0 && (index % mUpdateRate) == 0)
+        {
+            queueCommand(GcodeCommand::StatusUpdateCommand());
+        }
+        queueCommand(gcodeFile.getData()[index]);
     }
 
     mCommandQueueInitialSize = mCommandQueue.count();
@@ -465,17 +440,26 @@ void GrblMachineModel::onSendProgramFromLine(QSharedPointer<GcodeFileModel> gcod
 
 void GrblMachineModel::startProgramSendTimer()
 {
-    mProgramSendTimer.start(mProgramSendInterval);
+    if (!mProgramSendTimer.isActive())
+    {
+        qDebug() << "GrblMachineModel: Starting Program Timer";
+        mProgramSendTimer.start(mProgramSendInterval);
+    }
 }
 
 void GrblMachineModel::stopProgramSendTimer()
 {
+    qDebug() << "GrblMachineController: Stopping program send timer";
     mProgramSendTimer.stop();
+    clearCommandBuffer();
+    clearCommandQueue();
 }
 
 void GrblMachineModel::clearCommandQueue()
 {
     mCommandQueue.clear();
+    mCountProcessedCommands = 0;
+    mCommandQueueInitialSize = 0;
 }
 
 void GrblMachineModel::clearCommandBuffer()
@@ -549,12 +533,23 @@ void GrblMachineModel::onSettingChanged(QString group, QString param, QVariant v
     }
 }
 
-void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
+void GrblMachineModel::onGcodeCommandManualSend(const GcodeCommand& command)
 {
     queueCommand(command);
+    startProgramSendTimer();
 }
 
-void GrblMachineModel::queueCommand(GcodeCommand* command)
+void GrblMachineModel::onUpdateSpindleSpeed(float speed)
+{
+
+}
+
+void GrblMachineModel::onUpdateFeedRate(float rate)
+{
+
+}
+
+void GrblMachineModel::queueCommand(const GcodeCommand& command)
 {
     mCommandQueue.append(command);
 }
@@ -563,21 +558,21 @@ int GrblMachineModel::bufferLengthInUse()
 {
     int length = 0;
 
-    for (GcodeCommand *gc : mCommandBuffer)
+    for (GcodeCommand gc : mCommandBuffer)
     {
-        length += gc->getCommandLength()+1;
+        length += gc.getCommandLength()+1;
     }
 
     qDebug() << "GrblMachineModel: Buffer in use:" << length;
     return length;
 }
 
-bool GrblMachineModel::isSpaceInBuffer(GcodeCommand* cmd)
+bool GrblMachineModel::isSpaceInBuffer(const GcodeCommand& cmd)
 {
     int bufferLeft = BUFFER_LENGTH_LIMIT - bufferLengthInUse();
     int bufferUsed = BUFFER_LENGTH_LIMIT - bufferLeft;
     emit setBufferProgressSignal(((float)bufferUsed/BUFFER_LENGTH_LIMIT)*100);
-    return (bufferLeft) > (cmd->getCommandLength()+1);
+    return (bufferLeft) > (cmd.getCommandLength()+1);
 }
 
 GcodeCommand GrblMachineModel::feedOverride(GcodeCommand& command, double overridePercent)
@@ -653,3 +648,149 @@ QString GrblMachineModel::stateToString(GrblMachineState state)
             return QString("Unlocked");
     }
 }
+
+const int GrblMachineModel::BUFFER_LENGTH_LIMIT = 127;
+
+const map<int,QString> GrblMachineModel::ERROR_STRINGS =
+{
+    {
+        1,
+        QString("G-code words consist of a letter and a value. Letter was not found.")
+    },
+    {
+        2,
+        QString("Numeric value format is not valid or missing an expected value.")
+    },
+    {
+        3,
+        QString("Grbl '$' system command was not recognized or supported.")
+    },
+    {
+        4,
+        QString("Negative value received for an expected positive value.")
+    },
+    {
+        5,
+        QString("Homing cycle is not enabled via settings.")
+    },
+    {
+        6,
+        QString("Minimum step pulse time must be greater than 3usec")
+    },
+    {
+        7,
+        QString("EEPROM read failed. Reset and restored to default values.")
+    },
+    {
+        8,
+        QString("Grbl '$' command cannot be used unless Grbl is IDLE. Ensures smooth operation during a job.")
+    },
+    {
+        9,
+        QString("G-code locked out during alarm or jog state")
+    },
+    {
+        10,
+        QString("Soft limits cannot be enabled without homing also enabled.")
+    },
+    {
+        11,
+        QString("Max characters per line exceeded. Line was not processed and executed.")
+    },
+    {
+        12,
+        QString("(Compile Option) Grbl '$' setting value exceeds the maximum step rate supported.")
+    },
+    {
+        13,
+        QString("Safety door detected as opened and door state initiated.")
+    },
+    {
+        14,
+        QString("(Grbl-Mega Only) Build info or startup line exceeded EEPROM line length limit.")
+    },
+    {
+        15,
+        QString("Jog target exceeds machine travel. Command ignored.")
+    },
+    {
+        16,
+        QString("Jog command with no '=' or contains prohibited g-code.")
+    },
+    {
+        17,
+        QString("Laser mode requires PWM output.")
+    },
+    {
+        20,
+        QString("Unsupported or invalid g-code command found in block.")
+    },
+    {
+        21,
+        QString("More than one g-code command from same modal group found in block.")
+    },
+    {
+        22,
+        QString("Feed rate has not yet been set or is undefined.")
+    },
+    {
+        23,
+        QString("G-code command in block requires an integer value.")
+    },
+    {
+        24,
+        QString("Two G-code commands that both require the use of the XYZ axis words were detected in the block.")
+    },
+    {
+        25,
+        QString("A G-code word was repeated in the block.")
+    },
+    {
+        26,
+        QString("A G-code command implicitly or explicitly requires XYZ axis words in the block, but none were detected.")
+    },
+    {
+        27,
+        QString("N line number value is not within the valid range of 1 - 9,999,999.")
+    },
+    {
+        28,
+        QString("A G-code command was sent, but is missing some required P or L value words in the line.")
+    },
+    {
+        29,
+        QString("Grbl supports six work coordinate systems G54-G59. G59.1, G59.2, and G59.3 are not supported.")
+    },
+    {
+        30,
+        QString("The G53 G-code command requires either a G0 seek or G1 feed motion mode to be active. A different motion was active.")
+    },
+    {
+        31,
+        QString("There are unused axis words in the block and G80 motion mode cancel is active.")
+    },
+    {
+        32,
+        QString("A G2 or G3 arc was commanded but there are no XYZ axis words in the selected plane to trace the arc.")
+    },
+    {
+        33,
+        QString("The motion command has an invalid target. G2, G3, and G38.2 generates this error, if the arc is impossible to generate or if the probe target is the current position.")
+    },
+    {
+        34,
+        QString("A G2 or G3 arc, traced with the radius definition, had a mathematical error when computing the arc geometry. Try either breaking up the arc into semi-circles or quadrants, or redefine them with the arc offset definition.")
+    },
+    {
+        35,
+        QString("A G2 or G3 arc, traced with the offset definition, is missing the IJK offset word in the selected plane to trace the arc.")
+    },
+    {
+        36,
+        QString("There are unused, leftover G-code words that aren't used by any command in the block.")
+    },
+    {
+        37,
+        QString("The G43.1 dynamic tool length offset command cannot apply an offset to an axis other than its configured axis. The Grbl default axis is the Z-axis.")
+    }
+};

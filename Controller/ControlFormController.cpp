@@ -75,6 +75,7 @@ void ControlFormController::setupSignalSlots()
 
     qDebug() << "ControlFormController: Setup Signals/Slots";
     connect(mUi.cmdUnlock, SIGNAL(clicked()),this,SLOT(onCmdUnlockClicked()));
+    connect(mUi.cmdReset, SIGNAL(clicked()),this,SLOT(onCmdResetClicked()));
 }
 
 void ControlFormController::setFormActive(bool active)
@@ -99,13 +100,17 @@ void ControlFormController::initialise()
 
 }
 
-void ControlFormController::highlightUnlock(bool highlight)
+void ControlFormController::highlightUnlockReset(bool highlight)
 {
    if (highlight)
    {
        QPalette p = mUi.cmdUnlock->palette();
-       p.setColor(QPalette::Background,QColor("200,40,40"));
+       p.setColor(mUi.cmdUnlock->backgroundRole(),QColor(200,40,40));
        mUi.cmdUnlock->setPalette(p);
+
+       p = mUi.cmdReset->palette();
+       p.setColor(mUi.cmdUnlock->backgroundRole(),QColor(200,0,0));
+       mUi.cmdReset->setPalette(p);
    }
 }
 
@@ -139,7 +144,7 @@ void ControlFormController::onCmdRestoreOriginClicked()
 
 void ControlFormController::onCmdResetClicked()
 {
-    //grblReset();
+    emit gcodeCommandManualSendSignal(GcodeCommand::ResetCommand());
 }
 
 void ControlFormController::onCmdUnlockClicked()

@@ -35,8 +35,8 @@ public:
 
 
     void addDrawable(ShaderDrawable *drawable);
-    void updateExtremes(ShaderDrawable *drawable);
-    void fitDrawable(ShaderDrawable *drawable = nullptr);
+    void updateExtremes(const ShaderDrawable& drawable);
+    void fitDrawable(const ShaderDrawable& drawable);
 
     bool antialiasing() const;
     void setAntialiasing(bool antialiasing);

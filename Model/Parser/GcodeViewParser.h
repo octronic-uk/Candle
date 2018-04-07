@@ -14,12 +14,12 @@
 #include "GcodeParser.h"
 #include "Utils/Util.h"
 
-class GcodeViewParse : public QObject
+class GcodeViewParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit GcodeViewParse(QObject *parent = nullptr);
-    ~GcodeViewParse();
+    explicit GcodeViewParser(QObject *parent = nullptr);
+    ~GcodeViewParser();
 
     QVector3D getMinimumExtremes() const ;
     QVector3D getMaximumExtremes() const;
@@ -27,7 +27,7 @@ public:
     QSize getResolution() const;
     QList<LineSegment> toObjRedux(const QList<QString> &gcode, double arcPrecision, bool arcDegreeMode);
     QList<LineSegment> getLineSegmentList() const;
-    QList<LineSegment> getLinesFromParser(QSharedPointer<GcodeParser> &gp, double arcPrecision, bool arcDegreeMode);
+    QList<LineSegment> setLinesFromParser(QSharedPointer<GcodeParser> &gp, double arcPrecision, bool arcDegreeMode);
     QList<LineSegment>& getLines();
     QVector<QList<int>> getLinesIndexes() const;
 

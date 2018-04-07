@@ -25,7 +25,7 @@
 
 #include "GcodeFileModel.h"
 #include "Model/Tables/GcodeTableModel.h"
-#include "Utils/IndexOutOfBoundsException.h"
+#include "Utils/GcodeCommandNotFoundException.h"
 
 GcodeFileModel::GcodeFileModel(QObject *parent)
     : QObject(parent),
@@ -44,10 +44,12 @@ GcodeFileModel::~GcodeFileModel()
 
 void GcodeFileModel::initialise()
 {
+    /*
     for (int i=0; i<mData.length(); i++)
     {
         delete mData[i];
     }
+    */
     mData.clear();
     mProgramLoading = false;
     mFileChanged = false;
@@ -79,32 +81,26 @@ void GcodeFileModel::load(QList<QString> data)
     int index = 0;
     while (!data.isEmpty())
     {
-
-
         QString command;
         QString stripped;
         QString trimmed;
         QList<QString> args;
-        GcodeCommand* item = new GcodeCommand();
-
+        GcodeCommand item;// = new GcodeCommand();
         command = data.takeFirst();
-
         qDebug() << "GcodeFileModel: Next Line" << command;
-
         // Trim command
         trimmed = command.trimmed();
-
         if (!trimmed.isEmpty())
         {
             // Split command
             stripped = GcodeParser::removeComment(command);
             args = GcodeParser::splitCommand(stripped);
             mGcodeParser->addCommand(args);
-            item->setCommand(trimmed);
-            item->setState(GcodeCommandState::InQueue);
-            item->setLine(mGcodeParser->getCommandNumber());
-            item->setArgs(args);
-            item->setTableIndex(index);
+            item.setCommand(trimmed);
+            item.setState(GcodeCommandState::InQueue);
+            item.setLine(mGcodeParser->getCommandNumber());
+            item.setArgs(args);
+            item.setTableIndex(index);
             index++;
             mData.append(item);
         }
@@ -185,23 +181,23 @@ QString GcodeFileModel::getCurrentFileName()
    return mFile.fileName();
 }
 
-GcodeCommand* GcodeFileModel::getCommandByID(long id)
+GcodeCommand& GcodeFileModel::getCommandByID(long id) const
 {
-   for (GcodeCommand* next : mData)
+   for (GcodeCommand next : mData)
    {
-       if (next->hasID(id))
+       if (next.hasID(id))
        {
            return next;
        }
    }
-   return nullptr;
+   throw GcodeCommandNotFoundException(id);
 }
 
-GcodeCommand* GcodeFileModel::getCommand(int index) const
+GcodeCommand GcodeFileModel::getCommand(int index) const
 {
     if (index < 0 || index > mData.count() -1)
     {
-        return nullptr;
+        throw GcodeCommandNotFoundException(index);
     }
 
     return mData.at(index);
@@ -212,7 +208,7 @@ int GcodeFileModel::countCommands()
     return mData.count();
 }
 
-QList<GcodeCommand*>& GcodeFileModel::getData()
+QList<GcodeCommand> GcodeFileModel::getData() const
 {
    return mData;
 }

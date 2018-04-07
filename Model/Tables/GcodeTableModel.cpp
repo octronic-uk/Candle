@@ -42,14 +42,14 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
         switch (index.column())
         {
         case 0: // Command
-            return mData.at(index.row())->getCommand();
+            return mData.at(index.row()).getCommand();
         case 1: // Status
             if (index.row() == rowCount() - 1)
             {
                 return QString();
             }
 
-            switch (mData.at(index.row())->getState())
+            switch (mData.at(index.row()).getState())
             {
                 case GcodeCommandState::InQueue:
                     return tr("In Queue");
@@ -63,17 +63,17 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
                     return tr("Unknown");
             }
         case 2: // Response
-            return QVariant(mData.at(index.row())->getResponse().getData());
+            return QVariant(mData.at(index.row()).getResponse().getData());
         case 3: // Line
-            return QVariant(mData.at(index.row())->getLine());
+            return QVariant(mData.at(index.row()).getLine());
         case 4: // Args
-            if (mData.at(index.row())->getArgs().empty())
+            if (mData.at(index.row()).getArgs().empty())
             {
                return QVariant("---");
             }
             else
             {
-                return QVariant(mData.at(index.row())->getArgs());
+                return QVariant(mData.at(index.row()).getArgs());
             }
         default:
             return QVariant();
@@ -86,15 +86,17 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
         {
             case 2:
                 // Center empty responses
-                if (mData.at(index.row())->getResponse().getData() == "")
+                if (mData.at(index.row()).getResponse().getData() == "")
                 {
                     return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
                 }
+                break;
             case 4:
-                if (mData.at(index.row())->getArgs().empty())
+                if (mData.at(index.row()).getArgs().empty())
                 {
                    return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
                 }
+                break;
         }
         return QVariant::fromValue(Qt::AlignLeft | Qt::AlignVCenter);
     }
@@ -116,19 +118,19 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
         switch (index.column())
         {
         case 0:
-            mData[index.row()]->setCommand(value.toString());
+            mData[index.row()].setCommand(value.toString());
             break;
         case 1:
-            mData[index.row()]->setState(value.value<GcodeCommandState>());
+            mData[index.row()].setState(value.value<GcodeCommandState>());
             break;
         case 2:
-            mData[index.row()]->setResponse(value.value<GrblResponse>());
+            mData[index.row()].setResponse(value.value<GrblResponse>());
             break;
         case 3:
-            mData[index.row()]->setLine(value.toInt());
+            mData[index.row()].setLine(value.toInt());
             break;
         case 4:
-            mData[index.row()]->setArgs(value.toStringList());
+            mData[index.row()].setArgs(value.toStringList());
             break;
         }
         emit dataChanged(index, index);
@@ -148,7 +150,7 @@ bool GcodeTableModel::insertRow(int row, const QModelIndex &parent)
         return false;
     }
     beginInsertRows(parent, row, row);
-    mData.insert(row, new GcodeCommand());
+    mData.insert(row, GcodeCommand());
     endInsertRows();
     return true;
 }
@@ -230,17 +232,19 @@ Qt::ItemFlags GcodeTableModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index);
 }
 
-QList<GcodeCommand*>& GcodeTableModel::data()
+QList<GcodeCommand>& GcodeTableModel::data()
 {
     //qDebug() << "GcodeTableModel: data()";
     return mData;
 }
 
-void GcodeTableModel::setCommandData(QList<GcodeCommand*> &items)
+void GcodeTableModel::setCommandData(QList<GcodeCommand> &items)
 {
     mData = items;
+    /*j
     for (int i=0; i<mData.count(); i++)
     {
-//        qDebug() << "GcodeTableModel:" << i << "has index" << mData[i].getTableIndex();
+        qDebug() << "GcodeTableModel:" << i << "has index" << mData[i].getTableIndex();
     }
+    */
 }

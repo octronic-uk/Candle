@@ -33,18 +33,16 @@ public:
     bool isUpdatingSpindleSpeed();
     void setUpdatingSpindleSpeed(bool);
     QString getSpindleSpeed();
-
     void setFormActive(bool active) override;
-
     void initialise() override;
 
 signals:
+    void updateSpindleSpeedSignal(float val);
+
 public slots:
     void onCmdSpindleClicked(bool checked);
-    void onCmdSpindleToggled(bool checked);
-    void onTextSpindleSpeedEditingFinished();
-    void onSliderSpindleSpeedValueChanged(int value);
-    void onSliderSpindleSpeedActionTriggered(int action);
+    void onSliderValueChanged(int value);
+    void onUpdateSpindleSpeed(float speed);
 private:
     SpindleForm mUi;
     bool mIsUpdatingSpindleSpeed = false;

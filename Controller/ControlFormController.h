@@ -40,9 +40,9 @@ public:
 
     void initialise() override;
 
-    void highlightUnlock(bool highlight);
+    void highlightUnlockReset(bool highlight);
 signals:
-    void gcodeCommandManualSendSignal(GcodeCommand*);
+    void gcodeCommandManualSendSignal(const GcodeCommand&);
 
 public slots:
     void onCmdResetClicked();

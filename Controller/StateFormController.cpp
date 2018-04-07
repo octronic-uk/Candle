@@ -47,6 +47,20 @@ void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QCo
     mUi.statusText->setPalette(p);
 }
 
+void StateFormController::onUpdateMachinePosition(const QVector3D pos)
+{
+   mUi.txtMPosX->setText(QString::number(pos.x(), 'f', 2));
+   mUi.txtMPosY->setText(QString::number(pos.y(), 'f', 2));
+   mUi.txtMPosZ->setText(QString::number(pos.z(), 'f', 2));
+}
+
+void StateFormController::onUpdateWorkPosition(const QVector3D pos)
+{
+   mUi.txtWPosX->setText(QString::number(pos.x(), 'f', 2));
+   mUi.txtWPosY->setText(QString::number(pos.y(), 'f', 2));
+   mUi.txtWPosZ->setText(QString::number(pos.z(), 'f', 2));
+}
+
 void StateFormController::setFormActive(bool active)
 {
 

@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <map>
 #include <QObject>
 #include <QtSerialPort>
 #include <QTimer>
@@ -28,6 +29,7 @@
 #include "Model/GcodeCommand.h"
 #include "Model/GrblResponse.h"
 
+using namespace std;
 
 class GrblMachineModel : public QObject
 {
@@ -39,7 +41,6 @@ public:
     bool openPort();
     bool closePort();
     void initialise();
-
     int bufferLengthInUse();
     bool sendNextCommandFromQueue();
     void grblReset();
@@ -57,7 +58,6 @@ public:
     void restoreParserState();
     void clearCommandQueue();
     void clearCommandBuffer();
-
     QVector3D getMachinePosition();
     float getMachinePositionX();
     float getMachinePositionY();
@@ -66,32 +66,39 @@ public:
     float getWorkPositionX();
     float getWorkPositionY();
     float getWorkPositionZ();
-
-    void queueCommand(GcodeCommand* command);
+    void queueCommand(const GcodeCommand& command);
     static QString stateToString(GrblMachineState state);
 
 signals:
-    void updateProgramTableStatusSignal(GcodeCommand* state);
-    void serialPortErrorSignal(QString errorMessage);
-    void statusBarUpdateSignal(QString status);
-    void statusTextUpdateSignal(QString status, QColor = QColor("Black"), QColor = QColor("White"));
-    void appendResponseToConsoleSignal(const GrblResponse&);
-    void appendCommandToConsoleSignal(GcodeCommand*);
+    void updateProgramTableStatusSignal(const GcodeCommand& state);
+    void updateFeedRateSignal(float);
+    void updateSpindleSpeedSignal(float);
     void updateMachinePositionSignal(const QVector3D);
     void updateWorkPositionSignal(const QVector3D);
-    void spindleSpeedChangedSignal(int speed);
-    void jobCompletedSignal();
+
+    void serialPortErrorSignal(QString errorMessage);
+
+    void statusBarUpdateSignal(QString status);
+    void statusTextUpdateSignal(QString status, QColor = QColor("Black"), QColor = QColor("White"));
+
     void toolPositionChangedSignal(QVector3D);
-    void commandResponseSignal(const GrblResponse&);
     void machineStateUpdatedSignal(const GrblMachineState&);
+    void jobCompletedSignal();
+
+    void appendResponseToConsoleSignal(const GrblResponse&);
+    void appendCommandToConsoleSignal(const GcodeCommand&);
+    void commandResponseSignal(const GrblResponse&);
     void setCompletionProgressSignal(int);
     void setBufferProgressSignal(int);
+    void errorSignal(QString);
 
 public slots:
-    void onSendProgram(QSharedPointer<GcodeFileModel> gcodeFile);
-    void onSendProgramFromLine(QSharedPointer<GcodeFileModel> gcodeFile,long);
+    void onSendProgram(const GcodeFileModel& gcodeFile);
+    void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
     void onSettingChanged(QString group, QString param, QVariant value);
-    void onGcodeCommandManualSend(GcodeCommand*);
+    void onGcodeCommandManualSend(const GcodeCommand&);
+    void onUpdateSpindleSpeed(float speed);
+    void onUpdateFeedRate(float rate);
 
 private slots:
     void onConnectionTimer();
@@ -102,8 +109,8 @@ private slots:
 private: // Members
     const static int BUFFER_LENGTH_LIMIT;
     QSerialPort mSerialPort;
-    QList<GcodeCommand*> mCommandBuffer;
-    QList<GcodeCommand*> mCommandQueue;
+    QList<GcodeCommand> mCommandBuffer;
+    QList<GcodeCommand> mCommandQueue;
     GrblMachineState mState;
     GrblMachineState mLastState;
     QVector3D mMachinePosition;
@@ -120,6 +127,13 @@ private: // Members
     int mProgramSendInterval;
     int mCountProcessedCommands;
     int mCommandQueueInitialSize;
+    int mUpdateRate;
+    float mCurrentFeedRate;
+    float mCurrentSpindleSpeed;
+    bool mError;
+    int mErrorCode;
+    QString mErrorString;
+    QString mGrblVersion;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand& command, double overridePercent);
@@ -127,11 +141,13 @@ private: // Member Functions
     void processResponse(const GrblResponse& data);
     void updateMachineCoordinates(const GrblResponse& data);
     void updateWorkCoordinates(const GrblResponse& data);
-    void updateStatus(const GrblResponse& data);
     void updateToolCoordinates();
     void setupSerialPort();
-    bool isSpaceInBuffer(GcodeCommand* cmd);
+    bool isSpaceInBuffer(const GcodeCommand& cmd);
     void startProgramSendTimer();
     void stopProgramSendTimer();
     double getProcessedPercent();
+    void parseError(const GrblResponse& error);
+    const static std::map<int,QString> ERROR_STRINGS;
+    void parseGrblVersion(const GrblResponse& response);
 };

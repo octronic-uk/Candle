@@ -21,7 +21,6 @@ public:
 
     void saveSettings();
     int exec();
-    void undo();
 
     void initialise() override;
 
@@ -30,12 +29,6 @@ public:
 
     int getBaudRate();
     void setBaudRate(int baud);
-
-    double toolDiameter();
-    void setToolDiameter(double diameter);
-
-    double toolLength();
-    void setToolLength(double length);
 
     bool antialiasing();
     void setAntialiasing(bool antialiasing);
@@ -78,29 +71,17 @@ public:
     int spindleSpeedMax();
     void setSpindleSpeedMax(int speed);
 
-    int laserPowerMin();
-    void setLaserPowerMin(int value);
-
-    int laserPowerMax();
-    void setLaserPowerMax(int value);
-
     int rapidSpeed();
     void setRapidSpeed(int rapidSpeed);
 
-    int heightmapProbingFeed();
-    void setHeightmapProbingFeed(int heightmapProbingFeed);
+    QString heightmapProbingFeed();
+    void setHeightmapProbingFeed(QString heightmapProbingFeed);
 
     int acceleration();
     void setAcceleration(int acceleration);
 
     int queryStateTime();
     void setQueryStateTime(int queryStateTime);
-
-    int toolType();
-    void setToolType(int toolType);
-
-    double toolAngle();
-    void setToolAngle(double toolAngle);
 
     int fps();
     void setFps(int fps);
@@ -125,9 +106,6 @@ public:
 
     double simplifyPrecision();
     void setSimplifyPrecision(double simplifyPrecision);
-
-    //QList<ColorPicker*> colors();
-    //QColor colors(QString name);
 
     bool grayscaleSegments();
     void setGrayscaleSegments(bool value);
@@ -154,22 +132,49 @@ public slots:
 signals:
     void settingChangedSignal(QString group, QString param, QVariant value);
 
-protected:
-    void showEvent(QShowEvent *se) override;
 private slots:
+    void onCloseButtonClicked();
+    void onRestoreDefaultsButtonClicked();
     void onSerialPortRefreshClicked();
     void onSerialPortNameChanged(QString);
     void onSerialBaudRateChanged(QString);
-
-    void onCloseButtonClicked();
-    void onRestoreDefaultsButtonClicked();
-
-    void onComboBoxToolTypeCurrentIndexChanged(int index);
-
-    void onRadioBtnDrawModeVectorsToggled(bool checked);
-    void onRadioBtnDrawModeRasterToggled(bool checked);
-    void onRadioBtnGrayscaleSToggled(bool checked);
-    void onRadioBtnGrayscaleZToggled(bool checked);
+    void onIgnoreErrorsToggled(bool);
+    void onAutoLineToggled(bool);
+    void onArcLengthModeToggled(bool);
+    void onArcLengthValueChanged(QString);
+    void onArcDegreeModeToggled(bool);
+    void onArcDegreeValueChanged(QString);
+    void onLineWidthValueChanged(QString);
+    void onFpsCurrentIndexChanged(QString);
+    void onAntiAliasingToggled(bool);
+    void onMsaaToggled(bool);
+    void onVsyncToggled(bool);
+    void onZBufferToggled(bool);
+    void onDrawModeVectorsToggled(bool checked);
+    void onDrawModeRasterToggled(bool checked);
+    void onSimplifyToggled(bool);
+    void onSimplifyPrecisionValueChanged(QString);
+    void onGrayscaleToggled(bool);
+    void onGrayscaleSToggled(bool checked);
+    void onGrayscaleZToggled(bool checked);
+    void onShowProgramCommandsToggled(bool);
+    void onShowUiCommandsToggled(bool);
+    void onAutoCompletionToggled(bool);
+    void onQueryStateTimeValueChanged(QString);
+    void onUnitsCurrentIndexChanged(QString);
+    void onRapidSpeedValueChanged(QString);
+    void onAccelerationValueChanged(QString);
+    void onSpindleSpeedMinValueChanged(QString);
+    void onSpindleSpeedMaxValueChanged(QString);
+    void onTouchCommandValueChanged(QString);
+    void onSafeCommandValueChanged(QString);
+    void onMoveOnRestoreToggled(bool);
+    void onRestoreModeCurrentIndexChanged(QString);
+    void onUserCommand1ValueChanged(QString);
+    void onUserCommand2ValueChanged(QString);
+    void onUserCommand3ValueChanged(QString);
+    void onUserCommand4ValueChanged(QString);
+    void onHeightMapProbingFeedValueChanged(QString);
 private:
     QDialog mDialog;
     SettingsForm mUi;
@@ -184,6 +189,7 @@ private:
     QString mSerialPortName;
     QString mSerialPortBaudRate;
 
+    void setTabIcons();
 public:
     void setupSignalSlots() override;
 };

@@ -33,7 +33,7 @@ unix {
 
 TARGET = CocoanutCNC
 TEMPLATE = app
-VERSION = 1.0.12
+VERSION = 0.01a
 #RC_ICONS += images/cocoanut.ico
 
 DEFINES += sNan=\"65536\"
@@ -56,7 +56,6 @@ SOURCES +=\
     Model/Tables/HeightMapTableModel.cpp \
     Model/Parser/ArcProperties.cpp \
     Model/Parser/GcodeParser.cpp \
-    Model/Parser/GcodeViewParse.cpp \
     Model/Parser/LineSegment.cpp \
     Model/Parser/PointSegment.cpp \
     View/Drawers/GcodeDrawer.cpp \
@@ -89,7 +88,14 @@ SOURCES +=\
     Model/GrblMachineModel.cpp \
     Utils/IndexOutOfBoundsException.cpp \
     Model/GcodeCommand.cpp \
-    Model/GrblResponse.cpp
+    Model/GrblResponse.cpp \
+    Utils/GcodeCommandNotFoundException.cpp \
+    Model/Parser/GcodeViewParser.cpp \
+    Controller/ToolHolderModelFormController.cpp \
+    Model/ToolHolderModelListModel.cpp \
+    Model/ToolHolderModelTableModel.cpp \
+    Model/ToolHolderModelListItem.cpp \
+    Model/ToolHolderModelGeometryItem.cpp
 
 
 HEADERS  += \
@@ -100,7 +106,6 @@ HEADERS  += \
     Controller/MainFormController.h \
     Model/Parser/ArcProperties.h \
     Model/Parser/GcodeParser.h \
-    Model/Parser/GcodeViewParse.h \
     Model/Parser/LineSegment.h \
     Model/Parser/PointSegment.h \
     Model/Tables/HeightMapTableModel.h \
@@ -140,7 +145,14 @@ HEADERS  += \
     Utils/IndexOutOfBoundsException.h \
     Model/GcodeCommand.h \
     Model/GrblResponse.h \
-    Model/GrblMachineState.h
+    Model/GrblMachineState.h \
+    Utils/GcodeCommandNotFoundException.h \
+    Model/Parser/GcodeViewParser.h \
+    Controller/ToolHolderModelFormController.h \
+    Model/ToolHolderModelListModel.h \
+    Model/ToolHolderModelListItem.h \
+    Model/ToolHolderModelTableModel.h \
+    Model/ToolHolderModelGeometryItem.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -155,7 +167,8 @@ FORMS    += \
     View/SpindleForm.ui \
     View/StateForm.ui \
     View/UserCommandsForm.ui \
-    View/VisualisationForm.ui
+    View/VisualisationForm.ui \
+    View/ToolHolderModelForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

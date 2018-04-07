@@ -41,13 +41,13 @@ QVector3D GridDrawer::getSizes()
     return QVector3D();
 }
 
-QVector3D GridDrawer::getMinimumExtremes()
+QVector3D GridDrawer::getMinimumExtremes() const
 {
     return QVector3D();
 
 }
 
-QVector3D GridDrawer::getMaximumExtremes()
+QVector3D GridDrawer::getMaximumExtremes() const
 {
     return QVector3D();
 }

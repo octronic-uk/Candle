@@ -6,9 +6,9 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QDebug>
-#include "GcodeViewParse.h"
+#include "GcodeViewParser.h"
 
-GcodeViewParse::GcodeViewParse(QObject *parent) :
+GcodeViewParser::GcodeViewParser(QObject *parent) :
     QObject(parent)
 {
     mAbsoluteMode = true;
@@ -22,27 +22,27 @@ GcodeViewParse::GcodeViewParse(QObject *parent) :
     mMinLength = qQNaN();
 }
 
-GcodeViewParse::~GcodeViewParse()
+GcodeViewParser::~GcodeViewParser()
 {
     //foreach (LineSegment *ls, mLines) delete ls;
 }
 
-QVector3D GcodeViewParse::getMinimumExtremes() const
+QVector3D GcodeViewParser::getMinimumExtremes() const
 {
     return mMin;
 }
 
-QVector3D GcodeViewParse::getMaximumExtremes() const
+QVector3D GcodeViewParser::getMaximumExtremes() const
 {
     return mMax;
 }
 
-void GcodeViewParse::testExtremes(const QVector3D &p3d)
+void GcodeViewParser::testExtremes(const QVector3D &p3d)
 {
     testExtremes(p3d.x(), p3d.y(), p3d.z());
 }
 
-void GcodeViewParse::testExtremes(double x, double y, double z)
+void GcodeViewParser::testExtremes(double x, double y, double z)
 {
     mMin.setX(Util::nMin(mMin.x(), x));
     mMin.setY(Util::nMin(mMin.y(), y));
@@ -53,7 +53,7 @@ void GcodeViewParse::testExtremes(double x, double y, double z)
     mMax.setZ(Util::nMax(mMax.z(), z));
 }
 
-void GcodeViewParse::testLength(const QVector3D &start, const QVector3D &end)
+void GcodeViewParser::testLength(const QVector3D &start, const QVector3D &end)
 {
     double length = (start - end).length();
     if (!qIsNaN(length) && length != 0)
@@ -64,7 +64,7 @@ void GcodeViewParse::testLength(const QVector3D &start, const QVector3D &end)
     }
 }
 
-QList<LineSegment> GcodeViewParse::toObjRedux
+QList<LineSegment> GcodeViewParser::toObjRedux
 (
     const QList<QString> &gcode,
     double arcPrecision,
@@ -79,15 +79,15 @@ QList<LineSegment> GcodeViewParse::toObjRedux
         gp->addCommand(s);
     }
 
-    return getLinesFromParser(gp, arcPrecision, arcDegreeMode);
+    return setLinesFromParser(gp, arcPrecision, arcDegreeMode);
 }
 
-QList<LineSegment> GcodeViewParse::getLineSegmentList() const
+QList<LineSegment> GcodeViewParser::getLineSegmentList() const
 {
     return mLines;
 }
 
-void GcodeViewParse::reset()
+void GcodeViewParser::reset()
 {
     //foreach (LineSegment *ls, mLines) delete ls;
     mLines.clear();
@@ -98,12 +98,12 @@ void GcodeViewParse::reset()
     mMinLength = qQNaN();
 }
 
-double GcodeViewParse::getMinLength() const
+double GcodeViewParser::getMinLength() const
 {
     return mMinLength;
 }
 
-QSize GcodeViewParse::getResolution() const
+QSize GcodeViewParser::getResolution() const
 {
     return QSize
     (
@@ -112,7 +112,7 @@ QSize GcodeViewParse::getResolution() const
     );
 }
 
-QList<LineSegment> GcodeViewParse::getLinesFromParser
+QList<LineSegment> GcodeViewParser::setLinesFromParser
 (
         QSharedPointer<GcodeParser> &gp,
         double arcPrecision,
@@ -149,9 +149,11 @@ QList<LineSegment> GcodeViewParse::getLinesFromParser
             // Expand arc for graphics.
             if (segment.isArc())
             {
+                /*
                 qDebug() << "GcodeViewParse: PS" << segment.getLineNumber() << "is arc"
                          << "Start" << start
                          << "End" << end;
+                         */
 
                 QList<QVector3D> points =
                     GcodeParser::generatePointsAlongArcBDring
@@ -209,24 +211,24 @@ QList<LineSegment> GcodeViewParse::getLinesFromParser
         }
         else
         {
-            qDebug() << "GcodeViewParse: First line"
-                     << segment.getLineNumber();
+            //qDebug() << "GcodeViewParse: First line"
+             //        << segment.getLineNumber();
             first = false;
         }
 
         start = end;
-        qDebug() << "GcodeViewParse: after the fact Start" << start << "end" << end;
+        //qDebug() << "GcodeViewParse: after the fact Start" << start << "end" << end;
     }
 
     return mLines;
 }
 
-QList<LineSegment>& GcodeViewParse::getLines()
+QList<LineSegment>& GcodeViewParser::getLines()
 {
     return mLines;
 }
 
-QVector<QList<int>> GcodeViewParse::getLinesIndexes() const
+QVector<QList<int>> GcodeViewParser::getLinesIndexes() const
 {
     return mLineIndexes;
 }

@@ -62,7 +62,7 @@ public slots:
     void hideEvent(QHideEvent* he) override;
     void resizeEvent(QResizeEvent* re) override;
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand*>&);
+    void onGcodeFileLoadFinished(QList<GcodeCommand>&);
     void onGcodeParserUpdated(QSharedPointer<GcodeParser>);
 
     void onToggleGridButtonToggled(bool toggled);
@@ -85,8 +85,8 @@ private:
     HeightMapInterpolationDrawer mHeightMapInterpolationDrawer;
 
     // Parsers
-    QSharedPointer<GcodeViewParse> mViewParser;
-    QSharedPointer<GcodeViewParse> mProbeParser;
+    QSharedPointer<GcodeViewParser> mViewParser;
+    QSharedPointer<GcodeViewParser> mProbeParser;
     QBasicTimer mToolAnimationTimer;
     int mLastDrawnLineIndex;
     void updateParser();

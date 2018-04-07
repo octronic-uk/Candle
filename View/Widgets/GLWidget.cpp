@@ -88,44 +88,24 @@ void GLWidget::addDrawable(ShaderDrawable *drawable)
     mShaderDrawables.append(drawable);
 }
 
-void GLWidget::fitDrawable(ShaderDrawable *drawable)
+void GLWidget::fitDrawable(const ShaderDrawable &drawable)
 {
     stopViewAnimation();
 
-    if (drawable != nullptr)
-    {
-        updateExtremes(drawable);
+    updateExtremes(drawable);
 
-        float a = mYSize / 2 / 0.25 * 1.3 + (mZMax - mZMin) / 2;
-        float b = mXSize / 2 / 0.25 * 1.3 / ((float)width() / height()) + (mZMax - mZMin) / 2;
-        mDistance = qMax(a, b);
+    float a = mYSize / 2 / 0.25 * 1.3 + (mZMax - mZMin) / 2;
+    float b = mXSize / 2 / 0.25 * 1.3 / ((float)width() / height()) + (mZMax - mZMin) / 2;
+    mDistance = qMax(a, b);
 
-        if (mDistance == 0)
-        {
-            mDistance = 200;
-        }
-        mXLookAt = (mXMax - mXMin) / 2 + mXMin;
-        mZLookAt = -((mYMax - mYMin) / 2 + mYMin);
-        mYLookAt = (mZMax - mZMin) / 2 + mZMin;
-    }
-    else
+    if (mDistance == 0)
     {
         mDistance = 200;
-        mXLookAt = 0;
-        mYLookAt = 0;
-        mZLookAt = 0;
-
-        mXMin = 0;
-        mXMax = 0;
-        mYMin = 0;
-        mYMax = 0;
-        mZMin = 0;
-        mZMax = 0;
-
-        mXSize = 0;
-        mYSize = 0;
-        mZSize = 0;
     }
+
+    mXLookAt = (mXMax - mXMin) / 2 + mXMin;
+    mZLookAt = -((mYMax - mYMin) / 2 + mYMin);
+    mYLookAt = (mZMax - mZMin) / 2 + mZMin;
 
     mXPan = 0;
     mYPan = 0;
@@ -135,11 +115,11 @@ void GLWidget::fitDrawable(ShaderDrawable *drawable)
     updateView();
 }
 
-void GLWidget::updateExtremes(ShaderDrawable *drawable)
+void GLWidget::updateExtremes(const ShaderDrawable &drawable)
 {
-    if (!qIsNaN(drawable->getMinimumExtremes().x()))
+    if (!qIsNaN(drawable.getMinimumExtremes().x()))
     {
-        mXMin = drawable->getMinimumExtremes().x();
+        mXMin = drawable.getMinimumExtremes().x();
     }
     else
     {
@@ -147,45 +127,45 @@ void GLWidget::updateExtremes(ShaderDrawable *drawable)
     }
 
 
-    if (!qIsNaN(drawable->getMaximumExtremes().x()))
+    if (!qIsNaN(drawable.getMaximumExtremes().x()))
     {
-        mXMax = drawable->getMaximumExtremes().x();
+        mXMax = drawable.getMaximumExtremes().x();
     }
     else
     {
         mXMax = 0;
     }
 
-    if (!qIsNaN(drawable->getMinimumExtremes().y()))
+    if (!qIsNaN(drawable.getMinimumExtremes().y()))
     {
-        mYMin = drawable->getMinimumExtremes().y();
+        mYMin = drawable.getMinimumExtremes().y();
     }
     else
     {
         mYMin = 0;
     }
 
-    if (!qIsNaN(drawable->getMaximumExtremes().y()))
+    if (!qIsNaN(drawable.getMaximumExtremes().y()))
     {
-        mYMax = drawable->getMaximumExtremes().y();
+        mYMax = drawable.getMaximumExtremes().y();
     }
     else
     {
         mYMax = 0;
     }
 
-    if (!qIsNaN(drawable->getMinimumExtremes().z()))
+    if (!qIsNaN(drawable.getMinimumExtremes().z()))
     {
-        mZMin = drawable->getMinimumExtremes().z();
+        mZMin = drawable.getMinimumExtremes().z();
     }
     else
     {
         mZMin = 0;
     }
 
-    if (!qIsNaN(drawable->getMaximumExtremes().z()))
+    if (!qIsNaN(drawable.getMaximumExtremes().z()))
     {
-        mZMax = drawable->getMaximumExtremes().z();
+        mZMax = drawable.getMaximumExtremes().z();
     }
     else
     {

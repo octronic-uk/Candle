@@ -25,6 +25,7 @@ SettingsFormController::SettingsFormController(QWidget *parent)
         emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_PORT_NAME, getPortName());
         emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, getBaudRate());
     }
+//    setTabIcons();
 }
 
 SettingsFormController::~SettingsFormController()
@@ -32,31 +33,17 @@ SettingsFormController::~SettingsFormController()
     qDebug() << "SettingsFormController: Destructing";
 }
 
+void SettingsFormController::setTabIcons()
+{
+   mUi.settingsTabs->setTabIcon(0,QIcon(":/Images/SVG/plug.svg"));
+   mUi.settingsTabs->setTabIcon(1,QIcon(":/Images/SVG/desktop.svg"));
+   mUi.settingsTabs->setTabIcon(2,QIcon(":/Images/SVG/tachometer-alt.svg"));
+   mUi.settingsTabs->setTabIcon(3,QIcon(":/Images/SVG/wrench.svg"));
+}
+
 int SettingsFormController::exec()
 {
     return mDialog.exec();
-}
-
-void SettingsFormController::undo()
-{
-    foreach (QAbstractSpinBox* sb, this->findChildren<QAbstractSpinBox*>())
-    {
-        sb->setProperty("value", mStoredValues.takeFirst());
-    }
-
-    foreach (QAbstractButton* cb, this->findChildren<QAbstractButton*>())
-    {
-        cb->setChecked(mStoredChecks.takeFirst());
-    }
-    foreach (QComboBox* cb, this->findChildren<QComboBox*>())
-    {
-        cb->setCurrentText(mStoredCombos.takeFirst());
-    }
-    /*foreach (ColorPicker* pick, this->findChildren<ColorPicker*>())
-    {
-        pick->setColor(mStoredColors.takeFirst());
-    }
-    */
 }
 
 void SettingsFormController::initialise()
@@ -82,26 +69,6 @@ int SettingsFormController::getBaudRate()
 void SettingsFormController::setBaudRate(int baud)
 {
     mUi.serialBaudRateBox->setCurrentText(QString::number(baud));
-}
-
-double SettingsFormController::toolDiameter()
-{
-    return mUi.txtToolDiameter->value();
-}
-
-void SettingsFormController::setToolDiameter(double diameter)
-{
-    mUi.txtToolDiameter->setValue(diameter);
-}
-
-double SettingsFormController::toolLength()
-{
-    return mUi.txtToolLength->value();
-}
-
-void SettingsFormController::setToolLength(double length)
-{
-    mUi.txtToolLength->setValue(length);
 }
 
 bool SettingsFormController::antialiasing()
@@ -239,26 +206,6 @@ void SettingsFormController::setSpindleSpeedMax(int speed)
     mUi.txtSpindleSpeedMax->setValue(speed);
 }
 
-int SettingsFormController::laserPowerMin()
-{
-    return mUi.txtLaserPowerMin->value();
-}
-
-void SettingsFormController::setLaserPowerMin(int value)
-{
-    mUi.txtLaserPowerMin->setValue(value);
-}
-
-int SettingsFormController::laserPowerMax()
-{
-    return mUi.txtLaserPowerMax->value();
-}
-
-void SettingsFormController::setLaserPowerMax(int value)
-{
-    mUi.txtLaserPowerMax->setValue(value);
-}
-
 int SettingsFormController::rapidSpeed()
 {
     return mUi.txtRapidSpeed->value();
@@ -269,14 +216,14 @@ void SettingsFormController::setRapidSpeed(int rapidSpeed)
     mUi.txtRapidSpeed->setValue(rapidSpeed);
 }
 
-int SettingsFormController::heightmapProbingFeed()
+QString SettingsFormController::heightmapProbingFeed()
 {
-    return mUi.txtHeightMapProbingFeed->value();
+    return mUi.txtHeightMapProbingFeed->text();
 }
 
-void SettingsFormController::setHeightmapProbingFeed(int heightmapProbingFeed)
+void SettingsFormController::setHeightmapProbingFeed(QString heightmapProbingFeed)
 {
-    mUi.txtHeightMapProbingFeed->setValue(heightmapProbingFeed);
+    mUi.txtHeightMapProbingFeed->setText(heightmapProbingFeed);
 }
 
 int SettingsFormController::acceleration()
@@ -297,26 +244,6 @@ int SettingsFormController::queryStateTime()
 void SettingsFormController::setQueryStateTime(int queryStateTime)
 {
     mUi.txtQueryStateTime->setValue(queryStateTime);
-}
-
-int SettingsFormController::toolType()
-{
-    return mUi.cboToolType->currentIndex();
-}
-
-void SettingsFormController::setToolType(int toolType)
-{
-    mUi.cboToolType->setCurrentIndex(toolType);
-}
-
-double SettingsFormController::toolAngle()
-{
-    return mUi.txtToolAngle->value();
-}
-
-void SettingsFormController::setToolAngle(double toolAngle)
-{
-    mUi.txtToolAngle->setValue(toolAngle);
 }
 
 int SettingsFormController::fps()
@@ -398,20 +325,6 @@ void SettingsFormController::setSimplifyPrecision(double simplifyPrecision)
 {
     mUi.txtSimplifyPrecision->setValue(simplifyPrecision);
 }
-
-/*QList<ColorPicker *> SettingsFormController::colors()
-{
-    return this->findChildren<ColorPicker*>();
-}
-*/
-
-/*
-QColor SettingsFormController::colors(QString name)
-{
-    ColorPicker *pick = this->findChildren<ColorPicker*>("clp" + name).at(0);
-    if (pick) return pick->color(); else return QColor();
-}
-*/
 
 bool SettingsFormController::grayscaleSegments()
 {
@@ -529,11 +442,6 @@ void SettingsFormController::onSettingChanged(QString group, QString param, QVar
    }
 }
 
-void SettingsFormController::showEvent(QShowEvent *se)
-{
-    Q_UNUSED(se)
-}
-
 void SettingsFormController::searchPorts()
 {
     mUi.serialPortNameBox->clear();
@@ -553,19 +461,66 @@ void SettingsFormController::searchPorts()
 
 void SettingsFormController::setupSignalSlots()
 {
-
     qDebug() << "SettingsFormController: Setup Signals/Slots";
-    // Ok
+
+    // Main ----------------------------------------------------------------------
     connect(mUi.closeButton, SIGNAL(clicked()),SLOT(onCloseButtonClicked()));
-    // Defaults
     connect(mUi.restoreDefaultsButton, SIGNAL(clicked()),SLOT(onRestoreDefaultsButtonClicked()));
-    // Serial Port
-    // Refresh
+
+    // Connection ----------------------------------------------------------------
+    // Serial
     connect(mUi.serialPortRefreshButton, SIGNAL(clicked()), SLOT(onSerialPortRefreshClicked()));
-    // Port Name
     connect(mUi.serialPortNameBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialPortNameChanged(QString)));
-    // Baud Rate
     connect(mUi.serialBaudRateBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialBaudRateChanged(QString)));
+    // Sender
+    connect(mUi.chkIgnoreErrors, SIGNAL(toggled(bool)), this, SLOT(onIgnoreErrorsToggled(bool)));
+    connect(mUi.chkAutoLine, SIGNAL(toggled(bool)), this, SLOT(onAutoLineToggled(bool)));
+    // Parser
+    connect(mUi.radArcLengthMode, SIGNAL(toggled(bool)), this, SLOT(onArcLengthModeToggled(bool)));
+    connect(mUi.txtArcLength, SIGNAL(valueChanged(QString)), this, SLOT(onArcLengthValueChanged(QString)));
+    connect(mUi.radArcDegreeMode, SIGNAL(toggled(bool)), this, SLOT(onArcDegreeModeToggled(bool)));
+    connect(mUi.txtArcDegree,SIGNAL(valueChanged(QString)),this,SLOT(onArcDegreeValueChanged(QString)));
+
+    // Interface -----------------------------------------------------------------
+    // Visualiser
+    connect(mUi.txtLineWidth, SIGNAL(valueChanged(QString)), this, SLOT(onLineWidthValueChanged(QString)));
+    connect(mUi.cboFps, SIGNAL(currentIndexChanged(QString)), this, SLOT(onFpsCurrentIndexChanged(QString)));
+    connect(mUi.chkAntialiasing, SIGNAL(toggled(bool)), this, SLOT(onAntiAliasingToggled(bool)));
+    connect(mUi.radMSAA, SIGNAL(toggled(bool)), this, SLOT(onMsaaToggled(bool)));
+    connect(mUi.chkVSync, SIGNAL(toggled(bool)), this, SLOT(onVsyncToggled(bool)));
+    connect(mUi.chkZBuffer, SIGNAL(toggled(bool)), this, SLOT(onZBufferToggled(bool)));
+    connect(mUi.radDrawModeVectors, SIGNAL(toggled(bool)), this, SLOT(onDrawModeVectorsToggled(bool)));
+    connect(mUi.radDrawModeRaster,  SIGNAL(toggled(bool)), this, SLOT(onDrawModeRasterToggled(bool)));
+    connect(mUi.chkSimplify, SIGNAL(toggled(bool)), this, SLOT(onSimplifyToggled(bool)));
+    connect(mUi.txtSimplifyPrecision, SIGNAL(valueChanged(QString)), this, SLOT(onSimplifyPrecisionValueChanged(QString)));
+    connect(mUi.chkGrayscale, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleToggled(bool)));
+    connect(mUi.radGrayscaleS, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleSToggled(bool)));
+    connect(mUi.radGrayscaleZ, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleZToggled(bool)));
+    // Console
+    connect(mUi.chkShowProgramCommands, SIGNAL(toggled(bool)), this, SLOT(onShowProgramCommandsToggled(bool)));
+    connect(mUi.chkShowUICommands, SIGNAL(toggled(bool)), this, SLOT(onShowUiCommandsToggled(bool)));
+    connect(mUi.chkAutocompletion, SIGNAL(toggled(bool)), this, SLOT(onAutoCompletionToggled(bool)));
+    // Colors
+    // Machine -------------------------------------------------------------------
+    // Machine Information
+    connect(mUi.txtQueryStateTime, SIGNAL(valueChanged(QString)), this, SLOT(onQueryStateTimeValueChanged(QString)));
+    connect(mUi.cboUnits, SIGNAL(currentIndexChanged(QString)), this, SLOT(onUnitsCurrentIndexChanged(QString)));
+    connect(mUi.txtRapidSpeed, SIGNAL(valueChanged(QString)), this, SLOT(onRapidSpeedValueChanged(QString)));
+    connect(mUi.txtAcceleration, SIGNAL(valueChanged(QString)), this, SLOT(onAccelerationValueChanged(QString)));
+    connect(mUi.txtSpindleSpeedMin, SIGNAL(valueChanged(QString)), this, SLOT(onSpindleSpeedMinValueChanged(QString)));
+    connect(mUi.txtSpindleSpeedMax, SIGNAL(valueChanged(QString)), this, SLOT(onSpindleSpeedMaxValueChanged(QString)));
+    // Control
+    connect(mUi.txtTouchCommand, SIGNAL(textChanged(QString)), this, SLOT(onTouchCommandValueChanged(QString)));
+    connect(mUi.txtSafeCommand, SIGNAL(textChanged(QString)), this, SLOT(onSafeCommandValueChanged(QString)));
+    connect(mUi.chkMoveOnRestore, SIGNAL(toggled(bool)), this, SLOT(onMoveOnRestoreToggled(bool)));
+    connect(mUi.cboRestoreMode, SIGNAL(currentIndexChanged(QString)), this, SLOT(onRestoreModeCurrentIndexChanged(QString)));
+    // User Commands
+    connect(mUi.txtUserCommand0, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand1ValueChanged(QString)));
+    connect(mUi.txtUserCommand1, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand2ValueChanged(QString)));
+    connect(mUi.txtUserCommand2, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand3ValueChanged(QString)));
+    connect(mUi.txtUserCommand3, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand4ValueChanged(QString)));
+    // Height Mep
+    connect(mUi.txtHeightMapProbingFeed, SIGNAL(textChanged(QString)), this, SLOT(onHeightMapProbingFeedValueChanged(QString)));
 }
 
 void SettingsFormController::onSerialPortRefreshClicked()
@@ -580,18 +535,72 @@ void SettingsFormController::onSerialPortNameChanged(QString port)
 
 void SettingsFormController::onSerialBaudRateChanged(QString baud)
 {
-   emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, baud.toInt());
+    emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, baud.toInt());
+}
+
+void SettingsFormController::onIgnoreErrorsToggled(bool)
+{
+
+}
+
+void SettingsFormController::onAutoLineToggled(bool)
+{
+
+}
+
+void SettingsFormController::onArcLengthModeToggled(bool)
+{
+
+}
+
+void SettingsFormController::onArcLengthValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onArcDegreeModeToggled(bool)
+{
+
+}
+
+void SettingsFormController::onArcDegreeValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onLineWidthValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onFpsCurrentIndexChanged(QString)
+{
+
+}
+
+void SettingsFormController::onAntiAliasingToggled(bool)
+{
+
+}
+
+void SettingsFormController::onMsaaToggled(bool)
+{
+
+}
+
+void SettingsFormController::onVsyncToggled(bool)
+{
+
+}
+
+void SettingsFormController::onZBufferToggled(bool)
+{
+
 }
 
 void SettingsFormController::onCloseButtonClicked()
 {
     mDialog.accept();
-}
-
-void SettingsFormController::onComboBoxToolTypeCurrentIndexChanged(int index)
-{
-    mUi.lblToolAngle->setEnabled(index == 1);
-    mUi.txtToolAngle->setEnabled(index == 1);
 }
 
 void SettingsFormController::onRestoreDefaultsButtonClicked()
@@ -617,13 +626,11 @@ void SettingsFormController::onRestoreDefaultsButtonClicked()
     setAcceleration(100);
     setSpindleSpeedMin(0);
     setSpindleSpeedMax(10000);
-    setLaserPowerMin(0);
-    setLaserPowerMax(100);
     setTouchCommand("G21G91G38.2Z-30F100; G0Z1; G38.2Z-2F10");
     setSafePositionCommand("G21G90; G53G0Z0");
     setMoveOnRestore(false);
     setRestoreMode(0);
-    setHeightmapProbingFeed(10);
+    setHeightmapProbingFeed("10");
     setUnits(0);
     setArcLength(0.0);
     setArcDegreeMode(true);
@@ -638,35 +645,135 @@ void SettingsFormController::onRestoreDefaultsButtonClicked()
     setGrayscaleSegments(false);
     setGrayscaleSCode(true);
     setDrawModeVectors(true);
-    setToolType(1);
-    setToolAngle(15.0);
-    setToolDiameter(3.0);
-    setToolLength(30.0);
     setShowProgramCommands(false);
     setAutoCompletion(true);
 }
 
-void SettingsFormController::onRadioBtnDrawModeVectorsToggled(bool checked)
+void SettingsFormController::onDrawModeVectorsToggled(bool checked)
 {
     mUi.chkSimplify->setEnabled(checked);
     mUi.lblSimpilyPrecision->setEnabled(checked && mUi.chkSimplify->isChecked());
     mUi.txtSimplifyPrecision->setEnabled(checked && mUi.chkSimplify->isChecked());
-
     mUi.radDrawModeRaster->setChecked(!checked);
 }
 
-void SettingsFormController::onRadioBtnDrawModeRasterToggled(bool checked)
+void SettingsFormController::onDrawModeRasterToggled(bool checked)
 {
     mUi.radDrawModeVectors->setChecked(!checked);
 }
 
-void SettingsFormController::onRadioBtnGrayscaleSToggled(bool checked)
+void SettingsFormController::onSimplifyToggled(bool)
+{
+
+}
+
+void SettingsFormController::onSimplifyPrecisionValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onGrayscaleToggled(bool)
+{
+
+}
+
+void SettingsFormController::onGrayscaleSToggled(bool checked)
 {
     mUi.radGrayscaleZ->setChecked(!checked);
 }
 
-void SettingsFormController::onRadioBtnGrayscaleZToggled(bool checked)
+void SettingsFormController::onGrayscaleZToggled(bool checked)
 {
     mUi.radGrayscaleS->setChecked(!checked);
+}
+
+void SettingsFormController::onShowProgramCommandsToggled(bool)
+{
+
+}
+
+void SettingsFormController::onShowUiCommandsToggled(bool)
+{
+
+}
+
+void SettingsFormController::onAutoCompletionToggled(bool)
+{
+
+}
+
+void SettingsFormController::onQueryStateTimeValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onUnitsCurrentIndexChanged(QString)
+{
+
+}
+
+void SettingsFormController::onRapidSpeedValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onAccelerationValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onSpindleSpeedMinValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onSpindleSpeedMaxValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onTouchCommandValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onSafeCommandValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onMoveOnRestoreToggled(bool)
+{
+
+}
+
+void SettingsFormController::onRestoreModeCurrentIndexChanged(QString)
+{
+
+}
+
+void SettingsFormController::onUserCommand1ValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onUserCommand2ValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onUserCommand3ValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onUserCommand4ValueChanged(QString)
+{
+
+}
+
+void SettingsFormController::onHeightMapProbingFeedValueChanged(QString)
+{
+
 }
 
