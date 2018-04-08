@@ -16,18 +16,18 @@
  * this file belongs to.
  */
 
-#include "ToolHolderModelTableModel.h"
+#include "ToolHolderGeometryTableModel.h"
 #include <QtDebug>
 
 
 
-ToolHolderModelTableModel::ToolHolderModelTableModel(QObject *parent)
+ToolHolderGeometryTableModel::ToolHolderGeometryTableModel(QObject *parent)
     : QAbstractTableModel(parent)
 {
     mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter";
 }
 
-QVariant ToolHolderModelTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant ToolHolderGeometryTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
     {
@@ -41,19 +41,19 @@ QVariant ToolHolderModelTableModel::headerData(int section, Qt::Orientation orie
 }
 
 
-int ToolHolderModelTableModel::rowCount(const QModelIndex &parent) const
+int ToolHolderGeometryTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return mData.size();
 }
 
-int ToolHolderModelTableModel::columnCount(const QModelIndex &parent) const
+int ToolHolderGeometryTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return mTableHeaders.count();
 }
 
-QVariant ToolHolderModelTableModel::data(const QModelIndex &index, int role) const
+QVariant ToolHolderGeometryTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
@@ -75,7 +75,7 @@ QVariant ToolHolderModelTableModel::data(const QModelIndex &index, int role) con
     return QVariant();
 }
 
-bool ToolHolderModelTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool ToolHolderGeometryTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (role == Qt::EditRole)
     {
@@ -100,7 +100,7 @@ bool ToolHolderModelTableModel::setData(const QModelIndex &index, const QVariant
     return false;
 }
 
-Qt::ItemFlags ToolHolderModelTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags ToolHolderGeometryTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::NoItemFlags;
@@ -108,18 +108,18 @@ Qt::ItemFlags ToolHolderModelTableModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
-bool ToolHolderModelTableModel::insertRows(int row, int count, const QModelIndex &parent)
+bool ToolHolderGeometryTableModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     for (int i=0; i<count; i++)
     {
-        mData.insert(row,ToolHolderModelGeometryItem(1.0f,1.0f,1.0f));
+        mData.insert(row,ToolHolderGeometry(-1,mData.count()+i, 1.0f,1.0f,1.0f));
     }
     endInsertRows();
     return true;
 }
 
-bool ToolHolderModelTableModel::removeRows(int row, int count, const QModelIndex &parent)
+bool ToolHolderGeometryTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     beginRemoveRows(parent, row, row + count - 1);
     mData.removeAt(row);
@@ -127,7 +127,14 @@ bool ToolHolderModelTableModel::removeRows(int row, int count, const QModelIndex
     return true;
 }
 
-ToolHolderModelGeometryItem& ToolHolderModelTableModel::getItemAtRow(int row)
+ToolHolderGeometry& ToolHolderGeometryTableModel::getItemAtRow(int row)
 {
-   return mData[row];
+    return mData[row];
+}
+
+void ToolHolderGeometryTableModel::insert(ToolHolderGeometry item)
+{
+   //insertRows(item.getIndex(),1,QModelIndex());
+   mData.insert(item.getIndex(),item);
+   emit dataChanged(QModelIndex(), QModelIndex());
 }

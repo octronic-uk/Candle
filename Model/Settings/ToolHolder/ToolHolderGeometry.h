@@ -1,5 +1,5 @@
 /*
- * ToolHolderModelGeometryItem.h
+ * ToolHolderGeometry.h
  *
  * Created: 06 2018 by Ashley
  *
@@ -18,11 +18,20 @@
 
 #pragma once
 
-class ToolHolderModelGeometryItem
+#include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+
+class ToolHolderGeometry : public AbstractDatabaseRecord
 {
 public:
-    ToolHolderModelGeometryItem();
-    ToolHolderModelGeometryItem(float height, float upper, float lower);
+    ToolHolderGeometry
+    (
+        int id=-1,
+        int toolHolderId = -1,
+        int index = -1,
+        float height = 1,
+        float upper=1,
+        float lower = 1
+    );
 
     float getUpperDiameter() const;
     void setUpperDiameter(float upperDiameter);
@@ -33,7 +42,15 @@ public:
     float getHeight() const;
     void setHeight(float height);
 
+    int getIndex() const;
+    void setIndex(int index);
+
+    int getToolHolderID() const;
+    void setToolHolderID(int toolHolderID);
+
 private:
+    int mToolHolderId;
+    int mIndex;
     float mHeight;
     float mUpperDiameter;
     float mLowerDiameter;

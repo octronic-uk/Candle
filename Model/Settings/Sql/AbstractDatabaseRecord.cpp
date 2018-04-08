@@ -1,7 +1,7 @@
 /*
- * AbstractSettingsModel.cpp
+ * AbstractDatabaseRecord.cpp
  *
- * Created: 30 2018 by Ashley
+ * Created: 08 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -15,16 +15,22 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+#include "AbstractDatabaseRecord.h"
 
-#include "AbstractSettingsModel.h"
-#include <QDir>
-#include <QtDebug>
-#include <QStandardPaths>
-
-
-AbstractSettingsModel::AbstractSettingsModel(QObject *parent)
-    : QObject(parent)
+AbstractDatabaseRecord::AbstractDatabaseRecord(int id)
+    : mID(id)
 {
+
 }
 
-AbstractSettingsModel::~AbstractSettingsModel() {}
+
+int AbstractDatabaseRecord::getID() const
+{
+    return mID;
+}
+
+void AbstractDatabaseRecord::setID(int iD)
+{
+    mID = iD;
+}
+

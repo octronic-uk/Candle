@@ -27,16 +27,18 @@ class IniFileSettingsModel : public AbstractSettingsModel
 public:
     IniFileSettingsModel(QObject *parent=nullptr);
     ~IniFileSettingsModel() override;
+
 signals:
     void settingChangedSignal(QString groupName, QString settingName, QVariant value);
 
 public slots:
     void onLoadSettings() override;
     void onSaveSettings() override;
-    void onSettingChanged(QString groupName, QString settingName, QVariant value);
+    void onSettingChanged(QString groupName, QString settingName, QVariant value) override;
+
 private:
-    void preload();
-    QDir mSettingsDirectory;
+    void initialiseDefaults();
+    QSharedPointer<QSettings> mSettings;
     QString mSettingsFilePath;
     const QString mFileName = "settings.ini";
 };

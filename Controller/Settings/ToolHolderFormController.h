@@ -18,21 +18,28 @@
 
 #pragma once
 
-#include <QWidget>
-#include "Model/ToolHolderModelListModel.h"
-#include "Model/ToolHolderModelTableModel.h"
-#include "ui_ToolHolderModelForm.h"
+#include "Controller/AbstractFormController.h"
+#include "Model/Settings/ToolHolder/ToolHolderListModel.h"
+#include "Model/Settings/ToolHolder/ToolHolderGeometryTableModel.h"
+#include "ui_ToolHolderForm.h"
 
-class ToolHolderModelFormController : public QWidget
+class ToolHolderFormController : public AbstractFormController
 {
     Q_OBJECT
 
 public:
-    explicit ToolHolderModelFormController(QWidget *parent = nullptr);
-    ~ToolHolderModelFormController();
+    explicit ToolHolderFormController(QWidget *parent = nullptr);
+    ~ToolHolderFormController() override;
 
-protected:
-    void setupSignalsSlots();
+    void setupSignalSlots() override;
+    void setFormActive(bool) override;
+    void initialise() override;
+
+signals:
+    void settingChangedSignal(QString, QString, QVariant);
+
+public slots:
+    void onToolHolderModel_ListModelReady(QSharedPointer<ToolHolderModelListModel> model);
 
 private slots:
     // Buttons
@@ -46,10 +53,12 @@ private slots:
 
 private: // Members
     Ui::ToolHolderModelForm mUi;
-    ToolHolderModelListModel mListModel;
+    QSharedPointer<ToolHolderModelListModel> mListModel;
     const static QString DEFAULT_NAME;
-    QSharedPointer<ToolHolderModelListItem> mSelected;
+    QSharedPointer<ToolHolder> mSelected;
 
 private: // Member Functions
     void toolHolderModelSelectionValid(bool isValid);
+
+
 };

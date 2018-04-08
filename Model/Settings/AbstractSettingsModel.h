@@ -22,6 +22,7 @@
 #include <QSettings>
 #include "Model/SerialBaudRate.h"
 #include "Settings.h"
+#include <QDir>
 
 class AbstractSettingsModel : public QObject
 {
@@ -36,14 +37,8 @@ signals:
 public slots:
     virtual void onSaveSettings() = 0;
     virtual void onLoadSettings() = 0;
-
-    void onSettingChanged(QString groupName, QString settingName, QVariant value);
+    virtual void onSettingChanged(QString groupName, QString settingName, QVariant value) = 0;
 
 protected:
-    void initialiseDefaults();
-
-    QSharedPointer<QSettings> mSettings;
     bool mSettingsLoading;
-
-
 };

@@ -18,24 +18,27 @@
 
 #pragma once
 
-#include "Model/ToolHolderModelTableModel.h"
+#include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+#include "Model/Settings/ToolHolder/ToolHolderGeometryTableModel.h"
 #include <QSharedPointer>
 
-class ToolHolderModelListItem
+class ToolHolder : public AbstractDatabaseRecord
 {
 public:
-    explicit ToolHolderModelListItem(QString name);
+    explicit ToolHolder(int id = -1, QString name = "");
 
     QString getName() const;
     void setName(const QString& name);
 
-    QSharedPointer<ToolHolderModelTableModel> getTableModel() const;
+    QSharedPointer<ToolHolderGeometryTableModel> getTableModel() const;
     void addNewRow();
     void setSelectedRow(int row);
-    ToolHolderModelGeometryItem& getSelected();
+    ToolHolderGeometry& getSelected();
+
+    void insertGeometry(ToolHolderGeometry item);
 
 private:
     QString mName;
-    ToolHolderModelGeometryItem mSelected;
-    QSharedPointer<ToolHolderModelTableModel> mTableModel;
+    ToolHolderGeometry mSelected;
+    QSharedPointer<ToolHolderGeometryTableModel> mTableModel;
 };

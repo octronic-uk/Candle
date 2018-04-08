@@ -37,13 +37,6 @@ public:
     const static QString SERIAL_PORT_NAME;
     const static QString SERIAL_BAUD_RATE;
 
-    // Tool
-    const static QString TOOL;
-    const static QString TOOL_DIAMETER;
-    const static QString TOOL_LENGTH;
-    const static QString TOOL_ANGLE;
-    const static QString TOOL_TYPE;
-
     // Graphics
     const static QString GFX;
     const static QString GFX_ANTIALIASING;
@@ -52,8 +45,9 @@ public:
     const static QString GFX_ZBUFFER;
     const static QString GFX_SIMPLIFY;
     const static QString GFX_SIMPLIFY_PRECISION;
-    const static QString GFX_GRAYSCALE_SEGMENTS;
+    const static QString GFX_GRAYSCALE;
     const static QString GFX_GRAYSCALE_S_CODE;
+    const static QString GFX_GRAYSCALE_Z_CODE;
     const static QString GFX_DRAW_MODE_VECTORS;
 
     // Ui
@@ -66,9 +60,6 @@ public:
     const static QString UI_CONSOLE_SHOW_UI_CMDS;
     const static QString UI_SPINDLE_SPEED_MIN;
     const static QString UI_SPINDLE_SPEED_MAX;
-    const static QString UI_LASER_POWER_MIN;
-    const static QString UI_LASER_POWER_MAX;
-    const static QString UI_PANEL_SHOW_USER_CMDS;
     const static QString UI_PANEL_SHOW_SPINDLE;
     const static QString UI_PANEL_SHOW_FEED;
     const static QString UI_PANEL_SHOW_JOG;
@@ -79,7 +70,6 @@ public:
     const static QString UI_AUTO_COMPLETION;
     const static QString UI_TOUCH_COMMAND;
     const static QString UI_SAFE_POSITION;
-    const static QString UI_PRG_TABLE_HEADER;
     const static QString UI_COMMAND_ITEMS;
     const static QString UI_COMMAND_INDEX;
     const static QString UI_FEED_OVERRIDE;
@@ -113,4 +103,17 @@ public:
     const static QString HEIGHT_MAP_INTERPOLATION_TYPE;
     const static QString HEIGHT_MAP_INTERPOLATION_SHOW;
 
+    // User Command
+    const static QString USER_COMMAND;
+    const static QString USER_COMMAND_1;
+    const static QString USER_COMMAND_2;
+    const static QString USER_COMMAND_3;
+    const static QString USER_COMMAND_4;
+
+    // Tool
+    const static QString TOOL;
+    const static QString TOOL_DIAMETER;
+    const static QString TOOL_LENGTH;
+    const static QString TOOL_ANGLE;
+    const static QString TOOL_TYPE;
 };

@@ -25,11 +25,22 @@
 #include <QtDebug>
 #include <QErrorMessage>
 
+#include "Controller/ConsoleFormController.h"
+#include "Controller/ControlFormController.h"
+#include "Controller/FeedFormController.h"
+#include "Controller/HeightMapFormController.h"
+#include "Controller/JogFormController.h"
+#include "Controller/ProgramFormController.h"
+#include "Controller/SpindleFormController.h"
+#include "Controller/StateFormController.h"
+#include "Controller/VisualisationFormController.h"
+
+
+#include "Model/Parser/GcodeParser.h"
 #include "Model/GrblMachineState.h"
-#include "AbstractFormController.h"
+
 #include "MainFormController.h"
 #include "ui_MainForm.h"
-#include "Model/Parser/GcodeParser.h"
 
 MainFormController::MainFormController(QWidget *parent) :
     AbstractFormController(parent),
@@ -41,7 +52,11 @@ MainFormController::MainFormController(QWidget *parent) :
     mUi.setupUi(&mMainWindow);
     setupToolbarActions();
     setupCompletionAndBufferProgressBars();
+    // Consolidate into one eventually
+    mSettingsModel = QSharedPointer<IniFileSettingsModel>::create();
+    mSqlSettingsModel = QSharedPointer<SqlSettingsModel>::create();
     setupSignalSlots();
+    onMachineStateUpdated(GrblMachineState::Locked);
 
     mUi.splitter->setSizes(QList<int>() << 200 << 200);
 
@@ -50,14 +65,14 @@ MainFormController::MainFormController(QWidget *parent) :
     {
         mGcodeFileModel.load(qApp->arguments().last());
     }
-
-    mSettingsModel.onLoadSettings();
+    mSettingsModel->onLoadSettings();
+    mSqlSettingsModel->onLoadSettings();
 }
 
 MainFormController::~MainFormController()
 {
     qDebug() << "MainFormController: Destructing";
-    mSettingsModel.onSaveSettings();
+    mSettingsModel->onSaveSettings();
 }
 
 void MainFormController::setupToolbarActions()
@@ -107,18 +122,36 @@ void MainFormController::setupSettingsModelSignals()
 {
     // Settings Model to Settings Form
     connect(
-        &mSettingsModel, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
+        mSettingsModel.data(), SIGNAL(settingChangedSignal(QString, QString, QVariant)),
         &mSettingsFormController, SLOT(onSettingChanged(QString, QString, QVariant))
     );
     // Settings Form to Settings Model
     connect(
         &mSettingsFormController, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
-        &mSettingsModel, SLOT(onSettingChanged(QString, QString, QVariant))
+        mSettingsModel.data(), SLOT(onSettingChanged(QString, QString, QVariant))
     );
     // Settings Model to SerialPort Model
     connect(
-        &mSettingsModel, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
+        mSettingsModel.data(), SIGNAL(settingChangedSignal(QString, QString, QVariant)),
         &mGrblMachineModel, SLOT(onSettingChanged(QString, QString, QVariant))
+    );
+
+    // Profiles List Model
+    connect
+    (
+        mSqlSettingsModel.data(),
+        SIGNAL(profilesListModel_ListModelReady_Signal(QSharedPointer<ProfilesListModel>)),
+        &mSettingsFormController,
+        SLOT(onProfilesListModel_ListModelReady_Signal(QSharedPointer<ProfilesListModel>))
+    );
+
+    // Tool Holders Model
+    connect
+    (
+        mSqlSettingsModel.data(),
+        SIGNAL(toolHolderModel_ListModelReady_Signal(QSharedPointer<ToolHolderModelListModel>)),
+        mSettingsFormController.getToolHolderFormController(),
+        SLOT(onToolHolderModel_ListModelReady(QSharedPointer<ToolHolderModelListModel>))
     );
 }
 
@@ -733,7 +766,7 @@ void MainFormController::onStatusTextUpdate(QString status)
 
 void MainFormController::onStatusBarUpdate(QString status)
 {
-    qDebug() << "MainFormController: onStatusUpdate";
+    //qDebug() << "MainFormController: onStatusUpdate";
     mUi.statusBar->showMessage(status);
 }
 

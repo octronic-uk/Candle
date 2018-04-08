@@ -181,6 +181,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
                 next.setState(GcodeCommandState::Processed);
                 emit updateProgramTableStatusSignal(next);
                 mCountProcessedCommands++;
+                emit setCompletionProgressSignal((int)getProcessedPercent());
             }
             else
             {

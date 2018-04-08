@@ -19,7 +19,7 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include "Model/ToolHolderModelListItem.h"
+#include "Model/Settings/ToolHolder/ToolHolder.h"
 #include <QSharedPointer>
 
 class ToolHolderModelListModel : public QAbstractListModel
@@ -34,9 +34,10 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void insert(const QSharedPointer<ToolHolderModelListItem> newItem);
-    QSharedPointer<ToolHolderModelListItem> getData(int);
-    void remove(QSharedPointer<ToolHolderModelListItem> item);
+    void insert(const QSharedPointer<ToolHolder> newItem);
+    QSharedPointer<ToolHolder> getData(int);
+    void remove(QSharedPointer<ToolHolder> item);
+    QList<QSharedPointer<ToolHolder>> getAllData();
 private:
-    QList<QSharedPointer<ToolHolderModelListItem>> mData;
+    QList<QSharedPointer<ToolHolder>> mData;
 };

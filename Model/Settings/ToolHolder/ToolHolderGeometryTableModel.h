@@ -19,14 +19,14 @@
 #pragma once
 #include <QAbstractTableModel>
 #include <QStringList>
-#include "ToolHolderModelGeometryItem.h"
+#include "ToolHolderGeometry.h"
 
-class ToolHolderModelTableModel : public QAbstractTableModel
+class ToolHolderGeometryTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit ToolHolderModelTableModel(QObject *parent = nullptr);
+    explicit ToolHolderGeometryTableModel(QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -47,9 +47,10 @@ public:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    ToolHolderModelGeometryItem& getItemAtRow(int row);
+    ToolHolderGeometry& getItemAtRow(int row);
+    void insert(ToolHolderGeometry item);
 
 private:
     QStringList mTableHeaders;
-    QList<ToolHolderModelGeometryItem> mData;
+    QList<ToolHolderGeometry> mData;
 };

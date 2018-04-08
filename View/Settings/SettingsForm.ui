@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SettingsForm</class>
+ <widget class="QDialog" name="SettingsForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>657</width>
+    <height>686</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Settings</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../Resources/Images.qrc">
+    <normaloff>:/Images/PNG/Cocoanut.png</normaloff>:/Images/PNG/Cocoanut.png</iconset>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="profileLabel">
+       <property name="text">
+        <string>Profile</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="profilesComboBox"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="profileRenameButton">
+       <property name="text">
+        <string>Rename</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="profileAddButton">
+       <property name="text">
+        <string>+</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="profileRemoveButton">
+       <property name="text">
+        <string>-</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="settingsTabs">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <widget class="QWidget" name="Connection">
+      <attribute name="title">
+       <string>Connection</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="ConnectionFormController" name="connectionFormController" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="interfaceTab">
+      <attribute name="title">
+       <string>Interface</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_10">
+       <item>
+        <widget class="InterfaceFormController" name="interfaceFormController" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="machineTab">
+      <attribute name="title">
+       <string>Machine</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_17">
+       <item>
+        <widget class="MachineFormController" name="machineFormController" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="toolHolderTab">
+      <attribute name="title">
+       <string>Tool Holder</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_18">
+       <item>
+        <widget class="ToolHolderFormController" name="toolHolderForm" native="true"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="restoreDefaultsButton">
+       <property name="text">
+        <string>Restore Defaults</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="closeButton">
+       <property name="text">
+        <string>Close</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ToolHolderFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/Settings/ToolHolderFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ConnectionFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/Settings/ConnectionFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>InterfaceFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/Settings/InterfaceFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>MachineFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/Settings/MachineFormController.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>restoreDefaultsButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../../Resources/Images.qrc"/>
+ </resources>
+ <connections/>
+</ui>

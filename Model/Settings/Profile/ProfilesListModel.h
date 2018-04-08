@@ -1,7 +1,7 @@
 /*
- * AbstractSettingsModel.cpp
+ * ProfilesListModel.h
  *
- * Created: 30 2018 by Ashley
+ * Created: 08 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -16,15 +16,22 @@
  * this file belongs to.
  */
 
-#include "AbstractSettingsModel.h"
-#include <QDir>
-#include <QtDebug>
-#include <QStandardPaths>
+#pragma once
 
+#include <QAbstractListModel>
+#include "Model/Settings/Profile/Profile.h"
 
-AbstractSettingsModel::AbstractSettingsModel(QObject *parent)
-    : QObject(parent)
+class ProfilesListModel : public QAbstractListModel
 {
-}
+    Q_OBJECT
+public:
+    ProfilesListModel(QObject* parent=nullptr);
+    ~ProfilesListModel() override;
 
-AbstractSettingsModel::~AbstractSettingsModel() {}
+    int rowCount(const QModelIndex& parent) const override;
+    QVariant data(const QModelIndex& index, int role) const override;
+    void insert(Profile profile);
+
+private:
+    QList<Profile> mData;
+};

@@ -52,14 +52,6 @@ IniFileSettingsModel::~IniFileSettingsModel()
     onSaveSettings();
 }
 
-void IniFileSettingsModel::preload()
-{
-    // Update v-sync in glformat
-    QGLFormat fmt = QGLFormat::defaultFormat();
-    fmt.setSwapInterval(mSettings->value("vsync", false).toBool() ? 1 : 0);
-    QGLFormat::setDefaultFormat(fmt);
-}
-
 void IniFileSettingsModel::onLoadSettings()
 {
     qDebug() << "IniFileSettingsModel: onLoadSettings()";
@@ -89,7 +81,7 @@ void IniFileSettingsModel::onLoadSettings()
     emit settingChangedSignal(Settings::GFX, Settings::GFX_ZBUFFER, mSettings->value(Settings::GFX_ZBUFFER).toBool());
     emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY, mSettings->value(Settings::GFX_SIMPLIFY).toBool());
     emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY_PRECISION, mSettings->value(Settings::GFX_SIMPLIFY_PRECISION).toDouble());
-    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_SEGMENTS, mSettings->value(Settings::GFX_GRAYSCALE_SEGMENTS).toBool());
+    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE, mSettings->value(Settings::GFX_GRAYSCALE).toBool());
     emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_S_CODE, mSettings->value(Settings::GFX_GRAYSCALE_S_CODE).toBool());
     emit settingChangedSignal(Settings::GFX, Settings::GFX_DRAW_MODE_VECTORS, mSettings->value(Settings::GFX_DRAW_MODE_VECTORS).toBool());
     mSettings->endGroup();
@@ -103,9 +95,6 @@ void IniFileSettingsModel::onLoadSettings()
     emit settingChangedSignal(Settings::UI, Settings::UI_CONSOLE_SHOW_UI_CMDS, mSettings->value(Settings::UI_CONSOLE_SHOW_UI_CMDS).toBool());
     emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MIN, mSettings->value(Settings::UI_SPINDLE_SPEED_MIN).toInt());
     emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MAX, mSettings->value(Settings::UI_SPINDLE_SPEED_MAX).toInt());
-    emit settingChangedSignal(Settings::UI, Settings::UI_LASER_POWER_MIN, mSettings->value(Settings::UI_LASER_POWER_MIN).toInt());
-    emit settingChangedSignal(Settings::UI, Settings::UI_LASER_POWER_MAX, mSettings->value(Settings::UI_LASER_POWER_MAX).toInt());
-    emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_USER_CMDS, mSettings->value(Settings::UI_PANEL_SHOW_USER_CMDS).toBool());
     emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_SPINDLE, mSettings->value(Settings::UI_PANEL_SHOW_SPINDLE).toBool());
     emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_FEED, mSettings->value(Settings::UI_PANEL_SHOW_FEED).toBool());
     emit settingChangedSignal(Settings::UI, Settings::UI_PANEL_SHOW_JOG, mSettings->value(Settings::UI_PANEL_SHOW_JOG).toBool());
@@ -117,7 +106,6 @@ void IniFileSettingsModel::onLoadSettings()
     emit settingChangedSignal(Settings::UI, Settings::UI_AUTO_COMPLETION, mSettings->value(Settings::UI_AUTO_COMPLETION).toBool());
     emit settingChangedSignal(Settings::UI, Settings::UI_TOUCH_COMMAND, mSettings->value(Settings::UI_TOUCH_COMMAND).toString());
     emit settingChangedSignal(Settings::UI, Settings::UI_SAFE_POSITION, mSettings->value(Settings::UI_SAFE_POSITION).toString());
-    emit settingChangedSignal(Settings::UI, Settings::UI_PRG_TABLE_HEADER, mSettings->value(Settings::UI_PRG_TABLE_HEADER).toByteArray());
     emit settingChangedSignal(Settings::UI, Settings::UI_COMMAND_ITEMS, mSettings->value(Settings::UI_COMMAND_ITEMS).toStringList());
     emit settingChangedSignal(Settings::UI, Settings::UI_COMMAND_INDEX, mSettings->value(Settings::UI_COMMAND_INDEX).toInt());
     mSettings->endGroup();
@@ -160,6 +148,103 @@ void IniFileSettingsModel::onSaveSettings()
 
 void IniFileSettingsModel::onSettingChanged(QString groupName, QString settingName, QVariant value)
 {
-    AbstractSettingsModel::onSettingChanged(groupName,settingName,value);
+    qDebug() << "IniFileSettingsModel: Received setting change "
+             << groupName
+             << settingName
+             << value;
+
+    mSettings->beginGroup(groupName);
+    mSettings->setValue(settingName,value);
+    mSettings->endGroup();
     emit settingChangedSignal(groupName, settingName, value);
+}
+
+
+void IniFileSettingsModel::initialiseDefaults()
+{
+    qDebug() << "IniFileSettingsModel: Initialising Defaults";
+    // Settings::GLOBAL
+    mSettings->beginGroup(Settings::GLOBAL);
+    mSettings->setValue(Settings::GLOBAL_IGNORE_ERRORS,false);
+    mSettings->setValue(Settings::GLOBAL_AUTO_LINE,true);
+    mSettings->endGroup();
+    // Settings::SERIAL
+    mSettings->beginGroup(Settings::SERIAL);
+    mSettings->setValue(Settings::SERIAL_PORT_NAME,"");
+    mSettings->setValue(Settings::SERIAL_BAUD_RATE,SerialBaudRate::BAUD_115200);
+    mSettings->endGroup();
+    // Settings::TOOL
+    mSettings->beginGroup(Settings::TOOL);
+    mSettings->setValue(Settings::TOOL_DIAMETER,3);
+    mSettings->setValue(Settings::TOOL_LENGTH,15);
+    mSettings->setValue(Settings::TOOL_ANGLE,0);
+    mSettings->setValue(Settings::TOOL_TYPE,0);
+    mSettings->endGroup();
+    // Settings::GFX
+    mSettings->beginGroup(Settings::GFX);
+    mSettings->setValue(Settings::GFX_ANTIALIASING,true);
+    mSettings->setValue(Settings::GFX_MSAA, true);
+    mSettings->setValue(Settings::GFX_VSYNC, false);
+    mSettings->setValue(Settings::GFX_ZBUFFER, false);
+    mSettings->setValue(Settings::GFX_SIMPLIFY, false);
+    mSettings->setValue(Settings::GFX_SIMPLIFY_PRECISION, 0);
+    mSettings->setValue(Settings::GFX_GRAYSCALE, false);
+    mSettings->setValue(Settings::GFX_GRAYSCALE_S_CODE, true);
+    mSettings->setValue(Settings::GFX_GRAYSCALE_Z_CODE, true);
+    mSettings->setValue(Settings::GFX_DRAW_MODE_VECTORS,  true);
+    mSettings->endGroup();
+    // Settings::UI
+    mSettings->beginGroup(Settings::UI);
+    mSettings->setValue(Settings::UI_JOG_STEP, 1);
+    mSettings->setValue(Settings::UI_SPINDLE_SPEED,0);
+    mSettings->setValue(Settings::UI_MOVE_ON_RESTORE,false);
+    mSettings->setValue(Settings::UI_RESTORE_MODE,0);
+    mSettings->setValue(Settings::UI_SHOW_PROGRAM_COMMANDS,false);
+    mSettings->setValue(Settings::UI_CONSOLE_SHOW_UI_CMDS,false);
+    mSettings->setValue(Settings::UI_SPINDLE_SPEED_MIN,0);
+    mSettings->setValue(Settings::UI_SPINDLE_SPEED_MAX,100);
+    mSettings->setValue(Settings::UI_PANEL_SHOW_SPINDLE,true);
+    mSettings->setValue(Settings::UI_PANEL_SHOW_FEED, true);
+    mSettings->setValue(Settings::UI_PANEL_SHOW_JOG,true);
+    mSettings->setValue(Settings::UI_AUTOSCROLL_CHECKED,false);
+    mSettings->setValue(Settings::UI_SPINDLE_SPEED,100);
+    mSettings->setValue(Settings::UI_FEED_OVERRIDE,false);
+    mSettings->setValue(Settings::UI_UNITS,0);
+    mSettings->setValue(Settings::UI_LAST_FOLDER,QDir::homePath());
+    mSettings->setValue(Settings::UI_KEYBOARD_CONTROL,false);
+    mSettings->setValue(Settings::UI_AUTO_COMPLETION,true);
+    mSettings->setValue(Settings::UI_TOUCH_COMMAND,"");
+    mSettings->setValue(Settings::UI_SAFE_POSITION,"");
+    mSettings->setValue(Settings::UI_COMMAND_ITEMS,QStringList());
+    mSettings->setValue(Settings::UI_COMMAND_INDEX,-1);
+    mSettings->endGroup();
+    // Settings::VISUALISER
+    mSettings->beginGroup(Settings::VISUALISER);
+    mSettings->setValue(Settings::VISUALISER_LINE_WIDTH,1);
+    mSettings->setValue(Settings::VISUALISER_ARC_LENGTH,0);
+    mSettings->setValue(Settings::VISUALISER_ARC_DEGREE,0);
+    mSettings->setValue(Settings::VISUALISER_ARC_DEGREE_MODE,true);
+    mSettings->setValue(Settings::VISUALISER_RAPID_SPEED,0);
+    mSettings->setValue(Settings::VISUALISER_ACCELERATION,10);
+    mSettings->setValue(Settings::VISUALISER_FPS,60);
+    mSettings->setValue(Settings::VISUALISER_QUERY_STATE_TIME,250);
+    mSettings->endGroup();
+    // HeightMap
+    mSettings->beginGroup(Settings::HEIGHT_MAP);
+    mSettings->setValue(Settings::HEIGHT_MAP_PROBING_FEED,0);
+    mSettings->setValue(Settings::HEIGHT_MAP_BORDER_X,0);
+    mSettings->setValue(Settings::HEIGHT_MAP_BORDER_Y,0);
+    mSettings->setValue(Settings::HEIGHT_MAP_BORDER_WIDTH,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_BORDER_HEIGHT,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_BORDER_SHOW,false);
+    mSettings->setValue(Settings::HEIGHT_MAP_GRID_X,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_GRID_Y,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_GRID_Z_TOP,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_GRID_Z_BOTTOM,-1);
+    mSettings->setValue(Settings::HEIGHT_MAP_GRID_SHOW,false);
+    mSettings->setValue(Settings::HEIGHT_MAP_INTERPOLATION_STEP_X,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_INTERPOLATION_STEP_Y,1);
+    mSettings->setValue(Settings::HEIGHT_MAP_INTERPOLATION_TYPE, 0);
+    mSettings->setValue(Settings::HEIGHT_MAP_INTERPOLATION_SHOW,false);
+    mSettings->endGroup();
 }

@@ -48,7 +48,7 @@ TRANSLATIONS += \
 SOURCES +=\
     Main.cpp \
     Controller/MainFormController.cpp \
-    Controller/SettingsFormController.cpp \
+    Controller/Settings/SettingsFormController.cpp \
     Controller/JogFormController.cpp \
     Controller/ConsoleFormController.cpp \
     Controller/AboutFormController.cpp \
@@ -82,7 +82,7 @@ SOURCES +=\
     Model/RecentHeightMapFilesModel.cpp \
     View/Widgets/GLWidget.cpp \
     Model/Settings/AbstractSettingsModel.cpp \
-    Model/Settings/IniFileSettingsModel.cpp \
+    Model/Settings/Ini/IniFileSettingsModel.cpp \
     View/Drawers/GridDrawer.cpp \
     Model/Settings/Settings.cpp \
     Model/GrblMachineModel.cpp \
@@ -91,18 +91,25 @@ SOURCES +=\
     Model/GrblResponse.cpp \
     Utils/GcodeCommandNotFoundException.cpp \
     Model/Parser/GcodeViewParser.cpp \
-    Controller/ToolHolderModelFormController.cpp \
-    Model/ToolHolderModelListModel.cpp \
-    Model/ToolHolderModelTableModel.cpp \
-    Model/ToolHolderModelListItem.cpp \
-    Model/ToolHolderModelGeometryItem.cpp
+    Model/Settings/Sql/SqlSettingsModel.cpp \
+    Model/Settings/Profile/ProfilesListModel.cpp \
+    Model/Settings/Profile/Profile.cpp \
+    Model/Settings/Sql/AbstractDatabaseRecord.cpp \
+    Model/Settings/ToolHolder/ToolHolder.cpp \
+    Model/Settings/ToolHolder/ToolHolderGeometry.cpp \
+    Model/Settings/ToolHolder/ToolHolderListModel.cpp \
+    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.cpp \
+    Controller/Settings/ToolHolderFormController.cpp \
+    Controller/Settings/ConnectionFormController.cpp \
+    Controller/Settings/InterfaceFormController.cpp \
+    Controller/Settings/MachineFormController.cpp
 
 
 HEADERS  += \
     Controller/JogFormController.h \
     Controller/AboutFormController.h \
     Controller/ConsoleFormController.h \
-    Controller/SettingsFormController.h \
+    Controller/Settings/SettingsFormController.h \
     Controller/MainFormController.h \
     Model/Parser/ArcProperties.h \
     Model/Parser/GcodeParser.h \
@@ -130,7 +137,7 @@ HEADERS  += \
     Controller/UserCommandsFormController.h \
     Controller/VisualisationFormController.h \
     Controller/AbstractFormController.h \
-    Model/Settings/IniFileSettingsModel.h \
+    Model/Settings/Ini/IniFileSettingsModel.h \
     Model/StatusModel.h \
     Model/GcodeFileModel.h \
     Model/HeightMapFileModel.h \
@@ -148,11 +155,18 @@ HEADERS  += \
     Model/GrblMachineState.h \
     Utils/GcodeCommandNotFoundException.h \
     Model/Parser/GcodeViewParser.h \
-    Controller/ToolHolderModelFormController.h \
-    Model/ToolHolderModelListModel.h \
-    Model/ToolHolderModelListItem.h \
-    Model/ToolHolderModelTableModel.h \
-    Model/ToolHolderModelGeometryItem.h
+    Model/Settings/Sql/SqlSettingsModel.h \
+    Model/Settings/Profile/ProfilesListModel.h \
+    Model/Settings/Profile/Profile.h \
+    Model/Settings/Sql/AbstractDatabaseRecord.h \
+    Model/Settings/ToolHolder/ToolHolder.h \
+    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.h \
+    Model/Settings/ToolHolder/ToolHolderGeometry.h \
+    Model/Settings/ToolHolder/ToolHolderListModel.h \
+    Controller/Settings/ToolHolderFormController.h \
+    Controller/Settings/ConnectionFormController.h \
+    Controller/Settings/InterfaceFormController.h \
+    Controller/Settings/MachineFormController.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -163,12 +177,15 @@ FORMS    += \
     View/JogForm.ui \
     View/MainForm.ui \
     View/ProgramForm.ui \
-    View/SettingsForm.ui \
+    View/Settings/SettingsForm.ui \
     View/SpindleForm.ui \
     View/StateForm.ui \
     View/UserCommandsForm.ui \
     View/VisualisationForm.ui \
-    View/ToolHolderModelForm.ui
+    View/Settings/ConnectionSettingsForm.ui \
+    View/Settings/ToolHolderForm.ui \
+    View/Settings/InterfaceForm.ui \
+    View/Settings/MachineForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

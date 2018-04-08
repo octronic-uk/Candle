@@ -16,7 +16,7 @@
  * this file belongs to.
  */
 
-#include "ToolHolderModelListModel.h"
+#include "ToolHolderListModel.h"
 #include <QtDebug>
 
 ToolHolderModelListModel::ToolHolderModelListModel(QObject *parent)
@@ -25,27 +25,23 @@ ToolHolderModelListModel::ToolHolderModelListModel(QObject *parent)
 int ToolHolderModelListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    //qDebug() << "ToolHolderModelListModel::rowCount()";
     return mData.count();
 }
 
 int ToolHolderModelListModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
-    //qDebug() << "ToolHolderModelListModel::columnCount()";
     return 1;
 }
 
 Qt::ItemFlags ToolHolderModelListModel::flags(const QModelIndex& index) const
 {
     Q_UNUSED(index)
-    //qDebug() << "ToolHolderModelListModel::flags";
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 QVariant ToolHolderModelListModel::data(const QModelIndex &index, int role) const
 {
-    //qDebug() << "ToolHolderModelListModel::data()" << index;
 
     if (!index.isValid())
     {
@@ -55,37 +51,37 @@ QVariant ToolHolderModelListModel::data(const QModelIndex &index, int role) cons
     if (role == Qt::DisplayRole)
     {
         QString str = mData.at(index.row())->getName();
-        //qDebug() << "ToolHolderModelListModel: Got" << str;
         return str;
     }
 
     return QVariant();
 }
 
-void ToolHolderModelListModel::insert(QSharedPointer<ToolHolderModelListItem> newItem)
+void ToolHolderModelListModel::insert(QSharedPointer<ToolHolder> newItem)
 {
-    //qDebug() << "ToolHolderModelListModel::insert()";
     insertRows(mData.count(),1,QModelIndex());
     mData.append(newItem);
-    //qDebug() << "ToolHolderModelListModel: data now has " << mData.count();
     emit dataChanged(QModelIndex(),QModelIndex());
 }
 
-void ToolHolderModelListModel::remove(QSharedPointer<ToolHolderModelListItem> item)
+void ToolHolderModelListModel::remove(QSharedPointer<ToolHolder> item)
 {
-    //qDebug() << "ToolHolderModelListModel::remove()";
     int index = mData.indexOf(item);
     removeRows(index, 1, QModelIndex());
     mData.removeOne(item);
     emit dataChanged(QModelIndex(),QModelIndex());
 }
 
-QSharedPointer<ToolHolderModelListItem> ToolHolderModelListModel::getData(int index)
+QList<QSharedPointer<ToolHolder>> ToolHolderModelListModel::getAllData()
+{
+   return mData;
+}
+
+QSharedPointer<ToolHolder> ToolHolderModelListModel::getData(int index)
 {
     if (index < 0 || index > mData.count())
     {
-        //qDebug() << "ToolHolderModelListModel: No item at index " << index;
-        return QSharedPointer<ToolHolderModelListItem>();
+        return QSharedPointer<ToolHolder>();
     }
     return mData[index];
 }

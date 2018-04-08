@@ -1,7 +1,7 @@
 /*
- * AbstractSettingsModel.cpp
+ * Profile.h
  *
- * Created: 30 2018 by Ashley
+ * Created: 08 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -16,15 +16,22 @@
  * this file belongs to.
  */
 
-#include "AbstractSettingsModel.h"
-#include <QDir>
-#include <QtDebug>
-#include <QStandardPaths>
+#pragma once
 
+#include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+#include <QString>
 
-AbstractSettingsModel::AbstractSettingsModel(QObject *parent)
-    : QObject(parent)
+class Profile : public AbstractDatabaseRecord
 {
-}
+public:
+    Profile(int id = -1, QString name = "");
+    ~Profile();
 
-AbstractSettingsModel::~AbstractSettingsModel() {}
+    Profile(const Profile& other);
+
+    QString getName() const;
+    void setName(const QString& name);
+
+private:
+    QString mName;
+};

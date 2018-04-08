@@ -18,7 +18,8 @@
 #include <QHBoxLayout>
 
 #include "Model/Parser/GcodeViewParser.h"
-#include "Model/Settings/IniFileSettingsModel.h"
+#include "Model/Settings/Ini/IniFileSettingsModel.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "Model/HeightMapFileModel.h"
 
 #include "Model/RecentFilesModel.h"
@@ -41,17 +42,9 @@
 #include "Utils/Interpolation.h"
 
 #include "Controller/AboutFormController.h"
-#include "Controller/ConsoleFormController.h"
-#include "Controller/ControlFormController.h"
-#include "Controller/FeedFormController.h"
-#include "Controller/HeightMapFormController.h"
-#include "Controller/JogFormController.h"
-#include "Controller/ProgramFormController.h"
-#include "Controller/SettingsFormController.h"
-#include "Controller/SpindleFormController.h"
-#include "Controller/StateFormController.h"
-#include "Controller/UserCommandsFormController.h"
-#include "Controller/VisualisationFormController.h"
+#include "Controller/Settings/SettingsFormController.h"
+
+
 #include "ui_MainForm.h"
 #include "CancelException.h"
 
@@ -137,7 +130,8 @@ private: // Members
     QString mLastFolder;
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
-    IniFileSettingsModel mSettingsModel;
+    QSharedPointer<IniFileSettingsModel> mSettingsModel;
+    QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;

@@ -15,27 +15,40 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "ToolHolderModelFormController.h"
-#include "ui_ToolHolderModelForm.h"
-
+#include "ToolHolderFormController.h"
 #include <QtDebug>
 #include <QMessageBox>
 
-ToolHolderModelFormController::ToolHolderModelFormController(QWidget *parent)
-    : QWidget(parent)
+ToolHolderFormController::ToolHolderFormController(QWidget *parent)
+    : AbstractFormController(parent)
 {
     mUi.setupUi(this);
     mUi.splitter->setStretchFactor(0,1);
     mUi.splitter->setStretchFactor(1,2);
-    mUi.toolHoldersListView->setModel(&mListModel);
     toolHolderModelSelectionValid(false);
     mUi.geometryTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-    setupSignalsSlots();
+    setupSignalSlots();
 }
 
-ToolHolderModelFormController::~ToolHolderModelFormController() {}
+ToolHolderFormController::~ToolHolderFormController() {}
 
-void ToolHolderModelFormController::setupSignalsSlots()
+void ToolHolderFormController::onToolHolderModel_ListModelReady
+(QSharedPointer<ToolHolderModelListModel> model)
+{
+    mListModel = model;
+    mUi.toolHoldersListView->setModel(mListModel.data());
+    // Tool Model Selection Changed
+    connect
+    (
+        mUi.toolHoldersListView->selectionModel(),
+        SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+        this,
+        SLOT(onToolHolderModelListSelectionChanged(const QItemSelection&, const QItemSelection&))
+
+    );
+}
+
+void ToolHolderFormController::setupSignalSlots()
 {
     // Add tool holder
     connect
@@ -61,32 +74,27 @@ void ToolHolderModelFormController::setupSignalsSlots()
         mUi.geometryRemoveButton, SIGNAL(clicked()),
         this, SLOT(onRemoveToolHolderModelGeometryButtonClicked())
     );
-    // Tool Model Selection Changed
-    connect
-    (
-        mUi.toolHoldersListView->selectionModel(),
-        SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this,
-        SLOT(onToolHolderModelListSelectionChanged(const QItemSelection&, const QItemSelection&))
 
-    );
     // Tool Holder Name
     connect
     (
         mUi.nameLineEdit, SIGNAL(textChanged(QString)),
         this, SLOT(onToolHolderModelNameChanged(QString))
     );
-    // Geometry Table Selection
-    connect
-    (
-        mUi.geometryTable->selectionModel(),
-        SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-        this,
-        SLOT(onToolHolderGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
-    );
+
 }
 
-void ToolHolderModelFormController::onToolHolderModelListSelectionChanged
+void ToolHolderFormController::setFormActive(bool)
+{
+
+}
+
+void ToolHolderFormController::initialise()
+{
+
+}
+
+void ToolHolderFormController::onToolHolderModelListSelectionChanged
 (const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(deselected)
@@ -99,26 +107,26 @@ void ToolHolderModelFormController::onToolHolderModelListSelectionChanged
     int selectedRow = selected.indexes().first().row();
 
     qDebug() << "ToolHolderModelFormController: Selection Changed" << selectedRow;
-    mSelected = mListModel.getData(selectedRow);
+    mSelected = mListModel->getData(selectedRow);
     toolHolderModelSelectionValid(mSelected != nullptr);
     mUi.toolHoldersRemoveButton->setEnabled(mSelected != nullptr);
 }
 
-void ToolHolderModelFormController::onToolHolderModelNameChanged(QString txt)
+void ToolHolderFormController::onToolHolderModelNameChanged(QString txt)
 {
     if (mSelected != nullptr)
         mSelected->setName(txt);
 
-   emit mListModel.dataChanged(QModelIndex(),QModelIndex());
+   emit mListModel->dataChanged(QModelIndex(),QModelIndex());
 }
 
-void ToolHolderModelFormController::onAddToolHolderModelButtonClicked()
+void ToolHolderFormController::onAddToolHolderModelButtonClicked()
 {
    qDebug() << "ToolHolderModelFormController::onAddToolHolderModelButtonClicked()";
-   mListModel.insert(QSharedPointer<ToolHolderModelListItem>::create(DEFAULT_NAME));
+   mListModel->insert(QSharedPointer<ToolHolder>::create(-1,DEFAULT_NAME));
 }
 
-void ToolHolderModelFormController::onRemoveToolHolderModelButtonClicked()
+void ToolHolderFormController::onRemoveToolHolderModelButtonClicked()
 {
    qDebug() << "ToolHolderModelFormController::onRemoveToolHolderModelButtonClicked()";
    if (mSelected == nullptr)
@@ -137,7 +145,7 @@ void ToolHolderModelFormController::onRemoveToolHolderModelButtonClicked()
    switch (result)
    {
        case QMessageBox::Ok:
-           mListModel.remove(mSelected);
+           mListModel->remove(mSelected);
            mSelected.clear();
            mUi.nameLineEdit->setText("");
            mUi.geometryTable->setModel(nullptr);
@@ -154,18 +162,18 @@ void ToolHolderModelFormController::onRemoveToolHolderModelButtonClicked()
    }
 }
 
-void ToolHolderModelFormController::onAddToolHolderModelGeometryButtonClicked()
+void ToolHolderFormController::onAddToolHolderModelGeometryButtonClicked()
 {
    qDebug() << "ToolHolderModelFormController::onAddTooHolderlModelGeometryButtonClicked()";
    mSelected->addNewRow();
 }
 
-void ToolHolderModelFormController::onRemoveToolHolderModelGeometryButtonClicked()
+void ToolHolderFormController::onRemoveToolHolderModelGeometryButtonClicked()
 {
    qDebug() << "ToolHolderModelFormController::onRemoveToolHolderModelGeometryButtonClicked()";
 }
 
-void ToolHolderModelFormController::toolHolderModelSelectionValid(bool isValid)
+void ToolHolderFormController::toolHolderModelSelectionValid(bool isValid)
 {
     mUi.geometryAddButton->setEnabled(isValid);
     mUi.geometryRemoveButton->setEnabled(isValid);
@@ -179,10 +187,18 @@ void ToolHolderModelFormController::toolHolderModelSelectionValid(bool isValid)
        mUi.nameLineEdit->setText(mSelected->getName());
        mUi.geometryTable->setModel(mSelected->getTableModel().data());
        mUi.geometryTable->setEditTriggers(QAbstractItemView::DoubleClicked);
+       // Geometry Table Selection
+       connect
+       (
+           mUi.geometryTable->selectionModel(),
+           SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+           this,
+           SLOT(onToolHolderGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
+       );
     }
 }
 
-void ToolHolderModelFormController::onToolHolderGeometrySelectionChanged
+void ToolHolderFormController::onToolHolderGeometrySelectionChanged
 (const QItemSelection &selected, const QItemSelection &deselected)
 {
     qDebug() << "ToolHolderModelFormController::onToolHolderGeometrySelectionChanged";
@@ -194,4 +210,4 @@ void ToolHolderModelFormController::onToolHolderGeometrySelectionChanged
     }
 }
 
-const QString ToolHolderModelFormController::DEFAULT_NAME = "New Tool Holder";
+const QString ToolHolderFormController::DEFAULT_NAME = "New Tool Holder";

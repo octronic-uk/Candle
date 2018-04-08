@@ -15,40 +15,46 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "ToolHolderModelListItem.h"
+#include "ToolHolder.h"
 
-ToolHolderModelListItem::ToolHolderModelListItem(QString name)
-    : mName(name)
+ToolHolder::ToolHolder(int id ,QString name)
+    : AbstractDatabaseRecord(id),
+      mName(name)
 {
-    mTableModel = QSharedPointer<ToolHolderModelTableModel>::create();
+    mTableModel = QSharedPointer<ToolHolderGeometryTableModel>::create();
 }
 
-QString ToolHolderModelListItem::getName() const
+QString ToolHolder::getName() const
 {
     return mName;
 }
 
-void ToolHolderModelListItem::setName(const QString& name)
+void ToolHolder::setName(const QString& name)
 {
     mName = name;
 }
 
-QSharedPointer<ToolHolderModelTableModel> ToolHolderModelListItem::getTableModel() const
+QSharedPointer<ToolHolderGeometryTableModel> ToolHolder::getTableModel() const
 {
     return mTableModel;
 }
 
-void ToolHolderModelListItem::addNewRow()
+void ToolHolder::addNewRow()
 {
     mTableModel->insertRows(0,1,QModelIndex());
 }
 
-void ToolHolderModelListItem::setSelectedRow(int row)
+void ToolHolder::insertGeometry(ToolHolderGeometry item)
+{
+    mTableModel->insert(item);
+}
+
+void ToolHolder::setSelectedRow(int row)
 {
     mSelected = mTableModel->getItemAtRow(row);
 }
 
-ToolHolderModelGeometryItem& ToolHolderModelListItem::getSelected()
+ToolHolderGeometry& ToolHolder::getSelected()
 {
     return mSelected;
 }
