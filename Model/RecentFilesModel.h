@@ -19,6 +19,8 @@
 #pragma once
 
 #include <QObject>
+#include <QList>
+#include "Model/RecentFile.h"
 
 class RecentFilesModel : public QObject
 {
@@ -27,15 +29,15 @@ public:
     explicit RecentFilesModel(QObject *parent = nullptr);
     ~RecentFilesModel();
 
-    void add(QString fileName);
+    void add(RecentFile fileName);
     void clear();
-    QStringList getRecentFiles();
+    int count();
+    QList<RecentFile> getRecentFiles();
 
 signals:
     void recentFilesChangedSignal();
 
-public slots:
 private:
-    QStringList mRecentFiles;
+    QList<RecentFile> mRecentFiles;
     int mMaxRecent;
 };

@@ -52,7 +52,7 @@ void SettingsFormController::setFormActive(bool active)
 
 ToolHolderFormController* SettingsFormController::getToolHolderFormController()
 {
-    return mUi.toolHolderForm;
+    return mUi.toolHolderFormController;
 }
 
 ConnectionFormController*SettingsFormController::getConnectionFormController()

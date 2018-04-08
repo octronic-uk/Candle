@@ -65,6 +65,8 @@ void SqlSettingsModel::createTables()
             insertDefaultProfile();
         }
 
+        createRecentGcodeFilesTable();
+        createRecentHeightMapFilesTable();
         createToolHoldersTable();
         createToolHoldersGeometryTable();
     }
@@ -110,6 +112,32 @@ bool SqlSettingsModel::createToolHoldersGeometryTable()
     return true;
 }
 
+bool SqlSettingsModel::createRecentGcodeFilesTable()
+{
+    qDebug() << "SqlSettingsModel:createRecentGcodeFilesTable Creating table";
+    QSqlQuery query;
+    query.prepare(CREATE_RECENT_GCODE_FILES_TABLE_QUERY);
+    if (!query.exec())
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+bool SqlSettingsModel::createRecentHeightMapFilesTable()
+{
+    qDebug() << "SqlSettingsModel:createRecentHeightMapFilesTable Creating table";
+    QSqlQuery query;
+    query.prepare(CREATE_RECENT_HEIGHT_MAP_FILES_TABLE_QUERY);
+    if (!query.exec())
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+    return true;
+}
+
 bool SqlSettingsModel::insertToolHolderInDB(const ToolHolder& item)
 {
     QSqlQuery query;
@@ -145,6 +173,38 @@ bool SqlSettingsModel::updateProfileInDB(const Profile& profile)
     query.addBindValue(profile.getName());
     query.addBindValue(profile.getID());
     return query.exec();
+}
+
+int SqlSettingsModel::getRecentGcodeFilesFromDB()
+{
+    if (mRecentGcodeFilesModel == nullptr)
+    {
+        mRecentGcodeFilesModel = QSharedPointer<RecentFilesModel>::create();
+    }
+    else
+    {
+        mRecentGcodeFilesModel->clear();
+    }
+
+    // Get form DB
+    QSqlQuery query;
+    query.prepare(SELECT_RECENT_GCODE_FILES_BY_PROFILE_ID_QUERY);
+    query.addBindValue(mCurrentProfile.getID());
+    int idFieldNum = query.record().indexOf("id");
+    int profileIdFieldNum = query.record().indexOf("profile_id");
+    int indexFieldNum = query.record().indexOf("index");
+    int pathFieldNum = query.record().indexOf("path");
+    // Populate
+    while (query.next())
+    {
+       int id = query.value(idFieldNum).toInt();
+       int profile_id = query.value(profileIdFieldNum).toInt();
+       int index = query.value(indexFieldNum).toInt();
+       QString path = query.value(pathFieldNum).toString();
+       mRecentGcodeFilesModel->add(RecentFile(id,index,profile_id,path));
+    }
+    emit recentGcodeFilesModel_ModelReady_Signal(mRecentGcodeFilesModel);
+    return mRecentGcodeFilesModel->count();
 }
 
 int SqlSettingsModel::getToolHoldersFromDB()
@@ -237,6 +297,7 @@ void SqlSettingsModel::onSaveSettings()
 void SqlSettingsModel::onLoadSettings()
 {
     getProfilesFromDB();
+    getRecentGcodeFilesFromDB();
     getToolHoldersFromDB();
     getToolHoldersGeometryFromDB();
 }
@@ -250,6 +311,76 @@ const QString SqlSettingsModel::SQLITE_DB = "QSQLITE";
 
 const QString SqlSettingsModel::DB_FILE_NAME = "co.uk.octronic.cocoanut_cnc.sqlite";
 
+// Profiles ----------------------------------------------------------------------
+
+const QString SqlSettingsModel::CREATE_PROFILES_TABLE_QUERY =
+"CREATE TABLE 'profiles' ("
+    "'id'   INTEGER PRIMARY KEY,"
+    "'name' TEXT NOT NULL,"
+    "'selected' INTEGER NOT NULL"
+")";
+
+const QString SqlSettingsModel::INSERT_DEFAULT_PROFILE_QUERY =
+"INSERT INTO 'profiles' ('name','selected') VALUES ('Default',1)";
+
+const QString SqlSettingsModel::SELECT_ALL_PROFILES_QUERY =
+"SELECT * FROM PROFILES";
+
+const QString SqlSettingsModel::UPDATE_PROFILE_WHERE_ID_QUERY =
+"UPDATE 'profiles' SET name=? WHERE id=?";
+
+// Recent Gcode Files ------------------------------------------------------------
+const QString SqlSettingsModel::CREATE_RECENT_GCODE_FILES_TABLE_QUERY =
+"CREATE TABLE 'recent_gcode_files' ("
+    "'id'           INTEGER PRIMARY KEY,"
+    "'profile_id'   INTEGER NOT NULL,"
+    "'index'        INTEGER NOT NULL,"
+    "'path'         TEXT NOT NULL,"
+    "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
+")";
+
+const QString SqlSettingsModel::SELECT_RECENT_GCODE_FILES_BY_PROFILE_ID_QUERY =
+"SELECT * FROM 'recent_gcode_files WHERE profile_id=?";
+
+// Recent HeightMap Files --------------------------------------------------------
+const QString SqlSettingsModel::CREATE_RECENT_HEIGHT_MAP_FILES_TABLE_QUERY =
+"CREATE TABLE 'recent_height_map_files' ("
+    "'id'           INTEGER PRIMARY KEY,"
+    "'profile_id'   INTEGER NOT NULL,"
+    "'index'        INTEGER NOT NULL,"
+    "'path'         TEXT NOT NULL,"
+    "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
+")";
+
+const QString SqlSettingsModel::SELECT_RECENT_HEIGHT_MAP_FILES_BY_PROFILE_ID_QUERY =
+"SELECT * FROM 'recent_height_map_files WHERE profile_id=?";
+
+
+// Connection --------------------------------------------------------------------
+const QString SqlSettingsModel::CREATE_CONNECTION_TABLE_QUERY =
+"CREATE TABLE 'recent_gcode_files' ("
+    "'id'           INTEGER PRIMARY KEY,"
+    "'profile_id'   INTEGER NOT NULL,"
+    "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
+")";
+
+// Interface ---------------------------------------------------------------------
+const QString SqlSettingsModel::CREATE_INTERFACE_TABLE_QUERY =
+"CREATE TABLE 'recent_gcode_files' ("
+    "'id'           INTEGER PRIMARY KEY,"
+    "'profile_id'   INTEGER NOT NULL,"
+    "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
+")";
+
+// Machine -----------------------------------------------------------------------
+const QString SqlSettingsModel::CREATE_MACHINE_TABLE_QUERY =
+"CREATE TABLE 'recent_gcode_files' ("
+    "'id'           INTEGER PRIMARY KEY,"
+    "'profile_id'   INTEGER NOT NULL,"
+    "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
+")";
+
+// Tool Holders ------------------------------------------------------------------
 const QString SqlSettingsModel::CREATE_TOOL_HOLDERS_TABLE_QUERY =
 "CREATE TABLE 'tool_holders' ("
     "'id'           INTEGER PRIMARY KEY,"
@@ -269,6 +400,8 @@ const QString SqlSettingsModel::SELECT_TOOL_HOLDER_BY_ID_QUERY =
 
 const QString SqlSettingsModel::DELETE_TOOL_HOLDER_BY_ID_QUERY =
 "DELETE FROM 'tool_holders' WHERE id=?";
+
+// Tool Holders Geometry ---------------------------------------------------------
 
 const QString SqlSettingsModel::CREATE_TOOL_HOLDERS_GEOMETRY_TABLE_QUERY =
 "CREATE TABLE 'tool_holders_geometry' ("
@@ -298,23 +431,9 @@ const QString SqlSettingsModel::INSERT_TOOL_HOLDERS_GEOMETRY_QUERY =
 ")";
 
 const QString SqlSettingsModel::SELECT_TOOL_HOLDERS_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY =
-"SELECT * FROM 'tool_holders_geometry' WHERE tool_holder_id=?;";
+"SELECT * FROM 'tool_holders_geometry' WHERE tool_holder_id=?";
 
 const QString SqlSettingsModel::DELETE_TOOL_HOLDERS_GEOMETRY_BY_ID_QUERY =
 "DELETE FROM 'tool_holders_geometry' WHERE id=?";
 
-const QString SqlSettingsModel::CREATE_PROFILES_TABLE_QUERY =
-"CREATE TABLE 'profiles' ("
-    "'id'   INTEGER PRIMARY KEY,"
-    "'name' TEXT NOT NULL"
-")";
 
-const QString SqlSettingsModel::INSERT_DEFAULT_PROFILE_QUERY =
-"INSERT INTO 'profiles' ('name') VALUES ('Default')";
-
-const QString SqlSettingsModel::SELECT_ALL_PROFILES_QUERY =
-"SELECT * FROM PROFILES";
-
-
-const QString SqlSettingsModel::UPDATE_PROFILE_WHERE_ID_QUERY =
-"UPDATE 'profiles' SET name=? WHERE id=?";

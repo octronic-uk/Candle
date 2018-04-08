@@ -21,9 +21,11 @@
 #include "Model/Settings/Ini/IniFileSettingsModel.h"
 #include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "Model/HeightMapFileModel.h"
-
 #include "Model/RecentFilesModel.h"
-#include "Model/RecentHeightMapFilesModel.h"
+#include "Model/GcodeFileModel.h"
+#include "Model/Tables/GcodeTableModel.h"
+#include "Model/Tables/HeightMapTableModel.h"
+#include "Model/GrblMachineModel.h"
 
 #include "View/Drawers/OriginDrawer.h"
 #include "View/Drawers/GcodeDrawer.h"
@@ -33,20 +35,16 @@
 #include "View/Drawers/HeightMapInterpolationDrawer.h"
 #include "View/Drawers/ShaderDrawable.h"
 #include "View/Drawers/SelectionDrawer.h"
-#include "Model/GcodeFileModel.h"
-
-#include "Model/Tables/GcodeTableModel.h"
-#include "Model/Tables/HeightMapTableModel.h"
-#include "Model/GrblMachineModel.h"
-
-#include "Utils/Interpolation.h"
 
 #include "Controller/AboutFormController.h"
 #include "Controller/Settings/SettingsFormController.h"
 
 
-#include "ui_MainForm.h"
+#include "Utils/Interpolation.h"
+
 #include "CancelException.h"
+
+#include "ui_MainForm.h"
 
 #ifdef WINDOWS
 #include <QtWinExtras/QtWinExtras>
@@ -112,6 +110,8 @@ private slots:
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
 
+    void onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel> model);
+    void onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel> model);
 protected:
     void showEvent(QShowEvent *se) override;
     void hideEvent(QHideEvent *he) override;
@@ -124,14 +124,15 @@ private: // Members
     Ui::MainForm mUi;
     AboutFormController mAboutFormController;
     SettingsFormController mSettingsFormController;
-    RecentFilesModel mRecentFilesModel;
-    RecentHeightMapFilesModel mRecentHeightMapFilesModel;
+
     MainFormMode mFormMode;
     QString mLastFolder;
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
     QSharedPointer<IniFileSettingsModel> mSettingsModel;
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
+    QSharedPointer<RecentFilesModel> mRecentGcodeFilesModel;
+    QSharedPointer<RecentFilesModel> mRecentHeightMapFilesModel;
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;

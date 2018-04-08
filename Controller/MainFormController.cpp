@@ -34,7 +34,7 @@
 #include "Controller/SpindleFormController.h"
 #include "Controller/StateFormController.h"
 #include "Controller/VisualisationFormController.h"
-
+#include "Model/RecentFile.h"
 
 #include "Model/Parser/GcodeParser.h"
 #include "Model/GrblMachineState.h"
@@ -164,47 +164,47 @@ void MainFormController::setupMenuBarSignals()
     );
     // File->New
     connect(
-                mUi.actFileNew, SIGNAL(triggered()),
-                this, SLOT(onActFileNewTriggered())
-                );
+        mUi.actFileNew, SIGNAL(triggered()),
+        this, SLOT(onActFileNewTriggered())
+    );
     // File->Open
     connect(
-                mUi.actFileOpen, SIGNAL(triggered()),
-                this, SLOT(onActFileOpenTriggered())
-                );
+        mUi.actFileOpen, SIGNAL(triggered()),
+        this, SLOT(onActFileOpenTriggered())
+    );
     // File->Save
     connect(
-                mUi.actFileSave, SIGNAL(triggered()),
-                this, SLOT(onActFileSaveTriggered())
-                );
+        mUi.actFileSave, SIGNAL(triggered()),
+        this, SLOT(onActFileSaveTriggered())
+    );
     // File->Save As...
     connect(
-                mUi.actFileSaveAs, SIGNAL(triggered()),
-                this, SLOT(onActFileSaveAsTriggered())
-                );
+        mUi.actFileSaveAs, SIGNAL(triggered()),
+        this, SLOT(onActFileSaveAsTriggered())
+    );
     // File->Save Transformed As...
     connect(
-                mUi.actFileSaveTransformedAs, SIGNAL(triggered()),
-                this, SLOT(onActFileSaveTransformedAsTriggered())
-                );
+        mUi.actFileSaveTransformedAs, SIGNAL(triggered()),
+        this, SLOT(onActFileSaveTransformedAsTriggered())
+    );
 }
 
 void MainFormController::setupHeightMapFileModelSignals()
 {
     // On File Load Handlers
     connect(
-                &mHeightMapFileModel,SIGNAL(heightMapFileLoadStartedSignal()),
-                this, SLOT(onHeightMapFileLoadStarted())
-                );
+        &mHeightMapFileModel,SIGNAL(heightMapFileLoadStartedSignal()),
+        this, SLOT(onHeightMapFileLoadStarted())
+    );
     connect(
-                &mHeightMapFileModel,SIGNAL(heightMapFileLoadFinishedSignal()),
-                this, SLOT(onHeightMapFileLoadFinished())
-                );
+        &mHeightMapFileModel,SIGNAL(heightMapFileLoadFinishedSignal()),
+        this, SLOT(onHeightMapFileLoadFinished())
+    );
     // HeightMap File Model
     connect(
-                &mHeightMapFileModel, SIGNAL(statusBarUpdateSignal(QString)),
-                this, SLOT(onStatusBarUpdate(QString))
-                );
+        &mHeightMapFileModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
 }
 
 void MainFormController::setupGcodeFileModelSignals()
@@ -212,43 +212,43 @@ void MainFormController::setupGcodeFileModelSignals()
     qDebug() << "MainFormController: setupGcodeFileModelSignals";
     // Gcode File Model
     connect(
-                &mGcodeFileModel, SIGNAL(statusBarUpdateSignal(QString)),
-                this, SLOT(onStatusBarUpdate(QString))
-                );
+        &mGcodeFileModel, SIGNAL(statusBarUpdateSignal(QString)),
+        this, SLOT(onStatusBarUpdate(QString))
+    );
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                this, SLOT(onGcodeFileLoadStarted())
-                );
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        this, SLOT(onGcodeFileLoadStarted())
+    );
     connect(
-                &mGcodeFileModel, SIGNAL(reserveGcodeRowsSignal(int)),
-                mUi.programFormController, SLOT(onReserveGcodeRowsSignal(int))
-                );
+        &mGcodeFileModel, SIGNAL(reserveGcodeRowsSignal(int)),
+        mUi.programFormController, SLOT(onReserveGcodeRowsSignal(int))
+    );
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                mUi.programFormController, SLOT(onGcodeFileLoadStarted())
-                );
-    // Gcode Loading Finished
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-                mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
-                );
-    connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-                mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
-                );
-    connect(
-            &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-            this, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        mUi.programFormController, SLOT(onGcodeFileLoadStarted())
     );
     // Gcode Loading Finished
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                mUi.visualisationFormController, SLOT(onGcodeFileLoadStarted())
-                );
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
+        mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+    );
     connect(
-                &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
-                this, SLOT(onGcodeFileLoadStarted())
-                );
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
+        mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
+        this, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+    );
+    // Gcode Loading Finished
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        mUi.visualisationFormController, SLOT(onGcodeFileLoadStarted())
+    );
+    connect(
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadStartedSignal()),
+        this, SLOT(onGcodeFileLoadStarted())
+    );
     // Parser State
     connect(
         &mGcodeFileModel, SIGNAL(gcodeParserUpdatedSignal(QSharedPointer<GcodeParser>)),
@@ -260,13 +260,27 @@ void MainFormController::setupRecentFilesModelsSignals()
 {
     // Recent files changed handlers
     connect(
-                &mRecentFilesModel, SIGNAL(recentFilesChangedSignal()),
-                this, SLOT(onRecentGcodeFilesChanged())
-                );
+        mSqlSettingsModel.data(),
+        SIGNAL(recentGcodeFilesModel_ModelReady_Signal(QSharedPointer<RecentFilesModel>)),
+        this,
+        SLOT(onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel>))
+    );
     connect(
-                &mRecentHeightMapFilesModel, SIGNAL(recentFilesChangedSignal()),
-                this, SLOT(onRecentHeightMapFilesChanged())
-                );
+        mSqlSettingsModel.data(),
+        SIGNAL(recentHeightMapFilesModel_ModelReady_Signal(QSharedPointer<RecentFilesModel>)),
+        this,
+        SLOT(onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel>))
+    );
+}
+
+void MainFormController::onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel> model)
+{
+    mRecentGcodeFilesModel = model;
+}
+
+void MainFormController::onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel> model)
+{
+    mRecentHeightMapFilesModel = model;
 }
 
 void MainFormController::setupGrblMachineModelSignals()
@@ -628,13 +642,13 @@ void MainFormController::onActFileOpenTriggered()
         {
             qDebug() << "MainFormController: HeightMap file format";
             mHeightMapFileModel.load(fileName);
-            mRecentHeightMapFilesModel.add(fileName);
+            mRecentHeightMapFilesModel->add(RecentFile(fileName));
         }
         else if (mGcodeFileModel.isGcodeFile(fileName))
         {
             qDebug() << "MainFormController: Gcode file format";
             mGcodeFileModel.load(fileName);
-            mRecentFilesModel.add(fileName);
+            mRecentGcodeFilesModel->add(RecentFile(fileName));
         }
         else
         {
@@ -790,26 +804,28 @@ void MainFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
 void MainFormController::populateRecentGcodeFilesMenu()
 {
     qDebug() << "MainFormController: populateRecentGcodeFilesMenu";
-    foreach (QString file, mRecentFilesModel.getRecentFiles())
+    foreach (RecentFile file, mRecentGcodeFilesModel->getRecentFiles())
     {
-        QAction *action = new QAction(file, this);
+        QAction *action = new QAction(file.getPath(), this);
         connect(action, SIGNAL(triggered()), this, SLOT(onActRecentFileTriggered()));
-        mUi.recentGcodeFilesMenu->insertAction(
-                    mUi.recentGcodeFilesMenu->actions()[0], action
-                );
+        mUi.recentGcodeFilesMenu->insertAction
+        (
+            mUi.recentGcodeFilesMenu->actions()[0], action
+        );
     }
 }
 
 void MainFormController::populateRecentHeightMapFilesMenu()
 {
     qDebug() << "MainFormController: populateRecentHeightMapFilesMenu";
-    foreach (QString file, mRecentHeightMapFilesModel.getRecentFiles())
+    foreach (RecentFile file, mRecentHeightMapFilesModel->getRecentFiles())
     {
-        QAction *action = new QAction(file, this);
+        QAction *action = new QAction(file.getPath(), this);
         connect(action, SIGNAL(triggered()), this, SLOT(onActRecentFileTriggered()));
-        mUi.recentHeightMapFilesMenu->insertAction(
-                    mUi.recentHeightMapFilesMenu->actions()[0], action
-                );
+        mUi.recentHeightMapFilesMenu->insertAction
+        (
+            mUi.recentHeightMapFilesMenu->actions()[0], action
+        );
     }
 }
 

@@ -15,7 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "RecentFilesModel.h"
+
 
 #include <QtDebug>
 
@@ -36,16 +38,21 @@ void RecentFilesModel::clear()
     mRecentFiles.clear();
 }
 
-QStringList RecentFilesModel::getRecentFiles()
+int RecentFilesModel::count()
+{
+   return mRecentFiles.count();
+}
+
+QList<RecentFile> RecentFilesModel::getRecentFiles()
 {
    return mRecentFiles;
 }
 
-void RecentFilesModel::add(QString fileName)
+void RecentFilesModel::add(RecentFile file)
 {
-    qDebug() << "RecentFilesModel: Adding file " << fileName;
-    mRecentFiles.removeAll(fileName);
-    mRecentFiles.append(fileName);
+    qDebug() << "RecentFilesModel: Adding file " << file.getPath();
+    mRecentFiles.removeAll(file);
+    mRecentFiles.append(file);
     if (mRecentFiles.count() > mMaxRecent)
     {
         mRecentFiles.takeFirst();

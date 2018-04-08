@@ -106,7 +106,6 @@
     <addaction name="separator"/>
     <addaction name="actFileSave"/>
     <addaction name="actFileSaveAs"/>
-    <addaction name="actFileSaveTransformedAs"/>
     <addaction name="separator"/>
     <addaction name="actFileExit"/>
    </widget>

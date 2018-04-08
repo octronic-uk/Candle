@@ -1,7 +1,7 @@
 /*
- * RecentHeightMapFilesModel.h
+ * RecentFile.h
  *
- * Created: 24 2018 by Ashley
+ * Created: 08 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -18,27 +18,29 @@
 
 #pragma once
 
-#include <QObject>
+#include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+#include <QString>
 
-class RecentHeightMapFilesModel : public QObject
+class RecentFile : AbstractDatabaseRecord
 {
-    Q_OBJECT
 public:
-    explicit RecentHeightMapFilesModel(QObject *parent = nullptr);
-    ~RecentHeightMapFilesModel();
-    void add(QString fileName);
-    void clear();
+    RecentFile(QString);
+    RecentFile(int id, int index, int profileId, QString path);
+    RecentFile(const RecentFile& other);
 
-    int getMaxRecent() const;
-    void setMaxRecent(int maxRecent);
-    QStringList getRecentFiles();
+    bool operator==(const RecentFile& other);
 
-signals:
-    void recentFilesChangedSignal();
+    QString getPath() const;
+    void setPath(const QString& path);
 
-public slots:
+    int getIndex() const;
+    void setIndex(int index);
+
+    int getProfileId() const;
+    void setProfileId(int profileId);
 
 private:
-    QStringList mRecentFiles;
-    int mMaxRecent;
+    QString mPath;
+    int mIndex;
+    int mProfileId;
 };

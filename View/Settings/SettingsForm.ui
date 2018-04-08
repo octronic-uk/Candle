@@ -78,7 +78,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>4</number>
      </property>
      <property name="iconSize">
       <size>
@@ -122,7 +122,17 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_18">
        <item>
-        <widget class="ToolHolderFormController" name="toolHolderForm" native="true"/>
+        <widget class="ToolHolderFormController" name="toolHolderFormController" native="true"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="toolsTab">
+      <attribute name="title">
+       <string>Tools</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="ToolFormController" name="toolsFormController" native="true"/>
        </item>
       </layout>
      </widget>
@@ -190,6 +200,12 @@
    <class>MachineFormController</class>
    <extends>QWidget</extends>
    <header>Controller/Settings/MachineFormController.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ToolFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/Settings/ToolFormController.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

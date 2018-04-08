@@ -47,17 +47,42 @@ TRANSLATIONS += \
 
 SOURCES +=\
     Main.cpp \
-    Controller/MainFormController.cpp \
-    Controller/Settings/SettingsFormController.cpp \
-    Controller/JogFormController.cpp \
-    Controller/ConsoleFormController.cpp \
-    Controller/AboutFormController.cpp \
     Model/Tables/GcodeTableModel.cpp \
     Model/Tables/HeightMapTableModel.cpp \
     Model/Parser/ArcProperties.cpp \
     Model/Parser/GcodeParser.cpp \
     Model/Parser/LineSegment.cpp \
     Model/Parser/PointSegment.cpp \
+    Model/StatusModel.cpp \
+    Model/GcodeFileModel.cpp \
+    Model/HeightMapFileModel.cpp \
+    Model/RecentFilesModel.cpp \
+    Model/Settings/AbstractSettingsModel.cpp \
+    Model/Settings/Ini/IniFileSettingsModel.cpp \
+    Model/Settings/Settings.cpp \
+    Model/GrblMachineModel.cpp \
+    Model/GcodeCommand.cpp \
+    Model/GrblResponse.cpp \
+    Model/Parser/GcodeViewParser.cpp \
+    Model/Settings/Sql/SqlSettingsModel.cpp \
+    Model/Settings/Sql/AbstractDatabaseRecord.cpp \
+    \
+    Model/Settings/ToolHolder/ToolHolder.cpp \
+    Model/Settings/ToolHolder/ToolHolderGeometry.cpp \
+    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.cpp \
+    Model/Settings/ToolHolder/ToolHolderListModel.cpp \
+    \
+    Controller/Settings/ToolHolderFormController.cpp \
+    Controller/Settings/ToolFormController.cpp \
+    \
+    Model/Settings/Tool/Tool.cpp \
+    Model/Settings/Tool/ToolGeometry.cpp \
+    Model/Settings/Tool/ToolGeometryTableModel.cpp \
+    Model/Settings/Tool/ToolListModel.cpp \
+    \
+    Model/RecentFile.cpp \
+    View/Drawers/GridDrawer.cpp \
+    View/Widgets/GLWidget.cpp \
     View/Drawers/GcodeDrawer.cpp \
     View/Drawers/HeightMapBorderDrawer.cpp \
     View/Drawers/HeightMapGridDrawer.cpp \
@@ -66,6 +91,9 @@ SOURCES +=\
     View/Drawers/SelectionDrawer.cpp \
     View/Drawers/ShaderDrawable.cpp \
     View/Drawers/ToolDrawer.cpp \
+    Controller/Settings/ConnectionFormController.cpp \
+    Controller/Settings/InterfaceFormController.cpp \
+    Controller/Settings/MachineFormController.cpp \
     Controller/ControlFormController.cpp \
     Controller/FeedFormController.cpp \
     Controller/HeightMapFormController.cpp \
@@ -75,48 +103,47 @@ SOURCES +=\
     Controller/UserCommandsFormController.cpp \
     Controller/VisualisationFormController.cpp \
     Controller/AbstractFormController.cpp \
-    Model/StatusModel.cpp \
-    Model/GcodeFileModel.cpp \
-    Model/HeightMapFileModel.cpp \
-    Model/RecentFilesModel.cpp \
-    Model/RecentHeightMapFilesModel.cpp \
-    View/Widgets/GLWidget.cpp \
-    Model/Settings/AbstractSettingsModel.cpp \
-    Model/Settings/Ini/IniFileSettingsModel.cpp \
-    View/Drawers/GridDrawer.cpp \
-    Model/Settings/Settings.cpp \
-    Model/GrblMachineModel.cpp \
+    Controller/MainFormController.cpp \
+    Controller/Settings/SettingsFormController.cpp \
+    Controller/JogFormController.cpp \
+    Controller/ConsoleFormController.cpp \
+    Controller/AboutFormController.cpp \
     Utils/IndexOutOfBoundsException.cpp \
-    Model/GcodeCommand.cpp \
-    Model/GrblResponse.cpp \
     Utils/GcodeCommandNotFoundException.cpp \
-    Model/Parser/GcodeViewParser.cpp \
-    Model/Settings/Sql/SqlSettingsModel.cpp \
-    Model/Settings/Profile/ProfilesListModel.cpp \
     Model/Settings/Profile/Profile.cpp \
-    Model/Settings/Sql/AbstractDatabaseRecord.cpp \
-    Model/Settings/ToolHolder/ToolHolder.cpp \
-    Model/Settings/ToolHolder/ToolHolderGeometry.cpp \
-    Model/Settings/ToolHolder/ToolHolderListModel.cpp \
-    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.cpp \
-    Controller/Settings/ToolHolderFormController.cpp \
-    Controller/Settings/ConnectionFormController.cpp \
-    Controller/Settings/InterfaceFormController.cpp \
-    Controller/Settings/MachineFormController.cpp
-
+    Model/Settings/Profile/ProfilesListModel.cpp
 
 HEADERS  += \
-    Controller/JogFormController.h \
-    Controller/AboutFormController.h \
-    Controller/ConsoleFormController.h \
-    Controller/Settings/SettingsFormController.h \
-    Controller/MainFormController.h \
     Model/Parser/ArcProperties.h \
     Model/Parser/GcodeParser.h \
     Model/Parser/LineSegment.h \
     Model/Parser/PointSegment.h \
     Model/Tables/HeightMapTableModel.h \
     Model/Tables/GcodeTableModel.h \
+    Model/Settings/Ini/IniFileSettingsModel.h \
+    Model/StatusModel.h \
+    Model/GcodeFileModel.h \
+    Model/HeightMapFileModel.h \
+    Model/RecentFilesModel.h \
+    Model/Settings/AbstractSettingsModel.h \
+    Model/SerialBaudRate.h \
+    Model/GrblMachineModel.h \
+    Model/GcodeCommand.h \
+    Model/GrblResponse.h \
+    Model/GrblMachineState.h \
+    Model/Parser/GcodeViewParser.h \
+    Model/Settings/Sql/SqlSettingsModel.h \
+    Model/Settings/Profile/ProfilesListModel.h \
+    Model/Settings/Profile/Profile.h \
+    \
+    Model/Settings/ToolHolder/ToolHolder.h \
+    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.h \
+    Model/Settings/ToolHolder/ToolHolderGeometry.h \
+    Model/Settings/ToolHolder/ToolHolderListModel.h \
+    Controller/Settings/ToolHolderFormController.h \
+\
+    Model/RecentFile.h \
+    View/Drawers/GridDrawer.h \
     View/Drawers/GcodeDrawer.h \
     View/Drawers/HeightMapBorderDrawer.h \
     View/Drawers/HeightMapGridDrawer.h \
@@ -126,8 +153,17 @@ HEADERS  += \
     View/Drawers/ShaderDrawable.h \
     View/Drawers/ToolDrawer.h \
     View/Widgets/GLWidget.h \
-    Utils/Interpolation.h \
-    Utils/Util.h \
+    Controller/JogFormController.h \
+    Controller/AboutFormController.h \
+    Controller/ConsoleFormController.h \
+    Controller/Settings/SettingsFormController.h \
+    Controller/MainFormController.h \
+    Controller/AbstractFormController.h \
+    Controller/CancelException.h \
+    Controller/Settings/ConnectionFormController.h \
+    Controller/Settings/InterfaceFormController.h \
+    Controller/Settings/MachineFormController.h \
+    Controller/Settings/ToolFormController.h \
     Controller/ControlFormController.h \
     Controller/FeedFormController.h \
     Controller/HeightMapFormController.h \
@@ -136,37 +172,17 @@ HEADERS  += \
     Controller/StateFormController.h \
     Controller/UserCommandsFormController.h \
     Controller/VisualisationFormController.h \
-    Controller/AbstractFormController.h \
-    Model/Settings/Ini/IniFileSettingsModel.h \
-    Model/StatusModel.h \
-    Model/GcodeFileModel.h \
-    Model/HeightMapFileModel.h \
-    Model/RecentFilesModel.h \
-    Model/RecentHeightMapFilesModel.h \
-    Controller/CancelException.h \
-    Model/Settings/AbstractSettingsModel.h \
-    View/Drawers/GridDrawer.h \
-    Model/SerialBaudRate.h \
-    Model/Settings/Settings.h \
-    Model/GrblMachineModel.h \
     Utils/IndexOutOfBoundsException.h \
-    Model/GcodeCommand.h \
-    Model/GrblResponse.h \
-    Model/GrblMachineState.h \
     Utils/GcodeCommandNotFoundException.h \
-    Model/Parser/GcodeViewParser.h \
-    Model/Settings/Sql/SqlSettingsModel.h \
-    Model/Settings/Profile/ProfilesListModel.h \
-    Model/Settings/Profile/Profile.h \
+    Utils/Interpolation.h \
+    Utils/Util.h \
     Model/Settings/Sql/AbstractDatabaseRecord.h \
-    Model/Settings/ToolHolder/ToolHolder.h \
-    Model/Settings/ToolHolder/ToolHolderGeometryTableModel.h \
-    Model/Settings/ToolHolder/ToolHolderGeometry.h \
-    Model/Settings/ToolHolder/ToolHolderListModel.h \
-    Controller/Settings/ToolHolderFormController.h \
-    Controller/Settings/ConnectionFormController.h \
-    Controller/Settings/InterfaceFormController.h \
-    Controller/Settings/MachineFormController.h
+    Model/Settings/Tool/Tool.h \
+    Model/Settings/Tool/ToolGeometry.h \
+    Model/Settings/Tool/ToolGeometryTableModel.h \
+    Model/Settings/Tool/ToolListModel.h \
+    \
+    Model/Settings/Settings.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -185,7 +201,8 @@ FORMS    += \
     View/Settings/ConnectionSettingsForm.ui \
     View/Settings/ToolHolderForm.ui \
     View/Settings/InterfaceForm.ui \
-    View/Settings/MachineForm.ui
+    View/Settings/MachineForm.ui \
+    View/Settings/ToolForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS
