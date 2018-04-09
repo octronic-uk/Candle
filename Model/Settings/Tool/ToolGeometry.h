@@ -33,6 +33,10 @@ public:
         float lower = 1
     );
 
+    ToolGeometry(const ToolGeometry& other);
+
+    bool operator==(const ToolGeometry& other);
+
     float getUpperDiameter() const;
     void setUpperDiameter(float upperDiameter);
 

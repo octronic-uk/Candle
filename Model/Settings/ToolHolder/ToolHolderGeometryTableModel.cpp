@@ -65,11 +65,11 @@ QVariant ToolHolderGeometryTableModel::data(const QModelIndex &index, int role) 
         switch (index.column())
         {
             case 0: // Height
-                return mData.at(index.row()).getHeight();
+                return mData.at(index.row())->getHeight();
             case 1: // Upper Diameter
-                return mData.at(index.row()).getUpperDiameter();
+                return mData.at(index.row())->getUpperDiameter();
             case 2: // Lower Diameter
-                return mData.at(index.row()).getLowerDiameter();
+                return mData.at(index.row())->getLowerDiameter();
         }
     }
     return QVariant();
@@ -84,16 +84,17 @@ bool ToolHolderGeometryTableModel::setData(const QModelIndex &index, const QVari
             switch (index.column())
             {
                 case 0: // Height
-                    mData[index.row()].setHeight(value.toFloat());
+                    mData[index.row()]->setHeight(value.toFloat());
                     break;
                 case 1: // Upper Diameter
-                    mData[index.row()].setUpperDiameter(value.toFloat());
+                    mData[index.row()]->setUpperDiameter(value.toFloat());
                     break;
                 case 2: // Lower Diameter
-                    mData[index.row()].setLowerDiameter(value.toFloat());
+                    mData[index.row()]->setLowerDiameter(value.toFloat());
                     break;
             }
             emit dataChanged(index, index, QVector<int>() << role);
+            emit toolHolderGeometryUpdatedSignal(mData[index.row()].data());
             return true;
         }
     }
@@ -108,12 +109,33 @@ Qt::ItemFlags ToolHolderGeometryTableModel::flags(const QModelIndex &index) cons
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
+bool ToolHolderGeometryTableModel::insertRows(int parent_id, int row, int count, const QModelIndex &parent)
+{
+    beginInsertRows(parent, row, row + count - 1);
+    for (int i=0; i<count; i++)
+    {
+        QSharedPointer<ToolHolderGeometry> geom =
+                QSharedPointer<ToolHolderGeometry>::create
+                    (-1,parent_id,mData.count()+i, 1.0f,1.0f,1.0f);
+
+        mData.insert(row,geom);
+        emit toolHolderGeometryCreatedSignal(geom.data());
+    }
+    endInsertRows();
+    return true;
+}
+
 bool ToolHolderGeometryTableModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     for (int i=0; i<count; i++)
     {
-        mData.insert(row,ToolHolderGeometry(-1,mData.count()+i, 1.0f,1.0f,1.0f));
+        QSharedPointer<ToolHolderGeometry> geom =
+            QSharedPointer<ToolHolderGeometry>::create
+                (-1,-1,mData.count()+i, 1.0f,1.0f,1.0f);
+
+        mData.insert(row,geom);
+        emit toolHolderGeometryCreatedSignal(geom.data());
     }
     endInsertRows();
     return true;
@@ -121,20 +143,48 @@ bool ToolHolderGeometryTableModel::insertRows(int row, int count, const QModelIn
 
 bool ToolHolderGeometryTableModel::removeRows(int row, int count, const QModelIndex &parent)
 {
+    qDebug() << "ToolHolderGeometryTableModel::removeRows" << row << count;
+    if (row < 0 || row+count > mData.count())
+    {
+        qDebug() << "ToolHolderGeometryTableModel::removeRows Attempted to remove invalid row";
+        return false;
+    }
     beginRemoveRows(parent, row, row + count - 1);
-    mData.removeAt(row);
+    for (int r=row; r<row+count; r++)
+    {
+        ToolHolderGeometry* geom = mData.at(r).data();
+        emit toolHolderGeometryDeletedSignal(geom);
+        mData.removeAt(r);
+    }
     endRemoveRows();
     return true;
 }
 
-ToolHolderGeometry& ToolHolderGeometryTableModel::getItemAtRow(int row)
+ToolHolderGeometry* ToolHolderGeometryTableModel::getToolHolderGeometryHandleAtRow(int row)
 {
-    return mData[row];
+    return mData[row].data();
 }
 
-void ToolHolderGeometryTableModel::insert(ToolHolderGeometry item)
+void ToolHolderGeometryTableModel::insert(QSharedPointer<ToolHolderGeometry> item)
 {
-   //insertRows(item.getIndex(),1,QModelIndex());
-   mData.insert(item.getIndex(),item);
+   mData.insert(item->getIndex(),item);
    emit dataChanged(QModelIndex(), QModelIndex());
+}
+
+void ToolHolderGeometryTableModel::remove(ToolHolderGeometry* geom)
+{
+    int index = -1;
+    for (auto geomData : mData)
+    {
+        if (geomData.data() == geom)
+        {
+           index = mData.indexOf(geomData);
+           break;
+        }
+    }
+
+    if (index > -1)
+    {
+        removeRows(index,1,QModelIndex());
+    }
 }

@@ -27,13 +27,14 @@ public:
     void setFormActive(bool active) override;
     void setupSignalSlots() override;
 
+    ToolFormController* getToolFormController();
     ToolHolderFormController* getToolHolderFormController();
     ConnectionFormController* getConnectionFormController();
     MachineFormController* getMachineFormController();
     InterfaceFormController* getInterfaceFormController();
 
 public slots:
-    void onProfilesListModel_ListModelReady_Signal(QSharedPointer<ProfilesListModel>);
+    void onProfileListModelReady(ProfilesListModel*);
     void onSettingChanged(QString group, QString param, QVariant value);
 
 signals:

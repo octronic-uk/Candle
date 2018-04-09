@@ -19,6 +19,7 @@
 #pragma once
 #include <QAbstractTableModel>
 #include <QStringList>
+#include <QSharedPointer>
 #include "ToolHolderGeometry.h"
 
 class ToolHolderGeometryTableModel : public QAbstractTableModel
@@ -45,12 +46,19 @@ public:
 
     // Add data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool insertRows(int parent_id, int row, int count, const QModelIndex& parent);
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    ToolHolderGeometry& getItemAtRow(int row);
-    void insert(ToolHolderGeometry item);
+    ToolHolderGeometry* getToolHolderGeometryHandleAtRow(int row);
+    void insert(QSharedPointer<ToolHolderGeometry> item);
+    void remove(ToolHolderGeometry* geom);
+
+signals:
+    void toolHolderGeometryCreatedSignal(ToolHolderGeometry*);
+    void toolHolderGeometryUpdatedSignal(ToolHolderGeometry*);
+    void toolHolderGeometryDeletedSignal(ToolHolderGeometry*);
 
 private:
     QStringList mTableHeaders;
-    QList<ToolHolderGeometry> mData;
+    QList<QSharedPointer<ToolHolderGeometry>> mData;
 };

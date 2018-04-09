@@ -19,7 +19,8 @@
 #pragma once
 #include <QAbstractTableModel>
 #include <QStringList>
-#include "Model/Settings/Tool/ToolGeometry.h"
+#include <QSharedPointer>
+#include "ToolGeometry.h"
 
 class ToolGeometryTableModel : public QAbstractTableModel
 {
@@ -45,12 +46,19 @@ public:
 
     // Add data:
     bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool insertRows(int parent_id, int row, int count, const QModelIndex& parent);
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    ToolGeometry& getItemAtRow(int row);
-    void insert(ToolGeometry item);
+    ToolGeometry* getToolGeometryHandleAtRow(int row);
+    void insert(QSharedPointer<ToolGeometry> item);
+    void remove(ToolGeometry* geom);
+
+signals:
+    void toolGeometryCreatedSignal(ToolGeometry*);
+    void toolGeometryUpdatedSignal(ToolGeometry*);
+    void toolGeometryDeletedSignal(ToolGeometry*);
 
 private:
     QStringList mTableHeaders;
-    QList<ToolGeometry> mData;
+    QList<QSharedPointer<ToolGeometry>> mData;
 };

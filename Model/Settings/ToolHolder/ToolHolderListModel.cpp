@@ -19,28 +19,33 @@
 #include "ToolHolderListModel.h"
 #include <QtDebug>
 
-ToolHolderModelListModel::ToolHolderModelListModel(QObject *parent)
+ToolHolderListModel::ToolHolderListModel(QObject *parent)
     : QAbstractListModel(parent) {}
 
-int ToolHolderModelListModel::rowCount(const QModelIndex &parent) const
+void ToolHolderListModel::initialise(QList<QSharedPointer<ToolHolder>> data)
+{
+   mData = data;
+}
+
+int ToolHolderListModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return mData.count();
 }
 
-int ToolHolderModelListModel::columnCount(const QModelIndex& parent) const
+int ToolHolderListModel::columnCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent)
     return 1;
 }
 
-Qt::ItemFlags ToolHolderModelListModel::flags(const QModelIndex& index) const
+Qt::ItemFlags ToolHolderListModel::flags(const QModelIndex& index) const
 {
     Q_UNUSED(index)
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-QVariant ToolHolderModelListModel::data(const QModelIndex &index, int role) const
+QVariant ToolHolderListModel::data(const QModelIndex &index, int role) const
 {
 
     if (!index.isValid())
@@ -57,31 +62,74 @@ QVariant ToolHolderModelListModel::data(const QModelIndex &index, int role) cons
     return QVariant();
 }
 
-void ToolHolderModelListModel::insert(QSharedPointer<ToolHolder> newItem)
+void ToolHolderListModel::insert(QSharedPointer<ToolHolder> newItem)
 {
     insertRows(mData.count(),1,QModelIndex());
+    emit toolHolderCreatedSignal(newItem.data());
     mData.append(newItem);
     emit dataChanged(QModelIndex(),QModelIndex());
 }
 
-void ToolHolderModelListModel::remove(QSharedPointer<ToolHolder> item)
+void ToolHolderListModel::remove(ToolHolder* item)
 {
-    int index = mData.indexOf(item);
-    removeRows(index, 1, QModelIndex());
-    mData.removeOne(item);
-    emit dataChanged(QModelIndex(),QModelIndex());
-}
-
-QList<QSharedPointer<ToolHolder>> ToolHolderModelListModel::getAllData()
-{
-   return mData;
-}
-
-QSharedPointer<ToolHolder> ToolHolderModelListModel::getData(int index)
-{
-    if (index < 0 || index > mData.count())
+    int index = -1;
+    for (auto data : mData)
     {
-        return QSharedPointer<ToolHolder>();
+        if (data.data() == item)
+        {
+            index = mData.indexOf(data);
+            break;
+        }
     }
-    return mData[index];
+    if (index > -1)
+    {
+        removeRows(index, 1, QModelIndex());
+        emit toolHolderDeletedSignal(item);
+        mData.removeAt(index);
+        emit dataChanged(QModelIndex(),QModelIndex());
+    }
+}
+
+QList<QSharedPointer<ToolHolder>>& ToolHolderListModel::getAllData()
+{
+    return mData;
+}
+
+void ToolHolderListModel::clear()
+{
+   mData.clear();
+   emit dataChanged(QModelIndex(),QModelIndex());
+}
+
+QModelIndex ToolHolderListModel::indexOf(ToolHolder* holder)
+{
+    int index = -1;
+    for (auto data : mData)
+    {
+        if (data.data() == holder)
+        {
+            index = mData.indexOf(data);
+            break;
+        }
+    }
+    return createIndex(index,0);
+}
+
+bool ToolHolderListModel::setData(const QModelIndex& index, const QVariant& value, int role)
+{
+    if (index.row() >= 0 && index.row() < mData.count())
+    {
+        if (role == Qt::EditRole)
+        {
+            mData[index.row()]->setName(value.toString());
+            emit toolHolderUpdatedSignal(mData[index.row()].data());
+            emit dataChanged(QModelIndex(), QModelIndex());
+        }
+    }
+    return true;
+}
+
+ToolHolder* ToolHolderListModel::getData(int index)
+{
+    return mData[index].data();
 }

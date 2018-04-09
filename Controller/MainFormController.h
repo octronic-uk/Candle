@@ -92,6 +92,8 @@ public slots:
     void onSetCompletionProgressValue(int);
     void onSetFormMode(MainFormMode mode);
     void onGrblMachineError(QString error);
+    void onRecentGcodeFilesModelReady(RecentFilesModel* model);
+    void onRecentHeightMapFilesModelReady(RecentFilesModel* model);
 
 private slots:
     // Main Menu Actions
@@ -110,8 +112,6 @@ private slots:
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
 
-    void onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel> model);
-    void onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel> model);
 protected:
     void showEvent(QShowEvent *se) override;
     void hideEvent(QHideEvent *he) override;
@@ -131,8 +131,8 @@ private: // Members
     QTimer mStateQueryTimer;
     QSharedPointer<IniFileSettingsModel> mSettingsModel;
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
-    QSharedPointer<RecentFilesModel> mRecentGcodeFilesModel;
-    QSharedPointer<RecentFilesModel> mRecentHeightMapFilesModel;
+    RecentFilesModel* mRecentGcodeFilesModelHandle;
+    RecentFilesModel* mRecentHeightMapFilesModelHande;
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
     HeightMapFileModel mHeightMapFileModel;

@@ -31,6 +31,28 @@ ToolGeometry::ToolGeometry
     qDebug() << "ToolModelGeometryItem: Creating with index" << index;
 }
 
+ToolGeometry::ToolGeometry(const ToolGeometry& other)
+    : AbstractDatabaseRecord (other.getID()),
+      mToolId(other.mToolId),
+      mIndex(other.mIndex),
+      mHeight(other.mHeight),
+      mUpperDiameter(other.mUpperDiameter),
+      mLowerDiameter(other.mLowerDiameter)
+{
+    qDebug() << "ToolModelGeometryItem: Creating ToolGeometry(other&)"
+             << "ID" << getID()
+             << "H_ID" <<  mToolId
+             << "IDX" <<  mIndex
+             << "H" <<  mHeight
+             << "L_D" <<  mLowerDiameter
+             << "U_D" <<  mUpperDiameter;
+}
+
+bool ToolGeometry::operator==(const ToolGeometry& other)
+{
+   return getID() == other.getID() && getIndex() == other.getIndex();
+}
+
 float ToolGeometry::getUpperDiameter() const
 {
     return mUpperDiameter;

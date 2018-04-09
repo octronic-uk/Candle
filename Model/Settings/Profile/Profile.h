@@ -24,7 +24,7 @@
 class Profile : public AbstractDatabaseRecord
 {
 public:
-    Profile(int id = -1, QString name = "");
+    Profile(int id = -1, QString name = "", bool selected=false);
     ~Profile();
 
     Profile(const Profile& other);
@@ -32,6 +32,10 @@ public:
     QString getName() const;
     void setName(const QString& name);
 
+    bool getSelected() const;
+    void setSelected(bool selected);
+
 private:
     QString mName;
+    bool mSelected;
 };

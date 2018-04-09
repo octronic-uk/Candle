@@ -30,15 +30,27 @@ int ProfilesListModel::rowCount(const QModelIndex& parent) const
 
 QVariant ProfilesListModel::data(const QModelIndex& index, int role) const
 {
-   if (role == Qt::DisplayRole)
-   {
-       return mData.at(index.row()).getName();
-   }
-   return QVariant();
+    if (role == Qt::DisplayRole)
+    {
+        return mData.at(index.row())->getName();
+    }
+    return QVariant();
 }
 
-void ProfilesListModel::insert(Profile profile)
+void ProfilesListModel::insert(QSharedPointer<Profile> profile)
 {
     insertRows(mData.count(),1,QModelIndex());
     mData.insert(mData.count(),profile);
+}
+
+Profile* ProfilesListModel::getCurrentProfileHandle()
+{
+    for (QSharedPointer<Profile> p : mData)
+    {
+        if (p->getSelected())
+        {
+            return p.data();
+        }
+    }
+    return nullptr;
 }

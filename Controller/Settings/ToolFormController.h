@@ -38,8 +38,16 @@ public:
 signals:
     void settingChangedSignal(QString, QString, QVariant);
 
+    void toolGeometryCreatedSignal(ToolGeometry*);
+    void toolGeometryUpdatedSignal(ToolGeometry*);
+    void toolGeometryDeletedSignal(ToolGeometry*);
+
 public slots:
-    void onToolModel_ListModelReady(QSharedPointer<ToolModelListModel> model);
+    void onToolListModelReady(ToolListModel* model);
+
+    void onToolGeometryCreated(ToolGeometry* item);
+    void onToolGeometryUpdated(ToolGeometry* item);
+    void onToolGeometryDeleted(ToolGeometry* item);
 
 private slots:
     // Buttons
@@ -47,15 +55,16 @@ private slots:
     void onRemoveToolModelButtonClicked();
     void onAddToolModelGeometryButtonClicked();
     void onRemoveToolModelGeometryButtonClicked();
-    void onToolModelListSelectionChanged(const QItemSelection& selected, const QItemSelection& delelected);
-    void onToolModelNameChanged(QString);
+    void onToolListSelectionChanged(const QItemSelection& selected, const QItemSelection& delelected);
+    void onToolEditingFinished();
     void onToolGeometrySelectionChanged(const QItemSelection&, const QItemSelection&);
 
 private: // Members
     Ui::ToolModelForm mUi;
-    QSharedPointer<ToolModelListModel> mListModel;
+    ToolListModel* mListModelHandle;
+    Tool* mSelectedToolHandle;
+
     const static QString DEFAULT_NAME;
-    QSharedPointer<Tool> mSelected;
 
 private: // Member Functions
     void toolModelSelectionValid(bool isValid);

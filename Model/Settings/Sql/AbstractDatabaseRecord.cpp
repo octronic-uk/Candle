@@ -34,3 +34,8 @@ void AbstractDatabaseRecord::setID(int iD)
     mID = iD;
 }
 
+bool AbstractDatabaseRecord::isIdValid() const
+{
+    return mID >= 0;
+}
+

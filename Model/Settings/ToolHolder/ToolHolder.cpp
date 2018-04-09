@@ -16,12 +16,29 @@
  * this file belongs to.
  */
 #include "ToolHolder.h"
+#include <QtDebug>
 
 ToolHolder::ToolHolder(int id ,QString name)
     : AbstractDatabaseRecord(id),
-      mName(name)
+      mName(name),
+      mSelectedGeometryHandle(nullptr)
 {
-    mTableModel = QSharedPointer<ToolHolderGeometryTableModel>::create();
+    qDebug() << "ToolHolder: Constructing(int,QString)"
+             << getID()
+             << getName();
+
+    mGeometryTableModel = QSharedPointer<ToolHolderGeometryTableModel>::create();
+}
+
+ToolHolder::ToolHolder(const ToolHolder& other)
+    : AbstractDatabaseRecord (other.getID()),
+      mName(other.mName),
+      mSelectedGeometryHandle(other.mSelectedGeometryHandle),
+      mGeometryTableModel(other.mGeometryTableModel)
+{
+    qDebug() << "ToolHolder: Constructing(ToolHolder&)"
+             << getID()
+             << getName();
 }
 
 QString ToolHolder::getName() const
@@ -34,27 +51,54 @@ void ToolHolder::setName(const QString& name)
     mName = name;
 }
 
-QSharedPointer<ToolHolderGeometryTableModel> ToolHolder::getTableModel() const
+bool ToolHolder::operator==(const ToolHolder& other)
 {
-    return mTableModel;
+   return getID() == other.getID() && getName() == other.getName();
 }
 
-void ToolHolder::addNewRow()
+ToolHolderGeometryTableModel* ToolHolder::getGeometryTableModelHandle()
 {
-    mTableModel->insertRows(0,1,QModelIndex());
+    return mGeometryTableModel.data();
 }
 
-void ToolHolder::insertGeometry(ToolHolderGeometry item)
+void ToolHolder::addNewGeometryRow()
 {
-    mTableModel->insert(item);
+    qDebug() << "ToolHolder: addNewGeometryRow";
+    if (getID() < 0)
+    {
+        qDebug() << "ToolHolder: WARNING!! parent id < 0";
+    }
+    mGeometryTableModel->insertRows(getID(), mGeometryTableModel->rowCount(),1,QModelIndex());
 }
 
-void ToolHolder::setSelectedRow(int row)
+void ToolHolder::insertGeometry(QSharedPointer<ToolHolderGeometry> item)
 {
-    mSelected = mTableModel->getItemAtRow(row);
+    mGeometryTableModel->insert(item);
 }
 
-ToolHolderGeometry& ToolHolder::getSelected()
+void ToolHolder::disconnect()
 {
-    return mSelected;
+    mGeometryTableModel->disconnect();
+}
+
+void ToolHolder::removeSelectedGeometryRow()
+{
+    if (mSelectedGeometryHandle && mSelectedGeometryHandle->getID() < 0)
+    {
+       qDebug() << "ToolHolder: Cannot remove, selected.id < 0";
+       return;
+    }
+    mGeometryTableModel->remove(mSelectedGeometryHandle);
+    mSelectedGeometryHandle = nullptr;
+}
+
+void ToolHolder::setSelectedGeometryRow(int row)
+{
+    qDebug() << "Setting selected geometry row" << row;
+    mSelectedGeometryHandle = mGeometryTableModel->getToolHolderGeometryHandleAtRow(row);
+}
+
+ToolHolderGeometry* ToolHolder::getSelectedGeometryHandle()
+{
+    return mSelectedGeometryHandle;
 }

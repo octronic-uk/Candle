@@ -46,7 +46,9 @@ MainFormController::MainFormController(QWidget *parent) :
     AbstractFormController(parent),
     mFormMode(MainFormMode::Idle),
     mLastFolder(QDir::homePath()),
-    mOldStatusBarLayout(nullptr)
+    mOldStatusBarLayout(nullptr),
+    mRecentGcodeFilesModelHandle(nullptr),
+    mRecentHeightMapFilesModelHande(nullptr)
 {
     qDebug() << "MainFormController: Constructing";
     mUi.setupUi(&mMainWindow);
@@ -140,18 +142,71 @@ void MainFormController::setupSettingsModelSignals()
     connect
     (
         mSqlSettingsModel.data(),
-        SIGNAL(profilesListModel_ListModelReady_Signal(QSharedPointer<ProfilesListModel>)),
+        SIGNAL(profileListModelReadySignal(ProfilesListModel*)),
         &mSettingsFormController,
-        SLOT(onProfilesListModel_ListModelReady_Signal(QSharedPointer<ProfilesListModel>))
+        SLOT(onProfileListModelReady(ProfilesListModel*))
     );
 
-    // Tool Holders Model
+    // Tool Model
+    ToolFormController* toolForm = mSettingsFormController.getToolFormController() ;
     connect
     (
         mSqlSettingsModel.data(),
-        SIGNAL(toolHolderModel_ListModelReady_Signal(QSharedPointer<ToolHolderModelListModel>)),
-        mSettingsFormController.getToolHolderFormController(),
-        SLOT(onToolHolderModel_ListModelReady(QSharedPointer<ToolHolderModelListModel>))
+        SIGNAL(toolListModelReadySignal(ToolListModel*)),
+        toolForm,
+        SLOT(onToolListModelReady(ToolListModel*))
+    );
+    connect
+    (
+        toolForm,
+        SIGNAL(toolGeometryCreatedSignal(ToolGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolGeometryCreated(ToolGeometry*))
+    );
+    connect
+    (
+        toolForm,
+        SIGNAL(toolGeometryUpdatedSignal(ToolGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolGeometryUpdated(ToolGeometry*))
+    );
+    connect
+    (
+        toolForm,
+        SIGNAL(toolGeometryDeletedSignal(ToolGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolGeometryDeleted(ToolGeometry*))
+    );
+
+    // Tool Holders Model
+    ToolHolderFormController* toolHolderForm = mSettingsFormController.getToolHolderFormController() ;
+    connect
+    (
+        mSqlSettingsModel.data(),
+        SIGNAL(toolHolderListModelReadySignal(ToolHolderListModel*)),
+        toolHolderForm,
+        SLOT(onToolHolderListModelReady(ToolHolderListModel*))
+    );
+    connect
+    (
+        toolHolderForm,
+        SIGNAL(toolHolderGeometryCreatedSignal(ToolHolderGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolHolderGeometryCreated(ToolHolderGeometry*))
+    );
+    connect
+    (
+        toolHolderForm,
+        SIGNAL(toolHolderGeometryUpdatedSignal(ToolHolderGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolHolderGeometryUpdated(ToolHolderGeometry*))
+    );
+    connect
+    (
+        toolHolderForm,
+        SIGNAL(toolHolderGeometryDeletedSignal(ToolHolderGeometry*)),
+        mSqlSettingsModel.data(),
+        SLOT(onToolHolderGeometryDeleted(ToolHolderGeometry*))
     );
 }
 
@@ -261,26 +316,26 @@ void MainFormController::setupRecentFilesModelsSignals()
     // Recent files changed handlers
     connect(
         mSqlSettingsModel.data(),
-        SIGNAL(recentGcodeFilesModel_ModelReady_Signal(QSharedPointer<RecentFilesModel>)),
+        SIGNAL(recentGcodeFilesModelReadySignal(RecentFilesModel*)),
         this,
-        SLOT(onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel>))
+        SLOT(onRecentGcodeFilesModelReady(RecentFilesModel*))
     );
     connect(
         mSqlSettingsModel.data(),
-        SIGNAL(recentHeightMapFilesModel_ModelReady_Signal(QSharedPointer<RecentFilesModel>)),
+        SIGNAL(recentHeightMapFilesModelReadySignal(RecentFilesModel*)),
         this,
-        SLOT(onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel>))
+        SLOT(onRecentHeightMapFilesModelReady(RecentFilesModel*))
     );
 }
 
-void MainFormController::onRecentGcodeFiles_ModelReady(QSharedPointer<RecentFilesModel> model)
+void MainFormController::onRecentGcodeFilesModelReady(RecentFilesModel* model)
 {
-    mRecentGcodeFilesModel = model;
+    mRecentGcodeFilesModelHandle = model;
 }
 
-void MainFormController::onRecentHeightMapFilesModel_ModelReady(QSharedPointer<RecentFilesModel> model)
+void MainFormController::onRecentHeightMapFilesModelReady(RecentFilesModel* model)
 {
-    mRecentHeightMapFilesModel = model;
+    mRecentHeightMapFilesModelHande = model;
 }
 
 void MainFormController::setupGrblMachineModelSignals()
@@ -642,13 +697,13 @@ void MainFormController::onActFileOpenTriggered()
         {
             qDebug() << "MainFormController: HeightMap file format";
             mHeightMapFileModel.load(fileName);
-            mRecentHeightMapFilesModel->add(RecentFile(fileName));
+            mRecentHeightMapFilesModelHande->add(RecentFile(fileName));
         }
         else if (mGcodeFileModel.isGcodeFile(fileName))
         {
             qDebug() << "MainFormController: Gcode file format";
             mGcodeFileModel.load(fileName);
-            mRecentGcodeFilesModel->add(RecentFile(fileName));
+            mRecentGcodeFilesModelHandle->add(RecentFile(fileName));
         }
         else
         {
@@ -804,7 +859,7 @@ void MainFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
 void MainFormController::populateRecentGcodeFilesMenu()
 {
     qDebug() << "MainFormController: populateRecentGcodeFilesMenu";
-    foreach (RecentFile file, mRecentGcodeFilesModel->getRecentFiles())
+    foreach (RecentFile file, mRecentGcodeFilesModelHandle->getRecentFiles())
     {
         QAction *action = new QAction(file.getPath(), this);
         connect(action, SIGNAL(triggered()), this, SLOT(onActRecentFileTriggered()));
@@ -818,7 +873,7 @@ void MainFormController::populateRecentGcodeFilesMenu()
 void MainFormController::populateRecentHeightMapFilesMenu()
 {
     qDebug() << "MainFormController: populateRecentHeightMapFilesMenu";
-    foreach (RecentFile file, mRecentHeightMapFilesModel->getRecentFiles())
+    foreach (RecentFile file, mRecentHeightMapFilesModelHande->getRecentFiles())
     {
         QAction *action = new QAction(file.getPath(), this);
         connect(action, SIGNAL(triggered()), this, SLOT(onActRecentFileTriggered()));

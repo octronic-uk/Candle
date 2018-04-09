@@ -32,20 +32,38 @@ ToolFormController::ToolFormController(QWidget *parent)
 
 ToolFormController::~ToolFormController() {}
 
-void ToolFormController::onToolModel_ListModelReady
-(QSharedPointer<ToolModelListModel> model)
+void ToolFormController::onToolListModelReady
+(ToolListModel* model)
 {
-    mListModel = model;
-    mUi.toolsListView->setModel(mListModel.data());
+    qDebug() << "ToolFormController: onToolModel_ListModelReady";
+    mListModelHandle = model;
+    mUi.toolsListView->setModel(mListModelHandle);
     // Tool Model Selection Changed
     connect
     (
         mUi.toolsListView->selectionModel(),
         SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
         this,
-        SLOT(onToolModelListSelectionChanged(const QItemSelection&, const QItemSelection&))
-
+        SLOT(onToolListSelectionChanged(const QItemSelection&, const QItemSelection&))
     );
+}
+
+void ToolFormController::onToolGeometryCreated(ToolGeometry* item)
+{
+    qDebug() << "ToolFormController: Forwarding toolGeometryCreated";
+    emit toolGeometryCreatedSignal(item);
+}
+
+void ToolFormController::onToolGeometryUpdated(ToolGeometry* item)
+{
+    qDebug() << "ToolFormController: Forwarding toolGeometryUpdated";
+    emit toolGeometryUpdatedSignal(item);
+}
+
+void ToolFormController::onToolGeometryDeleted(ToolGeometry* item)
+{
+    qDebug() << "ToolFormController: Forwarding toolGeometryDeleted";
+    emit toolGeometryDeletedSignal(item);
 }
 
 void ToolFormController::setupSignalSlots()
@@ -74,14 +92,12 @@ void ToolFormController::setupSignalSlots()
         mUi.geometryRemoveButton, SIGNAL(clicked()),
         this, SLOT(onRemoveToolModelGeometryButtonClicked())
     );
-
     // Tool  Name
     connect
     (
-        mUi.nameLineEdit, SIGNAL(textChanged(QString)),
-        this, SLOT(onToolModelNameChanged(QString))
+        mUi.nameLineEdit, SIGNAL(editingFinished()),
+        this, SLOT(onToolEditingFinished())
     );
-
 }
 
 void ToolFormController::setFormActive(bool)
@@ -94,42 +110,59 @@ void ToolFormController::initialise()
 
 }
 
-void ToolFormController::onToolModelListSelectionChanged
+void ToolFormController::onToolListSelectionChanged
 (const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(deselected)
+
+    if (mSelectedToolHandle)
+    {
+        mSelectedToolHandle->disconnect();
+    }
+
     if (selected.count() == 0)
     {
-        mSelected.clear();
+        mSelectedToolHandle = nullptr;
         return;
     }
 
     int selectedRow = selected.indexes().first().row();
 
-    qDebug() << "ToolModelFormController: Selection Changed" << selectedRow;
-    mSelected = mListModel->getData(selectedRow);
-    toolModelSelectionValid(mSelected != nullptr);
-    mUi.toolsRemoveButton->setEnabled(mSelected != nullptr);
+    qDebug() << "ToolModelFormController: Selection Changed to row"
+             << selectedRow;
+
+    mSelectedToolHandle = mListModelHandle->getData(selectedRow);
+
+    qDebug() << "ToolModelFormController: Selected ID "
+             << mSelectedToolHandle->getID();
+
+    toolModelSelectionValid(mSelectedToolHandle->isIdValid());
+    mUi.toolsRemoveButton->setEnabled(mSelectedToolHandle->isIdValid());
 }
 
-void ToolFormController::onToolModelNameChanged(QString txt)
+void ToolFormController::onToolEditingFinished()
 {
-    if (mSelected != nullptr)
-        mSelected->setName(txt);
-
-   emit mListModel->dataChanged(QModelIndex(),QModelIndex());
+    if (mSelectedToolHandle->isIdValid())
+    {
+        mListModelHandle->setData
+        (
+            mListModelHandle->indexOf(mSelectedToolHandle),
+            mUi.nameLineEdit->text(),
+            Qt::EditRole
+        );
+    }
 }
 
 void ToolFormController::onAddToolModelButtonClicked()
 {
    qDebug() << "ToolModelFormController::onAddToolModelButtonClicked()";
-   mListModel->insert(QSharedPointer<Tool>::create(-1,DEFAULT_NAME));
+   mListModelHandle->insert(QSharedPointer<Tool>::create(-1,DEFAULT_NAME));
 }
 
 void ToolFormController::onRemoveToolModelButtonClicked()
 {
    qDebug() << "ToolModelFormController::onRemoveToolModelButtonClicked()";
-   if (mSelected == nullptr)
+   if (!mSelectedToolHandle->isIdValid())
    {
        return;
    }
@@ -138,15 +171,16 @@ void ToolFormController::onRemoveToolModelButtonClicked()
    (
         this,
         "Are you sure?",
-        QString("Are you sure?\n\nDelete: '%1'?").arg(mSelected->getName()),
+        QString("Are you sure?\n\nAny tools using this Tool  will need to be reassigned\n\nDelete: '%1'?")
+            .arg(mSelectedToolHandle->getName()),
         QMessageBox::Ok | QMessageBox::Cancel
    );
 
    switch (result)
    {
        case QMessageBox::Ok:
-           mListModel->remove(mSelected);
-           mSelected.clear();
+           mListModelHandle->remove(mSelectedToolHandle);
+           mSelectedToolHandle = nullptr;
            mUi.nameLineEdit->setText("");
            mUi.geometryTable->setModel(nullptr);
            mUi.geometryTable->setEnabled(false);
@@ -165,12 +199,13 @@ void ToolFormController::onRemoveToolModelButtonClicked()
 void ToolFormController::onAddToolModelGeometryButtonClicked()
 {
    qDebug() << "ToolModelFormController::onAddToolModelGeometryButtonClicked()";
-   mSelected->addNewRow();
+   mSelectedToolHandle->addNewGeometryRow();
 }
 
 void ToolFormController::onRemoveToolModelGeometryButtonClicked()
 {
    qDebug() << "ToolModelFormController::onRemoveToolModelGeometryButtonClicked()";
+   mSelectedToolHandle->removeSelectedGeometryRow();
 }
 
 void ToolFormController::toolModelSelectionValid(bool isValid)
@@ -184,17 +219,62 @@ void ToolFormController::toolModelSelectionValid(bool isValid)
 
     if (isValid)
     {
-       mUi.nameLineEdit->setText(mSelected->getName());
-       mUi.geometryTable->setModel(mSelected->getTableModel().data());
-       mUi.geometryTable->setEditTriggers(QAbstractItemView::DoubleClicked);
-       // Geometry Table Selection
-       connect
-       (
-           mUi.geometryTable->selectionModel(),
-           SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
-           this,
-           SLOT(onToolGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
-       );
+       mUi.nameLineEdit->setText(mSelectedToolHandle->getName());
+
+       if (mUi.geometryTable->model())
+       {
+           mUi.geometryTable->model()->disconnect();
+       }
+
+       if (mUi.geometryTable->selectionModel())
+       {
+           mUi.geometryTable->selectionModel()->disconnect();
+       }
+
+       ToolGeometryTableModel* tableModel = mSelectedToolHandle->getGeometryTableModelHandle();
+
+       if (tableModel != nullptr)
+       {
+           qDebug() << "ToolModelFormController: tableModel is valid";
+
+           mUi.geometryTable->setModel(tableModel);
+           mUi.geometryTable->setEditTriggers(QAbstractItemView::DoubleClicked);
+
+           // Geometry Table CRUD
+           connect
+           (
+                tableModel,
+                SIGNAL(toolGeometryCreatedSignal(ToolGeometry*)),
+                this,
+                SLOT(onToolGeometryCreated(ToolGeometry*))
+           );
+           connect
+           (
+                tableModel,
+                SIGNAL(toolGeometryUpdatedSignal(ToolGeometry*)),
+                this,
+                SLOT(onToolGeometryUpdated(ToolGeometry*))
+           );
+           connect
+           (
+                tableModel,
+                SIGNAL(toolGeometryDeletedSignal(ToolGeometry*)),
+                this,
+                SLOT(onToolGeometryDeleted(ToolGeometry*))
+           );
+           // Geometry Table Selection
+           connect
+           (
+               mUi.geometryTable->selectionModel(),
+               SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+               this,
+               SLOT(onToolGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
+           );
+       }
+       else
+       {
+           qDebug() << "ToolModelFormController: tableModel is nullptr";
+       }
     }
 }
 
@@ -206,7 +286,7 @@ void ToolFormController::onToolGeometrySelectionChanged
     if(selected.indexes().count() > 0)
     {
         qDebug() << "ToolModelFormController: row valid";
-        mSelected->setSelectedRow(selected.indexes().first().row());
+        mSelectedToolHandle->setSelectedGeometryRow(selected.indexes().first().row());
     }
 }
 

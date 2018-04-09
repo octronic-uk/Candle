@@ -19,6 +19,7 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QSharedPointer>
 #include "Model/Settings/Profile/Profile.h"
 
 class ProfilesListModel : public QAbstractListModel
@@ -30,8 +31,8 @@ public:
 
     int rowCount(const QModelIndex& parent) const override;
     QVariant data(const QModelIndex& index, int role) const override;
-    void insert(Profile profile);
-
+    void insert(QSharedPointer<Profile> profile);
+    Profile* getCurrentProfileHandle();
 private:
-    QList<Profile> mData;
+    QList<QSharedPointer<Profile>> mData;
 };

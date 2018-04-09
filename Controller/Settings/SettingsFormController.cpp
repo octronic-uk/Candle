@@ -70,10 +70,10 @@ InterfaceFormController*SettingsFormController::getInterfaceFormController()
    return mUi.interfaceFormController;
 }
 
-void SettingsFormController::onProfilesListModel_ListModelReady_Signal
-(QSharedPointer<ProfilesListModel> model)
+void SettingsFormController::onProfileListModelReady
+(ProfilesListModel* model)
 {
-    mUi.profilesComboBox->setModel(model.data());
+    mUi.profilesComboBox->setModel(model);
 }
 
 void SettingsFormController::onSettingChanged(QString group, QString param, QVariant value)
@@ -112,6 +112,11 @@ void SettingsFormController::setupSignalSlots()
     // Main ----------------------------------------------------------------------
     connect(mUi.closeButton, SIGNAL(clicked()),SLOT(onCloseButtonClicked()));
     connect(mUi.restoreDefaultsButton, SIGNAL(clicked()),SLOT(onRestoreDefaultsButtonClicked()));
+}
+
+ToolFormController* SettingsFormController::getToolFormController()
+{
+   return mUi.toolsFormController;
 }
 
 void SettingsFormController::onCloseButtonClicked()

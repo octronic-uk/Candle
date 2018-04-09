@@ -26,19 +26,24 @@ class ToolHolder : public AbstractDatabaseRecord
 {
 public:
     explicit ToolHolder(int id = -1, QString name = "");
+    ToolHolder(const ToolHolder& other);
 
     QString getName() const;
     void setName(const QString& name);
 
-    QSharedPointer<ToolHolderGeometryTableModel> getTableModel() const;
-    void addNewRow();
-    void setSelectedRow(int row);
-    ToolHolderGeometry& getSelected();
+    bool operator==(const ToolHolder& other);
 
-    void insertGeometry(ToolHolderGeometry item);
+    ToolHolderGeometryTableModel* getGeometryTableModelHandle();
+    void addNewGeometryRow();
+    void setSelectedGeometryRow(int row);
+    ToolHolderGeometry* getSelectedGeometryHandle();
+
+    void insertGeometry(QSharedPointer<ToolHolderGeometry> item);
+    void disconnect();
+    void removeSelectedGeometryRow();
 
 private:
     QString mName;
-    ToolHolderGeometry mSelected;
-    QSharedPointer<ToolHolderGeometryTableModel> mTableModel;
+    ToolHolderGeometry* mSelectedGeometryHandle;
+    QSharedPointer<ToolHolderGeometryTableModel> mGeometryTableModel;
 };

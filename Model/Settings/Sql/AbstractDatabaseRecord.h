@@ -25,6 +25,7 @@ public:
 
     int getID() const;
     void setID(int id);
+    bool isIdValid() const;
 
 private:
     int mID;

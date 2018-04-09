@@ -22,22 +22,35 @@
 #include "Model/Settings/ToolHolder/ToolHolder.h"
 #include <QSharedPointer>
 
-class ToolHolderModelListModel : public QAbstractListModel
+class ToolHolderListModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    explicit ToolHolderModelListModel(QObject *parent = nullptr);
+    explicit ToolHolderListModel(QObject *parent = nullptr);
+    void initialise(QList<QSharedPointer<ToolHolder>> data);
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void insert(const QSharedPointer<ToolHolder> newItem);
-    QSharedPointer<ToolHolder> getData(int);
-    void remove(QSharedPointer<ToolHolder> item);
-    QList<QSharedPointer<ToolHolder>> getAllData();
+    void insert(QSharedPointer<ToolHolder> newItem);
+    ToolHolder* getData(int);
+    void remove(ToolHolder* item);
+    QList<QSharedPointer<ToolHolder>>& getAllData();
+    void clear();
+    QModelIndex indexOf(ToolHolder* holder);
+
+signals:
+    void toolHolderCreatedSignal(ToolHolder* toolHolder);
+    void toolHolderUpdatedSignal(ToolHolder* toolHolder);
+    void toolHolderDeletedSignal(ToolHolder* toolHolder);
+
 private:
     QList<QSharedPointer<ToolHolder>> mData;
+
+    // QAbstractItemModel interface
+public:
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 };

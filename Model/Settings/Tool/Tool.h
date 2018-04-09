@@ -26,19 +26,24 @@ class Tool : public AbstractDatabaseRecord
 {
 public:
     explicit Tool(int id = -1, QString name = "");
+    Tool(const Tool& other);
 
     QString getName() const;
     void setName(const QString& name);
 
-    QSharedPointer<ToolGeometryTableModel> getTableModel() const;
-    void addNewRow();
-    void setSelectedRow(int row);
-    ToolGeometry& getSelected();
+    bool operator==(const Tool& other);
 
-    void insertGeometry(ToolGeometry item);
+    ToolGeometryTableModel* getGeometryTableModelHandle();
+    void addNewGeometryRow();
+    void setSelectedGeometryRow(int row);
+    ToolGeometry* getSelectedGeometryHandle();
+
+    void insertGeometry(QSharedPointer<ToolGeometry> item);
+    void disconnect();
+    void removeSelectedGeometryRow();
 
 private:
     QString mName;
-    ToolGeometry mSelected;
-    QSharedPointer<ToolGeometryTableModel> mTableModel;
+    ToolGeometry* mSelectedGeometryHandle;
+    QSharedPointer<ToolGeometryTableModel> mGeometryTableModel;
 };

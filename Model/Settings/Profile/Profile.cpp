@@ -16,12 +16,15 @@
  * this file belongs to.
  */
 #include "Profile.h"
+#include <QtDebug>
 
-Profile::Profile(int id, QString name)
+Profile::Profile(int id, QString name, bool selected)
     : AbstractDatabaseRecord(id),
-      mName(name)
+      mName(name),
+      mSelected(selected)
 {
-
+    qDebug() << "Profile: Constructing(...)"
+             << id << name << selected;
 }
 
 Profile::~Profile()
@@ -31,8 +34,12 @@ Profile::~Profile()
 
 Profile::Profile(const Profile& other)
     : AbstractDatabaseRecord (other.getID()),
-      mName(other.mName)
-{}
+      mName(other.mName),
+      mSelected(other.mSelected)
+{
+    qDebug() << "Profile: Constructing(Profile&)"
+             << getID() << mName << mSelected;
+}
 
 QString Profile::getName() const
 {
@@ -42,4 +49,14 @@ QString Profile::getName() const
 void Profile::setName(const QString& name)
 {
     mName = name;
+}
+
+bool Profile::getSelected() const
+{
+    return mSelected;
+}
+
+void Profile::setSelected(bool selected)
+{
+    mSelected = selected;
 }

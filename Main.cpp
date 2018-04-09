@@ -42,6 +42,7 @@ void initGL()
 
 int main(int argc, char *argv[])
 {
+    //qSetMessagePattern("%{file}(%{line}):\n\t%{message}");
     QCoreApplication::setOrganizationName("octronic");
     QCoreApplication::setOrganizationDomain("octronic.co.uk");
     QCoreApplication::setApplicationName("CocoanutCNC");

@@ -22,22 +22,35 @@
 #include "Model/Settings/Tool/Tool.h"
 #include <QSharedPointer>
 
-class ToolModelListModel : public QAbstractListModel
+class ToolListModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    explicit ToolModelListModel(QObject *parent = nullptr);
+    explicit ToolListModel(QObject *parent = nullptr);
+    void initialise(QList<QSharedPointer<Tool>> data);
 
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void insert(const QSharedPointer<Tool> newItem);
-    QSharedPointer<Tool> getData(int);
-    void remove(QSharedPointer<Tool> item);
-    QList<QSharedPointer<Tool>> getAllData();
+    void insert(QSharedPointer<Tool> newItem);
+    Tool* getData(int);
+    void remove(Tool* item);
+    QList<QSharedPointer<Tool>>& getAllData();
+    void clear();
+    QModelIndex indexOf(Tool* holder);
+
+signals:
+    void toolCreatedSignal(Tool* tool);
+    void toolUpdatedSignal(Tool* tool);
+    void toolDeletedSignal(Tool* tool);
+
 private:
     QList<QSharedPointer<Tool>> mData;
+
+    // QAbstractItemModel interface
+public:
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 };
