@@ -37,10 +37,48 @@ QVariant ProfilesListModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
+Profile* ProfilesListModel::createNewProfile()
+{
+    auto p = QSharedPointer<Profile>::create();
+    insert(p);
+    return p.data();
+}
+
+Profile* ProfilesListModel::get(int index)
+{
+   return mData.at(index).data();
+}
+
+void ProfilesListModel::setSelected(Profile* profile)
+{
+   for (auto p : mData)
+   {
+       if (profile == p)
+       {
+           p->setSelected(true);
+       }
+       else
+       {
+           p->setSelected(false);
+       }
+   }
+}
+
+QList<Profile*> ProfilesListModel::getDataHandles()
+{
+   QList<Profile*> handles;
+   for (auto profile : mData)
+   {
+       handles.append(profile.data());
+   }
+   return handles;
+}
+
 void ProfilesListModel::insert(QSharedPointer<Profile> profile)
 {
     insertRows(mData.count(),1,QModelIndex());
     mData.insert(mData.count(),profile);
+    emit dataChanged(QModelIndex(), QModelIndex());
 }
 
 Profile* ProfilesListModel::getCurrentProfileHandle()
@@ -54,3 +92,4 @@ Profile* ProfilesListModel::getCurrentProfileHandle()
     }
     return nullptr;
 }
+

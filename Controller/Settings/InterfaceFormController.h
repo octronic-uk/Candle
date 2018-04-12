@@ -21,6 +21,9 @@
 #include "Controller/AbstractFormController.h"
 #include "ui_InterfaceForm.h"
 
+class SqlSettingsModel;
+class Profile;
+
 class InterfaceFormController : public AbstractFormController
 {
     Q_OBJECT
@@ -75,8 +78,9 @@ public:
     bool drawModeVectors();
     void setDrawModeVectors(bool value);
 
-signals:
-    void settingChangedSignal(QString group, QString param, QVariant value);
+    void setSettingsModel(SqlSettingsModel* handle);
+    void onProfileChanged(Profile* profile);
+
 
 private slots:
     void onLineWidthValueChanged(QString);
@@ -98,4 +102,5 @@ private slots:
 
 private:
     Ui::InterfaceForm mUi;
+    SqlSettingsModel* mSettingsModelHandle;
 };

@@ -22,12 +22,14 @@
 #include <QSharedPointer>
 #include "ToolGeometry.h"
 
+class Tool;
+
 class ToolGeometryTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit ToolGeometryTableModel(QObject *parent = nullptr);
+    explicit ToolGeometryTableModel(Tool* parentTool, QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -50,15 +52,22 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
     ToolGeometry* getToolGeometryHandleAtRow(int row);
-    void insert(QSharedPointer<ToolGeometry> item);
-    void remove(ToolGeometry* geom);
+
+    ToolGeometry* insertNew();
+    void insertItem(QSharedPointer<ToolGeometry> item);
+    void deleteItem(ToolGeometry* geom);
+
+    void removeSelectedGeometryRow();
+    void setSelectedGeometryRow(int row);
+    ToolGeometry*getSelectedGeometryHandle();
+    QList<ToolGeometry*> getDataHandles();
 
 signals:
-    void toolGeometryCreatedSignal(ToolGeometry*);
-    void toolGeometryUpdatedSignal(ToolGeometry*);
-    void toolGeometryDeletedSignal(ToolGeometry*);
+    void geometryUpdatedSignal(ToolGeometry*);
 
 private:
     QStringList mTableHeaders;
+    ToolGeometry* mSelectedGeometryHandle;
+    Tool* mParentHandle;
     QList<QSharedPointer<ToolGeometry>> mData;
 };

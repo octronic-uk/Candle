@@ -20,13 +20,15 @@
 
 #include "Model/Settings/Sql/AbstractDatabaseRecord.h"
 
+class Tool;
+
 class ToolGeometry : public AbstractDatabaseRecord
 {
 public:
     ToolGeometry
     (
+        Tool* parent,
         int id=-1,
-        int toolId = -1,
         int index = -1,
         float height = 1,
         float upper=1,
@@ -50,10 +52,12 @@ public:
     void setIndex(int index);
 
     int getToolID() const;
-    void setToolID(int toolID);
+
+    Tool* getParentHandle() const;
+    void setParentHandle(Tool* parentHandle);
 
 private:
-    int mToolId;
+    Tool* mParentHandle;
     int mIndex;
     float mHeight;
     float mUpperDiameter;

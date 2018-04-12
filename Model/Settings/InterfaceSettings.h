@@ -1,7 +1,7 @@
 /*
- * RecentFilesModel.h
+ * InterfaceSettings.h
  *
- * Created: 24 2018 by Ashley
+ * Created: 10 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -18,31 +18,17 @@
 
 #pragma once
 
-#include <QObject>
-#include <QList>
-#include "Model/RecentFile.h"
+#include "Model/Settings/Sql/AbstractDatabaseRecord.h"
 
 class Profile;
 
-class RecentFilesModel : public QObject
+class InterfaceSettings : public AbstractDatabaseRecord
 {
-    Q_OBJECT
 public:
-    explicit RecentFilesModel(Profile* profile, QObject *parent = nullptr);
-    ~RecentFilesModel();
-
-    void add(RecentFile fileName);
-    void clear();
-    int count();
-    QList<RecentFile> getRecentFiles();
-
-    Profile* getProfileHandle() const;
-
-signals:
-    void recentFilesChangedSignal();
+    InterfaceSettings(Profile* parent, int id = -1);
+    Profile* getParentHandle() const;
+    int getParentID();
 
 private:
-    Profile* mProfileHandle;
-    QList<RecentFile> mRecentFiles;
-    int mMaxRecent;
+    Profile* mParentHandle;
 };

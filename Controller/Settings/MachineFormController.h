@@ -22,6 +22,9 @@
 #include "Model/Settings/Settings.h"
 #include "ui_MachineForm.h"
 
+class SqlSettingsModel;
+class Profile;
+
 class MachineFormController : public AbstractFormController
 {
     Q_OBJECT
@@ -70,8 +73,9 @@ public:
     QString userCommands(int index);
     void setUserCommands(int index, QString commands);
 
-signals:
-    void settingChangedSignal(QString group, QString param, QVariant value);
+    void setSettingsModel(SqlSettingsModel* handle);
+    void onProfileChanged(Profile*);
+
 
 private slots:
     void onQueryStateTimeValueChanged(QString);
@@ -91,6 +95,7 @@ private slots:
     void onHeightMapProbingFeedValueChanged(QString);
 private:
     Ui::MachineForm mUi;
+    SqlSettingsModel* mSettingsModelHandle;
 
 
 };

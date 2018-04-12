@@ -189,77 +189,72 @@ void MachineFormController::setUserCommands(int index, QString commands)
     this->findChild<QLineEdit*>(QString("txtUserCommand%1").arg(index))->setText(commands);
 }
 
+void MachineFormController::setSettingsModel(SqlSettingsModel* handle)
+{
+    mSettingsModelHandle = handle;
+}
+
+void MachineFormController::onProfileChanged(Profile* profile)
+{
+
+}
+
 void MachineFormController::onQueryStateTimeValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_QUERY_STATE_TIME, value);
 }
 
 void MachineFormController::onUnitsCurrentIndexChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_UNITS, value);
 }
 
 void MachineFormController::onRapidSpeedValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_RAPID_SPEED, value);
 }
 
 void MachineFormController::onAccelerationValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::VISUALISER, Settings::VISUALISER_ACCELERATION, value);
 }
 
 void MachineFormController::onSpindleSpeedMinValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MIN, value);
 }
 
 void MachineFormController::onSpindleSpeedMaxValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_SPINDLE_SPEED_MAX, value);
 }
 
 void MachineFormController::onTouchCommandValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_TOUCH_COMMAND, value);
 }
 
 void MachineFormController::onSafeCommandValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_SAFE_POSITION, value);
 }
 
 void MachineFormController::onMoveOnRestoreToggled(bool value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_MOVE_ON_RESTORE, value);
 }
 
 void MachineFormController::onRestoreModeCurrentIndexChanged(QString value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_RESTORE_MODE, value);
 }
 
 void MachineFormController::onUserCommand1ValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::USER_COMMAND, Settings::USER_COMMAND_1, value);
 }
 
 void MachineFormController::onUserCommand2ValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::USER_COMMAND, Settings::USER_COMMAND_2, value);
 }
 
 void MachineFormController::onUserCommand3ValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::USER_COMMAND, Settings::USER_COMMAND_3, value);
 }
 
 void MachineFormController::onUserCommand4ValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::USER_COMMAND, Settings::USER_COMMAND_4, value);
 }
 
 void MachineFormController::onHeightMapProbingFeedValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::HEIGHT_MAP, Settings::HEIGHT_MAP_PROBING_FEED, value);
 }

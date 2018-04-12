@@ -1,5 +1,5 @@
 /*
- * ToolModelForm.h
+ * ToolFormController.h
  *
  * Created: 06 2018 by Ashley
  *
@@ -19,9 +19,13 @@
 #pragma once
 
 #include "Controller/AbstractFormController.h"
+#include "Model/Settings/Profile/Profile.h"
 #include "Model/Settings/Tool/ToolListModel.h"
 #include "Model/Settings/Tool/ToolGeometryTableModel.h"
+#include "Model/Settings/ToolHolder/ToolHolderListModel.h"
 #include "ui_ToolForm.h"
+
+class SqlSettingsModel;
 
 class ToolFormController : public AbstractFormController
 {
@@ -35,39 +39,29 @@ public:
     void setFormActive(bool) override;
     void initialise() override;
 
-signals:
-    void settingChangedSignal(QString, QString, QVariant);
-
-    void toolGeometryCreatedSignal(ToolGeometry*);
-    void toolGeometryUpdatedSignal(ToolGeometry*);
-    void toolGeometryDeletedSignal(ToolGeometry*);
+    void setSettingsModel(SqlSettingsModel* handle);
 
 public slots:
-    void onToolListModelReady(ToolListModel* model);
-
-    void onToolGeometryCreated(ToolGeometry* item);
-    void onToolGeometryUpdated(ToolGeometry* item);
-    void onToolGeometryDeleted(ToolGeometry* item);
+    void onProfileChanged(Profile* model);
 
 private slots:
-    // Buttons
-    void onAddToolModelButtonClicked();
-    void onRemoveToolModelButtonClicked();
-    void onAddToolModelGeometryButtonClicked();
-    void onRemoveToolModelGeometryButtonClicked();
     void onToolListSelectionChanged(const QItemSelection& selected, const QItemSelection& delelected);
-    void onToolEditingFinished();
-    void onToolGeometrySelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onToolHolderComboBoxIndexChanged(int currentIndex);
+    void onToolNumberSpinBoxValueChanged(int value);
+    void onToolNameEditingFinished();
+    void onAddToolButtonClicked();
+    void onRemoveToolButtonClicked();
+
+    void onAddToolGeometryButtonClicked();
+    void onRemoveToolGeometryButtonClicked();
+    void onGeometrySelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onGeometryUpdated(ToolGeometry*);
+
 
 private: // Members
-    Ui::ToolModelForm mUi;
-    ToolListModel* mListModelHandle;
-    Tool* mSelectedToolHandle;
-
-    const static QString DEFAULT_NAME;
+    Ui::ToolForm mUi;
+    SqlSettingsModel* mSettingsModelHandle;
 
 private: // Member Functions
-    void toolModelSelectionValid(bool isValid);
-
-
+    void toolSelectionValid(bool isValid);
 };

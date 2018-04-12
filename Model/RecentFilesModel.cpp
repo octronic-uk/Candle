@@ -17,12 +17,13 @@
  */
 
 #include "RecentFilesModel.h"
-
+#include "Model/Settings/Profile/Profile.h"
 
 #include <QtDebug>
 
-RecentFilesModel::RecentFilesModel(QObject *parent)
+RecentFilesModel::RecentFilesModel(Profile* profile, QObject *parent)
     : QObject(parent),
+      mProfileHandle(profile),
       mMaxRecent(5)
 {
     qDebug() << "RecentFilesModel: Constructing";
@@ -46,6 +47,11 @@ int RecentFilesModel::count()
 QList<RecentFile> RecentFilesModel::getRecentFiles()
 {
    return mRecentFiles;
+}
+
+Profile* RecentFilesModel::getProfileHandle() const
+{
+    return mProfileHandle;
 }
 
 void RecentFilesModel::add(RecentFile file)

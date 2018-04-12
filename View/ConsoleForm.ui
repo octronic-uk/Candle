@@ -14,6 +14,24 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinimumSize</enum>
+   </property>
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
+    <number>4</number>
+   </property>
    <item>
     <widget class="QTextEdit" name="txtConsole"/>
    </item>
@@ -47,7 +65,7 @@
      <item>
       <widget class="QToolButton" name="commandSendButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -60,8 +78,8 @@
        </property>
        <property name="baseSize">
         <size>
-         <width>32</width>
-         <height>32</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="toolTip">
@@ -73,8 +91,8 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>24</width>
-         <height>24</height>
+         <width>16</width>
+         <height>16</height>
         </size>
        </property>
       </widget>
@@ -82,7 +100,7 @@
      <item>
       <widget class="QToolButton" name="consoleClearButton">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -95,8 +113,8 @@
        </property>
        <property name="baseSize">
         <size>
-         <width>32</width>
-         <height>32</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="toolTip">
@@ -108,8 +126,8 @@
        </property>
        <property name="iconSize">
         <size>
-         <width>24</width>
-         <height>24</height>
+         <width>16</width>
+         <height>16</height>
         </size>
        </property>
       </widget>

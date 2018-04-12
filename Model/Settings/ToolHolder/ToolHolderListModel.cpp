@@ -16,11 +16,16 @@
  * this file belongs to.
  */
 
+#include "Model/Settings/Profile/Profile.h"
+#include "Model/Settings/ToolHolder/ToolHolder.h"
 #include "ToolHolderListModel.h"
 #include <QtDebug>
 
-ToolHolderListModel::ToolHolderListModel(QObject *parent)
-    : QAbstractListModel(parent) {}
+ToolHolderListModel::ToolHolderListModel(Profile* profile, QObject *parent)
+    : QAbstractListModel(parent),
+      mProfileHandle(profile),
+      mSelected(nullptr)
+{}
 
 void ToolHolderListModel::initialise(QList<QSharedPointer<ToolHolder>> data)
 {
@@ -55,22 +60,24 @@ QVariant ToolHolderListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        QString str = mData.at(index.row())->getName();
-        return str;
+        if (index.row() >= 0 && index.row() < mData.count())
+        {
+            QString str = mData.at(index.row())->getName();
+            return str;
+        }
     }
 
     return QVariant();
 }
 
-void ToolHolderListModel::insert(QSharedPointer<ToolHolder> newItem)
+void ToolHolderListModel::insertItem(QSharedPointer<ToolHolder> newItem)
 {
     insertRows(mData.count(),1,QModelIndex());
-    emit toolHolderCreatedSignal(newItem.data());
     mData.append(newItem);
     emit dataChanged(QModelIndex(),QModelIndex());
 }
 
-void ToolHolderListModel::remove(ToolHolder* item)
+void ToolHolderListModel::deleteItem(ToolHolder* item)
 {
     int index = -1;
     for (auto data : mData)
@@ -84,7 +91,6 @@ void ToolHolderListModel::remove(ToolHolder* item)
     if (index > -1)
     {
         removeRows(index, 1, QModelIndex());
-        emit toolHolderDeletedSignal(item);
         mData.removeAt(index);
         emit dataChanged(QModelIndex(),QModelIndex());
     }
@@ -115,6 +121,40 @@ QModelIndex ToolHolderListModel::indexOf(ToolHolder* holder)
     return createIndex(index,0);
 }
 
+QModelIndex ToolHolderListModel::getIndexByID(int id)
+{
+   for (auto holder : mData)
+   {
+       if (holder->getID() == id)
+       {
+           return createIndex(mData.indexOf(holder),0);
+       }
+   }
+   return createIndex(-1,-1);
+}
+
+ToolHolder* ToolHolderListModel::getToolHolderByID(int id)
+{
+   for (auto holder : mData)
+   {
+       if (holder->getID() == id)
+       {
+           return holder.data();
+       }
+   }
+   return nullptr;
+}
+
+ToolHolder* ToolHolderListModel::getSelected() const
+{
+    return mSelected;
+}
+
+void ToolHolderListModel::setSelected(ToolHolder* selected)
+{
+    mSelected = selected;
+}
+
 bool ToolHolderListModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     if (index.row() >= 0 && index.row() < mData.count())
@@ -122,7 +162,6 @@ bool ToolHolderListModel::setData(const QModelIndex& index, const QVariant& valu
         if (role == Qt::EditRole)
         {
             mData[index.row()]->setName(value.toString());
-            emit toolHolderUpdatedSignal(mData[index.row()].data());
             emit dataChanged(QModelIndex(), QModelIndex());
         }
     }
@@ -131,5 +170,9 @@ bool ToolHolderListModel::setData(const QModelIndex& index, const QVariant& valu
 
 ToolHolder* ToolHolderListModel::getData(int index)
 {
+    if (index < 0 || index >= mData.count())
+    {
+        return nullptr;
+    }
     return mData[index].data();
 }

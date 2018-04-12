@@ -18,7 +18,6 @@
 #include <QHBoxLayout>
 
 #include "Model/Parser/GcodeViewParser.h"
-#include "Model/Settings/Ini/IniFileSettingsModel.h"
 #include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "Model/HeightMapFileModel.h"
 #include "Model/RecentFilesModel.h"
@@ -92,8 +91,7 @@ public slots:
     void onSetCompletionProgressValue(int);
     void onSetFormMode(MainFormMode mode);
     void onGrblMachineError(QString error);
-    void onRecentGcodeFilesModelReady(RecentFilesModel* model);
-    void onRecentHeightMapFilesModelReady(RecentFilesModel* model);
+    void onProfileChanged(Profile* model);
 
 private slots:
     // Main Menu Actions
@@ -129,7 +127,7 @@ private: // Members
     QString mLastFolder;
     QTimer mConnectionTimer;
     QTimer mStateQueryTimer;
-    QSharedPointer<IniFileSettingsModel> mSettingsModel;
+    //QSharedPointer<IniFileSettingsModel> mSettingsModel;
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
     RecentFilesModel* mRecentGcodeFilesModelHandle;
     RecentFilesModel* mRecentHeightMapFilesModelHande;

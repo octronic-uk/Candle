@@ -16,29 +16,46 @@
  * this file belongs to.
  */
 #include "Tool.h"
+#include "Model/Settings/Profile/Profile.h"
+
 #include <QtDebug>
 
-Tool::Tool(int id ,QString name)
+Tool::Tool
+(
+    Profile* parent,
+    int id,
+    QString name,
+    int toolNumber,
+    int toolHolderID
+)
     : AbstractDatabaseRecord(id),
+      mParentHandle(parent),
+      mSelectedGeometryHandle(nullptr),
       mName(name),
-      mSelectedGeometryHandle(nullptr)
+      mToolNumber(toolNumber),
+      mToolHolderID(toolHolderID)
 {
     qDebug() << "Tool: Constructing(int,QString)"
              << getID()
-             << getName();
+             << getName()
+             << getToolNumber()
+             << getToolHolderID();
 
-    mGeometryTableModel = QSharedPointer<ToolGeometryTableModel>::create();
+    mGeometryTableModel = QSharedPointer<ToolGeometryTableModel>::create(this);
 }
 
 Tool::Tool(const Tool& other)
     : AbstractDatabaseRecord (other.getID()),
       mName(other.mName),
-      mSelectedGeometryHandle(other.mSelectedGeometryHandle),
+      mToolNumber(other.mToolNumber),
+      mToolHolderID(other.mToolHolderID),
       mGeometryTableModel(other.mGeometryTableModel)
 {
     qDebug() << "Tool: Constructing(Tool&)"
              << getID()
-             << getName();
+             << getName()
+             << getToolNumber()
+             << getToolHolderID();
 }
 
 QString Tool::getName() const
@@ -53,7 +70,7 @@ void Tool::setName(const QString& name)
 
 bool Tool::operator==(const Tool& other)
 {
-   return getID() == other.getID() && getName() == other.getName();
+    return getID() == other.getID() && getName() == other.getName();
 }
 
 ToolGeometryTableModel* Tool::getGeometryTableModelHandle()
@@ -68,12 +85,17 @@ void Tool::addNewGeometryRow()
     {
         qDebug() << "Tool: WARNING!! parent id < 0";
     }
-    mGeometryTableModel->insertRows(getID(), mGeometryTableModel->rowCount(),1,QModelIndex());
+    mGeometryTableModel->insertRows(mGeometryTableModel->rowCount(),1,QModelIndex());
 }
 
-void Tool::insertGeometry(QSharedPointer<ToolGeometry> item)
+void Tool::insertItem(QSharedPointer<ToolGeometry> item)
 {
-    mGeometryTableModel->insert(item);
+    mGeometryTableModel->insertItem(item);
+}
+
+void Tool::deleteItem(ToolGeometry* geom)
+{
+   mGeometryTableModel->deleteItem(geom);
 }
 
 void Tool::disconnect()
@@ -81,15 +103,29 @@ void Tool::disconnect()
     mGeometryTableModel->disconnect();
 }
 
-void Tool::removeSelectedGeometryRow()
+int Tool::getToolNumber() const
 {
-    if (mSelectedGeometryHandle && mSelectedGeometryHandle->getID() < 0)
-    {
-       qDebug() << "Tool: Cannot remove, selected.id < 0";
-       return;
-    }
-    mGeometryTableModel->remove(mSelectedGeometryHandle);
-    mSelectedGeometryHandle = nullptr;
+    return mToolNumber;
+}
+
+void Tool::setToolNumber(int toolNumber)
+{
+    mToolNumber = toolNumber;
+}
+
+int Tool::getToolHolderID() const
+{
+    return mToolHolderID;
+}
+
+void Tool::setToolHolderID(int toolHolderID)
+{
+    mToolHolderID = toolHolderID;
+}
+
+Profile* Tool::getParentHandle() const
+{
+    return mParentHandle;
 }
 
 void Tool::setSelectedGeometryRow(int row)
@@ -101,4 +137,9 @@ void Tool::setSelectedGeometryRow(int row)
 ToolGeometry* Tool::getSelectedGeometryHandle()
 {
     return mSelectedGeometryHandle;
+}
+
+ToolGeometry* Tool::insertNew()
+{
+    return mGeometryTableModel->insertNew();
 }

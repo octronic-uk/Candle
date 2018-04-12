@@ -33,6 +33,12 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     void insert(QSharedPointer<Profile> profile);
     Profile* getCurrentProfileHandle();
+    Profile* createNewProfile();
+    Profile* get(int index);
+    void setSelected(Profile*);
+    QList<Profile*> getDataHandles();
+
 private:
     QList<QSharedPointer<Profile>> mData;
+    Profile* mCurrentProfileHandle;
 };

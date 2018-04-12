@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "Profile.h"
+
 #include <QtDebug>
 
 Profile::Profile(int id, QString name, bool selected)
@@ -23,8 +24,15 @@ Profile::Profile(int id, QString name, bool selected)
       mName(name),
       mSelected(selected)
 {
-    qDebug() << "Profile: Constructing(...)"
+    qDebug() << "Profile: Constructing"
              << id << name << selected;
+    mConnectionSettings = QSharedPointer<ConnectionSettings>::create(this);
+    mInterfaceSettings = QSharedPointer<InterfaceSettings>::create(this);
+    mMachineSettings = QSharedPointer<MachineSettings>::create(this);
+    mToolsListModel = QSharedPointer<ToolListModel>::create(this);
+    mToolHoldersListModel = QSharedPointer<ToolHolderListModel>::create(this);
+    mRecentGcodeFilesModel = QSharedPointer<RecentFilesModel>::create(this);
+    mRecentHeightMapFilesModel = QSharedPointer<RecentFilesModel>::create(this);
 }
 
 Profile::~Profile()
@@ -59,4 +67,39 @@ bool Profile::getSelected() const
 void Profile::setSelected(bool selected)
 {
     mSelected = selected;
+}
+
+InterfaceSettings* Profile::getInterfaceSettingsHandle()
+{
+   return mInterfaceSettings.data();
+}
+
+MachineSettings*Profile::getMachineSettingsHandle()
+{
+   return mMachineSettings.data();
+}
+
+ToolListModel*Profile::getToolListModelHandle()
+{
+   return mToolsListModel.data();
+}
+
+ToolHolderListModel* Profile::getToolHolderListModelHandle()
+{
+   return mToolHoldersListModel.data();
+}
+
+RecentFilesModel*Profile::getRecentGcodeFilesModelHandle()
+{
+   return mRecentGcodeFilesModel.data();
+}
+
+RecentFilesModel*Profile::getRecentHeightMapFilesModelHandle()
+{
+   return mRecentHeightMapFilesModel.data();
+}
+
+ConnectionSettings* Profile::getConnectionSettingsHandle()
+{
+    return mConnectionSettings.data();
 }

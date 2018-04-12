@@ -16,11 +16,17 @@
  * this file belongs to.
  */
 
+#include "Model/Settings/Profile/Profile.h"
+#include "Model/Settings/Tool/Tool.h"
+
 #include "ToolListModel.h"
 #include <QtDebug>
 
-ToolListModel::ToolListModel(QObject *parent)
-    : QAbstractListModel(parent) {}
+ToolListModel::ToolListModel(Profile* profileHandle, QObject *parent)
+    : QAbstractListModel(parent),
+      mProfileHandle(profileHandle),
+      mSelectedToolHandle(nullptr)
+{}
 
 void ToolListModel::initialise(QList<QSharedPointer<Tool>> data)
 {
@@ -55,22 +61,22 @@ QVariant ToolListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole)
     {
-        QString str = mData.at(index.row())->getName();
-        return str;
+        return QString("(%1) %2")
+                .arg(mData.at(index.row())->getToolNumber())
+                .arg(mData.at(index.row())->getName());
     }
 
     return QVariant();
 }
 
-void ToolListModel::insert(QSharedPointer<Tool> newItem)
+void ToolListModel::insertItem(QSharedPointer<Tool> newItem)
 {
     insertRows(mData.count(),1,QModelIndex());
-    emit toolCreatedSignal(newItem.data());
     mData.append(newItem);
     emit dataChanged(QModelIndex(),QModelIndex());
 }
 
-void ToolListModel::remove(Tool* item)
+void ToolListModel::deleteItem(Tool* item)
 {
     int index = -1;
     for (auto data : mData)
@@ -84,7 +90,6 @@ void ToolListModel::remove(Tool* item)
     if (index > -1)
     {
         removeRows(index, 1, QModelIndex());
-        emit toolDeletedSignal(item);
         mData.removeAt(index);
         emit dataChanged(QModelIndex(),QModelIndex());
     }
@@ -115,14 +120,74 @@ QModelIndex ToolListModel::indexOf(Tool* holder)
     return createIndex(index,0);
 }
 
+QModelIndex ToolListModel::getSelectedToolIndex()
+{
+    if (mSelectedToolHandle)
+    {
+        return getToolIndex(mSelectedToolHandle);
+    }
+    else
+    {
+        return QModelIndex();
+    }
+}
+
+QModelIndex ToolListModel::getToolIndex(Tool* holder)
+{
+    int index = -1;
+    for (auto data : mData)
+    {
+        if (data.data() == holder)
+        {
+            index = mData.indexOf(data);
+            break;
+        }
+    }
+    return createIndex(index,TOOL_HOLDER_ID_INDEX);
+}
+
+QModelIndex ToolListModel::getToolNumberIndex(Tool* holder)
+{
+    int index = -1;
+    for (auto data : mData)
+    {
+        if (data.data() == holder)
+        {
+            index = mData.indexOf(data);
+            break;
+        }
+    }
+    return createIndex(index,TOOL_NUMBER_INDEX);
+}
+
+Tool* ToolListModel::getSelected() const
+{
+    return mSelectedToolHandle;
+}
+
+void ToolListModel::setSelectedToolHandle(Tool* selectedToolHandle)
+{
+    mSelectedToolHandle = selectedToolHandle;
+}
+
 bool ToolListModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
     if (index.row() >= 0 && index.row() < mData.count())
     {
         if (role == Qt::EditRole)
         {
-            mData[index.row()]->setName(value.toString());
-            emit toolUpdatedSignal(mData[index.row()].data());
+            switch (index.column())
+            {
+                case TOOL_NAME_INDEX:
+                    mData[index.row()]->setName(value.toString());
+                    break;
+                case TOOL_HOLDER_ID_INDEX:
+                    mData[index.row()]->setToolHolderID(value.toInt());
+                    break;
+                case TOOL_NUMBER_INDEX:
+                    mData[index.row()]->setToolNumber(value.toInt());
+                    break;
+            }
             emit dataChanged(QModelIndex(), QModelIndex());
         }
     }
@@ -133,3 +198,5 @@ Tool* ToolListModel::getData(int index)
 {
     return mData[index].data();
 }
+
+

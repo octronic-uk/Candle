@@ -20,14 +20,7 @@
 
 #include <QtSql>
 
-#include "Model/Settings/AbstractSettingsModel.h"
-#include "Model/RecentFilesModel.h"
-// Tool
-#include "Model/Settings/Tool/Tool.h"
-#include "Model/Settings/Tool/ToolListModel.h"
-// Tool Holder
-#include "Model/Settings/ToolHolder/ToolHolder.h"
-#include "Model/Settings/ToolHolder/ToolHolderListModel.h"
+
 // Profiles
 #include "Model/Settings/Profile/ProfilesListModel.h"
 
@@ -41,29 +34,39 @@ public:
     bool getOpen() const;
     void setOpen(bool open);
 
+    Profile* getCurrentProfileHandle();
+    void setCurrentProfileHandle(Profile*);
+    Profile* getProfileFromModelAtIndex(int);
+
+    bool updateProfileName(Profile* profile, QString name);
+    bool createNewProfile(QString);
+    ProfilesListModel* getProfilesListModelHandle();
+
 signals:
-    void profileListModelReadySignal(ProfilesListModel*);
-    void recentGcodeFilesModelReadySignal(RecentFilesModel*);
-    void recentHeightMapFilesModelReadySignal(RecentFilesModel*);
-    void toolHolderListModelReadySignal(ToolHolderListModel*);
-    void toolListModelReadySignal(ToolListModel*);
-    void currentProfileChangedSignal(Profile* p);
+    void settingsModelReadySignal(SqlSettingsModel*);
+    void profileChangedSignal(Profile* p);
 
 public slots:
+
     void onCurrentProfileChanged(Profile* profile);
+
+    void onConnecitonSettingsUpdated(ConnectionSettings* settings);
+    void onInterfaceSettingsUpdated(InterfaceSettings* settings);
+    void onMachineSettingsUpdated(MachineSettings* settings);
+
     // Tools
-    void onToolCreated(Tool* tool);
+    void onToolCreated();
     void onToolUpdated(Tool* tool);
     void onToolDeleted(Tool* tool);
-    void onToolGeometryCreated(ToolGeometry* toolGeometry);
+    void onToolGeometryCreated();
     void onToolGeometryUpdated(ToolGeometry* toolGeometry);
     void onToolGeometryDeleted(ToolGeometry* toolGeometry);
 
     // Tool Holders
-    void onToolHolderCreated(ToolHolder* toolHolder);
+    void onToolHolderCreated();
     void onToolHolderUpdated(ToolHolder* toolHolder);
     void onToolHolderDeleted(ToolHolder* toolHolder);
-    void onToolHolderGeometryCreated(ToolHolderGeometry* toolHolderGeometry);
+    void onToolHolderGeometryCreated();
     void onToolHolderGeometryUpdated(ToolHolderGeometry* toolHolderGeometry);
     void onToolHolderGeometryDeleted(ToolHolderGeometry* toolHolderGeometry);
 
@@ -76,37 +79,55 @@ protected:
     // Profile
     bool createProfilesTable();
     int getProfilesFromDB();
+    bool insertProfileInDB(Profile* profile);
     bool updateProfileInDB(Profile* profile);
-    bool currentProfileValid();
-    bool insertDefaultProfile();
-    Profile* getCurrentProfileHandle();
+    bool deleteProfileFromDB(Profile* profile);
+    bool profileValid(Profile* profile);
+    // Connection
+    bool createConnectionSettingsTable();
+    int getConnectionSettingsFromDB(Profile* );
+    bool insertConnectionSettingsInDB(ConnectionSettings* connection);
+    bool updateConnectionSettingsInDB(ConnectionSettings* connection);
+    bool deleteConnectionSettingsFromDB(ConnectionSettings* connection);
+    // Interface
+    bool createInterfaceSettingsTable();
+    int getInterfaceSettingsFromDB(Profile* );
+    bool insertInterfaceSettingsInDB(InterfaceSettings* settings);
+    bool updateInterfaceSettingsInDB(InterfaceSettings* settings);
+    bool deleteInterfaceSettingsFromDB(InterfaceSettings* settings);
+    // Machine
+    bool createMachineSettingsTable();
+    int getMachineSettingsFromDB(Profile*);
+    bool insertMachineSettingsInDB(MachineSettings* settings);
+    bool updateMachineSettingsInDB(MachineSettings* settings);
+    bool deleteMachineSettingsFromDB(MachineSettings* settings);
     // Recent Gcode Files
     bool createRecentGcodeFilesTable();
-    int getRecentGcodeFilesFromDB();
+    int getRecentGcodeFilesFromDB(Profile*);
     bool insertRecentGcodeFileInDB();
     // Recent HeightMap Files
     bool createRecentHeightMapFilesTable();
     // Tool
-    int getToolsFromDB();
+    bool createToolsTable();
+    int getToolsFromDB(Profile*);
     bool insertToolInDB(Tool* tool);
     bool updateToolInDB(Tool* tool);
     bool deleteToolFromDB(Tool* tool);
-    bool createToolsTable();
-    bool createToolGeometryTable();
     // Tool Geometry
-    int getToolsGeometryFromDB();
+    int getToolsGeometryFromDB(Profile*);
+    bool createToolGeometryTable();
     bool insertToolGeometryInDB(ToolGeometry* tool);
     bool updateToolGeometryInDB(ToolGeometry* tool);
     bool deleteToolGeometryFromDB(ToolGeometry* tool);
     // Tool Holder
     bool createToolHoldersTable();
-    int getToolHoldersFromDB();
+    int getToolHoldersFromDB(Profile*);
     bool insertToolHolderInDB(ToolHolder* toolHolder);
     bool updateToolHolderInDB(ToolHolder* toolHolder);
     bool deleteToolHolderFromDB(ToolHolder* toolHolder);
     // Tool Holder Geometry
     bool createToolHoldersGeometryTable();
-    int getToolHoldersGeometryFromDB();
+    int getToolHoldersGeometryFromDB(Profile*);
     bool insertToolHolderGeometryInDB(ToolHolderGeometry* toolHolder);
     bool updateToolHolderGeometryInDB(ToolHolderGeometry* toolHolder);
     bool deleteToolHolderGeometryFromDB(ToolHolderGeometry* toolHolder);
@@ -114,72 +135,7 @@ protected:
 private: // Members
     QDir mSettingsDirectory;
     QString mFilePath;
-    Profile* mCurrentProfileHandle;
-    QSharedPointer<ToolListModel> mToolsListModel;
-    QSharedPointer<ToolHolderListModel> mToolHoldersListModel;
     QSharedPointer<ProfilesListModel> mProfilesListModel;
-    QSharedPointer<RecentFilesModel> mRecentGcodeFilesModel;
-    QSharedPointer<RecentFilesModel> mRecentHeightMapFilesModel;
 
-private: // Member Functions
-
-
-
-private: // Query Strings
-    const static QString DB_FILE_NAME;
-    const static QString SQLITE_DB;
-
-    // Profiles
-    const static QString CREATE_PROFILES_TABLE_QUERY;
-    const static QString INSERT_DEFAULT_PROFILE_QUERY;
-    const static QString SELECT_ALL_PROFILES_QUERY;
-    const static QString UPDATE_PROFILE_WHERE_ID_QUERY;
-
-    // Recent Files
-    const static QString CREATE_RECENT_GCODE_FILES_TABLE_QUERY;
-    const static QString SELECT_RECENT_GCODE_FILES_BY_PROFILE_ID_QUERY;
-
-    // Recent HeightMep Files
-    const static QString CREATE_RECENT_HEIGHT_MAP_FILES_TABLE_QUERY;
-    const static QString SELECT_RECENT_HEIGHT_MAP_FILES_BY_PROFILE_ID_QUERY;
-
-    // Connection
-    const static QString CREATE_CONNECTION_TABLE_QUERY;
-
-    // Interface
-    const static QString CREATE_INTERFACE_TABLE_QUERY;
-
-    // Machine
-    const static QString CREATE_MACHINE_TABLE_QUERY;
-
-    // Tools
-    const static QString CREATE_TOOL_TABLE_QUERY;
-    const static QString INSERT_TOOL_QUERY;
-    const static QString SELECT_TOOL_BY_ID_QUERY;
-    const static QString SELECT_ALL_FROM_TOOL_BY_PROFILE_ID_QUERY;
-    const static QString UPDATE_TOOL_QUERY;
-    const static QString DELETE_TOOL_QUERY;
-
-    // Tool Holders Geometry
-    const static QString CREATE_TOOL_GEOMETRY_TABLE_QUERY;
-    const static QString INSERT_TOOL_GEOMETRY_QUERY;
-    const static QString UPDATE_TOOL_GEOMETRY_QUERY;
-    const static QString SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY;
-    const static QString DELETE_TOOL_GEOMETRY_QUERY;
-
-    // Tool Holders
-    const static QString CREATE_TOOL_HOLDER_TABLE_QUERY;
-    const static QString INSERT_TOOL_HOLDER_QUERY;
-    const static QString SELECT_TOOL_HOLDER_BY_ID_QUERY;
-    const static QString SELECT_ALL_FROM_TOOL_HOLDER_BY_PROFILE_ID_QUERY;
-    const static QString UPDATE_TOOL_HOLDER_QUERY;
-    const static QString DELETE_TOOL_HOLDER_QUERY;
-
-    // Tool Holders Geometry
-    const static QString CREATE_TOOL_HOLDER_GEOMETRY_TABLE_QUERY;
-    const static QString INSERT_TOOL_HOLDER_GEOMETRY_QUERY;
-    const static QString UPDATE_TOOL_HOLDER_GEOMETRY_QUERY;
-    const static QString SELECT_TOOL_HOLDER_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY;
-    const static QString DELETE_TOOL_HOLDER_GEOMETRY_QUERY;
-
+    bool createNewProfile(Profile*);
 };

@@ -18,15 +18,18 @@
 
 #pragma once
 
+#include "Model/Settings/ToolHolder/ToolHolder.h"
 #include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+
+class ToolHolder;
 
 class ToolHolderGeometry : public AbstractDatabaseRecord
 {
 public:
     ToolHolderGeometry
     (
+        ToolHolder* parent,
         int id=-1,
-        int toolHolderId = -1,
         int index = -1,
         float height = 1,
         float upper=1,
@@ -50,10 +53,11 @@ public:
     void setIndex(int index);
 
     int getToolHolderID() const;
-    void setToolHolderID(int toolHolderID);
+
+    ToolHolder* getParentHandle() const;
 
 private:
-    int mToolHolderId;
+    ToolHolder* mParentHandle;
     int mIndex;
     float mHeight;
     float mUpperDiameter;

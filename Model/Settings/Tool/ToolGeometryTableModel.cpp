@@ -16,13 +16,16 @@
  * this file belongs to.
  */
 
+#include "Model/Settings/Tool/Tool.h"
 #include "ToolGeometryTableModel.h"
 #include <QtDebug>
 
 
 
-ToolGeometryTableModel::ToolGeometryTableModel(QObject *parent)
-    : QAbstractTableModel(parent)
+ToolGeometryTableModel::ToolGeometryTableModel(Tool* parentTool, QObject *parent)
+    : QAbstractTableModel(parent),
+      mSelectedGeometryHandle(nullptr),
+      mParentHandle(parentTool)
 {
     mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter";
 }
@@ -93,8 +96,8 @@ bool ToolGeometryTableModel::setData(const QModelIndex &index, const QVariant &v
                     mData[index.row()]->setLowerDiameter(value.toFloat());
                     break;
             }
+            emit geometryUpdatedSignal(mData[index.row()].data());
             emit dataChanged(index, index, QVector<int>() << role);
-            emit toolGeometryUpdatedSignal(mData[index.row()].data());
             return true;
         }
     }
@@ -109,33 +112,19 @@ Qt::ItemFlags ToolGeometryTableModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
 }
 
-bool ToolGeometryTableModel::insertRows(int parent_id, int row, int count, const QModelIndex &parent)
-{
-    beginInsertRows(parent, row, row + count - 1);
-    for (int i=0; i<count; i++)
-    {
-        QSharedPointer<ToolGeometry> geom =
-                QSharedPointer<ToolGeometry>::create
-                    (-1,parent_id,mData.count()+i, 1.0f,1.0f,1.0f);
-
-        mData.insert(row,geom);
-        emit toolGeometryCreatedSignal(geom.data());
-    }
-    endInsertRows();
-    return true;
-}
-
 bool ToolGeometryTableModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     beginInsertRows(parent, row, row + count - 1);
     for (int i=0; i<count; i++)
     {
-        QSharedPointer<ToolGeometry> geom =
-            QSharedPointer<ToolGeometry>::create
-                (-1,-1,mData.count()+i, 1.0f,1.0f,1.0f);
-
+        auto geom = QSharedPointer<ToolGeometry>::create
+        (
+            mParentHandle,
+            -1, // ID to be set by DB
+            mData.count()+i,
+            1.0f,1.0f,1.0f
+        );
         mData.insert(row,geom);
-        emit toolGeometryCreatedSignal(geom.data());
     }
     endInsertRows();
     return true;
@@ -153,7 +142,6 @@ bool ToolGeometryTableModel::removeRows(int row, int count, const QModelIndex &p
     for (int r=row; r<row+count; r++)
     {
         ToolGeometry* geom = mData.at(r).data();
-        emit toolGeometryDeletedSignal(geom);
         mData.removeAt(r);
     }
     endRemoveRows();
@@ -165,13 +153,24 @@ ToolGeometry* ToolGeometryTableModel::getToolGeometryHandleAtRow(int row)
     return mData[row].data();
 }
 
-void ToolGeometryTableModel::insert(QSharedPointer<ToolGeometry> item)
+void ToolGeometryTableModel::insertItem(QSharedPointer<ToolGeometry> item)
 {
-   mData.insert(item->getIndex(),item);
-   emit dataChanged(QModelIndex(), QModelIndex());
+    qDebug() << "ToolGeometryTableModel: insertItem with index" << item->getIndex();
+    if (item->getIndex() > 0 && item->getIndex() < mData.count())
+    {
+        qDebug() << "ToolGeometryTableModel: mData index" << item->getIndex();
+        mData.insert(item->getIndex(),item);
+    }
+    else
+    {
+        qDebug() << "ToolGeometryTableModel: mData index " << mData.count();
+        item->setIndex(mData.count());
+        mData.insert(mData.count(),item);
+    }
+    emit dataChanged(QModelIndex(), QModelIndex());
 }
 
-void ToolGeometryTableModel::remove(ToolGeometry* geom)
+void ToolGeometryTableModel::deleteItem(ToolGeometry* geom)
 {
     int index = -1;
     for (auto geomData : mData)
@@ -187,4 +186,52 @@ void ToolGeometryTableModel::remove(ToolGeometry* geom)
     {
         removeRows(index,1,QModelIndex());
     }
+}
+
+void ToolGeometryTableModel::removeSelectedGeometryRow()
+{
+    if (mSelectedGeometryHandle && mSelectedGeometryHandle->getID() < 0)
+    {
+        qDebug() << "Tool: Cannot remove, selected.id < 0";
+        return;
+    }
+    deleteItem(mSelectedGeometryHandle);
+    mSelectedGeometryHandle = nullptr;
+}
+
+void ToolGeometryTableModel::setSelectedGeometryRow(int row)
+{
+    qDebug() << "Setting selected geometry row" << row;
+    mSelectedGeometryHandle = getToolGeometryHandleAtRow(row);
+}
+
+ToolGeometry* ToolGeometryTableModel::getSelectedGeometryHandle()
+{
+    return mSelectedGeometryHandle;
+}
+
+QList<ToolGeometry*> ToolGeometryTableModel::getDataHandles()
+{
+   QList<ToolGeometry*> handles;
+   for (auto geom : mData)
+   {
+       handles.append(geom.data());
+   }
+   return handles;
+}
+
+ToolGeometry* ToolGeometryTableModel::insertNew()
+{
+    int index = mData.count();
+    beginInsertRows(QModelIndex(), index,index);
+    auto geom = QSharedPointer<ToolGeometry>::create
+    (
+        mParentHandle,
+        -1, // ID needs to be set by DB
+        index,
+        1.0f,1.0f,1.0f
+    );
+    mData.append(geom);
+    endInsertRows();
+    return geom.data();
 }

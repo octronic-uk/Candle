@@ -38,6 +38,7 @@ public:
 signals:
 public slots:
     void onStatusTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));
+    void onToolTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));
     void onUpdateMachinePosition(const QVector3D);
     void onUpdateWorkPosition(const QVector3D);
 private:

@@ -99,6 +99,12 @@ void GridDrawer::setSize(float size)
     mSize = size;
 }
 
+void GridDrawer::onSizeUpdated(float size)
+{
+   setSize(size);
+    updateData();
+}
+
 float GridDrawer::getMinorSpacing() const
 {
     return mMinorSpacing;

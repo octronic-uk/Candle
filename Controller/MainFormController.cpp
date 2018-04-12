@@ -46,16 +46,14 @@ MainFormController::MainFormController(QWidget *parent) :
     AbstractFormController(parent),
     mFormMode(MainFormMode::Idle),
     mLastFolder(QDir::homePath()),
-    mOldStatusBarLayout(nullptr),
     mRecentGcodeFilesModelHandle(nullptr),
-    mRecentHeightMapFilesModelHande(nullptr)
+    mRecentHeightMapFilesModelHande(nullptr),
+    mOldStatusBarLayout(nullptr)
 {
     qDebug() << "MainFormController: Constructing";
     mUi.setupUi(&mMainWindow);
     setupToolbarActions();
     setupCompletionAndBufferProgressBars();
-    // Consolidate into one eventually
-    mSettingsModel = QSharedPointer<IniFileSettingsModel>::create();
     mSqlSettingsModel = QSharedPointer<SqlSettingsModel>::create();
     setupSignalSlots();
     onMachineStateUpdated(GrblMachineState::Locked);
@@ -67,14 +65,12 @@ MainFormController::MainFormController(QWidget *parent) :
     {
         mGcodeFileModel.load(qApp->arguments().last());
     }
-    mSettingsModel->onLoadSettings();
     mSqlSettingsModel->onLoadSettings();
 }
 
 MainFormController::~MainFormController()
 {
     qDebug() << "MainFormController: Destructing";
-    mSettingsModel->onSaveSettings();
 }
 
 void MainFormController::setupToolbarActions()
@@ -122,91 +118,13 @@ void MainFormController::setupToolbarSignals()
 
 void MainFormController::setupSettingsModelSignals()
 {
-    // Settings Model to Settings Form
-    connect(
-        mSettingsModel.data(), SIGNAL(settingChangedSignal(QString, QString, QVariant)),
-        &mSettingsFormController, SLOT(onSettingChanged(QString, QString, QVariant))
-    );
-    // Settings Form to Settings Model
-    connect(
-        &mSettingsFormController, SIGNAL(settingChangedSignal(QString, QString, QVariant)),
-        mSettingsModel.data(), SLOT(onSettingChanged(QString, QString, QVariant))
-    );
-    // Settings Model to SerialPort Model
-    connect(
-        mSettingsModel.data(), SIGNAL(settingChangedSignal(QString, QString, QVariant)),
-        &mGrblMachineModel, SLOT(onSettingChanged(QString, QString, QVariant))
-    );
-
     // Profiles List Model
     connect
     (
         mSqlSettingsModel.data(),
-        SIGNAL(profileListModelReadySignal(ProfilesListModel*)),
+        SIGNAL(settingsModelReadySignal(SqlSettingsModel*)),
         &mSettingsFormController,
-        SLOT(onProfileListModelReady(ProfilesListModel*))
-    );
-
-    // Tool Model
-    ToolFormController* toolForm = mSettingsFormController.getToolFormController() ;
-    connect
-    (
-        mSqlSettingsModel.data(),
-        SIGNAL(toolListModelReadySignal(ToolListModel*)),
-        toolForm,
-        SLOT(onToolListModelReady(ToolListModel*))
-    );
-    connect
-    (
-        toolForm,
-        SIGNAL(toolGeometryCreatedSignal(ToolGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolGeometryCreated(ToolGeometry*))
-    );
-    connect
-    (
-        toolForm,
-        SIGNAL(toolGeometryUpdatedSignal(ToolGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolGeometryUpdated(ToolGeometry*))
-    );
-    connect
-    (
-        toolForm,
-        SIGNAL(toolGeometryDeletedSignal(ToolGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolGeometryDeleted(ToolGeometry*))
-    );
-
-    // Tool Holders Model
-    ToolHolderFormController* toolHolderForm = mSettingsFormController.getToolHolderFormController() ;
-    connect
-    (
-        mSqlSettingsModel.data(),
-        SIGNAL(toolHolderListModelReadySignal(ToolHolderListModel*)),
-        toolHolderForm,
-        SLOT(onToolHolderListModelReady(ToolHolderListModel*))
-    );
-    connect
-    (
-        toolHolderForm,
-        SIGNAL(toolHolderGeometryCreatedSignal(ToolHolderGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolHolderGeometryCreated(ToolHolderGeometry*))
-    );
-    connect
-    (
-        toolHolderForm,
-        SIGNAL(toolHolderGeometryUpdatedSignal(ToolHolderGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolHolderGeometryUpdated(ToolHolderGeometry*))
-    );
-    connect
-    (
-        toolHolderForm,
-        SIGNAL(toolHolderGeometryDeletedSignal(ToolHolderGeometry*)),
-        mSqlSettingsModel.data(),
-        SLOT(onToolHolderGeometryDeleted(ToolHolderGeometry*))
+        SLOT(onSettingsModelReady(SqlSettingsModel*))
     );
 }
 
@@ -316,26 +234,16 @@ void MainFormController::setupRecentFilesModelsSignals()
     // Recent files changed handlers
     connect(
         mSqlSettingsModel.data(),
-        SIGNAL(recentGcodeFilesModelReadySignal(RecentFilesModel*)),
+        SIGNAL(profileChangedSignal(Profile*)),
         this,
-        SLOT(onRecentGcodeFilesModelReady(RecentFilesModel*))
-    );
-    connect(
-        mSqlSettingsModel.data(),
-        SIGNAL(recentHeightMapFilesModelReadySignal(RecentFilesModel*)),
-        this,
-        SLOT(onRecentHeightMapFilesModelReady(RecentFilesModel*))
+        SLOT(onProfileChanged(Profile*))
     );
 }
 
-void MainFormController::onRecentGcodeFilesModelReady(RecentFilesModel* model)
+void MainFormController::onProfileChanged(Profile* profile)
 {
-    mRecentGcodeFilesModelHandle = model;
-}
-
-void MainFormController::onRecentHeightMapFilesModelReady(RecentFilesModel* model)
-{
-    mRecentHeightMapFilesModelHande = model;
+    mRecentGcodeFilesModelHandle = profile->getRecentGcodeFilesModelHandle();
+    mRecentHeightMapFilesModelHande = profile->getRecentHeightMapFilesModelHandle();
 }
 
 void MainFormController::setupGrblMachineModelSignals()
@@ -697,13 +605,19 @@ void MainFormController::onActFileOpenTriggered()
         {
             qDebug() << "MainFormController: HeightMap file format";
             mHeightMapFileModel.load(fileName);
-            mRecentHeightMapFilesModelHande->add(RecentFile(fileName));
+            if (mRecentHeightMapFilesModelHande)
+            {
+                mRecentHeightMapFilesModelHande->add(RecentFile(fileName));
+            }
         }
         else if (mGcodeFileModel.isGcodeFile(fileName))
         {
             qDebug() << "MainFormController: Gcode file format";
             mGcodeFileModel.load(fileName);
-            mRecentGcodeFilesModelHandle->add(RecentFile(fileName));
+            if (mRecentGcodeFilesModelHandle)
+            {
+                mRecentGcodeFilesModelHandle->add(RecentFile(fileName));
+            }
         }
         else
         {

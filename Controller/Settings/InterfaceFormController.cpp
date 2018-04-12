@@ -87,13 +87,11 @@ void InterfaceFormController::onDrawModeRasterToggled(bool checked)
 void InterfaceFormController::onGrayscaleSToggled(bool checked)
 {
     mUi.radGrayscaleZ->setChecked(!checked);
-    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_S_CODE, checked);
 }
 
 void InterfaceFormController::onGrayscaleZToggled(bool checked)
 {
     mUi.radGrayscaleS->setChecked(!checked);
-    emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE_Z_CODE, checked);
 }
 
 bool InterfaceFormController::antialiasing()
@@ -238,6 +236,16 @@ void InterfaceFormController::setDrawModeVectors(bool value)
     mUi.radDrawModeRaster->setChecked(!value);
 }
 
+void InterfaceFormController::setSettingsModel(SqlSettingsModel* handle)
+{
+    mSettingsModelHandle = handle;
+}
+
+void InterfaceFormController::onProfileChanged(Profile* profile)
+{
+
+}
+
 void InterfaceFormController::onLineWidthValueChanged(QString)
 {
 
@@ -270,30 +278,24 @@ void InterfaceFormController::onZBufferToggled(bool)
 
 void InterfaceFormController::onSimplifyToggled(bool value)
 {
-    emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY, value);
 }
 
 void InterfaceFormController::onSimplifyPrecisionValueChanged(QString value)
 {
-    emit settingChangedSignal(Settings::GFX, Settings::GFX_SIMPLIFY_PRECISION, value);
 }
 
 void InterfaceFormController::onGrayscaleToggled(bool value)
 {
-   emit settingChangedSignal(Settings::GFX, Settings::GFX_GRAYSCALE, value);
 }
 
 void InterfaceFormController::onShowProgramCommandsToggled(bool value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_SHOW_PROGRAM_COMMANDS, value);
 }
 
 void InterfaceFormController::onShowUiCommandsToggled(bool value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_CONSOLE_SHOW_UI_CMDS, value);
 }
 
 void InterfaceFormController::onAutoCompletionToggled(bool value)
 {
-    emit settingChangedSignal(Settings::UI, Settings::UI_AUTO_COMPLETION, value);
 }

@@ -1,5 +1,5 @@
 /*
- * ToolModelForm.cpp
+ * ToolFormController.cpp
  *
  * Created: 06 2018 by Ashley
  *
@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "ToolFormController.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 #include <QtDebug>
 #include <QMessageBox>
 
@@ -25,19 +26,19 @@ ToolFormController::ToolFormController(QWidget *parent)
     mUi.setupUi(this);
     mUi.splitter->setStretchFactor(0,1);
     mUi.splitter->setStretchFactor(1,2);
-    toolModelSelectionValid(false);
+    toolSelectionValid(false);
     mUi.geometryTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     setupSignalSlots();
 }
 
 ToolFormController::~ToolFormController() {}
 
-void ToolFormController::onToolListModelReady
-(ToolListModel* model)
+void ToolFormController::onProfileChanged
+(Profile* profile)
 {
-    qDebug() << "ToolFormController: onToolModel_ListModelReady";
-    mListModelHandle = model;
-    mUi.toolsListView->setModel(mListModelHandle);
+    qDebug() << "ToolFormController: onProfileChanged";
+    mUi.toolsListView->setModel(profile->getToolListModelHandle());
+    mUi.toolHolderComboBox->setModel(profile->getToolHolderListModelHandle());
     // Tool Model Selection Changed
     connect
     (
@@ -48,22 +49,51 @@ void ToolFormController::onToolListModelReady
     );
 }
 
-void ToolFormController::onToolGeometryCreated(ToolGeometry* item)
+void ToolFormController::onToolHolderComboBoxIndexChanged(int currentIndex)
 {
-    qDebug() << "ToolFormController: Forwarding toolGeometryCreated";
-    emit toolGeometryCreatedSignal(item);
+    qDebug() << "ToolFormController: tool holder combobox changed"
+             << currentIndex;
+    if (!mSettingsModelHandle)
+        return;
+
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+    if (!profile)
+        return;
+
+    ToolListModel* toolModel = profile->getToolListModelHandle();
+    if (!toolModel)
+        return;
+
+    ToolHolderListModel* toolHolderModel = profile->getToolHolderListModelHandle();
+    Tool* selected = toolModel->getSelected();
+
+    if (toolHolderModel && selected)
+    {
+        ToolHolder* holder = toolHolderModel->getData(currentIndex);
+        if (holder)
+        {
+            selected->setToolHolderID(holder->getID());
+            mSettingsModelHandle->onToolUpdated(selected);
+        }
+    }
 }
 
-void ToolFormController::onToolGeometryUpdated(ToolGeometry* item)
+void ToolFormController::onToolNumberSpinBoxValueChanged(int value)
 {
-    qDebug() << "ToolFormController: Forwarding toolGeometryUpdated";
-    emit toolGeometryUpdatedSignal(item);
-}
-
-void ToolFormController::onToolGeometryDeleted(ToolGeometry* item)
-{
-    qDebug() << "ToolFormController: Forwarding toolGeometryDeleted";
-    emit toolGeometryDeletedSignal(item);
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+    if (profile)
+    {
+        ToolListModel* toolModel = profile->getToolListModelHandle();
+        if (toolModel)
+        {
+            Tool* selected = toolModel->getSelected();
+            if (selected)
+            {
+                selected->setToolNumber(value);
+                mSettingsModelHandle->onToolUpdated(selected);
+            }
+        }
+    }
 }
 
 void ToolFormController::setupSignalSlots()
@@ -72,31 +102,43 @@ void ToolFormController::setupSignalSlots()
     connect
     (
         mUi.toolsAddButton, SIGNAL(clicked()),
-        this, SLOT(onAddToolModelButtonClicked())
+        this, SLOT(onAddToolButtonClicked())
     );
     // Remove tool holder
     connect
     (
         mUi.toolsRemoveButton, SIGNAL(clicked()),
-        this, SLOT(onRemoveToolModelButtonClicked())
+        this, SLOT(onRemoveToolButtonClicked())
     );
     // Add tool holder geometry
     connect
     (
         mUi.geometryAddButton, SIGNAL(clicked()),
-        this, SLOT(onAddToolModelGeometryButtonClicked())
+        this, SLOT(onAddToolGeometryButtonClicked())
     );
     // Remove tool holder geometry
     connect
     (
         mUi.geometryRemoveButton, SIGNAL(clicked()),
-        this, SLOT(onRemoveToolModelGeometryButtonClicked())
+        this, SLOT(onRemoveToolGeometryButtonClicked())
     );
     // Tool  Name
     connect
     (
         mUi.nameLineEdit, SIGNAL(editingFinished()),
-        this, SLOT(onToolEditingFinished())
+        this, SLOT(onToolNameEditingFinished())
+    );
+    // Tool Holder Combo Changed
+    connect
+    (
+        mUi.toolHolderComboBox, SIGNAL(currentIndexChanged(int)),
+        this, SLOT(onToolHolderComboBoxIndexChanged(int))
+    );
+    // Tool number spinbox
+    connect
+    (
+        mUi.toolNumberSpinBox, SIGNAL(valueChanged(int)),
+        this, SLOT(onToolNumberSpinBoxValueChanged(int))
     );
 }
 
@@ -110,105 +152,142 @@ void ToolFormController::initialise()
 
 }
 
+void ToolFormController::setSettingsModel(SqlSettingsModel* handle)
+{
+    mSettingsModelHandle = handle;
+}
+
 void ToolFormController::onToolListSelectionChanged
 (const QItemSelection& selected, const QItemSelection& deselected)
 {
     Q_UNUSED(deselected)
 
-    if (mSelectedToolHandle)
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+    ToolListModel* toolModel = profile->getToolListModelHandle();
+
+    if (toolModel->getSelected())
     {
-        mSelectedToolHandle->disconnect();
+        toolModel->getSelected()->disconnect();
     }
 
     if (selected.count() == 0)
     {
-        mSelectedToolHandle = nullptr;
+        toolModel->setSelectedToolHandle(nullptr);
         return;
     }
 
     int selectedRow = selected.indexes().first().row();
 
-    qDebug() << "ToolModelFormController: Selection Changed to row"
+    qDebug() << "ToolFormController: Selection Changed to row"
              << selectedRow;
 
-    mSelectedToolHandle = mListModelHandle->getData(selectedRow);
+    toolModel->setSelectedToolHandle(toolModel->getData(selectedRow));
 
-    qDebug() << "ToolModelFormController: Selected ID "
-             << mSelectedToolHandle->getID();
+    qDebug() << "ToolFormController: Selected ID "
+             << toolModel->getSelected()->getID();
 
-    toolModelSelectionValid(mSelectedToolHandle->isIdValid());
-    mUi.toolsRemoveButton->setEnabled(mSelectedToolHandle->isIdValid());
+    toolSelectionValid(toolModel->getSelected()->isIdValid());
+    mUi.toolsRemoveButton->setEnabled(toolModel->getSelected()->isIdValid());
 }
 
-void ToolFormController::onToolEditingFinished()
+void ToolFormController::onToolNameEditingFinished()
 {
-    if (mSelectedToolHandle->isIdValid())
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+    ToolListModel* toolModel = profile->getToolListModelHandle();
+    Tool* selected = toolModel->getSelected();
+
+    if (selected)
     {
-        mListModelHandle->setData
-        (
-            mListModelHandle->indexOf(mSelectedToolHandle),
-            mUi.nameLineEdit->text(),
-            Qt::EditRole
-        );
+        selected->setName(mUi.nameLineEdit->text());
+        mSettingsModelHandle->onToolUpdated(selected);
     }
 }
 
-void ToolFormController::onAddToolModelButtonClicked()
+void ToolFormController::onAddToolButtonClicked()
 {
-   qDebug() << "ToolModelFormController::onAddToolModelButtonClicked()";
-   mListModelHandle->insert(QSharedPointer<Tool>::create(-1,DEFAULT_NAME));
-}
-
-void ToolFormController::onRemoveToolModelButtonClicked()
-{
-   qDebug() << "ToolModelFormController::onRemoveToolModelButtonClicked()";
-   if (!mSelectedToolHandle->isIdValid())
+   qDebug() << "ToolModelFormController::onAddToolButtonClicked()";
+   Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+   if (profile)
    {
-       return;
-   }
-
-   int result = QMessageBox::warning
-   (
-        this,
-        "Are you sure?",
-        QString("Are you sure?\n\nAny tools using this Tool  will need to be reassigned\n\nDelete: '%1'?")
-            .arg(mSelectedToolHandle->getName()),
-        QMessageBox::Ok | QMessageBox::Cancel
-   );
-
-   switch (result)
-   {
-       case QMessageBox::Ok:
-           mListModelHandle->remove(mSelectedToolHandle);
-           mSelectedToolHandle = nullptr;
-           mUi.nameLineEdit->setText("");
-           mUi.geometryTable->setModel(nullptr);
-           mUi.geometryTable->setEnabled(false);
-           mUi.nameLineEdit->setEnabled(false);
-           mUi.nameLabel->setEnabled(false);
-           mUi.geometryAddButton->setEnabled(false);
-           mUi.geometryRemoveButton->setEnabled(false);
-           mUi.geometryLabel->setEnabled(false);
-           mUi.toolsListView->clearSelection();
-           break;
-       case QMessageBox::Cancel:
-           break;
+       mSettingsModelHandle->onToolCreated();
    }
 }
 
-void ToolFormController::onAddToolModelGeometryButtonClicked()
+void ToolFormController::onRemoveToolButtonClicked()
 {
-   qDebug() << "ToolModelFormController::onAddToolModelGeometryButtonClicked()";
-   mSelectedToolHandle->addNewGeometryRow();
+   qDebug() << "ToolHolderFormController::onRemoveToolButtonClicked()";
+   if (mSettingsModelHandle)
+   {
+       ToolListModel * model = mSettingsModelHandle
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle();
+
+       Tool *selected = model->getSelected();
+       if (selected)
+       {
+           int result = QMessageBox::warning
+           (
+                this,
+                "Are you sure?",
+                QString("Are you sure?\n\nAny tools using this Tool?\n\nDelete: '%1'?")
+                    .arg(selected->getName()),
+                QMessageBox::Ok | QMessageBox::Cancel
+           );
+
+           switch (result)
+           {
+               case QMessageBox::Ok:
+                   mSettingsModelHandle->onToolDeleted(selected);
+                   model->setSelectedToolHandle(nullptr);
+                   mUi.nameLineEdit->setText("");
+                   mUi.geometryTable->setModel(nullptr);
+                   mUi.geometryTable->setEnabled(false);
+                   mUi.nameLineEdit->setEnabled(false);
+                   mUi.nameLabel->setEnabled(false);
+                   mUi.geometryAddButton->setEnabled(false);
+                   mUi.geometryRemoveButton->setEnabled(false);
+                   mUi.geometryLabel->setEnabled(false);
+                   mUi.toolNumberLabel->setEnabled(false);
+                   mUi.toolNumberSpinBox->setEnabled(false);
+                   mUi.toolHolderComboBox->setEnabled(false);
+                   mUi.toolHolderLabel->setEnabled(false);
+                   mUi.toolsListView->clearSelection();
+                   break;
+               case QMessageBox::Cancel:
+                   break;
+           }
+       }
+   }
 }
 
-void ToolFormController::onRemoveToolModelGeometryButtonClicked()
+void ToolFormController::onAddToolGeometryButtonClicked()
 {
-   qDebug() << "ToolModelFormController::onRemoveToolModelGeometryButtonClicked()";
-   mSelectedToolHandle->removeSelectedGeometryRow();
+   qDebug() << "ToolFormController::onAddToolGeometryButtonClicked()";
+   if (mSettingsModelHandle)
+   {
+       mSettingsModelHandle->onToolGeometryCreated();
+   }
 }
 
-void ToolFormController::toolModelSelectionValid(bool isValid)
+void ToolFormController::onRemoveToolGeometryButtonClicked()
+{
+    qDebug() << "ToolFormController::onRemoveToolGeometryButtonClicked()";
+     if (mSettingsModelHandle)
+    {
+        ToolGeometry *selected = mSettingsModelHandle
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->getSelected()
+            ->getSelectedGeometryHandle();
+
+        if (selected)
+        {
+            mSettingsModelHandle->onToolGeometryDeleted(selected);
+        }
+    }
+}
+
+void ToolFormController::toolSelectionValid(bool isValid)
 {
     mUi.geometryAddButton->setEnabled(isValid);
     mUi.geometryRemoveButton->setEnabled(isValid);
@@ -216,26 +295,54 @@ void ToolFormController::toolModelSelectionValid(bool isValid)
     mUi.nameLineEdit->setEnabled(isValid);
     mUi.nameLabel->setEnabled(isValid);
     mUi.geometryLabel->setEnabled(isValid);
+    mUi.toolNumberLabel->setEnabled(isValid);
+    mUi.toolNumberSpinBox->setEnabled(isValid);
+    mUi.toolHolderLabel->setEnabled(isValid);
+    mUi.toolHolderComboBox->setEnabled(isValid);
+
+    if (!mSettingsModelHandle)
+    {
+        return;
+    }
+
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+
+    if (!profile)
+    {
+        return;
+    }
+
+    ToolListModel* toolModel = profile->getToolListModelHandle();
+    ToolHolderListModel* toolHolderModel = profile->getToolHolderListModelHandle();
 
     if (isValid)
     {
-       mUi.nameLineEdit->setText(mSelectedToolHandle->getName());
+        mUi.nameLineEdit->setText(toolModel->getSelected()->getName());
+        mUi.toolNumberSpinBox->setValue(toolModel->getSelected()->getToolNumber());
 
-       if (mUi.geometryTable->model())
-       {
-           mUi.geometryTable->model()->disconnect();
-       }
+        if (toolHolderModel)
+        {
+            QModelIndex index = toolHolderModel->getIndexByID
+                (toolModel->getSelected()->getToolHolderID());
+            mUi.toolHolderComboBox->setCurrentIndex(index.row());
+        }
 
-       if (mUi.geometryTable->selectionModel())
-       {
-           mUi.geometryTable->selectionModel()->disconnect();
-       }
+        if (mUi.geometryTable->model())
+        {
+            mUi.geometryTable->model()->disconnect();
+        }
 
-       ToolGeometryTableModel* tableModel = mSelectedToolHandle->getGeometryTableModelHandle();
+        if (mUi.geometryTable->selectionModel())
+        {
+            mUi.geometryTable->selectionModel()->disconnect();
+        }
 
-       if (tableModel != nullptr)
-       {
-           qDebug() << "ToolModelFormController: tableModel is valid";
+        ToolGeometryTableModel* tableModel = toolModel
+            ->getSelected()->getGeometryTableModelHandle();
+
+        if (tableModel != nullptr)
+        {
+           qDebug() << "ToolFormController: tableModel is valid";
 
            mUi.geometryTable->setModel(tableModel);
            mUi.geometryTable->setEditTriggers(QAbstractItemView::DoubleClicked);
@@ -244,23 +351,9 @@ void ToolFormController::toolModelSelectionValid(bool isValid)
            connect
            (
                 tableModel,
-                SIGNAL(toolGeometryCreatedSignal(ToolGeometry*)),
+                SIGNAL(geometryUpdatedSignal(ToolGeometry*)),
                 this,
-                SLOT(onToolGeometryCreated(ToolGeometry*))
-           );
-           connect
-           (
-                tableModel,
-                SIGNAL(toolGeometryUpdatedSignal(ToolGeometry*)),
-                this,
-                SLOT(onToolGeometryUpdated(ToolGeometry*))
-           );
-           connect
-           (
-                tableModel,
-                SIGNAL(toolGeometryDeletedSignal(ToolGeometry*)),
-                this,
-                SLOT(onToolGeometryDeleted(ToolGeometry*))
+                SLOT(onGeometryUpdated(ToolGeometry*))
            );
            // Geometry Table Selection
            connect
@@ -268,26 +361,36 @@ void ToolFormController::toolModelSelectionValid(bool isValid)
                mUi.geometryTable->selectionModel(),
                SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
                this,
-               SLOT(onToolGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
+               SLOT(onGeometrySelectionChanged(const QItemSelection&, const QItemSelection&))
            );
        }
        else
        {
-           qDebug() << "ToolModelFormController: tableModel is nullptr";
+           qDebug() << "ToolFormController: tableModel is nullptr";
        }
     }
 }
 
-void ToolFormController::onToolGeometrySelectionChanged
+void ToolFormController::onGeometrySelectionChanged
 (const QItemSelection &selected, const QItemSelection &deselected)
 {
-    qDebug() << "ToolModelFormController::onToolGeometrySelectionChanged";
+    qDebug() << "ToolFormController::onToolGeometrySelectionChanged";
     Q_UNUSED(deselected)
     if(selected.indexes().count() > 0)
     {
-        qDebug() << "ToolModelFormController: row valid";
-        mSelectedToolHandle->setSelectedGeometryRow(selected.indexes().first().row());
+        qDebug() << "ToolFormController: row valid";
+        Tool *selectedHandle = mSettingsModelHandle
+         ->getCurrentProfileHandle()
+         ->getToolListModelHandle()
+         ->getSelected();
+        selectedHandle->setSelectedGeometryRow(selected.indexes().first().row());
     }
 }
 
-const QString ToolFormController::DEFAULT_NAME = "New Tool";
+void ToolFormController::onGeometryUpdated(ToolGeometry* toolGeometry)
+{
+    if (mSettingsModelHandle)
+    {
+        mSettingsModelHandle->onToolGeometryUpdated(toolGeometry);
+    }
+}

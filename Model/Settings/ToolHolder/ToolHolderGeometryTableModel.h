@@ -20,14 +20,16 @@
 #include <QAbstractTableModel>
 #include <QStringList>
 #include <QSharedPointer>
-#include "ToolHolderGeometry.h"
+
+class ToolHolderGeometry;
+class ToolHolder;
 
 class ToolHolderGeometryTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit ToolHolderGeometryTableModel(QObject *parent = nullptr);
+    explicit ToolHolderGeometryTableModel(ToolHolder* parentHolder, QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -50,15 +52,17 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
     ToolHolderGeometry* getToolHolderGeometryHandleAtRow(int row);
-    void insert(QSharedPointer<ToolHolderGeometry> item);
-    void remove(ToolHolderGeometry* geom);
 
+    void insertItem(QSharedPointer<ToolHolderGeometry> item);
+    void deleteItem(ToolHolderGeometry* geom);
+
+    ToolHolderGeometry* insertNew();
+    QList<ToolHolderGeometry*> getDataHandles();
 signals:
-    void toolHolderGeometryCreatedSignal(ToolHolderGeometry*);
-    void toolHolderGeometryUpdatedSignal(ToolHolderGeometry*);
-    void toolHolderGeometryDeletedSignal(ToolHolderGeometry*);
+    void geometryUpdatedSignal(ToolHolderGeometry*);
 
 private:
     QStringList mTableHeaders;
+    ToolHolder* mParentHandle;
     QList<QSharedPointer<ToolHolderGeometry>> mData;
 };

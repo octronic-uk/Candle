@@ -19,15 +19,23 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include "Model/Settings/Tool/Tool.h"
 #include <QSharedPointer>
+
+class Profile;
+class Tool;
 
 class ToolListModel : public QAbstractListModel
 {
     Q_OBJECT
 
+    enum DataIndex {
+        TOOL_NAME_INDEX = 0,
+        TOOL_HOLDER_ID_INDEX = 3,
+        TOOL_NUMBER_INDEX = 4,
+    };
+
 public:
-    explicit ToolListModel(QObject *parent = nullptr);
+    explicit ToolListModel(Profile* profile, QObject *parent = nullptr);
     void initialise(QList<QSharedPointer<Tool>> data);
 
     // Basic functionality:
@@ -35,22 +43,26 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void insert(QSharedPointer<Tool> newItem);
     Tool* getData(int);
-    void remove(Tool* item);
+    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
     QList<QSharedPointer<Tool>>& getAllData();
     void clear();
+
+    void insertItem(QSharedPointer<Tool> newItem);
+    void deleteItem(Tool* item);
+
     QModelIndex indexOf(Tool* holder);
+    QModelIndex getSelectedToolIndex();
+    QModelIndex getToolIndex(Tool* holder);
+    QModelIndex getToolNumberIndex(Tool* holder);
+
+    Tool* getSelected() const;
+    void setSelectedToolHandle(Tool* selectedToolHandle);
 
 signals:
-    void toolCreatedSignal(Tool* tool);
-    void toolUpdatedSignal(Tool* tool);
-    void toolDeletedSignal(Tool* tool);
 
 private:
     QList<QSharedPointer<Tool>> mData;
-
-    // QAbstractItemModel interface
-public:
-    bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+    Profile* mProfileHandle;
+    Tool* mSelectedToolHandle;
 };

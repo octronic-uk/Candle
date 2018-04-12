@@ -7,8 +7,7 @@
 #include <QMessageBox>
 #include <QListWidgetItem>
 #include "Controller/AbstractFormController.h"
-#include "Model/Settings/Settings.h"
-#include "Model/Settings/Profile/ProfilesListModel.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "ui_SettingsForm.h"
 
 using namespace Ui;
@@ -34,8 +33,11 @@ public:
     InterfaceFormController* getInterfaceFormController();
 
 public slots:
-    void onProfileListModelReady(ProfilesListModel*);
-    void onSettingChanged(QString group, QString param, QVariant value);
+    void onSettingsModelReady(SqlSettingsModel*);
+    void onProfileComboBoxCurrentIndexChanged(int);
+    void onProfileRenameButtonClicked();
+    void onProfileAddButtonClicked();
+    void onProfileRemoveButtonClicked();
 
 signals:
     void settingChangedSignal(QString group, QString param, QVariant value);
@@ -48,8 +50,7 @@ private slots:
 private:
     QDialog mDialog;
     SettingsForm mUi;
-
-
+    SqlSettingsModel* mSettingsModelHandle;
     void setTabIcons();
 
 };

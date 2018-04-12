@@ -111,7 +111,11 @@ SOURCES +=\
     Utils/IndexOutOfBoundsException.cpp \
     Utils/GcodeCommandNotFoundException.cpp \
     Model/Settings/Profile/Profile.cpp \
-    Model/Settings/Profile/ProfilesListModel.cpp
+    Model/Settings/Profile/ProfilesListModel.cpp \
+    Model/Settings/ConnectionSettings.cpp \
+    Model/Settings/InterfaceSettings.cpp \
+    Model/Settings/MachineSettings.cpp \
+    Controller/Settings/NameDialogController.cpp
 
 HEADERS  += \
     Model/Parser/ArcProperties.h \
@@ -182,7 +186,12 @@ HEADERS  += \
     Model/Settings/Tool/ToolGeometryTableModel.h \
     Model/Settings/Tool/ToolListModel.h \
     \
-    Model/Settings/Settings.h
+    Model/Settings/Settings.h \
+    Model/Settings/Sql/SqlStrings.h \
+    Model/Settings/ConnectionSettings.h \
+    Model/Settings/InterfaceSettings.h \
+    Model/Settings/MachineSettings.h \
+    Controller/Settings/NameDialogController.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -202,7 +211,8 @@ FORMS    += \
     View/Settings/ToolHolderForm.ui \
     View/Settings/InterfaceForm.ui \
     View/Settings/MachineForm.ui \
-    View/Settings/ToolForm.ui
+    View/Settings/ToolForm.ui \
+    View/Settings/NameDialog.ui
 
 DEFINES += _USE_MATH_DEFINES
 DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

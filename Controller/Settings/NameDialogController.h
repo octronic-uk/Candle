@@ -1,7 +1,7 @@
 /*
- * RecentFilesModel.h
+ * NameDialogController.h
  *
- * Created: 24 2018 by Ashley
+ * Created: 11 2018 by Ashley
  *
  * Copyright 2018 Octronic. All rights reserved.
  *
@@ -18,31 +18,19 @@
 
 #pragma once
 
-#include <QObject>
-#include <QList>
-#include "Model/RecentFile.h"
+#include <QDialog>
 
-class Profile;
+#include "ui_NameDialog.h"
 
-class RecentFilesModel : public QObject
+class NameDialogController : public QDialog
 {
-    Q_OBJECT
 public:
-    explicit RecentFilesModel(Profile* profile, QObject *parent = nullptr);
-    ~RecentFilesModel();
+    NameDialogController(QWidget* parent = nullptr);
+    ~NameDialogController() override;
 
-    void add(RecentFile fileName);
-    void clear();
-    int count();
-    QList<RecentFile> getRecentFiles();
+    void setNameText(QString text);
+    QString getNameText();
 
-    Profile* getProfileHandle() const;
-
-signals:
-    void recentFilesChangedSignal();
-
-private:
-    Profile* mProfileHandle;
-    QList<RecentFile> mRecentFiles;
-    int mMaxRecent;
+protected:
+    Ui::NameDialog mUi;
 };

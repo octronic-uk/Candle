@@ -21,6 +21,10 @@
 #include "Controller/AbstractFormController.h"
 #include "ui_ConnectionSettingsForm.h"
 
+class SqlSettingsModel;
+class ConnectionSettings;
+class Profile;
+
 class ConnectionFormController : public AbstractFormController
 {
     Q_OBJECT
@@ -54,9 +58,11 @@ public:
 
     bool autoLine();
     void setAutoLine(bool value);
+
+    void setSettingsModel(SqlSettingsModel* handle);
+    void onProfileChanged(Profile*);
 public slots:
 
-    void onSettingChanged(QString group, QString param, QVariant value);
     void onSerialPortRefreshClicked();
     void onSerialPortNameChanged(QString);
     void onSerialBaudRateChanged(QString);
@@ -67,11 +73,13 @@ public slots:
     void onArcDegreeModeToggled(bool);
     void onArcDegreeValueChanged(QString);
 
-signals:
-    void settingChangedSignal(QString, QString, QVariant);
+private: // Member Functions
+    void searchPorts();
+    bool isModelValid();
+    ConnectionSettings* getSettings();
+    void commit();
 
 private:
-    void searchPorts();
-
     Ui::ConnectionSettingsFormController mUi;
+    SqlSettingsModel* mSettingsModelHandle;
 };

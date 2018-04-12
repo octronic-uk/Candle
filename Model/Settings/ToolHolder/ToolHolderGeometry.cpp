@@ -19,10 +19,12 @@
 #include "ToolHolderGeometry.h"
 #include <QtDebug>
 
+class ToolHolder;
+
 ToolHolderGeometry::ToolHolderGeometry
-(int id, int toolHolderId, int index, float height, float upper, float lower)
+(ToolHolder* parent, int id, int index, float height, float upper, float lower)
     : AbstractDatabaseRecord(id),
-      mToolHolderId(toolHolderId),
+      mParentHandle(parent),
       mIndex(index),
       mHeight(height),
       mUpperDiameter(upper),
@@ -33,7 +35,7 @@ ToolHolderGeometry::ToolHolderGeometry
 
 ToolHolderGeometry::ToolHolderGeometry(const ToolHolderGeometry& other)
     : AbstractDatabaseRecord (other.getID()),
-      mToolHolderId(other.mToolHolderId),
+      mParentHandle(other.mParentHandle),
       mIndex(other.mIndex),
       mHeight(other.mHeight),
       mUpperDiameter(other.mUpperDiameter),
@@ -41,7 +43,7 @@ ToolHolderGeometry::ToolHolderGeometry(const ToolHolderGeometry& other)
 {
     qDebug() << "ToolHolderModelGeometryItem: Creating ToolHolderGeometry(other&)"
              << "ID" << getID()
-             << "H_ID" <<  mToolHolderId
+             << "H_ID" <<  getToolHolderID()
              << "IDX" <<  mIndex
              << "H" <<  mHeight
              << "L_D" <<  mLowerDiameter
@@ -95,10 +97,10 @@ void ToolHolderGeometry::setIndex(int index)
 
 int ToolHolderGeometry::getToolHolderID() const
 {
-    return mToolHolderId;
+    return mParentHandle->getID();
 }
 
-void ToolHolderGeometry::setToolHolderID(int toolHolderID)
+ToolHolder* ToolHolderGeometry::getParentHandle() const
 {
-   mToolHolderId = toolHolderID;
+    return mParentHandle;
 }

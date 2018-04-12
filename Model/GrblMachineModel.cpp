@@ -324,6 +324,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
     if (!mSerialPort.isOpen())
     {
         qDebug() << "GrblMachineModel: sendCommand FAILED -> SerialPort is not open";
+        mProgramSendTimer.stop();
         return false;
     }
 

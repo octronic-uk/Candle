@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QScrollBar>
 #include <QColorDialog>
+#include "Controller/Settings/NameDialogController.h"
 #include "ui_SettingsForm.h"
 
 SettingsFormController::SettingsFormController(QWidget *parent)
@@ -15,6 +16,7 @@ SettingsFormController::SettingsFormController(QWidget *parent)
     qDebug() << "SettingsFormController: Constructing";
     mUi.setupUi(&mDialog);
     setupSignalSlots();
+    mSettingsModelHandle = nullptr;
     mDialog.setLocale(QLocale::C);
     //setTabIcons();
 }
@@ -55,53 +57,111 @@ ToolHolderFormController* SettingsFormController::getToolHolderFormController()
     return mUi.toolHolderFormController;
 }
 
-ConnectionFormController*SettingsFormController::getConnectionFormController()
+ConnectionFormController* SettingsFormController::getConnectionFormController()
 {
     return mUi.connectionFormController;
 }
 
-MachineFormController*SettingsFormController::getMachineFormController()
+MachineFormController* SettingsFormController::getMachineFormController()
 {
     return mUi.machineFormController;
 }
 
-InterfaceFormController*SettingsFormController::getInterfaceFormController()
+InterfaceFormController* SettingsFormController::getInterfaceFormController()
 {
    return mUi.interfaceFormController;
 }
 
-void SettingsFormController::onProfileListModelReady
-(ProfilesListModel* model)
+void SettingsFormController::onSettingsModelReady
+(SqlSettingsModel *model)
 {
-    mUi.profilesComboBox->setModel(model);
+    mSettingsModelHandle = model;
+    mUi.profilesComboBox->setModel(model->getProfilesListModelHandle());
+    getConnectionFormController()->setSettingsModel(mSettingsModelHandle);
+    getInterfaceFormController()->setSettingsModel(mSettingsModelHandle);
+    getMachineFormController()->setSettingsModel(mSettingsModelHandle);
+    getToolFormController()->setSettingsModel(mSettingsModelHandle);
+    getToolHolderFormController()->setSettingsModel(mSettingsModelHandle);
 }
 
-void SettingsFormController::onSettingChanged(QString group, QString param, QVariant value)
+void SettingsFormController::onProfileComboBoxCurrentIndexChanged(int index)
 {
-    /*
-    qDebug() << "SettingsFormController: onSettingChanged"
-             << group
-             << param
-             << value;
-    */
+    qDebug() << "SettinngsFormController: Profile combo box index changed" << index;
+    Profile* profile = mSettingsModelHandle->getProfileFromModelAtIndex(index);
+    mSettingsModelHandle->setCurrentProfileHandle(profile);
+    getToolFormController()->onProfileChanged(profile);
+    getToolHolderFormController()->onProfileChanged(profile);
+    getConnectionFormController()->onProfileChanged(profile);
+    getMachineFormController()->onProfileChanged(profile);
+    getInterfaceFormController()->onProfileChanged(profile);
 
-   if (group == Settings::GFX)
+}
+
+void SettingsFormController::onProfileRenameButtonClicked()
+{
+    qDebug() << "SettinngsFormController: Profile Rename clicked";
+    NameDialogController dialog(&mDialog);
+    Profile *profile = mSettingsModelHandle->getCurrentProfileHandle();
+    dialog.setWindowTitle("Rename Profile");
+    dialog.setNameText(profile->getName());
+    int response = dialog.exec();
+
+    switch (response)
+    {
+        case QDialog::Accepted:
+            qDebug() << "SettingsFormController: Rename Accepted" << dialog.getNameText();
+            mSettingsModelHandle->updateProfileName(profile, dialog.getNameText());
+            break;
+        case QDialog::Rejected:
+            qDebug() << "SettingsFormController: Rename Cancelled";
+            break;
+    }
+}
+
+void SettingsFormController::onProfileAddButtonClicked()
+{
+    qDebug() << "SettinngsFormController: Profile add clicked";
+    NameDialogController dialog(&mDialog);
+    dialog.setWindowTitle("Create Profile");
+    dialog.setNameText("");
+    int response = dialog.exec();
+
+    switch (response)
+    {
+        case QDialog::Accepted:
+            qDebug() << "SettingsFormController: Create Accepted" << dialog.getNameText();
+            mSettingsModelHandle->createNewProfile(dialog.getNameText());
+            break;
+        case QDialog::Rejected:
+            qDebug() << "SettingsFormController: Create Cancelled";
+            break;
+    }
+}
+
+void SettingsFormController::onProfileRemoveButtonClicked()
+{
+    qDebug() << "SettinngsFormController: Profile Remove Clicked";
+    if (!mSettingsModelHandle)
+    {
+        qDebug() << "SettinngsFormController: Settings model is null";
+        return;
+    }
+
+   int result = QMessageBox::warning
+   (
+        this,
+        "Delete Profile",
+        QString("Are you sure you want to delete this profile?\n\n%1")
+            .arg(mSettingsModelHandle->getCurrentProfileHandle()->getName()),
+        QMessageBox::Ok | QMessageBox::Cancel
+   );
+
+   switch (result)
    {
-
-   }
-
-   else if (group == Settings::HEIGHT_MAP)
-   {
-
-   }
-
-   else if (group == Settings::TOOL)
-   {
-
-   }
-   else if (group == Settings::VISUALISER)
-   {
-
+       case QMessageBox::Ok:
+           break;
+       case QMessageBox::Cancel:
+           break;
    }
 }
 
@@ -109,9 +169,29 @@ void SettingsFormController::setupSignalSlots()
 {
     qDebug() << "SettingsFormController: Setup Signals/Slots";
 
-    // Main ----------------------------------------------------------------------
+    // Lower Buttons
     connect(mUi.closeButton, SIGNAL(clicked()),SLOT(onCloseButtonClicked()));
     connect(mUi.restoreDefaultsButton, SIGNAL(clicked()),SLOT(onRestoreDefaultsButtonClicked()));
+
+    // Profile Controls
+    connect(
+        mUi.profilesComboBox,SIGNAL(currentIndexChanged(int)),
+        this, SLOT(onProfileComboBoxCurrentIndexChanged(int))
+    );
+    connect
+    (
+        mUi.profileRenameButton, SIGNAL(clicked()),
+        this, SLOT(onProfileRenameButtonClicked())
+    );
+    connect(
+        mUi.profileAddButton,SIGNAL(clicked()),
+        this, SLOT(onProfileAddButtonClicked())
+    );
+    connect(
+        mUi.profileRemoveButton,SIGNAL(clicked()),
+        this, SLOT(onProfileRemoveButtonClicked())
+    );
+
 }
 
 ToolFormController* SettingsFormController::getToolFormController()
@@ -144,6 +224,3 @@ void SettingsFormController::onRestoreDefaultsButtonClicked()
     getMachineFormController()->initialise();
     getToolHolderFormController()->initialise();
 }
-
-
-

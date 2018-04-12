@@ -50,7 +50,8 @@ public:
 
     float getSize() const;
     void setSize(float size);
-
+public slots:
+    void onSizeUpdated(float size);
 protected:
     bool updateData() override;
 

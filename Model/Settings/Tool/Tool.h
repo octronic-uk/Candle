@@ -22,10 +22,20 @@
 #include "Model/Settings/Tool/ToolGeometryTableModel.h"
 #include <QSharedPointer>
 
+class Profile;
+
 class Tool : public AbstractDatabaseRecord
 {
 public:
-    explicit Tool(int id = -1, QString name = "");
+    explicit Tool
+    (
+        Profile* mParentHandle,
+        int id = -1,
+        QString name = "New Tool",
+        int toolNumber = -1,
+        int toolHolderID = -1
+    );
+
     Tool(const Tool& other);
 
     QString getName() const;
@@ -35,15 +45,27 @@ public:
 
     ToolGeometryTableModel* getGeometryTableModelHandle();
     void addNewGeometryRow();
-    void setSelectedGeometryRow(int row);
     ToolGeometry* getSelectedGeometryHandle();
 
-    void insertGeometry(QSharedPointer<ToolGeometry> item);
+    ToolGeometry* insertNew();
+    void insertItem(QSharedPointer<ToolGeometry> item);
+    void deleteItem(ToolGeometry* geom);
     void disconnect();
-    void removeSelectedGeometryRow();
 
+    int getToolNumber() const;
+    void setToolNumber(int toolNumber);
+
+    int getToolHolderID() const;
+    void setToolHolderID(int toolHolderID);
+
+    Profile* getParentHandle() const;
+
+    void setSelectedGeometryRow(int row);
 private:
+    Profile* mParentHandle;
+    ToolGeometry *mSelectedGeometryHandle;
     QString mName;
-    ToolGeometry* mSelectedGeometryHandle;
+    int mToolNumber;
+    int mToolHolderID;
     QSharedPointer<ToolGeometryTableModel> mGeometryTableModel;
 };

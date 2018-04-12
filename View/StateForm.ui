@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>372</width>
-    <height>136</height>
+    <width>350</width>
+    <height>154</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,20 +22,25 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1,1,1">
-   <item>
-    <spacer name="horizontalSpacer_3">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+  <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="1">
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinimumSize</enum>
+   </property>
+   <property name="leftMargin">
+    <number>4</number>
+   </property>
+   <property name="topMargin">
+    <number>4</number>
+   </property>
+   <property name="rightMargin">
+    <number>4</number>
+   </property>
+   <property name="bottomMargin">
+    <number>4</number>
+   </property>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="sizeConstraint">
@@ -53,7 +58,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>20</height>
           </size>
          </property>
@@ -75,13 +80,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -103,19 +108,19 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -149,7 +154,7 @@
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -181,13 +186,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -218,13 +223,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -264,13 +269,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -310,8 +315,14 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
           </size>
          </property>
          <property name="cursor">
@@ -354,13 +365,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -388,8 +399,14 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
           </size>
          </property>
          <property name="cursor">
@@ -428,13 +445,13 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>0</height>
           </size>
          </property>
@@ -474,8 +491,14 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
+           <width>60</width>
            <height>16777215</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>60</width>
+           <height>0</height>
           </size>
          </property>
          <property name="cursor">
@@ -553,6 +576,25 @@
       </widget>
      </item>
      <item>
+      <widget class="QLineEdit" name="toolText">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Tool</string>
+       </property>
+       <property name="frame">
+        <bool>false</bool>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -566,19 +608,6 @@
       </spacer>
      </item>
     </layout>
-   </item>
-   <item>
-    <spacer name="horizontalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>112</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

@@ -16,13 +16,14 @@
  * this file belongs to.
  */
 
+#include "Model/Settings/Tool/Tool.h"
 #include "ToolGeometry.h"
 #include <QtDebug>
 
 ToolGeometry::ToolGeometry
-(int id, int toolId, int index, float height, float upper, float lower)
+(Tool* parent, int id, int index, float height, float upper, float lower)
     : AbstractDatabaseRecord(id),
-      mToolId(toolId),
+      mParentHandle(parent),
       mIndex(index),
       mHeight(height),
       mUpperDiameter(upper),
@@ -33,7 +34,6 @@ ToolGeometry::ToolGeometry
 
 ToolGeometry::ToolGeometry(const ToolGeometry& other)
     : AbstractDatabaseRecord (other.getID()),
-      mToolId(other.mToolId),
       mIndex(other.mIndex),
       mHeight(other.mHeight),
       mUpperDiameter(other.mUpperDiameter),
@@ -41,7 +41,7 @@ ToolGeometry::ToolGeometry(const ToolGeometry& other)
 {
     qDebug() << "ToolModelGeometryItem: Creating ToolGeometry(other&)"
              << "ID" << getID()
-             << "H_ID" <<  mToolId
+             << "H_ID" <<  getToolID()
              << "IDX" <<  mIndex
              << "H" <<  mHeight
              << "L_D" <<  mLowerDiameter
@@ -95,10 +95,15 @@ void ToolGeometry::setIndex(int index)
 
 int ToolGeometry::getToolID() const
 {
-    return mToolId;
+    return mParentHandle->getID();
 }
 
-void ToolGeometry::setToolID(int toolID)
+Tool* ToolGeometry::getParentHandle() const
 {
-   mToolId = toolID;
+    return mParentHandle;
+}
+
+void ToolGeometry::setParentHandle(Tool* parentHandle)
+{
+    mParentHandle = parentHandle;
 }

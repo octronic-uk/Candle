@@ -25,10 +25,12 @@ StateFormController::StateFormController(QWidget *parent)
     mUi.setupUi(this);
     setupSignalSlots();
     mUi.statusText->setAutoFillBackground(false);
+    mUi.toolText->setAutoFillBackground(false);
 
     QFont font(mUi.statusText->font());
     font.setBold(true);
     mUi.statusText->setFont(font);
+    mUi.toolText->setFont(font);
 }
 
 StateFormController::~StateFormController()
@@ -39,12 +41,22 @@ StateFormController::~StateFormController()
 
 void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QColor bgColor)
 {
-    qDebug() << "StateFormController:" << text << textColor << bgColor;
+    qDebug() << "StateFormController: Status" << text << textColor << bgColor;
     mUi.statusText->setText(text);
     QPalette p = mUi.statusText->palette();
     p.setColor(mUi.statusText->foregroundRole(), textColor);
     p.setColor(mUi.statusText->backgroundRole(), bgColor);
     mUi.statusText->setPalette(p);
+}
+
+void StateFormController::onToolTextUpdate(QString text, QColor textColor, QColor bgColor)
+{
+    qDebug() << "StateFormController: Tool" << text << textColor << bgColor;
+    mUi.toolText->setText(text);
+    QPalette p = mUi.toolText->palette();
+    p.setColor(mUi.toolText->foregroundRole(), textColor);
+    p.setColor(mUi.toolText->backgroundRole(), bgColor);
+    mUi.toolText->setPalette(p);
 }
 
 void StateFormController::onUpdateMachinePosition(const QVector3D pos)

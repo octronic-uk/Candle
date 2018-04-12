@@ -20,6 +20,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 
 #include "ConnectionFormController.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "Model/SerialBaudRate.h"
 #include "Model/Settings/Settings.h"
 
@@ -27,6 +28,7 @@ ConnectionFormController::ConnectionFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
     mUi.setupUi(this);
+    setupSignalSlots();
     searchPorts();
 }
 
@@ -38,11 +40,11 @@ void ConnectionFormController::setupSignalSlots()
 {
     // Serial
     connect(mUi.serialPortRefreshButton, SIGNAL(clicked()), SLOT(onSerialPortRefreshClicked()));
-    connect(mUi.serialPortNameBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialPortNameChanged(QString)));
-    connect(mUi.serialBaudRateBox, SIGNAL(currentIndexChanged(QString)), SLOT(onSerialBaudRateChanged(QString)));
+    connect(mUi.serialPortNameBox, SIGNAL(activated(QString)), SLOT(onSerialPortNameChanged(QString)));
+    connect(mUi.serialBaudRateBox, SIGNAL(activated(QString)), SLOT(onSerialBaudRateChanged(QString)));
     // Sender
     connect(mUi.chkIgnoreErrors, SIGNAL(toggled(bool)), this, SLOT(onIgnoreErrorsToggled(bool)));
-    connect(mUi.chkAutoLine, SIGNAL(toggled(bool)), this, SLOT(onAutoLineToggled(bool)));
+    connect(mUi.chkAutoParserState, SIGNAL(toggled(bool)), this, SLOT(onAutoLineToggled(bool)));
     // Parser
     connect(mUi.radArcLengthMode, SIGNAL(toggled(bool)), this, SLOT(onArcLengthModeToggled(bool)));
     connect(mUi.txtArcLength, SIGNAL(valueChanged(QString)), this, SLOT(onArcLengthValueChanged(QString)));
@@ -57,13 +59,17 @@ void ConnectionFormController::setFormActive(bool)
 
 void ConnectionFormController::initialise()
 {
-    setPortName("");
-    setBaudRate(SerialBaudRate::BAUD_115200);
-    setIgnoreErrors(false);
-    setArcLength(0.0);
-    setArcDegreeMode(true);
-    setArcDegree(5.0);
-
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        setPortName(settings->getSerialPort());
+        setBaudRate(settings->getSerialBaudRate());
+        setIgnoreErrors(settings->getIgnoreErrorMessages());
+        setAutoLine(settings->getSetParserState());
+        setArcDegreeMode(settings->getArcApproximation());
+        setArcLength(settings->getArcApproximationLength());
+        setArcDegree(settings->getArcApproximationDegrees());
+    }
 }
 
 void ConnectionFormController::onSerialPortRefreshClicked()
@@ -71,41 +77,137 @@ void ConnectionFormController::onSerialPortRefreshClicked()
     searchPorts();
 }
 
+bool ConnectionFormController::isModelValid()
+{
+    if (!mSettingsModelHandle)
+    {
+        qDebug() << "ConnectionFormController: mSettingsModel = nullptr";
+        return false;
+    }
+
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+
+    if(!profile)
+    {
+        qDebug() << "ConnectionFormController: profile = nullptr";
+        return false;
+    }
+
+    ConnectionSettings* settings = profile->getConnectionSettingsHandle();
+
+    if (!settings)
+    {
+        qDebug() << "ConnectionFormController: settings = nullptr";
+        return false;
+    }
+    return true;
+}
+
+ConnectionSettings* ConnectionFormController::getSettings()
+{
+    return mSettingsModelHandle
+            ->getCurrentProfileHandle()
+            ->getConnectionSettingsHandle();
+}
+
+void ConnectionFormController::commit()
+{
+    auto settings = getSettings();
+    mSettingsModelHandle->onConnecitonSettingsUpdated(settings);
+}
+
 void ConnectionFormController::onSerialPortNameChanged(QString port)
 {
-   emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_PORT_NAME, port);
+    qDebug() << "ConnectionFormController: onSerialPortNameChanged" << port;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSerialPort(port);
+        commit();
+    }
 }
 
 void ConnectionFormController::onSerialBaudRateChanged(QString baud)
 {
-    emit settingChangedSignal(Settings::SERIAL, Settings::SERIAL_BAUD_RATE, baud.toInt());
+    qDebug() << "ConnectionFormController: onSerialBaudRateChanged" << baud;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSerialBaudRate(baud.toInt());
+        commit();
+    }
 }
 
 void ConnectionFormController::onIgnoreErrorsToggled(bool value)
 {
+    qDebug() << "ConnectionFormController: onIgnoreErrors" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setIgnoreErrorMessages(value);
+        commit();
+    }
 }
 
-void ConnectionFormController::onAutoLineToggled(bool value)
+void ConnectionFormController::onAutoLineToggled(bool autoLine)
 {
+    qDebug() << "ConnectionFormController: onAutoLineToggled" << autoLine;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSetParserState(autoLine);
+        commit();
+    }
 }
 
 void ConnectionFormController::onArcLengthModeToggled(bool value)
 {
+    qDebug() << "ConnectionFormController: onArcLengthMode" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        mUi.radArcDegreeMode->setChecked(!value);
+        mUi.txtArcDegree->setEnabled(!value);
+        mUi.txtArcLength->setEnabled(value);
+        settings->setArcApproximation(value);
+        commit();
+    }
 }
 
-void ConnectionFormController::onArcLengthValueChanged(QString)
+void ConnectionFormController::onArcLengthValueChanged(QString value)
 {
-
+qDebug() << "ConnectionFormController: onArcLengthValueChanged" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setArcApproximationLength(value.toFloat());
+        commit();
+    }
 }
 
-void ConnectionFormController::onArcDegreeModeToggled(bool)
+void ConnectionFormController::onArcDegreeModeToggled(bool value)
 {
-
+qDebug() << "ConnectionFormController: onArcDegreeChanged" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        mUi.radArcLengthMode->setChecked(!value);
+        mUi.txtArcDegree->setEnabled(value);
+        mUi.txtArcLength->setEnabled(!value);
+        settings->setArcApproximation(!value);
+        commit();
+    }
 }
 
-void ConnectionFormController::onArcDegreeValueChanged(QString)
+void ConnectionFormController::onArcDegreeValueChanged(QString value)
 {
-
+qDebug() << "ConnectionFormController: onArcDegreeValueChanged" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setArcApproximationDegrees(value.toFloat());
+        commit();
+    }
 }
 
 QString ConnectionFormController::getPortName()
@@ -163,32 +265,6 @@ void ConnectionFormController::setArcDegreeMode(bool arcDegreeMode)
     mUi.radArcDegreeMode->setChecked(arcDegreeMode);
 }
 
-void ConnectionFormController::onSettingChanged(QString group, QString param, QVariant value)
-{
-   if (group == Settings::SERIAL)
-   {
-      if (param == Settings::SERIAL_BAUD_RATE)
-      {
-          setBaudRate(value.toInt());
-      }
-      else if (param == Settings::SERIAL_PORT_NAME)
-      {
-          setPortName(value.toString());
-      }
-   }
-   else if (group == Settings::GLOBAL)
-   {
-        if (param == Settings::GLOBAL_AUTO_LINE)
-        {
-           setAutoLine(value.toBool());
-        }
-        else if (param == Settings::GLOBAL_IGNORE_ERRORS)
-        {
-            setIgnoreErrors(value.toBool());
-        }
-   }
-}
-
 bool ConnectionFormController::ignoreErrors()
 {
     return mUi.chkIgnoreErrors->isChecked();
@@ -201,12 +277,23 @@ void ConnectionFormController::setIgnoreErrors(bool value)
 
 bool ConnectionFormController::autoLine()
 {
-    return mUi.chkAutoLine->isChecked();
+    return mUi.chkAutoParserState->isChecked();
 }
 
 void ConnectionFormController::setAutoLine(bool value)
 {
-    mUi.chkAutoLine->setChecked(value);
+    mUi.chkAutoParserState->setChecked(value);
+}
+
+void ConnectionFormController::setSettingsModel(SqlSettingsModel* handle)
+{
+    mSettingsModelHandle = handle;
+    initialise();
+}
+
+void ConnectionFormController::onProfileChanged(Profile*)
+{
+    initialise();
 }
 
 void ConnectionFormController::searchPorts()

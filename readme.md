@@ -2,19 +2,21 @@
 
 CocoanutCNC
 -----------
-G-Code Controller and Visualiser Written in C++/Qt
+A G-Code Controller and Visualiser for GRBL Machines. 
+
+Written in C++/Qt
 
 Key Functions:
 ------------------------
-* Customisable User Interface. Taylor to a Touch/Mouse driven experience.
+* Customisable User Interface. Taylor to a Touch/Mouse Driven Experience.
 * Manual Control of Your CNC via Commands, Jog Buttons and Num-Pad.
-* Monitoring CNC State.
-* Loading, Editing, Saving and Sending of G-code Files to CNC Machine.
+* Live Monitoring of CNC State.
+* Loading, Manual Editing, Saving and Sending of G-code Files.
 * Visualising G-code Tool Paths in 3D. 
 
-Features Planned
+Planned Features
 ------------------
-* Accurate Tool Models in Visualiser
+* More Accurate Tool Models in Visualiser
 * Stock & Fixtures in Visualiser
 * Tool Change Alerts/Management
 * Tool Path Crash Prediction (Intersecting Stock/Fixtures During Rapids)
@@ -23,14 +25,12 @@ System Requirements for Running CocoanutCNC:
 -------------------
 * Windows/Linux/MacOS X 
 * A Graphics Card with OpenGL 2.0 Support
+* A GRBL Based CNC Machine
+* Requires GRBL v1.1 firmware. Available here https://github.com/gnea/grbl
 
 Build Requirements:
 ------------------
-* Build with Qt 5.10
-
-GRBL:
-----------
-* Requires GRBL v1.1 firmware. Available here https://github.com/gnea/grbl
+* Build with Qt 5.10 or above.
 
 Credits:
 ------------

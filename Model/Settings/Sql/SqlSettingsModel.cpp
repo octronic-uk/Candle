@@ -18,11 +18,14 @@
 #include "SqlSettingsModel.h"
 #include <QDir>
 #include <QStandardPaths>
-#include "Model/Settings/ToolHolder/ToolHolder.h"
+#include "Model/Settings/Sql/SqlStrings.h"
+#include "Model/Settings/ToolHolder/ToolHolderGeometry.h"
+
 
 SqlSettingsModel::SqlSettingsModel(QObject* parent)
     : AbstractSettingsModel(parent)
 {
+    mProfilesListModel = QSharedPointer<ProfilesListModel>::create(this);
     mSettingsDirectory = QDir
     (
         QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).at(0)
@@ -58,20 +61,59 @@ SqlSettingsModel::~SqlSettingsModel()
 void SqlSettingsModel::createTables()
 {
     QSqlDatabase db = QSqlDatabase::database();
+
     if (db.isOpen())
     {
-        if (createProfilesTable())
-        {
-            insertDefaultProfile();
-        }
-
+        bool firstRun = createProfilesTable();
+        createConnectionSettingsTable();
+        createInterfaceSettingsTable();
+        createMachineSettingsTable();
         createRecentGcodeFilesTable();
         createRecentHeightMapFilesTable();
         createToolsTable();
         createToolGeometryTable();
         createToolHoldersTable();
         createToolHoldersGeometryTable();
+
+        if (firstRun)
+        {
+            Profile *defaultProfile = mProfilesListModel->createNewProfile();
+            defaultProfile->setSelected(true);
+            defaultProfile->setName("Default Profile");
+            createNewProfile(defaultProfile);
+        }
     }
+}
+
+bool SqlSettingsModel::createNewProfile(QString name)
+{
+    Profile* profile = mProfilesListModel->createNewProfile();
+    profile->setName(name);
+    return createNewProfile(profile);
+}
+
+ProfilesListModel* SqlSettingsModel::getProfilesListModelHandle()
+{
+    return mProfilesListModel.data();
+}
+
+bool SqlSettingsModel::createNewProfile(Profile* profile)
+{
+    if (!insertProfileInDB(profile))
+    {
+        qDebug() << "SqlSettingsModel: CreateNewProfile Failed to insert new profile";
+        return false;
+    }
+
+    mProfilesListModel->setSelected(profile);
+
+    if(!insertConnectionSettingsInDB(profile->getConnectionSettingsHandle()))
+    {
+        qDebug() << "SqlSettingsModel: CreateNewProfile Failed to insert connection settings";
+        return false;
+    }
+
+    return true;
 }
 
 bool SqlSettingsModel::createProfilesTable()
@@ -169,13 +211,14 @@ bool SqlSettingsModel::createRecentHeightMapFilesTable()
 bool SqlSettingsModel::insertToolHolderInDB(ToolHolder* item)
 {
     qDebug() << "SqlSettingsModel: insertToolHolderIntoDB";
-    if (!currentProfileValid())
+    Profile* profile = item->getParentHandle();
+    if (!profileValid(profile))
     {
         return false;
     }
     QSqlQuery query;
     query.prepare(INSERT_TOOL_HOLDER_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.addBindValue(item->getName());
     if (!query.exec())
     {
@@ -184,20 +227,21 @@ bool SqlSettingsModel::insertToolHolderInDB(ToolHolder* item)
         return false;
     }
     item->setID(query.lastInsertId().toInt());
-    qDebug() << "SqlSettingsModel: Updated ToolHolder with id " << item->getID();
+    qDebug() << "SqlSettingsModel: Successfully inserted and updated ToolHolder to id " << item->getID();
     return true;
 }
 
 bool SqlSettingsModel::updateToolHolderInDB(ToolHolder* toolHolder)
 {
     qDebug() << "SqlSettingsModel::updateToolHolderInDB(ToolHolder& toolHolder)";
-    if (!currentProfileValid() || !toolHolder->isIdValid())
+    Profile* profile = toolHolder->getParentHandle();
+    if (!profileValid(profile) || !toolHolder->isIdValid())
     {
         return false;
     }
     QSqlQuery query;
     query.prepare(UPDATE_TOOL_HOLDER_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.addBindValue(toolHolder->getName());
     query.addBindValue(toolHolder->getID());
 
@@ -205,7 +249,7 @@ bool SqlSettingsModel::updateToolHolderInDB(ToolHolder* toolHolder)
              << toolHolder->getID()
              << toolHolder->getName()
              << "for"
-             << mCurrentProfileHandle->getID();
+             << profile->getID();
 
     if(!query.exec())
     {
@@ -226,48 +270,48 @@ bool SqlSettingsModel::deleteToolHolderFromDB(ToolHolder* toolHolder)
     return query.exec();
 }
 
-int SqlSettingsModel::getToolHoldersFromDB()
+int SqlSettingsModel::getToolHoldersFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getToolHoldersFromDB()";
     // Remove existing
-    if (mToolHoldersListModel == nullptr)
+    ToolHolderListModel* modelHandle = profile->getToolHolderListModelHandle();
+    if (modelHandle == nullptr)
     {
         qDebug() << "SqlSettingsModel: Creating ToolHoldersListModel";
-        mToolHoldersListModel = QSharedPointer<ToolHolderListModel>::create();
 
         connect
-        (
-            mToolHoldersListModel.data(),
-            SIGNAL(toolHolderCreatedSignal(ToolHolder*)),
-            this,
-            SLOT(onToolHolderCreated(ToolHolder*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolHolderCreatedSignal(ToolHolder*)),
+                    this,
+                    SLOT(onToolHolderCreated(ToolHolder*))
+                    );
 
         connect
-        (
-            mToolHoldersListModel.data(),
-            SIGNAL(toolHolderUpdatedSignal(ToolHolder*)),
-            this,
-            SLOT(onToolHolderUpdated(ToolHolder*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolHolderUpdatedSignal(ToolHolder*)),
+                    this,
+                    SLOT(onToolHolderUpdated(ToolHolder*))
+                    );
 
         connect
-        (
-            mToolHoldersListModel.data(),
-            SIGNAL(toolHolderDeletedSignal(ToolHolder*)),
-            this,
-            SLOT(onToolHolderDeleted(ToolHolder*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolHolderDeletedSignal(ToolHolder*)),
+                    this,
+                    SLOT(onToolHolderDeleted(ToolHolder*))
+                    );
     }
     else
     {
-        mToolHoldersListModel->clear();
+        modelHandle->clear();
     }
 
     // Get form DB
     QSqlQuery query;
     query.prepare(SELECT_ALL_FROM_TOOL_HOLDER_BY_PROFILE_ID_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.exec();
     int idFieldNum = query.record().indexOf("id");
     int nameFieldNum = query.record().indexOf("name");
@@ -277,21 +321,20 @@ int SqlSettingsModel::getToolHoldersFromDB()
     {
         QString name = query.value(nameFieldNum).toString();
         int id = query.value(idFieldNum).toInt();
-        auto th = QSharedPointer<ToolHolder>::create(id,name);
+        auto th = QSharedPointer<ToolHolder>::create(profile,id,name);
         holders.append(th);
         qDebug() << "SqlSettingsModel: Inserting ToolHolder into model"
                  << th->getID()
                  << th->getName();
     }
-    mToolHoldersListModel->initialise(holders);
-    emit toolHolderListModelReadySignal(mToolHoldersListModel.data());
-    return mToolHoldersListModel->rowCount();
+    modelHandle->initialise(holders);
+    return modelHandle->rowCount();
 }
 
-int SqlSettingsModel::getToolHoldersGeometryFromDB()
+int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
 {
     int numRecords = 0;
-    for (const QSharedPointer<ToolHolder>& nextHolder : mToolHoldersListModel->getAllData())
+    for (const QSharedPointer<ToolHolder>& nextHolder : profile->getToolHolderListModelHandle()->getAllData())
     {
         QSqlQuery query;
         query.prepare(SELECT_TOOL_HOLDER_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY);
@@ -326,10 +369,11 @@ int SqlSettingsModel::getToolHoldersGeometryFromDB()
             float height = query.value(heightFieldNum).toFloat();
             float upper = query.value(upperDiameterFieldNum).toFloat();
             float lower = query.value(lowerDiameterFieldNum).toFloat();
+            ToolHolder* parent = profile->getToolHolderListModelHandle()->getToolHolderByID(parentId);
             QSharedPointer<ToolHolderGeometry> nextTHG =
-                QSharedPointer<ToolHolderGeometry>::create
-                    (id, parentId, index, height, upper, lower);
-            nextHolder->insertGeometry(nextTHG);
+                    QSharedPointer<ToolHolderGeometry>::create
+                    (parent, id, index, height, upper, lower);
+            nextHolder->insertItem(nextTHG);
         }
         numRecords += nextHolder->getGeometryTableModelHandle()->rowCount();
     }
@@ -404,43 +448,59 @@ bool SqlSettingsModel::deleteToolHolderGeometryFromDB(ToolHolderGeometry* toolHo
 bool SqlSettingsModel::insertToolInDB(Tool* item)
 {
     qDebug() << "SqlSettingsModel: insertToolIntoDB";
-    if (!currentProfileValid())
+    Profile *profile = item->getParentHandle();
+    if (!profileValid(profile))
     {
         return false;
     }
+
     QSqlQuery query;
     query.prepare(INSERT_TOOL_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.addBindValue(item->getName());
+    query.addBindValue(item->getToolNumber());
+    query.addBindValue(item->getToolHolderID());
+
     if (!query.exec())
     {
         qDebug() << "SqlSettingsModel: Error inserting tool"
                  << query.lastError();
         return false;
     }
+
     item->setID(query.lastInsertId().toInt());
+
     qDebug() << "SqlSettingsModel: Updated Tool with id " << item->getID();
+
     return true;
 }
 
 bool SqlSettingsModel::updateToolInDB(Tool* tool)
 {
-    qDebug() << "SqlSettingsModel::updateToolInDB(Tool& tool)";
-    if (!currentProfileValid() || !tool->isIdValid())
+    qDebug() << "SqlSettingsModel::updateToolInDB";
+
+    Profile *profile = tool->getParentHandle();
+    if (!profileValid(profile) || !tool->isIdValid())
     {
         return false;
     }
+
     QSqlQuery query;
+
     query.prepare(UPDATE_TOOL_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.addBindValue(tool->getName());
+    query.addBindValue(tool->getToolNumber());
+    query.addBindValue(tool->getToolHolderID());
     query.addBindValue(tool->getID());
 
-    qDebug() << "UpdateTool"
+    qDebug() << "SqlSettingsModel: UpdateTool Bind Values"
              << tool->getID()
              << tool->getName()
+             << tool->getToolNumber()
+             << tool->getToolHolderID()
              << "for"
-             << mCurrentProfileHandle->getID();
+             << profile->getID();
 
     if(!query.exec())
     {
@@ -461,52 +521,55 @@ bool SqlSettingsModel::deleteToolFromDB(Tool* tool)
     return query.exec();
 }
 
-int SqlSettingsModel::getToolsFromDB()
+int SqlSettingsModel::getToolsFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getToolsFromDB()";
     // Remove existing
-    if (mToolsListModel == nullptr)
+    ToolListModel* modelHandle = profile->getToolListModelHandle();
+    if (modelHandle == nullptr)
     {
         qDebug() << "SqlSettingsModel: Creating ToolsListModel";
-        mToolsListModel = QSharedPointer<ToolListModel>::create();
+        //modelHandle = QSharedPointer<ToolListModel>::create();
 
         connect
-        (
-            mToolsListModel.data(),
-            SIGNAL(toolCreatedSignal(Tool*)),
-            this,
-            SLOT(onToolCreated(Tool*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolCreatedSignal(Tool*)),
+                    this,
+                    SLOT(onToolCreated(Tool*))
+                    );
 
         connect
-        (
-            mToolsListModel.data(),
-            SIGNAL(toolUpdatedSignal(Tool*)),
-            this,
-            SLOT(onToolUpdated(Tool*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolUpdatedSignal(Tool*)),
+                    this,
+                    SLOT(onToolUpdated(Tool*))
+                    );
 
         connect
-        (
-            mToolsListModel.data(),
-            SIGNAL(toolDeletedSignal(Tool*)),
-            this,
-            SLOT(onToolDeleted(Tool*))
-        );
+                (
+                    modelHandle,
+                    SIGNAL(toolDeletedSignal(Tool*)),
+                    this,
+                    SLOT(onToolDeleted(Tool*))
+                    );
     }
     else
     {
-        mToolsListModel->clear();
+        modelHandle->clear();
     }
 
     // Get form DB
     QSqlQuery query;
     query.prepare(SELECT_ALL_FROM_TOOL_BY_PROFILE_ID_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     query.exec();
 
     int idFieldNum = query.record().indexOf("id");
     int nameFieldNum = query.record().indexOf("name");
+    int toolNumberFieldNum = query.record().indexOf("tool_number");
+    int toolHolderIDFieldNum = query.record().indexOf("tool_holder_id");
 
     // Populate
     QList<QSharedPointer<Tool>> tools;
@@ -514,21 +577,26 @@ int SqlSettingsModel::getToolsFromDB()
     {
         QString name = query.value(nameFieldNum).toString();
         int id = query.value(idFieldNum).toInt();
-        auto tool = QSharedPointer<Tool>::create(id,name);
+        int toolNumber = query.value(toolNumberFieldNum).toInt();
+        int toolHolderID = query.value(toolHolderIDFieldNum).toInt();
+
+        auto tool = QSharedPointer<Tool>::create(profile, id,name,toolNumber,toolHolderID);
         tools.append(tool);
         qDebug() << "SqlSettingsModel: Inserting Tool into model"
                  << tool->getID()
-                 << tool->getName();
+                 << tool->getName()
+                 << tool->getToolNumber()
+                 << tool->getToolHolderID();
     }
-    mToolsListModel->initialise(tools);
-    emit toolListModelReadySignal(mToolsListModel.data());
-    return mToolsListModel->rowCount();
+    modelHandle->initialise(tools);
+    return modelHandle->rowCount();
 }
 
-int SqlSettingsModel::getToolsGeometryFromDB()
+int SqlSettingsModel::getToolsGeometryFromDB(Profile* profile)
 {
     int numRecords = 0;
-    for (const QSharedPointer<Tool>& next : mToolsListModel->getAllData())
+    ToolListModel* modelHandle = profile->getToolListModelHandle();
+    for (const QSharedPointer<Tool>& next : modelHandle->getAllData())
     {
         QSqlQuery query;
         query.prepare(SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY);
@@ -564,9 +632,9 @@ int SqlSettingsModel::getToolsGeometryFromDB()
             float upper = query.value(upperDiameterFieldNum).toFloat();
             float lower = query.value(lowerDiameterFieldNum).toFloat();
             QSharedPointer<ToolGeometry> nextTG =
-                QSharedPointer<ToolGeometry>::create
-                    (id, parentId, index, height, upper, lower);
-            next->insertGeometry(nextTG);
+                    QSharedPointer<ToolGeometry>::create
+                    (next.data(), id, index, height, upper, lower);
+            next->insertItem(nextTG);
         }
         numRecords += next->getGeometryTableModelHandle()->rowCount();
     }
@@ -577,6 +645,7 @@ bool SqlSettingsModel::insertToolGeometryInDB(ToolGeometry* tool)
 {
     qDebug() << "SqlSettingsModel: insertToolGeometryInDB";
     QSqlQuery query;
+
     query.prepare(INSERT_TOOL_GEOMETRY_QUERY);
     query.addBindValue(tool->getToolID());
     query.addBindValue(tool->getIndex());
@@ -654,27 +723,272 @@ int SqlSettingsModel::getProfilesFromDB()
         QString name = query.value(nameFieldNum).toString();
         bool selected = query.value(selectedFieldNum).toBool();
         QSharedPointer<Profile> nextProfile = QSharedPointer<Profile>::create(id,name,selected);
+
         mProfilesListModel->insert(nextProfile);
+
         qDebug() << "SqlSettings: Added profile to model"
                  << nextProfile->getID()
                  << nextProfile->getName()
                  << nextProfile->getSelected();
     }
-    emit profileListModelReadySignal(mProfilesListModel.data());
+
+    // Sync settings data for each profile
+
+    for (auto p : mProfilesListModel->getDataHandles())
+    {
+        getConnectionSettingsFromDB(p);
+        getRecentGcodeFilesFromDB(p);
+        getToolsFromDB(p);
+        getToolsGeometryFromDB(p);
+        getToolHoldersFromDB(p);
+        getToolHoldersGeometryFromDB(p);
+    }
     return mProfilesListModel->rowCount(QModelIndex());
 }
 
 Profile* SqlSettingsModel::getCurrentProfileHandle()
 {
-    mCurrentProfileHandle = mProfilesListModel->getCurrentProfileHandle();
-    qDebug() << "SqlSettingsModel: Setting Current Profile"
-             << mCurrentProfileHandle->getID()
-             << mCurrentProfileHandle->getName();
-    if (currentProfileValid())
+    Profile* profile = mProfilesListModel->getCurrentProfileHandle();
+    if (!profile)
     {
-        emit currentProfileChangedSignal(mCurrentProfileHandle);
+        return nullptr;
     }
-    return mCurrentProfileHandle;
+
+    if (profileValid(profile))
+    {
+        emit profileChangedSignal(profile);
+    }
+
+    return profile;
+}
+
+void SqlSettingsModel::setCurrentProfileHandle(Profile* profile)
+{
+    mProfilesListModel->setSelected(profile);
+    for (Profile *p : mProfilesListModel->getDataHandles())
+    {
+        updateProfileInDB(p);
+    }
+}
+
+Profile*SqlSettingsModel::getProfileFromModelAtIndex(int index)
+{
+    return mProfilesListModel->get(index);
+}
+
+bool SqlSettingsModel::createInterfaceSettingsTable()
+{
+    qDebug() << "SqlSettingsModel:createInterfaceTable Creating table";
+    QSqlQuery query;
+    query.prepare(CREATE_INTERFACE_TABLE_QUERY);
+    if (!query.exec())
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
+{
+    Q_UNUSED(profile)
+    return false;
+}
+
+bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::deleteInterfaceSettingsFromDB(InterfaceSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::createMachineSettingsTable()
+{
+    qDebug() << "SqlSettingsModel:creatMachineTable";
+    QSqlQuery query;
+    query.prepare(CREATE_MACHINE_TABLE_QUERY);
+    if (!query.exec())
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
+{
+    Q_UNUSED(profile)
+    return false;
+}
+
+bool SqlSettingsModel::insertMachineSettingsInDB(MachineSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::deleteMachineSettingsFromDB(MachineSettings* settings)
+{
+    Q_UNUSED(settings)
+    return false;
+}
+
+bool SqlSettingsModel::createConnectionSettingsTable()
+{
+    qDebug() << "SqlSettingsModel:createConnectionTable Creating table";
+    QSqlQuery query;
+    query.prepare(CREATE_CONNECTION_TABLE_QUERY);
+    if (!query.exec())
+    {
+        qDebug() << query.lastError();
+        return false;
+    }
+    return true;
+}
+
+int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
+{
+    qDebug() << "SqlSettingsModel::getConnectionFromDB for " << profile->getID();
+    // Get form DB
+    QSqlQuery query;
+    query.prepare(SELECT_CONNECTION_BY_PROFILE_ID_QUERY);
+    query.addBindValue(profile->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: getConnectionFromDB ERROR" << query.lastError();
+    }
+
+    int idFieldNum = query.record().indexOf("id");
+    int profileIdFieldNum = query.record().indexOf("profile_id");
+    int serialPortFieldNum = query.record().indexOf("serial_port");
+    int serialBaudFieldNum = query.record().indexOf("serial_baud");
+    int ignoreErrorReponsesFieldNum = query.record().indexOf("ignore_error_responses");
+    int setParserStateFieldNum = query.record().indexOf("set_parser_state");
+    int arcApproximationFieldNum = query.record().indexOf("arc_approximation");
+    int arcApproximationLengthFieldNum = query.record().indexOf("arc_approximation_length");
+    int arcApproximationDegreesFieldNum = query.record().indexOf("arc_approximation_degrees");
+
+    // Populate
+    int records = 0;
+    while (query.next())
+    {
+        int id = query.value(idFieldNum).toInt();
+        int profile_id = query.value(profileIdFieldNum).toInt();
+        QString serial_port = query.value(serialPortFieldNum).toString();
+        int serial_baud = query.value(serialBaudFieldNum).toInt();
+        bool ignore_error_responses = query.value(ignoreErrorReponsesFieldNum).toBool();
+        bool set_parser_state = query.value(setParserStateFieldNum).toBool();
+        bool arc_approximation = query.value(arcApproximationFieldNum).toBool();
+        float arc_approximation_length = query.value(arcApproximationLengthFieldNum).toFloat();
+        float arc_approximation_degrees = query.value(arcApproximationDegreesFieldNum).toFloat();
+
+        auto connection = profile->getConnectionSettingsHandle();
+        qDebug() << "SqlSettingsModel: Retrieving connection record for new id" << connection->getID();
+        connection->setID(id);
+        qDebug() << "SqlSettingsModel: Retrieving connection record now with id" << connection->getID();
+        connection->setSerialPort(serial_port);
+        connection->setSerialBaudRate(serial_baud);
+        connection->setIgnoreErrorMessages(ignore_error_responses);
+        connection->setSetParserState(set_parser_state);
+        connection->setArcApproximation(arc_approximation);
+        connection->setArcApproximationLength(arc_approximation_length);
+        connection->setArcApproximationDegrees(arc_approximation_degrees);
+        records++;
+    }
+
+    qDebug() << "SqlSettingsModel: Got " << records << "Connection records";
+
+    return records;
+}
+
+bool SqlSettingsModel::insertConnectionSettingsInDB(ConnectionSettings* connection)
+{
+    qDebug() << "SqlSettingsModel: insertConnectionInDB";
+    QSqlQuery query;
+    query.prepare(INSERT_CONNECTION_QUERY);
+    query.addBindValue(connection->getProfileID());
+    query.addBindValue(connection->getSerialPort());
+    query.addBindValue(connection->getSerialBaudRate());
+    query.addBindValue(connection->getIgnoreErrorMessages());
+    query.addBindValue(connection->getSetParserState());
+    query.addBindValue(connection->getArcApproximation());
+    query.addBindValue(connection->getArcApproximationLength());
+    query.addBindValue(connection->getArcApproximationDegrees());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error inserting connection"
+                 << query.lastError();
+        return false;
+    }
+
+    connection->setID(query.lastInsertId().toInt());
+    qDebug() << "SqlSettingsModel: Inserted connection with id" << connection->getID();
+    return true;
+}
+
+bool SqlSettingsModel::updateConnectionSettingsInDB(ConnectionSettings* connection)
+{
+    qDebug() << "SqlSettingsModel: updateConnectionInDB";
+    QSqlQuery query;
+    Profile* profile = connection->getParentHandle();
+    query.prepare(UPDATE_CONNECTION_QUERY);
+    query.addBindValue(profile->getID());
+    query.addBindValue(connection->getSerialPort());
+    query.addBindValue(connection->getSerialBaudRate());
+    query.addBindValue(connection->getIgnoreErrorMessages());
+    query.addBindValue(connection->getSetParserState());
+    query.addBindValue(connection->getArcApproximation());
+    query.addBindValue(connection->getArcApproximationLength());
+    query.addBindValue(connection->getArcApproximationDegrees());
+    query.addBindValue(connection->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error updating connection"
+                 << query.lastError();
+        return false;
+    }
+
+    qDebug() << "SqlSettingsModel: Updated connection with id" << connection->getID();
+    return true;
+}
+
+bool SqlSettingsModel::deleteConnectionSettingsFromDB(ConnectionSettings* connection)
+{
+    qDebug() << "SqlSettingsModel: deleteConnectionFromDB";
+    QSqlQuery query;
+    query.prepare(DELETE_CONNECTION_QUERY);
+    query.addBindValue(connection->getID());
+    return query.exec();
+}
+
+bool SqlSettingsModel::updateProfileName(Profile* profile, QString name)
+{
+    if (profile)
+    {
+        profile->setName(name);
+        return updateProfileInDB(profile);
+    }
+    return false;
 }
 
 bool SqlSettingsModel::updateProfileInDB(Profile* profile)
@@ -688,21 +1002,24 @@ bool SqlSettingsModel::updateProfileInDB(Profile* profile)
     return query.exec();
 }
 
-int SqlSettingsModel::getRecentGcodeFilesFromDB()
+bool SqlSettingsModel::deleteProfileFromDB(Profile* profile)
+{
+    qDebug() << "SqlSettingsModel: deleteProfileFromDB";
+    QSqlQuery query;
+    query.prepare(DELETE_PROFILE_QUERY);
+    query.addBindValue(profile->getID());
+    return query.exec();
+}
+
+int SqlSettingsModel::getRecentGcodeFilesFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getRecentGcodeFilesFromDB";
-    if (mRecentGcodeFilesModel == nullptr)
-    {
-        mRecentGcodeFilesModel = QSharedPointer<RecentFilesModel>::create();
-    }
-    else
-    {
-        mRecentGcodeFilesModel->clear();
-    }
+    RecentFilesModel* modelHandle = profile->getRecentGcodeFilesModelHandle();
+    modelHandle->clear();
     // Get form DB
     QSqlQuery query;
     query.prepare(SELECT_RECENT_GCODE_FILES_BY_PROFILE_ID_QUERY);
-    query.addBindValue(mCurrentProfileHandle->getID());
+    query.addBindValue(profile->getID());
     int idFieldNum = query.record().indexOf("id");
     int profileIdFieldNum = query.record().indexOf("profile_id");
     int indexFieldNum = query.record().indexOf("index");
@@ -714,21 +1031,47 @@ int SqlSettingsModel::getRecentGcodeFilesFromDB()
         int profile_id = query.value(profileIdFieldNum).toInt();
         int index = query.value(indexFieldNum).toInt();
         QString path = query.value(pathFieldNum).toString();
-        mRecentGcodeFilesModel->add(RecentFile(id,index,profile_id,path));
+        modelHandle->add(RecentFile(id,index,profile_id,path));
     }
-    emit recentGcodeFilesModelReadySignal(mRecentGcodeFilesModel.data());
-    return mRecentGcodeFilesModel->count();
+    return modelHandle->count();
 }
 
 void SqlSettingsModel::onCurrentProfileChanged(Profile* profile)
 {
-    mCurrentProfileHandle = profile;
+    getConnectionSettingsFromDB(profile);
+    getInterfaceSettingsFromDB(profile);
+    getMachineSettingsFromDB(profile);
+    getRecentGcodeFilesFromDB(profile);
+    getToolsFromDB(profile);
+    getToolsGeometryFromDB(profile);
+    getToolHoldersFromDB(profile);
+    getToolHoldersGeometryFromDB(profile);
 }
 
-void SqlSettingsModel::onToolCreated(Tool* tool)
+void SqlSettingsModel::onConnecitonSettingsUpdated(ConnectionSettings* settings)
+{
+   updateConnectionSettingsInDB(settings);
+}
+
+void SqlSettingsModel::onInterfaceSettingsUpdated(InterfaceSettings* settings)
+{
+   updateInterfaceSettingsInDB(settings);
+}
+
+void SqlSettingsModel::onMachineSettingsUpdated(MachineSettings* settings)
+{
+   updateMachineSettingsInDB(settings);
+}
+
+void SqlSettingsModel::onToolCreated()
 {
     qDebug() << "SqlSettingsModel::onToolCreated";
-    insertToolInDB(tool);
+    auto tool = QSharedPointer<Tool>::create(mProfilesListModel->getCurrentProfileHandle());
+    insertToolInDB(tool.data());
+    mProfilesListModel
+        ->getCurrentProfileHandle()
+        ->getToolListModelHandle()
+        ->insertItem(tool);
 }
 
 void SqlSettingsModel::onToolUpdated(Tool* tool)
@@ -740,91 +1083,145 @@ void SqlSettingsModel::onToolUpdated(Tool* tool)
 void SqlSettingsModel::onToolDeleted(Tool* tool)
 {
     qDebug() << "SqlSettingsModel::onToolDeleted";
+    for (auto geom : tool->getGeometryTableModelHandle()->getDataHandles())
+    {
+        onToolGeometryDeleted(geom);
+    }
     deleteToolFromDB(tool);
+    mProfilesListModel
+        ->getCurrentProfileHandle()
+        ->getToolListModelHandle()
+        ->deleteItem(tool);
 }
 
-void SqlSettingsModel::onToolHolderCreated(ToolHolder* toolHolder)
+void SqlSettingsModel::onToolHolderCreated()
 {
     qDebug() << "SqlSettingsModel::onToolHolderCreated";
-    insertToolHolderInDB(toolHolder);
+    auto toolHolder = QSharedPointer<ToolHolder>::create
+    (mProfilesListModel->getCurrentProfileHandle());
+    insertToolHolderInDB(toolHolder.data());
+    mProfilesListModel
+        ->getCurrentProfileHandle()
+        ->getToolHolderListModelHandle()
+        ->insertItem(toolHolder);
 }
 
 void SqlSettingsModel::onToolHolderUpdated(ToolHolder* toolHolder)
 {
     qDebug() << "SqlSettingsModel::onToolHolderUpdated";
-   updateToolHolderInDB(toolHolder);
+    ToolHolderListModel* model = toolHolder->getParentHandle()->getToolHolderListModelHandle();
+    if (model)
+    {
+        model->setData
+        (
+            model->indexOf(toolHolder),
+            toolHolder->getName(),
+            Qt::EditRole
+        );
+    }
+    updateToolHolderInDB(toolHolder);
 }
 
 void SqlSettingsModel::onToolHolderDeleted(ToolHolder* toolHolder)
 {
     qDebug() << "SqlSettingsModel::onToolHolderDeleted";
+    for (auto geom : toolHolder->getGeometryTableModelHandle()->getDataHandles())
+    {
+        onToolHolderGeometryDeleted(geom);
+    }
     deleteToolHolderFromDB(toolHolder);
+    mProfilesListModel
+        ->getCurrentProfileHandle()
+        ->getToolHolderListModelHandle()
+        ->deleteItem(toolHolder);
 }
 
-void SqlSettingsModel::onToolHolderGeometryCreated(ToolHolderGeometry* toolHolderGeometry)
+void SqlSettingsModel::onToolHolderGeometryCreated()
 {
-    qDebug() << "SqlSettingsModel::onToolHolderGeometryCreated"
-             << toolHolderGeometry->getID();
-   insertToolHolderGeometryInDB(toolHolderGeometry);
+    qDebug() << "SqlSettingsModel::onToolHolderGeometryCreated";
+    ToolHolder * holder = mProfilesListModel
+            ->getCurrentProfileHandle()
+            ->getToolHolderListModelHandle()
+            ->getSelected();
+
+    ToolHolderGeometry* newGeom = holder->insertNew();
+
+    insertToolHolderGeometryInDB(newGeom);
 }
 
 void SqlSettingsModel::onToolHolderGeometryUpdated(ToolHolderGeometry* toolHolderGeometry)
 {
     qDebug() << "SqlSettingsModel::onToolHolderGeometryUpdated"
              << toolHolderGeometry->getID();
-   updateToolHolderGeometryInDB(toolHolderGeometry);
+    updateToolHolderGeometryInDB(toolHolderGeometry);
 }
 
 void SqlSettingsModel::onToolHolderGeometryDeleted(ToolHolderGeometry* toolHolderGeometry)
 {
     qDebug() << "SqlSettingsModel::onToolHolderGeometryDeleted"
              << toolHolderGeometry->getID();
-   deleteToolHolderGeometryFromDB(toolHolderGeometry);
+    deleteToolHolderGeometryFromDB(toolHolderGeometry);
+    mProfilesListModel
+            ->getCurrentProfileHandle()
+            ->getToolHolderListModelHandle()
+            ->getSelected()
+            ->deleteItem(toolHolderGeometry);
 }
 
-void SqlSettingsModel::onToolGeometryCreated(ToolGeometry* toolGeometry)
+void SqlSettingsModel::onToolGeometryCreated()
 {
-    qDebug() << "SqlSettingsModel::onToolHolderGeometryCreated"
-             << toolGeometry->getID();
-   insertToolGeometryInDB(toolGeometry);
+    qDebug() << "SqlSettingsModel::onToolGeometryCreated";
+    Tool * tool = mProfilesListModel
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->getSelected();
+
+    ToolGeometry* newGeom = tool->insertNew();
+
+    insertToolGeometryInDB(newGeom);
+
 }
 
 void SqlSettingsModel::onToolGeometryUpdated(ToolGeometry* toolGeometry)
 {
     qDebug() << "SqlSettingsModel::onToolGeometryUpdated"
              << toolGeometry->getID();
-   updateToolGeometryInDB(toolGeometry);
+    updateToolGeometryInDB(toolGeometry);
 }
 
 void SqlSettingsModel::onToolGeometryDeleted(ToolGeometry* toolGeometry)
 {
     qDebug() << "SqlSettingsModel::onToolGeometryDeleted"
              << toolGeometry->getID();
-   deleteToolGeometryFromDB(toolGeometry);
+    deleteToolGeometryFromDB(toolGeometry);
+    mProfilesListModel
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->getSelected()
+            ->deleteItem(toolGeometry);
 }
-bool SqlSettingsModel::insertDefaultProfile()
+
+bool SqlSettingsModel::insertProfileInDB(Profile* profile)
 {
-    qDebug() << "SqlSettingsModel::insertDefaultProfile";
+    qDebug() << "SqlSettingsModel::insertProfileInDB";
     QSqlQuery query;
-    query.prepare(INSERT_DEFAULT_PROFILE_QUERY);
-    return query.exec();
+    query.prepare(INSERT_PROFILE_QUERY);
+    query.addBindValue(profile->getName());
+    query.addBindValue(profile->getSelected());
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error inserting profile"
+                 << query.lastError();
+        return false;
+    }
+    profile->setID(query.lastInsertId().toInt());
+    qDebug() << "SqlSettingsModel: Profile updated with id" << profile->getID();
+    return true;
 }
 
-bool SqlSettingsModel::currentProfileValid()
+bool SqlSettingsModel::profileValid(Profile* profile)
 {
-    bool valid = QSqlDatabase::database().isOpen();
-    if (!valid)
-    {
-       qDebug() << "SqlSettingsModel: ERROR database is not open";
-    }
-
-    valid = (mCurrentProfileHandle->getID() >= 0);
-
-    if (!valid)
-    {
-       qDebug() << "SqlSettingsModel: ERROR current profile is invalid!";
-    }
-    return valid;
+    return (profile->getID() >= 0);
 }
 
 void SqlSettingsModel::onSaveSettings()
@@ -836,229 +1233,10 @@ void SqlSettingsModel::onLoadSettings()
 {
     getProfilesFromDB();
     getCurrentProfileHandle();
-    getRecentGcodeFilesFromDB();
-    getToolsFromDB();
-    getToolsGeometryFromDB();
-    getToolHoldersFromDB();
-    getToolHoldersGeometryFromDB();
+    emit settingsModelReadySignal(this);
 }
 
-void SqlSettingsModel::onSettingChanged
-(
-    QString groupName,
-    QString settingName,
-    QVariant value
-)
+void SqlSettingsModel::onSettingChanged (QString groupName, QString settingName, QVariant value)
 {
 
 }
-
-const QString SqlSettingsModel::SQLITE_DB = "QSQLITE";
-
-const QString SqlSettingsModel::DB_FILE_NAME = "co.uk.octronic.cocoanut_cnc.sqlite";
-
-// Profiles ----------------------------------------------------------------------
-
-const QString SqlSettingsModel::CREATE_PROFILES_TABLE_QUERY =
-    "CREATE TABLE 'profiles' ("
-        "'id'   INTEGER PRIMARY KEY,"
-        "'name' TEXT NOT NULL,"
-        "'selected' INTEGER NOT NULL"
-    ")";
-
-const QString SqlSettingsModel::INSERT_DEFAULT_PROFILE_QUERY =
-    "INSERT INTO 'profiles' ('name','selected') VALUES ('Default',1)";
-
-const QString SqlSettingsModel::SELECT_ALL_PROFILES_QUERY =
-    "SELECT * FROM PROFILES";
-
-const QString SqlSettingsModel::UPDATE_PROFILE_WHERE_ID_QUERY =
-    "UPDATE 'profiles' SET name=?, selected=? WHERE id=?";
-
-// Recent Gcode Files ------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_RECENT_GCODE_FILES_TABLE_QUERY =
-    "CREATE TABLE 'recent_gcode_files' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "'index'        INTEGER NOT NULL,"
-        "'path'         TEXT NOT NULL,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-const QString SqlSettingsModel::SELECT_RECENT_GCODE_FILES_BY_PROFILE_ID_QUERY =
-    "SELECT * FROM 'recent_gcode_files WHERE profile_id=?";
-
-// Recent HeightMap Files --------------------------------------------------------
-const QString SqlSettingsModel::CREATE_RECENT_HEIGHT_MAP_FILES_TABLE_QUERY =
-    "CREATE TABLE 'recent_height_map_files' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "'index'        INTEGER NOT NULL,"
-        "'path'         TEXT NOT NULL,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-const QString SqlSettingsModel::SELECT_RECENT_HEIGHT_MAP_FILES_BY_PROFILE_ID_QUERY =
-    "SELECT * FROM 'recent_height_map_files WHERE profile_id=?";
-
-
-// Connection --------------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_CONNECTION_TABLE_QUERY =
-    "CREATE TABLE 'recent_gcode_files' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-// Interface ---------------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_INTERFACE_TABLE_QUERY =
-    "CREATE TABLE 'recent_gcode_files' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-// Machine -----------------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_MACHINE_TABLE_QUERY =
-    "CREATE TABLE 'recent_gcode_files' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-// Tools -------------------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_TOOL_TABLE_QUERY =
-    "CREATE TABLE 'tool' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "'name'         TEXT,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-const QString SqlSettingsModel::INSERT_TOOL_QUERY =
-    "INSERT INTO 'tool' (profile_id, name) values(?, ?)";
-
-const QString SqlSettingsModel::SELECT_ALL_FROM_TOOL_BY_PROFILE_ID_QUERY =
-    "SELECT * FROM 'tool' WHERE profile_id=?";
-
-const QString SqlSettingsModel::SELECT_TOOL_BY_ID_QUERY =
-    "SELECT * FROM 'tool' WHERE id=?";
-
-const QString SqlSettingsModel::UPDATE_TOOL_QUERY =
-    "UPDATE 'tool' SET profile_id=?, name=? WHERE id=?";
-
-const QString SqlSettingsModel::DELETE_TOOL_QUERY =
-    "DELETE FROM 'tool' WHERE id=?";
-
-// Tool Geometry ---------------------------------------------------------
-
-const QString SqlSettingsModel::CREATE_TOOL_GEOMETRY_TABLE_QUERY =
-    "CREATE TABLE 'tool_geometry' ("
-        "'id'             INTEGER PRIMARY KEY,"
-        "'tool_id'        INTEGER NOT NULL,"
-        "'index'          INTEGER NOT NULL,"
-        "'height'         REAL NOT NULL,"
-        "'upper_diameter' REAL NOT NULL,"
-        "'lower_diameter' REAL NOT NULL,"
-        "FOREIGN KEY('tool_id') REFERENCES tools('id')"
-    ")";
-
-const QString SqlSettingsModel::INSERT_TOOL_GEOMETRY_QUERY =
-    "insert into tool_geometry ("
-        "'tool_id',"
-        "'index',"
-        "'height', "
-        "'upper_diameter',"
-        "'lower_diameter'"
-    ")"
-    "values ("
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?"
-    ")";
-
-const QString SqlSettingsModel::UPDATE_TOOL_GEOMETRY_QUERY =
-    "UPDATE 'tool_geometry' SET "
-        "'index'=?, "
-        "'height'=?, "
-        "'upper_diameter'=?, "
-        "'lower_diameter'=?  "
-    "WHERE id=?";
-
-const QString SqlSettingsModel::SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY =
-    "SELECT * FROM 'tool_geometry' WHERE tool_id=?";
-
-const QString SqlSettingsModel::DELETE_TOOL_GEOMETRY_QUERY =
-    "DELETE FROM 'tool_geometry' WHERE id=?";
-
-
-// Tool Holders ------------------------------------------------------------------
-const QString SqlSettingsModel::CREATE_TOOL_HOLDER_TABLE_QUERY =
-    "CREATE TABLE 'tool_holder' ("
-        "'id'           INTEGER PRIMARY KEY,"
-        "'profile_id'   INTEGER NOT NULL,"
-        "'name'         TEXT,"
-        "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
-    ")";
-
-const QString SqlSettingsModel::INSERT_TOOL_HOLDER_QUERY =
-    "INSERT INTO 'tool_holder' (profile_id, name) values(?, ?)";
-
-const QString SqlSettingsModel::SELECT_ALL_FROM_TOOL_HOLDER_BY_PROFILE_ID_QUERY =
-    "SELECT * FROM 'tool_holder' WHERE profile_id=?";
-
-const QString SqlSettingsModel::SELECT_TOOL_HOLDER_BY_ID_QUERY =
-    "SELECT * FROM 'tool_holder' WHERE id=?";
-
-const QString SqlSettingsModel::UPDATE_TOOL_HOLDER_QUERY =
-    "UPDATE 'tool_holder' SET profile_id=?, name=? WHERE id=?";
-
-const QString SqlSettingsModel::DELETE_TOOL_HOLDER_QUERY =
-    "DELETE FROM 'tool_holder' WHERE id=?";
-
-// Tool Holders Geometry ---------------------------------------------------------
-
-const QString SqlSettingsModel::CREATE_TOOL_HOLDER_GEOMETRY_TABLE_QUERY =
-    "CREATE TABLE 'tool_holder_geometry' ("
-        "'id'             INTEGER PRIMARY KEY,"
-        "'tool_holder_id' INTEGER NOT NULL,"
-        "'index'          INTEGER NOT NULL,"
-        "'height'         REAL NOT NULL,"
-        "'upper_diameter' REAL NOT NULL,"
-        "'lower_diameter' REAL NOT NULL,"
-        "FOREIGN KEY('tool_holder_id') REFERENCES tool_holder('id')"
-    ")";
-
-const QString SqlSettingsModel::INSERT_TOOL_HOLDER_GEOMETRY_QUERY =
-    "insert into tool_holder_geometry ("
-        "'tool_holder_id',"
-        "'index',"
-        "'height', "
-        "'upper_diameter',"
-        "'lower_diameter'"
-    ")"
-    "values ("
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?"
-    ")";
-
-const QString SqlSettingsModel::UPDATE_TOOL_HOLDER_GEOMETRY_QUERY =
-    "UPDATE 'tool_holder_geometry' SET "
-        "'index'=?, "
-        "'height'=?, "
-        "'upper_diameter'=?, "
-        "'lower_diameter'=?  "
-    "WHERE id=?";
-
-const QString SqlSettingsModel::SELECT_TOOL_HOLDER_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY =
-    "SELECT * FROM 'tool_holder_geometry' WHERE tool_holder_id=?";
-
-const QString SqlSettingsModel::DELETE_TOOL_HOLDER_GEOMETRY_QUERY =
-    "DELETE FROM 'tool_holder_geometry' WHERE id=?";
-
-
