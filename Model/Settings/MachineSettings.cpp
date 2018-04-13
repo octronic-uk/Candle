@@ -19,11 +19,29 @@
 #include "Model/Settings/Profile/Profile.h"
 #include "MachineSettings.h"
 
+#include <QtDebug>
+
 MachineSettings::MachineSettings(Profile* profile,int id)
     : AbstractDatabaseRecord (id),
-      mParentHandle(profile)
+      mParentHandle(profile),
+      mQueryPeriod(100),
+      mUnits(false),
+      mRapidSpeed(500),
+      mAcceleration(500),
+      mSpindleMin(0),
+      mSpindleMax(10000),
+      mProbeCmds(""),
+      mSafePositionCmds(""),
+      mRestoreOrigin(false),
+      mRestoreType(false),
+      mUserCmd1(""),
+      mUserCmd2(""),
+      mUserCmd3(""),
+      mUserCmd4(""),
+      mHeightMapProbeFeed(1.0)
 {
 
+    qDebug() << "MachineSettings: Constructing";
 }
 
 Profile* MachineSettings::getParentHandle() const
@@ -34,4 +52,154 @@ Profile* MachineSettings::getParentHandle() const
 int MachineSettings::getParentID()
 {
    return mParentHandle->getID();
+}
+
+int MachineSettings::getQueryPeriod() const
+{
+    return mQueryPeriod;
+}
+
+void MachineSettings::setQueryPeriod(int queryPeriod)
+{
+    mQueryPeriod = queryPeriod;
+}
+
+bool MachineSettings::getUnits() const
+{
+    return mUnits;
+}
+
+void MachineSettings::setUnits(bool units)
+{
+    mUnits = units;
+}
+
+float MachineSettings::getRapidSpeed() const
+{
+    return mRapidSpeed;
+}
+
+void MachineSettings::setRapidSpeed(float rapidSpeed)
+{
+    mRapidSpeed = rapidSpeed;
+}
+
+float MachineSettings::getAcceleration() const
+{
+    return mAcceleration;
+}
+
+void MachineSettings::setAcceleration(float acceleration)
+{
+    mAcceleration = acceleration;
+}
+
+int MachineSettings::getSpindleMin() const
+{
+    return mSpindleMin;
+}
+
+void MachineSettings::setSpindleMin(int spindleMin)
+{
+    mSpindleMin = spindleMin;
+}
+
+int MachineSettings::getSpindleMax() const
+{
+    return mSpindleMax;
+}
+
+void MachineSettings::setSpindleMax(int spindleMax)
+{
+    mSpindleMax = spindleMax;
+}
+
+QString MachineSettings::getProbeCmds() const
+{
+    return mProbeCmds;
+}
+
+void MachineSettings::setProbeCmds(const QString& probeCmds)
+{
+    mProbeCmds = probeCmds;
+}
+
+QString MachineSettings::getSafePositionCmds() const
+{
+    return mSafePositionCmds;
+}
+
+void MachineSettings::setSafePositionCmds(const QString& safePositionCmds)
+{
+    mSafePositionCmds = safePositionCmds;
+}
+
+bool MachineSettings::getRestoreOrigin() const
+{
+    return mRestoreOrigin;
+}
+
+void MachineSettings::setRestoreOrigin(bool restoreOrigin)
+{
+    mRestoreOrigin = restoreOrigin;
+}
+
+bool MachineSettings::getRestoreType() const
+{
+    return mRestoreType;
+}
+
+void MachineSettings::setRestoreType(bool restoreType)
+{
+    mRestoreType = restoreType;
+}
+
+QString MachineSettings::getUserCmd1() const
+{
+    return mUserCmd1;
+}
+
+void MachineSettings::setUserCmd1(const QString& userCmd1)
+{
+    mUserCmd1 = userCmd1;
+}
+
+QString MachineSettings::getUserCmd2() const
+{
+    return mUserCmd2;
+}
+
+void MachineSettings::setUserCmd2(const QString& userCmd2)
+{
+    mUserCmd2 = userCmd2;
+}
+
+QString MachineSettings::getUserCmd3() const
+{
+    return mUserCmd3;
+}
+
+void MachineSettings::setUserCmd3(const QString& userCmd3)
+{
+    mUserCmd3 = userCmd3;
+}
+
+QString MachineSettings::getUserCmd4() const
+{
+    return mUserCmd4;
+}
+
+void MachineSettings::setUserCmd4(const QString& userCmd4)
+{
+    mUserCmd4 = userCmd4;
+}
+
+int MachineSettings::getHeightMapProbeFeed() const
+{
+    return mHeightMapProbeFeed;
+}
+
+void MachineSettings::setHeightMapProbeFeed(int heightMapProbeFeed)
+{
+    mHeightMapProbeFeed = heightMapProbeFeed;
 }

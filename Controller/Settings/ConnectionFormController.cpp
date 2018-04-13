@@ -25,7 +25,8 @@
 #include "Model/Settings/Settings.h"
 
 ConnectionFormController::ConnectionFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
     setupSignalSlots();

@@ -11,12 +11,12 @@
 #include "ui_SettingsForm.h"
 
 SettingsFormController::SettingsFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mSettingsModelHandle(nullptr)
 {
     qDebug() << "SettingsFormController: Constructing";
     mUi.setupUi(&mDialog);
     setupSignalSlots();
-    mSettingsModelHandle = nullptr;
     mDialog.setLocale(QLocale::C);
     //setTabIcons();
 }

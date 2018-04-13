@@ -27,9 +27,9 @@ SqlSettingsModel::SqlSettingsModel(QObject* parent)
 {
     mProfilesListModel = QSharedPointer<ProfilesListModel>::create(this);
     mSettingsDirectory = QDir
-    (
-        QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).at(0)
-    );
+            (
+                QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).at(0)
+                );
 
     if (!mSettingsDirectory.exists())
     {
@@ -110,6 +110,18 @@ bool SqlSettingsModel::createNewProfile(Profile* profile)
     if(!insertConnectionSettingsInDB(profile->getConnectionSettingsHandle()))
     {
         qDebug() << "SqlSettingsModel: CreateNewProfile Failed to insert connection settings";
+        return false;
+    }
+
+    if(!insertInterfaceSettingsInDB(profile->getInterfaceSettingsHandle()))
+    {
+        qDebug() << "SqlSettingsModel: CreateNewProfile Failed to insert interface settings";
+        return false;
+    }
+
+    if(!insertMachineSettingsInDB(profile->getMachineSettingsHandle()))
+    {
+        qDebug() << "SqlSettingsModel: CreateNewProfile Failed to insert machine settings";
         return false;
     }
 
@@ -592,7 +604,7 @@ int SqlSettingsModel::getToolsFromDB(Profile* profile)
     return modelHandle->rowCount();
 }
 
-int SqlSettingsModel::getToolsGeometryFromDB(Profile* profile)
+int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
 {
     int numRecords = 0;
     ToolListModel* modelHandle = profile->getToolListModelHandle();
@@ -626,7 +638,6 @@ int SqlSettingsModel::getToolsGeometryFromDB(Profile* profile)
         {
             qDebug() << "SqlSettingsModel: Got ToolGeometry";
             int id = query.value(idFieldNum).toInt();
-            int parentId = query.value(toolIdFieldNum).toInt();
             int index = query.value(indexFieldNum).toInt();
             float height = query.value(heightFieldNum).toFloat();
             float upper = query.value(upperDiameterFieldNum).toFloat();
@@ -739,7 +750,7 @@ int SqlSettingsModel::getProfilesFromDB()
         getConnectionSettingsFromDB(p);
         getRecentGcodeFilesFromDB(p);
         getToolsFromDB(p);
-        getToolsGeometryFromDB(p);
+        getToolGeometryFromDB(p);
         getToolHoldersFromDB(p);
         getToolHoldersGeometryFromDB(p);
     }
@@ -771,7 +782,7 @@ void SqlSettingsModel::setCurrentProfileHandle(Profile* profile)
     }
 }
 
-Profile*SqlSettingsModel::getProfileFromModelAtIndex(int index)
+Profile* SqlSettingsModel::getProfileFromModelAtIndex(int index)
 {
     return mProfilesListModel->get(index);
 }
@@ -791,26 +802,138 @@ bool SqlSettingsModel::createInterfaceSettingsTable()
 
 int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
 {
-    Q_UNUSED(profile)
-    return false;
+    int numRecords = 0;
+    QSqlQuery query;
+    query.prepare(SELECT_FROM_INTERFACE_QUERY);
+    query.addBindValue(profile->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error getting interface settings"
+                 << query.lastError();
+        return 0;
+    }
+
+    int idFieldNum = query.record().indexOf("id");
+    int lineWidthFieldNum = query.record().indexOf("line_width");
+    int fpsLockFieldNum = query.record().indexOf("fps_lock");
+    int antiAliasingFieldNum = query.record().indexOf("anti_aliasing");
+    int vSyncFieldNum = query.record().indexOf("v_sync");
+    int msaaFieldNum = query.record().indexOf("msaa");
+    int zBufferFieldNum = query.record().indexOf("z_buffer");
+    int gcodeDrawModeFieldNum = query.record().indexOf("gcode_draw_mode");
+    int simplifyGeomFieldNum = query.record().indexOf("simplify_geometry");
+    int simplifyPrecisionFieldNum = query.record().indexOf("simplify_precision");
+    int grayscaleSegmentsFieldNum = query.record().indexOf("grayscale_segments");
+    int grayscaleCodeFieldNum = query.record().indexOf("grayscale_code");
+
+    while(query.next())
+    {
+        qDebug() << "SqlSettingsModel: Got Interface settings for" << profile->getID();
+        int id = query.value(idFieldNum).toInt();
+        float lineWidth = query.value(lineWidthFieldNum).toFloat();
+        int fpsLock = query.value(fpsLockFieldNum).toInt();
+        bool antiAliasing = query.value(antiAliasingFieldNum).toBool();
+        bool vSync = query.value(vSyncFieldNum).toBool();
+        bool msaa = query.value(msaaFieldNum).toBool();
+        bool zBuffer = query.value(zBufferFieldNum).toBool();
+        bool gcodeDrawMode = query.value(gcodeDrawModeFieldNum).toBool();
+        bool simplifyGeom = query.value(simplifyGeomFieldNum).toBool();
+        float simplifyPrecision = query.value(simplifyPrecisionFieldNum).toFloat();
+        int grayscaleSegments = query.value(grayscaleSegmentsFieldNum).toInt();
+        bool grayscaleCode = query.value(grayscaleCodeFieldNum).toBool();
+
+        InterfaceSettings* iface = profile->getInterfaceSettingsHandle();
+        iface->setID(id);
+        iface->setLineWidth(lineWidth);
+        iface->setFpsLock(fpsLock);
+        iface->setAntiAliasing(antiAliasing);
+        iface->setVsync(vSync);
+        iface->setMsaa(msaa);
+        iface->setZbuffer(zBuffer);
+        iface->setGcodeDrawMode(gcodeDrawMode);
+        iface->setSimplifyGeometry(simplifyGeom);
+        iface->setSimplifyPrecision(simplifyPrecision);
+        iface->setGrayscaleSegments(grayscaleSegments);
+        iface->setGrayscaleCode(grayscaleCode);
+    }
+    numRecords++;
+    return numRecords;
 }
 
 bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: insertConnectionInDB";
+    QSqlQuery query;
+    query.prepare(INSERT_INTERFACE_QUERY);
+
+    query.addBindValue(settings->getParentID());
+    query.addBindValue(settings->getLineWidth());
+    query.addBindValue(settings->getFpsLock());
+    query.addBindValue(settings->getAntiAliasing());
+    query.addBindValue(settings->getVsync());
+    query.addBindValue(settings->getMsaa());
+    query.addBindValue(settings->getZbuffer());
+    query.addBindValue(settings->getGcodeDrawMode());
+    query.addBindValue(settings->getSimplifyGeometry());
+    query.addBindValue(settings->getSimplifyPrecision());
+    query.addBindValue(settings->getGrayscaleSegments());
+    query.addBindValue(settings->getGrayscaleCode());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error inserting interface"
+                 << query.lastError();
+        return false;
+    }
+
+    settings->setID(query.lastInsertId().toInt());
+
+    qDebug() << "SqlSettingsModel: Inserted interface with id"
+             << settings->getID();
+
+    return true;
 }
 
 bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: updateConnectionInDB";
+    QSqlQuery query;
+    Profile* profile = settings->getParentHandle();
+    query.prepare(UPDATE_INTERFACE_QUERY);
+    query.addBindValue(profile->getID());
+    query.addBindValue(settings->getLineWidth());
+    query.addBindValue(settings->getFpsLock());
+    query.addBindValue(settings->getAntiAliasing());
+    query.addBindValue(settings->getVsync());
+    query.addBindValue(settings->getMsaa());
+    query.addBindValue(settings->getZbuffer());
+    query.addBindValue(settings->getGcodeDrawMode());
+    query.addBindValue(settings->getSimplifyGeometry());
+    query.addBindValue(settings->getSimplifyPrecision());
+    query.addBindValue(settings->getGrayscaleSegments());
+    query.addBindValue(settings->getGrayscaleCode());
+    query.addBindValue(settings->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error updating interface"
+                 << query.lastError();
+        return false;
+    }
+
+    qDebug() << "SqlSettingsModel: Updated interface with id"
+             << settings->getID();
+    return true;
 }
 
 bool SqlSettingsModel::deleteInterfaceSettingsFromDB(InterfaceSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: deleteInterfaceFromDB";
+    QSqlQuery query;
+    query.prepare(DELETE_INTERFACE_QUERY);
+    query.addBindValue(settings->getID());
+    return query.exec();
 }
 
 bool SqlSettingsModel::createMachineSettingsTable()
@@ -828,26 +951,117 @@ bool SqlSettingsModel::createMachineSettingsTable()
 
 int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
 {
-    Q_UNUSED(profile)
-    return false;
+    int numRecords = 0;
+    QSqlQuery query;
+    query.prepare(SELECT_FROM_MACHINE_QUERY);
+    query.addBindValue(profile->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error getting machine settings"
+                 << query.lastError();
+        return 0;
+    }
+
+    int idFieldNum = query.record().indexOf("id");
+
+
+    while(query.next())
+    {
+        qDebug() << "SqlSettingsModel: Got Interface settings for" << profile->getID();
+        int id = query.value(idFieldNum).toInt();
+
+        MachineSettings* machine = profile->getMachineSettingsHandle();
+        machine->setID(id);
+
+    }
+    numRecords++;
+    return numRecords;
 }
 
 bool SqlSettingsModel::insertMachineSettingsInDB(MachineSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: insertMachineInDB";
+    QSqlQuery query;
+
+    query.prepare(INSERT_MACHINE_QUERY);
+
+    query.addBindValue(settings->getParentID());
+    query.addBindValue(settings->getQueryPeriod());
+    query.addBindValue(settings->getUnits());
+    query.addBindValue(settings->getRapidSpeed());
+    query.addBindValue(settings->getAcceleration());
+    query.addBindValue(settings->getSpindleMin());
+    query.addBindValue(settings->getSpindleMax());
+    query.addBindValue(settings->getProbeCmds());
+    query.addBindValue(settings->getSafePositionCmds());
+    query.addBindValue(settings->getRestoreOrigin());
+    query.addBindValue(settings->getRestoreType());
+    query.addBindValue(settings->getUserCmd1());
+    query.addBindValue(settings->getUserCmd2());
+    query.addBindValue(settings->getUserCmd3());
+    query.addBindValue(settings->getUserCmd4());
+    query.addBindValue(settings->getHeightMapProbeFeed());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error inserting machine"
+                 << query.lastError();
+        return false;
+    }
+
+    settings->setID(query.lastInsertId().toInt());
+
+    qDebug() << "SqlSettingsModel: Inserted machine with id"
+             << settings->getID();
+
+    return true;
 }
 
 bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: updateMachineInDB";
+    QSqlQuery query;
+    Profile* profile = settings->getParentHandle();
+    query.prepare(UPDATE_MACHINE_QUERY);
+
+    query.addBindValue(settings->getParentID());
+    query.addBindValue(settings->getQueryPeriod());
+    query.addBindValue(settings->getUnits());
+    query.addBindValue(settings->getRapidSpeed());
+    query.addBindValue(settings->getAcceleration());
+    query.addBindValue(settings->getSpindleMin());
+    query.addBindValue(settings->getSpindleMax());
+    query.addBindValue(settings->getProbeCmds());
+    query.addBindValue(settings->getSafePositionCmds());
+    query.addBindValue(settings->getRestoreOrigin());
+    query.addBindValue(settings->getRestoreType());
+    query.addBindValue(settings->getUserCmd1());
+    query.addBindValue(settings->getUserCmd2());
+    query.addBindValue(settings->getUserCmd3());
+    query.addBindValue(settings->getUserCmd4());
+    query.addBindValue(settings->getHeightMapProbeFeed());
+    query.addBindValue(profile->getID());
+
+    if (!query.exec())
+    {
+        qDebug() << "SqlSettingsModel: Error updating machine"
+                 << query.lastError();
+        return false;
+    }
+
+    qDebug() << "SqlSettingsModel: Updated machine with id"
+             << settings->getID();
+    return true;
 }
 
 bool SqlSettingsModel::deleteMachineSettingsFromDB(MachineSettings* settings)
 {
-    Q_UNUSED(settings)
-    return false;
+    qDebug() << "SqlSettingsModel: deleteMachineFromDB";
+    QSqlQuery query;
+    query.prepare(DELETE_MACHINE_QUERY);
+    query.addBindValue(settings->getID());
+    return query.exec();
 }
 
 bool SqlSettingsModel::createConnectionSettingsTable()
@@ -1043,24 +1257,24 @@ void SqlSettingsModel::onCurrentProfileChanged(Profile* profile)
     getMachineSettingsFromDB(profile);
     getRecentGcodeFilesFromDB(profile);
     getToolsFromDB(profile);
-    getToolsGeometryFromDB(profile);
+    getToolGeometryFromDB(profile);
     getToolHoldersFromDB(profile);
     getToolHoldersGeometryFromDB(profile);
 }
 
 void SqlSettingsModel::onConnecitonSettingsUpdated(ConnectionSettings* settings)
 {
-   updateConnectionSettingsInDB(settings);
+    updateConnectionSettingsInDB(settings);
 }
 
 void SqlSettingsModel::onInterfaceSettingsUpdated(InterfaceSettings* settings)
 {
-   updateInterfaceSettingsInDB(settings);
+    updateInterfaceSettingsInDB(settings);
 }
 
 void SqlSettingsModel::onMachineSettingsUpdated(MachineSettings* settings)
 {
-   updateMachineSettingsInDB(settings);
+    updateMachineSettingsInDB(settings);
 }
 
 void SqlSettingsModel::onToolCreated()
@@ -1069,9 +1283,9 @@ void SqlSettingsModel::onToolCreated()
     auto tool = QSharedPointer<Tool>::create(mProfilesListModel->getCurrentProfileHandle());
     insertToolInDB(tool.data());
     mProfilesListModel
-        ->getCurrentProfileHandle()
-        ->getToolListModelHandle()
-        ->insertItem(tool);
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->insertItem(tool);
 }
 
 void SqlSettingsModel::onToolUpdated(Tool* tool)
@@ -1089,21 +1303,21 @@ void SqlSettingsModel::onToolDeleted(Tool* tool)
     }
     deleteToolFromDB(tool);
     mProfilesListModel
-        ->getCurrentProfileHandle()
-        ->getToolListModelHandle()
-        ->deleteItem(tool);
+            ->getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->deleteItem(tool);
 }
 
 void SqlSettingsModel::onToolHolderCreated()
 {
     qDebug() << "SqlSettingsModel::onToolHolderCreated";
     auto toolHolder = QSharedPointer<ToolHolder>::create
-    (mProfilesListModel->getCurrentProfileHandle());
+            (mProfilesListModel->getCurrentProfileHandle());
     insertToolHolderInDB(toolHolder.data());
     mProfilesListModel
-        ->getCurrentProfileHandle()
-        ->getToolHolderListModelHandle()
-        ->insertItem(toolHolder);
+            ->getCurrentProfileHandle()
+            ->getToolHolderListModelHandle()
+            ->insertItem(toolHolder);
 }
 
 void SqlSettingsModel::onToolHolderUpdated(ToolHolder* toolHolder)
@@ -1113,11 +1327,11 @@ void SqlSettingsModel::onToolHolderUpdated(ToolHolder* toolHolder)
     if (model)
     {
         model->setData
-        (
-            model->indexOf(toolHolder),
-            toolHolder->getName(),
-            Qt::EditRole
-        );
+                (
+                    model->indexOf(toolHolder),
+                    toolHolder->getName(),
+                    Qt::EditRole
+                    );
     }
     updateToolHolderInDB(toolHolder);
 }
@@ -1131,9 +1345,9 @@ void SqlSettingsModel::onToolHolderDeleted(ToolHolder* toolHolder)
     }
     deleteToolHolderFromDB(toolHolder);
     mProfilesListModel
-        ->getCurrentProfileHandle()
-        ->getToolHolderListModelHandle()
-        ->deleteItem(toolHolder);
+            ->getCurrentProfileHandle()
+            ->getToolHolderListModelHandle()
+            ->deleteItem(toolHolder);
 }
 
 void SqlSettingsModel::onToolHolderGeometryCreated()

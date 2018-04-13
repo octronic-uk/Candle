@@ -114,7 +114,7 @@ protected:
     bool updateToolInDB(Tool* tool);
     bool deleteToolFromDB(Tool* tool);
     // Tool Geometry
-    int getToolsGeometryFromDB(Profile*);
+    int getToolGeometryFromDB(Profile*);
     bool createToolGeometryTable();
     bool insertToolGeometryInDB(ToolGeometry* tool);
     bool updateToolGeometryInDB(ToolGeometry* tool);

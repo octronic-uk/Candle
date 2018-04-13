@@ -20,7 +20,8 @@
 #include "Model/Settings/Settings.h"
 
 InterfaceFormController::InterfaceFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
 }

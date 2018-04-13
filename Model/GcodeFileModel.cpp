@@ -32,13 +32,13 @@ GcodeFileModel::GcodeFileModel(QObject *parent)
       mProgramLoading(false),
       mFileChanged(false)
 {
-    qDebug() << "GcodeFileModel: +++++ Constructing";
+    qDebug() << "GcodeFileModel: Constructing";
     mGcodeParser = QSharedPointer<GcodeParser>::create(this);
 }
 
 GcodeFileModel::~GcodeFileModel()
 {
-    qDebug() << "GcodeFileModel: ----- Destructing";
+    qDebug() << "GcodeFileModel: Destructing";
     initialise();
 }
 

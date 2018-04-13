@@ -21,7 +21,8 @@
 #include <QMessageBox>
 
 ToolFormController::ToolFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
     mUi.splitter->setStretchFactor(0,1);

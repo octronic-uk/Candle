@@ -17,6 +17,7 @@
  */
 #include "ConnectionSettings.h"
 #include "Model/Settings/Profile/Profile.h"
+#include <QtDebug>
 
 ConnectionSettings::ConnectionSettings(Profile* parent, int id)
     : AbstractDatabaseRecord (id),
@@ -28,7 +29,9 @@ ConnectionSettings::ConnectionSettings(Profile* parent, int id)
       mArcApproximation(false),
       mArcApproximationLength(0.0),
       mArcApproximationDegrees(0.0)
-{}
+{
+    qDebug() << "ConnectionSettings: Constructing";
+}
 
 ConnectionSettings::~ConnectionSettings() {}
 

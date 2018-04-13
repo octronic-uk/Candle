@@ -19,15 +19,77 @@
 #pragma once
 
 #include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+#include <QString>
 
 class Profile;
 class MachineSettings : public AbstractDatabaseRecord
 {
 public:
     MachineSettings(Profile* parent, int id = -1);
+
     Profile* getParentHandle() const;
     int getParentID();
 
+    int getQueryPeriod() const;
+    void setQueryPeriod(int queryPeriod);
+
+    bool getUnits() const;
+    void setUnits(bool units);
+
+    float getRapidSpeed() const;
+    void setRapidSpeed(float rapidSpeed);
+
+    float getAcceleration() const;
+    void setAcceleration(float acceleration);
+
+    int getSpindleMin() const;
+    void setSpindleMin(int spindleMin);
+
+    int getSpindleMax() const;
+    void setSpindleMax(int spindleMax);
+
+    QString getProbeCmds() const;
+    void setProbeCmds(const QString& probeCmds);
+
+    QString getSafePositionCmds() const;
+    void setSafePositionCmds(const QString& safePositionCmds);
+
+    bool getRestoreOrigin() const;
+    void setRestoreOrigin(bool restoreOrigin);
+
+    bool getRestoreType() const;
+    void setRestoreType(bool restoreType);
+
+    QString getUserCmd1() const;
+    void setUserCmd1(const QString& userCmd1);
+
+    QString getUserCmd2() const;
+    void setUserCmd2(const QString& userCmd2);
+
+    QString getUserCmd3() const;
+    void setUserCmd3(const QString& userCmd3);
+
+    QString getUserCmd4() const;
+    void setUserCmd4(const QString& userCmd4);
+
+    int getHeightMapProbeFeed() const;
+    void setHeightMapProbeFeed(int heightMapProbeFeed);
+
 private:
     Profile* mParentHandle;
+    int mQueryPeriod;
+    bool mUnits;
+    float mRapidSpeed;
+    float mAcceleration;
+    int mSpindleMin;
+    int mSpindleMax;
+    QString mProbeCmds;
+    QString mSafePositionCmds;
+    bool mRestoreOrigin;
+    bool mRestoreType;
+    QString mUserCmd1;
+    QString mUserCmd2;
+    QString mUserCmd3;
+    QString mUserCmd4;
+    int mHeightMapProbeFeed;
 };

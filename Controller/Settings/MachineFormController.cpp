@@ -19,7 +19,8 @@
 #include "ui_MachineForm.h"
 
 MachineFormController::MachineFormController(QWidget *parent) :
-    AbstractFormController(parent)
+    AbstractFormController(parent),
+    mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
 }
