@@ -15,10 +15,13 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "ControlFormController.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 
 ControlFormController::ControlFormController(QWidget *parent)
-    : AbstractFormController(parent)
+    : AbstractFormController(parent),
+      mSettingsModelHandle(nullptr)
 {
     qDebug() << "Contructing ControlFormController";
     mUi.setupUi(this);
@@ -31,68 +34,130 @@ ControlFormController::~ControlFormController()
 
 }
 
-void ControlFormController::onCmdHomeClicked()
+void ControlFormController::onHomeButtonClicked()
 {
-    mIsHoming = true;
-    //mIsUpdatingSpindleSpeed = true;
-    //sendCommand("$H", -1, mSettingsForm->showUICommands());
+   emit gcodeCommandManualSendSignal(GcodeCommand::HomingCommand());
 }
 
-void ControlFormController::onCmdTouchClicked()
+MachineSettings* ControlFormController::getMachineSettingsHandle()
 {
-    /*
-    mIsHoming = true;
+    if (isModelValid())
+    {
+        auto profile = mSettingsModelHandle->getCurrentProfileHandle();
+        if (profile)
+        {
+            return profile->getMachineSettingsHandle();
+        }
+    }
+    qDebug() << "ConnectionFormController: Settings model is invalid";
+    return nullptr;
+}
 
-    QStringList list = mSettingsForm->touchCommand().split(";");
+void ControlFormController::onProbeButtonClicked()
+{
+    auto machine = getMachineSettingsHandle();
+    QStringList list = machine->getProbeCmds().split(";");
 
     foreach (QString cmd, list)
     {
-        sendCommand(cmd.trimmed(), -1, mSettingsForm->showUICommands());
+        // TODO - Leak Spin
+        GcodeCommand *next = new GcodeCommand(cmd);
+        emit gcodeCommandManualSendSignal(next);
     }
-    */
 }
 
-void ControlFormController::onCmdZeroXYClicked()
+void ControlFormController::onZeroXYButtonClicked()
 {
-    /*
-    mSettingZeroXY = true;
-    sendCommand("G92X0Y0", -1, mSettingsForm->showUICommands());
-    sendCommand("$#", -2, mSettingsForm->showUICommands());
-    */
+    emit gcodeCommandManualSendSignal(GcodeCommand::ZeroXYCommand());
+    emit gcodeCommandManualSendSignal(GcodeCommand::GetGcodeParamsCommand());
 }
 
-void ControlFormController::onCmdZeroZClicked()
+void ControlFormController::onZeroZButtonClicked()
 {
-    /*
-    mSettingZeroZ = true;
-    sendCommand("G92Z0", -1, mSettingsForm->showUICommands());
-    sendCommand("$#", -2, mSettingsForm->showUICommands());
-    */
+    emit gcodeCommandManualSendSignal(GcodeCommand::ZeroZCommand());
+    emit gcodeCommandManualSendSignal(GcodeCommand::GetGcodeParamsCommand());
+}
+
+void ControlFormController::onUserCommand1ButtonClicked()
+{
+    auto settings = getMachineSettingsHandle();
+    QString command = settings->getUserCmd1();
+    // TODO - Leak Spin
+    emit gcodeCommandManualSendSignal(new GcodeCommand(command));
+}
+
+void ControlFormController::onUserCommand2ButtonClicked()
+{
+    auto settings = getMachineSettingsHandle();
+    QString command = settings->getUserCmd2();
+    // TODO - Leak Spin
+    emit gcodeCommandManualSendSignal(new GcodeCommand(command));
+}
+
+void ControlFormController::onUserCommand3ButtonClicked()
+{
+    auto settings = getMachineSettingsHandle();
+    QString command = settings->getUserCmd3();
+    // TODO - Leak Spin
+    emit gcodeCommandManualSendSignal(new GcodeCommand(command));
+}
+
+void ControlFormController::onUserCommand4ButtonClicked()
+{
+    auto settings = getMachineSettingsHandle();
+    QString command = settings->getUserCmd4();
+    // TODO - Leak Spin
+    emit gcodeCommandManualSendSignal(new GcodeCommand(command));
 }
 
 void ControlFormController::setupSignalSlots()
 {
 
     qDebug() << "ControlFormController: Setup Signals/Slots";
-    connect(mUi.cmdUnlock, SIGNAL(clicked()),this,SLOT(onCmdUnlockClicked()));
-    connect(mUi.cmdReset, SIGNAL(clicked()),this,SLOT(onCmdResetClicked()));
+    connect(mUi.homeButton,SIGNAL(clicked()),this,SLOT(onHomeButtonClicked()));
+    connect(mUi.probeZButton,SIGNAL(clicked()),this,SLOT(onProbeButtonClicked()));
+    connect(mUi.zeroXYButton,SIGNAL(clicked()),this,SLOT(onZeroXYButtonClicked()));
+    connect(mUi.zeroZButton,SIGNAL(clicked()),this,SLOT(onZeroZButtonClicked()));
+
+    connect(mUi.restoreOriginButton,SIGNAL(clicked()),this,SLOT(onRestoreOriginButtonClicked()));
+    connect(mUi.safePositionButton,SIGNAL(clicked()),this,SLOT(onSafePositionButtonClicked()));
+    connect(mUi.unlockButton, SIGNAL(clicked()),this,SLOT(onUnlockButtonClicked()));
+    connect(mUi.resetButton, SIGNAL(clicked()),this,SLOT(onResetButtonClicked()));
+
+    connect(mUi.user1Button,SIGNAL(clicked()),this,SLOT(onUserCommand1ButtonClicked()));
+    connect(mUi.user2Button,SIGNAL(clicked()),this,SLOT(onUserCommand2ButtonClicked()));
+    connect(mUi.user3Button,SIGNAL(clicked()),this,SLOT(onUserCommand3ButtonClicked()));
+    connect(mUi.user4Button,SIGNAL(clicked()),this,SLOT(onUserCommand4ButtonClicked()));
 }
 
 void ControlFormController::setFormActive(bool active)
 {
-    mUi.cmdHome->setEnabled(active);
-    mUi.cmdTouch->setEnabled(active);
-    mUi.cmdZeroXY->setEnabled(active);
-    mUi.cmdZeroZ->setEnabled(active);
-    mUi.cmdRestoreOrigin->setEnabled(active);
-    mUi.cmdSafePosition->setEnabled(active);
-    mUi.cmdUser1->setEnabled(active);
-    mUi.cmdUser2->setEnabled(active);
-    mUi.cmdUser3->setEnabled(active);
-    mUi.cmdUser4->setEnabled(active);
+    mUi.homeButton->setEnabled(active);
+    mUi.probeZButton->setEnabled(active);
+    mUi.zeroXYButton->setEnabled(active);
+    mUi.zeroZButton->setEnabled(active);
+
+    mUi.restoreOriginButton->setEnabled(active);
+    mUi.safePositionButton->setEnabled(active);
     // Always enabled
-    mUi.cmdReset->setEnabled(true);
-    mUi.cmdUnlock->setEnabled(true);
+    mUi.resetButton->setEnabled(true);
+    mUi.unlockButton->setEnabled(true);
+
+    if (isModelValid())
+    {
+        auto settings = getMachineSettingsHandle();
+        mUi.user1Button->setEnabled(!settings->getUserCmd1().isEmpty());
+        mUi.user2Button->setEnabled(!settings->getUserCmd2().isEmpty());
+        mUi.user3Button->setEnabled(!settings->getUserCmd3().isEmpty());
+        mUi.user4Button->setEnabled(!settings->getUserCmd4().isEmpty());
+    }
+    else
+    {
+        mUi.user1Button->setEnabled(false);
+        mUi.user2Button->setEnabled(false);
+        mUi.user3Button->setEnabled(false);
+        mUi.user4Button->setEnabled(false);
+    }
 }
 
 void ControlFormController::initialise()
@@ -104,17 +169,17 @@ void ControlFormController::highlightUnlockReset(bool highlight)
 {
    if (highlight)
    {
-       QPalette p = mUi.cmdUnlock->palette();
-       p.setColor(mUi.cmdUnlock->backgroundRole(),QColor(200,40,40));
-       mUi.cmdUnlock->setPalette(p);
+       QPalette p = mUi.unlockButton->palette();
+       p.setColor(mUi.unlockButton->backgroundRole(),QColor(200,40,40));
+       mUi.unlockButton->setPalette(p);
 
-       p = mUi.cmdReset->palette();
-       p.setColor(mUi.cmdUnlock->backgroundRole(),QColor(200,0,0));
-       mUi.cmdReset->setPalette(p);
+       p = mUi.resetButton->palette();
+       p.setColor(mUi.resetButton->backgroundRole(),QColor(200,0,0));
+       mUi.resetButton->setPalette(p);
    }
 }
 
-void ControlFormController::onCmdRestoreOriginClicked()
+void ControlFormController::onRestoreOriginButtonClicked()
 {
     /*
     // Restore offset
@@ -142,158 +207,39 @@ void ControlFormController::onCmdRestoreOriginClicked()
     */
 }
 
-void ControlFormController::onCmdResetClicked()
+void ControlFormController::onResetButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::ResetCommand());
 }
 
-void ControlFormController::onCmdUnlockClicked()
+void ControlFormController::onUnlockButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::UnlockCommand());
 }
 
-void ControlFormController::onCmdSafePositionClicked()
+void ControlFormController::onSafePositionButtonClicked()
 {
-    /*
-    QStringList list = mSettingsForm->safePositionCommand().split(";");
-
-    foreach (QString cmd, list)
+    if (isModelValid())
     {
-        sendCommand(cmd.trimmed(), -1, mSettingsForm->showUICommands());
+        auto machineSettings = getMachineSettingsHandle();
+        QString safePos = machineSettings->getSafePositionCmds();
+        QStringList list = safePos.split(";");
+
+        foreach (QString cmd, list)
+        {
+            GcodeCommand* next = new GcodeCommand(cmd.trimmed());
+            emit gcodeCommandManualSendSignal(next);
+        }
     }
-    */
 }
 
-void ControlFormController::onChkTestModeClicked(bool checked)
+bool ControlFormController::isModelValid()
 {
-    /*
-    if (checked)
-    {
-        storeOffsets();
-        storeParserState();
-        sendCommand("$C", -1, mSettingsForm->showUICommands());
-    }
-    else
-    {
-        mAborting = true;
-        grblReset();
-    };
-    */
+    return mSettingsModelHandle != nullptr;
 }
 
-void ControlFormController::updateControlsState()
+void ControlFormController::onSettingsModelReady(SqlSettingsModel* model)
 {
-    /*
-    bool portOpened = mSerialPort.isOpen();
-
-    mUi->grpState->setEnabled(portOpened);
-    mUi->grpControl->setEnabled(portOpened);
-    mUi->widgetUserCommands->setEnabled(portOpened && !mProcessingFile);
-    mUi->widgetSpindle->setEnabled(portOpened);
-    mUi->widgetJog->setEnabled(portOpened && !mProcessingFile);
-//    mUi->grpConsole->setEnabled(portOpened);
-    mUi->cboCommand->setEnabled(portOpened && (!mUi->chkKeyboardControl->isChecked()));
-    mUi->cmdCommandSend->setEnabled(portOpened);
-//    mUi->widgetFeed->setEnabled(!mTransferringFile);
-
-    mUi->chkTestMode->setEnabled(portOpened && !mProcessingFile);
-    mUi->cmdHome->setEnabled(!mProcessingFile);
-    mUi->cmdTouch->setEnabled(!mProcessingFile);
-    mUi->cmdZeroXY->setEnabled(!mProcessingFile);
-    mUi->cmdZeroZ->setEnabled(!mProcessingFile);
-    mUi->cmdRestoreOrigin->setEnabled(!mProcessingFile);
-    mUi->cmdSafePosition->setEnabled(!mProcessingFile);
-    mUi->cmdUnlock->setEnabled(!mProcessingFile);
-    mUi->cmdSpindle->setEnabled(!mProcessingFile);
-
-    mUi->actFileNew->setEnabled(!mProcessingFile);
-    mUi->actFileOpen->setEnabled(!mProcessingFile);
-    mUi->cmdFileOpen->setEnabled(!mProcessingFile);
-    mUi->cmdFileReset->setEnabled(!mProcessingFile && mProgramModel.rowCount() > 1);
-    mUi->cmdFileSend->setEnabled(portOpened && !mProcessingFile && mProgramModel.rowCount() > 1);
-    mUi->cmdFilePause->setEnabled(mProcessingFile && !mUi->chkTestMode->isChecked());
-    mUi->cmdFileAbort->setEnabled(mProcessingFile);
-    mUi->actFileOpen->setEnabled(!mProcessingFile);
-    mUi->mnuRecent->setEnabled(!mProcessingFile && ((mRecentFiles.count() > 0 && !mHeightMapMode)
-                                                      || (mRecentHeightmaps.count() > 0 && mHeightMapMode)));
-    mUi->actFileSave->setEnabled(mProgramModel.rowCount() > 1);
-    mUi->actFileSaveAs->setEnabled(mProgramModel.rowCount() > 1);
-
-    mUi->tblProgram->setEditTriggers(mProcessingFile ? QAbstractItemView::NoEditTriggers :
-                                                         QAbstractItemView::DoubleClicked | QAbstractItemView::SelectedClicked
-                                                         | QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed);
-
-    if (!portOpened)
-    {
-        mUi->txtStatus->setText(tr("Not connected"));
-        mUi->txtStatus->setStyleSheet(QString("background-color: palette(button); color: palette(text);"));
-    }
-
-    this->setWindowTitle(mProgramFileName.isEmpty() ? qApp->applicationDisplayName()
-                                                     : mProgramFileName.mid(mProgramFileName.lastIndexOf("/") + 1) + " - " + qApp->applicationDisplayName());
-
-    if (!mProcessingFile)
-    {
-        mUi->chkKeyboardControl->setChecked(mStoredKeyboardControl);
-    }
-
-#ifdef WINDOWS
-    if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) {
-        if (!mProcessingFile && mTaskBarProgress) mTaskBarProgress->hide();
-    }
-#endif
-
-    style()->unpolish(mUi->cmdFileOpen);
-    style()->unpolish(mUi->cmdFileReset);
-    style()->unpolish(mUi->cmdFileSend);
-    style()->unpolish(mUi->cmdFilePause);
-    style()->unpolish(mUi->cmdFileAbort);
-    mUi->cmdFileOpen->ensurePolished();
-    mUi->cmdFileReset->ensurePolished();
-    mUi->cmdFileSend->ensurePolished();
-    mUi->cmdFilePause->ensurePolished();
-    mUi->cmdFileAbort->ensurePolished();
-
-    // Heightmap
-    mHeightMapBorderDrawer.setVisible(mUi->chkHeightMapBorderShow->isChecked() && mHeightMapMode);
-    mHeightMapGridDrawer.setVisible(mUi->chkHeightMapGridShow->isChecked() && mHeightMapMode);
-    mHeightMapInterpolationDrawer.setVisible(mUi->chkHeightMapInterpolationShow->isChecked() && mHeightMapMode);
-
-    mUi->grpProgram->setTitle(mHeightMapMode ? tr("Heightmap") : tr("G-code program"));
-    mUi->grpProgram->setProperty("overrided", mHeightMapMode);
-    style()->unpolish(mUi->grpProgram);
-    mUi->grpProgram->ensurePolished();
-
-    mUi->grpHeightMapSettings->setVisible(mHeightMapMode);
-    mUi->grpHeightMapSettings->setEnabled(!mProcessingFile && !mUi->chkKeyboardControl->isChecked());
-
-    mUi->chkTestMode->setVisible(!mHeightMapMode);
-    mUi->chkAutoScroll->setVisible(mUi->splitter->sizes()[1] && !mHeightMapMode);
-
-    mUi->tblHeightMap->setVisible(mHeightMapMode);
-    mUi->tblProgram->setVisible(!mHeightMapMode);
-
-    mUi->widgetHeightMap->setEnabled(!mProcessingFile && mProgramModel.rowCount() > 1);
-    mUi->cmdHeightMapMode->setEnabled(!mUi->txtHeightMap->text().isEmpty());
-
-    mUi->cmdFileSend->setText(mHeightMapMode ? tr("Probe") : tr("Send"));
-
-    mUi->chkHeightMapUse->setEnabled(!mHeightMapMode && !mUi->txtHeightMap->text().isEmpty());
-
-    mUi->actFileSaveTransformedAs->setVisible(mUi->chkHeightMapUse->isChecked());
-
-    mUi->cmdFileSend->menu()->actions().first()->setEnabled(!mUi->cmdHeightMapMode->isChecked());
-
-    mSelectionDrawer.setVisible(!mUi->cmdHeightMapMode->isChecked());
-    */
-}
-
-bool ControlFormController::isHoming()
-{
-   return false;
-}
-
-bool ControlFormController::isResetCompleted()
-{
-   return false;
+    mSettingsModelHandle = model;
+    initialise();
 }

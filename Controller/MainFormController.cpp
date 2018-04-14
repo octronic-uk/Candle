@@ -112,13 +112,30 @@ void MainFormController::setupToolbarSignals()
 
 void MainFormController::setupSettingsModelSignals()
 {
-    // Profiles List Model
+    // Settings Model
     connect
     (
         mSqlSettingsModel.data(),
         SIGNAL(settingsModelReadySignal(SqlSettingsModel*)),
         &mSettingsFormController,
         SLOT(onSettingsModelReady(SqlSettingsModel*))
+    );
+    connect
+    (
+        mSqlSettingsModel.data(),
+        SIGNAL(settingsModelReadySignal(SqlSettingsModel*)),
+        mUi.controlFormController,
+        SLOT(onSettingsModelReady(SqlSettingsModel*))
+    );
+    // Serial Port
+    connect(
+        mSettingsFormController.getConnectionFormController(),SIGNAL(serialPortNameChangedSignal(QString)),
+        &mGrblMachineModel, SLOT(onSerialPortNameChanged(QString))
+    );
+    connect
+    (
+        mSettingsFormController.getConnectionFormController(), SIGNAL(serialPortBaudRateChangedSignal(int)),
+        &mGrblMachineModel, SLOT(onSerialPortBaudRateChanged(int))
     );
 }
 
@@ -563,10 +580,7 @@ void MainFormController::onActFileExitTriggered()
 void MainFormController::onActSettingsTriggered()
 {
     qDebug() << "MainFormController: onActSettingsTriggered";
-    if(mSettingsFormController.exec())
-    {
-        qDebug() << "MainFormController: Settings should be applied here";
-    }
+    mSettingsFormController.exec();
 }
 
 bool buttonLessThan(QPushButton *b1, QPushButton *b2)
@@ -829,7 +843,7 @@ void MainFormController::clearRecentHeightMapFilesMenu()
 void MainFormController::onSetBufferProgressValue(int value)
 {
     qDebug() << "MainFormController: setBufferProgressValue" << value;
-    mBufferProgressBar.setValue(value);
+    mBufferProgressBar.setValue(100-value);
 }
 
 void MainFormController::onSetCompletionProgressValue(int value)
@@ -844,10 +858,14 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mCompletionProgressBar.setMinimum(0);
     mCompletionProgressBar.setMaximum(100);
     mCompletionProgressBar.setTextVisible(false);
+    mCompletionProgressBar.setMinimumWidth(200);
+    mCompletionProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mCompletionProgressBar);
     mUi.statusBar->addPermanentWidget(new QLabel("Buffer"));
     mBufferProgressBar.setMinimum(0);
     mBufferProgressBar.setMaximum(100);
     mBufferProgressBar.setTextVisible(false);
+    mBufferProgressBar.setMinimumWidth(200);
+    mBufferProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mBufferProgressBar);
 }

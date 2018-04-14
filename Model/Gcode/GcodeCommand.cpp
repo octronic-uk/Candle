@@ -115,6 +115,31 @@ GcodeCommand* GcodeCommand::SpindleStopCommand()
     return &gc;
 }
 
+GcodeCommand* GcodeCommand::HomingCommand()
+{
+   static GcodeCommand gc("$H");
+   return &gc;
+}
+
+GcodeCommand* GcodeCommand::ZeroXYCommand()
+{
+   static GcodeCommand gc("G92X0Y0");
+   return &gc;
+}
+
+GcodeCommand*GcodeCommand::GetGcodeParamsCommand()
+{
+   static GcodeCommand gc("$#");
+   return &gc;
+}
+
+GcodeCommand*GcodeCommand::ZeroZCommand()
+{
+   static GcodeCommand gc("G92Z0");
+   return &gc;
+}
+
+
 bool GcodeCommand::operator==(const GcodeCommand& other)
 {
     return mID == other.mID;

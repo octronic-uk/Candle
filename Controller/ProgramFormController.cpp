@@ -391,7 +391,17 @@ void ProgramFormController::onMarkerSelectionChanged
     GcodeCommand *marker = mMarkerListModel.at(selected.indexes().first().row());
     if (marker)
     {
-        mUi.programTable->selectRow(marker->getTableIndex());
+        int index = marker->getTableIndex();
+
+        if (index > mUi.programTable->model()->rowCount()-1)
+        {
+            index = mUi.programTable->model()->rowCount()-1;
+        }
+
+        qDebug() << "ProgramFormController: Scrolling to marker"
+                 << index;
+
+        mUi.programTable->selectRow(index);
     }
 }
 
@@ -556,13 +566,25 @@ void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
     QModelIndex stateIndex = mProgramTableModel.index(command->getTableIndex(),1);
     QModelIndex responseIndex = mProgramTableModel.index(command->getTableIndex(),2);
 
+    int fewMoreIndex =
+        mUi.programTable->indexAt(mUi.programTable->rect().bottomRight()).row()
+        -
+        mUi.programTable->indexAt(mUi.programTable->rect().topLeft()).row();
+
+    fewMoreIndex /= 2;
+
+    QModelIndex fewMore = mProgramTableModel.index(command->getTableIndex() + fewMoreIndex,1);
+
     mProgramTableModel.setData(stateIndex, QVariant::fromValue(command->getState()));
     mProgramTableModel.setData(responseIndex, QVariant::fromValue(command->getResponse()));
 
     if (isAutoScrollChecked())
     {
+        if (command->getTableIndex() >= 0)
+        {
+            mUi.programTable->scrollTo(fewMore);
+        }
         mUi.programTable->selectRow(stateIndex.row());
-        mUi.programTable->scrollTo(stateIndex);
     }
 }
 
@@ -602,3 +624,19 @@ void ProgramFormController::onGcodeFileLoadStarted()
     clearTable();
 }
 
+void ProgramFormController::onTestModeButtonChecked(bool checked)
+{
+    /*
+    if (checked)
+    {
+        storeOffsets();
+        storeParserState();
+        sendCommand("$C", -1, mSettingsForm->showUICommands());
+    }
+    else
+    {
+        mAborting = true;
+        grblReset();
+    };
+    */
+}

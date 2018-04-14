@@ -53,6 +53,17 @@ QString GcodeMarkerListModel::removeCommentChars(QString marker) const
 void GcodeMarkerListModel::setMarkers(QList<GcodeCommand*> data)
 {
    mData = data;
+   // TODO - Leak Spin
+   GcodeCommand *start, *end;
+   start = new GcodeCommand("",0);
+   start->setMarker("Program Start");
+   start->setState(GcodeCommandState::Marker);
+   end = new GcodeCommand("",INT_MAX);
+   end->setMarker("Program End");
+   end->setState(GcodeCommandState::Marker);
+
+   mData.push_front(start);
+   mData.push_back(end);
    emit dataChanged(QModelIndex(),QModelIndex());
 }
 

@@ -33,7 +33,7 @@
     <number>4</number>
    </property>
    <item row="0" column="0">
-    <widget class="QToolButton" name="cmdHome">
+    <widget class="QToolButton" name="homeButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -71,7 +71,7 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QToolButton" name="cmdTouch">
+    <widget class="QToolButton" name="probeZButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -109,7 +109,7 @@
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QToolButton" name="cmdZeroXY">
+    <widget class="QToolButton" name="zeroXYButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -147,7 +147,7 @@
     </widget>
    </item>
    <item row="0" column="3">
-    <widget class="QToolButton" name="cmdZeroZ">
+    <widget class="QToolButton" name="zeroZButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -185,7 +185,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QToolButton" name="cmdRestoreOrigin">
+    <widget class="QToolButton" name="restoreOriginButton">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -226,7 +226,7 @@
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QToolButton" name="cmdSafePosition">
+    <widget class="QToolButton" name="safePositionButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -264,7 +264,7 @@
     </widget>
    </item>
    <item row="1" column="2">
-    <widget class="QToolButton" name="cmdReset">
+    <widget class="QToolButton" name="resetButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -302,7 +302,7 @@
     </widget>
    </item>
    <item row="1" column="3">
-    <widget class="QToolButton" name="cmdUnlock">
+    <widget class="QToolButton" name="unlockButton">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -343,7 +343,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QToolButton" name="cmdUser1">
+    <widget class="QToolButton" name="user1Button">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -375,7 +375,7 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QToolButton" name="cmdUser2">
+    <widget class="QToolButton" name="user2Button">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -407,7 +407,7 @@
     </widget>
    </item>
    <item row="2" column="2">
-    <widget class="QToolButton" name="cmdUser3">
+    <widget class="QToolButton" name="user3Button">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -439,7 +439,7 @@
     </widget>
    </item>
    <item row="2" column="3">
-    <widget class="QToolButton" name="cmdUser4">
+    <widget class="QToolButton" name="user4Button">
      <property name="enabled">
       <bool>true</bool>
      </property>

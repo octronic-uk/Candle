@@ -581,7 +581,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Tool</string>
+        <string>Current Tool: ---</string>
        </property>
        <property name="frame">
         <bool>false</bool>

@@ -75,6 +75,7 @@ InterfaceFormController* SettingsFormController::getInterfaceFormController()
 void SettingsFormController::onSettingsModelReady
 (SqlSettingsModel *model)
 {
+    qDebug() << "SettingsFormController: Model Ready";
     mSettingsModelHandle = model;
     mUi.profilesComboBox->setModel(model->getProfilesListModelHandle());
     getConnectionFormController()->setSettingsModel(mSettingsModelHandle);

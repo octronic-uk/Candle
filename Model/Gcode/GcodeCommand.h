@@ -85,6 +85,10 @@ public:
     static GcodeCommand* SpindleCounterClockwiseCommand();
     static GcodeCommand* SpindleClockwiseCommand();
     static GcodeCommand* SpindleStopCommand();
+    static GcodeCommand* HomingCommand();
+    static GcodeCommand* ZeroXYCommand();
+    static GcodeCommand* GetGcodeParamsCommand();
+    static GcodeCommand* ZeroZCommand();
 
     bool operator==(const GcodeCommand& other);
 

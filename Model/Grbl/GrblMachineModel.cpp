@@ -45,9 +45,9 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
     setupSerialPort();
     // Setup timer
     connect(
-                &mProgramSendTimer, SIGNAL(timeout()),
-                this, SLOT(onProgramSendTimerTimeout())
-                );
+        &mProgramSendTimer, SIGNAL(timeout()),
+        this, SLOT(onProgramSendTimerTimeout())
+    );
 
     startProgramSendTimer();
 }
@@ -67,23 +67,18 @@ void GrblMachineModel::setupSerialPort()
 
     mConnectionTimer.start(1000);
 
-    connect(&mConnectionTimer,SIGNAL(timeout()),
-            this, SLOT(onConnectionTimer()));
-    connect(
-                &mSerialPort, SIGNAL(readyRead()),
-                this, SLOT(onSerialPortReadyRead()),
-                Qt::QueuedConnection
-                );
-    connect(
-                &mSerialPort, SIGNAL(error(QSerialPort::SerialPortError)),
-                this, SLOT(onSerialPortError(QSerialPort::SerialPortError))
-                );
+    connect(&mConnectionTimer,SIGNAL(timeout()), this, SLOT(onConnectionTimer()));
+    connect(&mSerialPort, SIGNAL(readyRead()),this, SLOT(onSerialPortReadyRead()),Qt::QueuedConnection);
+    connect(&mSerialPort, SIGNAL(error(QSerialPort::SerialPortError)),this, SLOT(onSerialPortError(QSerialPort::SerialPortError)));
 }
 
 void GrblMachineModel::onConnectionTimer()
 {
     if (!mSerialPort.isOpen())
     {
+        qDebug() << "GrblMachineModel: Attempting to open port"
+             << getPortName()
+             << getBaudRate();
         openPort();
     }
 }
@@ -270,6 +265,18 @@ void GrblMachineModel::onSerialPortError(QSerialPort::SerialPortError error)
         }
         emit serialPortErrorSignal(tr("Serial port error ") + QString::number(error) + ": " + mSerialPort.errorString());
     }
+}
+
+void GrblMachineModel::onSerialPortNameChanged(QString port)
+{
+   setPortName(port);
+   closePort();
+}
+
+void GrblMachineModel::onSerialPortBaudRateChanged(int baud)
+{
+   setBaudRate(baud);
+   closePort();
 }
 
 void GrblMachineModel::onProgramSendTimerTimeout()
@@ -514,26 +521,6 @@ int GrblMachineModel::getBaudRate()
     return mSerialPort.baudRate();
 }
 
-void GrblMachineModel::onSettingChanged(QString group, QString param, QVariant value)
-{
-    qDebug() << "GrblMachineModel: onSettingChanged()"
-             << group
-             << param
-             << value;
-
-    if (group == Settings::SERIAL)
-    {
-        if (param == Settings::SERIAL_PORT_NAME)
-        {
-            setPortName(value.toString());
-        }
-        else if (param == Settings::SERIAL_BAUD_RATE)
-        {
-            setBaudRate(value.toInt());
-        }
-        closePort();
-    }
-}
 
 void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
 {
