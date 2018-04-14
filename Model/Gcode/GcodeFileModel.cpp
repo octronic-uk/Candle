@@ -81,7 +81,7 @@ void GcodeFileModel::load(QList<QString> data)
         QList<QString> args;
         GcodeCommand* item = new GcodeCommand();
         command = data.takeFirst();
-        qDebug() << "GcodeFileModel: Next Line" << command;
+        //qDebug() << "GcodeFileModel: Next Line" << command;
         // Trim command
         trimmed = command.trimmed();
         if (!trimmed.isEmpty())
@@ -97,7 +97,10 @@ void GcodeFileModel::load(QList<QString> data)
                 qDebug() << "GcodeFileModel: marker " << marker;
                 item->setMarker(marker);
                 item->setState(GcodeCommandState::Marker);
-                mMarkers.append(item);
+                if (!item->getMarker().isEmpty())
+                {
+                    mMarkers.append(item);
+                }
             }
             else
             {
@@ -114,7 +117,7 @@ void GcodeFileModel::load(QList<QString> data)
     mProgramLoading = false;
     printMarkers();
     emit gcodeFileLoadFinishedSignal(this);
-    emit gcodeParserUpdatedSignal(mGcodeParser);
+    emit gcodeParserUpdatedSignal(mGcodeParser.data());
 }
 
 void GcodeFileModel::load(QString fileName)
@@ -218,6 +221,11 @@ int GcodeFileModel::countCommands()
 QList<GcodeCommand*> GcodeFileModel::getData() const
 {
     return mData;
+}
+
+QList<GcodeCommand*> GcodeFileModel::getMarkers() const
+{
+    return mMarkers;
 }
 
 void GcodeFileModel::printMarkers()

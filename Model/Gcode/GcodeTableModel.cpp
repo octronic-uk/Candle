@@ -9,11 +9,12 @@ GcodeTableModel::GcodeTableModel(QObject *parent) :
 {
     //qDebug() << "GcodeTableModel: Constructing";
     mHeaders /*<< "#" not needed, on the left already */
-            << "Command"
-            << "State"
-            << "Response"
             << "Line"
-            << "Args";
+            << "Command"
+            << "Args"
+            << "Status"
+            << "Response";
+
 }
 
 GcodeTableModel::~GcodeTableModel()
@@ -43,7 +44,9 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
         GcodeCommand* gCmd = mData.at(index.row());
         switch (index.column())
         {
-        case 0: // Command
+        case 0: // Line
+            return QVariant(gCmd->getLine());
+        case 1: // Command
             if (gCmd->getState() == GcodeCommandState::Marker)
             {
                return gCmd->getMarker();
@@ -52,7 +55,16 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
             {
                 return gCmd->getCommand();
             }
-        case 1: // Status
+        case 2: // Args
+            if (gCmd->getArgs().empty())
+            {
+               return QVariant("---");
+            }
+            else
+            {
+                return QVariant(gCmd->getArgs());
+            }
+        case 3: // Status
             if (index.row() == rowCount() - 1)
             {
                 return QString();
@@ -73,19 +85,10 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
                 default:
                     return tr("Unknown");
             }
-        case 2: // Response
+        case 4: // Response
             return QVariant(gCmd->getResponse().getData());
-        case 3: // Line
-            return QVariant(gCmd->getLine());
-        case 4: // Args
-            if (gCmd->getArgs().empty())
-            {
-               return QVariant("---");
-            }
-            else
-            {
-                return QVariant(gCmd->getArgs());
-            }
+
+
         default:
             return QVariant();
         }

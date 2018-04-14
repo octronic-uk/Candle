@@ -318,13 +318,13 @@ void VisualisationFormController::timerEvent(QTimerEvent *te)
     mUi.glwVisualizer->timerEvent(te);
 }
 
-void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*> items)
+void VisualisationFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
 {
     Q_UNUSED(items)
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";
 }
 
-void VisualisationFormController::onGcodeParserUpdated(QSharedPointer<GcodeParser> parser)
+void VisualisationFormController::onGcodeParserUpdated(GcodeParser* parser)
 {
     qDebug() << "VisualisationFormController: onGcodeParserUpdated";
     mViewParser->setLinesFromParser(parser,1.0,true);

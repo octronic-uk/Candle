@@ -79,7 +79,7 @@ QList<LineSegment> GcodeViewParser::toObjRedux
         gp->addCommand(s);
     }
 
-    return setLinesFromParser(gp, arcPrecision, arcDegreeMode);
+    return setLinesFromParser(gp.data(), arcPrecision, arcDegreeMode);
 }
 
 QList<LineSegment> GcodeViewParser::getLineSegmentList() const
@@ -114,7 +114,7 @@ QSize GcodeViewParser::getResolution() const
 
 QList<LineSegment> GcodeViewParser::setLinesFromParser
 (
-        QSharedPointer<GcodeParser> &gp,
+        GcodeParser* gp,
         double arcPrecision,
         bool arcDegreeMode
 )

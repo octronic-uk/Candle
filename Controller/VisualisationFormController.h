@@ -34,6 +34,8 @@
 
 using namespace Ui;
 
+class GcodeFileModel;
+
 class VisualisationFormController : public AbstractFormController
 {
     Q_OBJECT
@@ -62,8 +64,8 @@ public slots:
     void hideEvent(QHideEvent* he) override;
     void resizeEvent(QResizeEvent* re) override;
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand*>);
-    void onGcodeParserUpdated(QSharedPointer<GcodeParser>);
+    void onGcodeFileLoadFinished(GcodeFileModel*);
+    void onGcodeParserUpdated(GcodeParser*);
 
     void onToggleGridButtonToggled(bool toggled);
     void onToggleToolButtonToggled(bool toggled);

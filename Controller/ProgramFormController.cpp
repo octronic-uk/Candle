@@ -34,7 +34,6 @@ ProgramFormController::ProgramFormController(QWidget *parent)
     mUi.setupUi(this);
     setupSignalSlots();
     setFormActive(false);
-    mUi.programTable->setSelectionBehavior(QAbstractItemView::SelectRows);
 }
 
 ProgramFormController::~ProgramFormController()
@@ -44,13 +43,16 @@ ProgramFormController::~ProgramFormController()
 
 void ProgramFormController::setupProgramTable()
 {
+
+    mUi.programTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     // Table & Model
     mUi.programTable->setModel(&mProgramTableModel);
     connect(
         mUi.programTable->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
         this, SLOT(onTableCurrentChanged(QModelIndex,QModelIndex))
     );
-    mUi.programTable->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+    mUi.programTable->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
     mUi.programTable->installEventFilter(this);
 
     connect
@@ -362,18 +364,42 @@ void ProgramFormController::setupSignalSlots()
     qDebug() << "ProgramFormController: Setup Signals/Slots";
     setupSendMenu();
     setupProgramTable();
+    mUi.markerListView->setModel(&mMarkerListModel);
 
     connect(
         mUi.testModeButton, SIGNAL(toggled(bool)),
         this, SLOT(onTestModeButtonClicked(bool))
     );
+
+    connect
+    (
+        mUi.markerListView->selectionModel(),
+        SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+        this,
+        SLOT(onMarkerSelectionChanged(const QItemSelection&, const QItemSelection&))
+    );
 }
+
+void ProgramFormController::onMarkerSelectionChanged
+(const QItemSelection& selected, const QItemSelection& deselected)
+{
+    /*qDebug() << "ProgramFormController: MarkerSelectionChanged"
+             << selected << deselected;
+             */
+    GcodeCommand *marker = mMarkerListModel.at(selected.indexes().first().row());
+    if (marker)
+    {
+        mUi.programTable->selectRow(marker->getTableIndex());
+    }
+}
+
 
 void ProgramFormController::onGcodeFileLoadFinished(GcodeFileModel* fileModel)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
     mProgramTableModel.insertRows(0,fileModel->getData().count(),QModelIndex());
     mProgramTableModel.setCommandData(fileModel->getData());
+    mMarkerListModel.setMarkers(fileModel->getMarkers());
 }
 
 void ProgramFormController::onSendActionTriggered()

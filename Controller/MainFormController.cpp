@@ -218,8 +218,8 @@ void MainFormController::setupGcodeFileModelSignals()
     );
     // Parser State
     connect(
-        &mGcodeFileModel, SIGNAL(gcodeParserUpdatedSignal(QSharedPointer<GcodeParser>)),
-        mUi.visualisationFormController, SLOT(onGcodeParserUpdated(QSharedPointer<GcodeParser>))
+        &mGcodeFileModel, SIGNAL(gcodeParserUpdatedSignal(GcodeParser*)),
+        mUi.visualisationFormController, SLOT(onGcodeParserUpdated(GcodeParser*))
     );
 }
 

@@ -48,6 +48,7 @@ public:
     GcodeCommand* getCommandByID(long ) const;
     int countCommands();
     QList<GcodeCommand*> getData() const;
+    QList<GcodeCommand*> getMarkers() const;
 
 signals:
     void statusBarUpdateSignal(QString);
@@ -56,7 +57,7 @@ signals:
     void nextGcodeLineReadySignal(GcodeCommand*);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
-    void gcodeParserUpdatedSignal(QSharedPointer<GcodeParser>);
+    void gcodeParserUpdatedSignal(GcodeParser*);
 
 private:
     bool mProgramLoading;

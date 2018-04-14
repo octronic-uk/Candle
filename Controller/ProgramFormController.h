@@ -23,6 +23,7 @@
 
 #include "AbstractFormController.h"
 #include "Model/Gcode/GcodeTableModel.h"
+#include "Model/Gcode/GcodeMarkerListModel.h"
 
 #include "ui_ProgramForm.h"
 
@@ -74,9 +75,14 @@ public slots:
     void onSendActionTriggered();
     void onSendFromCurrentLineActionTriggered();
     void onUpdateProgramTableStatus(GcodeCommand* command);
+
+private slots:
+    void onMarkerSelectionChanged(const QItemSelection&, const QItemSelection&);
+
 private:
     ProgramForm mUi;
     GcodeTableModel mProgramTableModel;
+    GcodeMarkerListModel mMarkerListModel;
     bool mCellChanged;
     QTimer mStartTime;
     bool mTransferCompleted;
