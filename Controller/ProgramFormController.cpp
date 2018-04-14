@@ -366,6 +366,7 @@ void ProgramFormController::setupSignalSlots()
     setupSendMenu();
     setupProgramTable();
     mUi.markerListView->setModel(&mMarkerListModel);
+    //mUi.markerListView->setMinimumWidth(mUi.markerListView->sizeHintForColumn(0));
 
     connect(
         mUi.testModeButton, SIGNAL(toggled(bool)),
