@@ -1,4 +1,4 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // This file was originally ported from "GcodeParser.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -10,8 +10,8 @@
 #include <QObject>
 #include <QVector3D>
 #include <cmath>
-#include "PointSegment.h"
-#include "Model/GcodeCommand.h"
+#include "Model/Gcode/Parser/PointSegment.h"
+#include "Model/Gcode/GcodeCommand.h"
 
 class GcodeParser : public QObject
 {
@@ -70,7 +70,7 @@ public:
     static bool isDigit(char c);
     static bool isLetter(char c);
     static char toUpper(char c);
-    static GcodeCommand overrideSpeed(const GcodeCommand &command, double speed);
+    static GcodeCommand* overrideSpeed(const GcodeCommand *command, double speed);
 
     const float GCODE_RAPID = 0.0f;
     const float GCODE_LINEAR_INTERPOLATION = 1.0;

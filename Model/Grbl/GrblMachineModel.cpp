@@ -17,7 +17,7 @@
  */
 #include "Model/Settings/Settings.h"
 #include "GrblMachineModel.h"
-#include "Model/GrblMachineState.h"
+#include "Model/Grbl/GrblMachineState.h"
 #include "Utils/Util.h"
 #include "Utils/IndexOutOfBoundsException.h"
 #include <QMetaType>
@@ -149,7 +149,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
     qDebug() << "GrblMachineModel: Process Response";
 
     mLastState = mState;
-    GcodeCommand next;
+    GcodeCommand* next = nullptr;
 
     switch (response.getType())
     {
@@ -175,10 +175,10 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             {
                 next = mCommandBuffer.takeFirst();
                 qDebug() << "GrblMachineModel: Popping"
-                         << next.getID() << "/" << next.getLine()
+                         << next->getID() << "/" << next->getLine()
                          << "from the buffer";
-                next.setResponse(response);
-                next.setState(GcodeCommandState::Processed);
+                next->setResponse(response);
+                next->setState(GcodeCommandState::Processed);
                 emit updateProgramTableStatusSignal(next);
                 mCountProcessedCommands++;
                 emit setCompletionProgressSignal((int)getProcessedPercent());
@@ -312,13 +312,13 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
-    GcodeCommand command = mCommandQueue.first();
+    GcodeCommand* command = mCommandQueue.first();
 
     qDebug() << "GrblMachineModel: Attempting to send queued command"
              << (
-                    command.getRawCommand() > 0 ?
-                    QString::number(command.getRawCommand(),16) :
-                    command.getCommand()
+                    command->getRawCommand() > 0 ?
+                    QString::number(command->getRawCommand(),16) :
+                    command->getCommand()
                 );
 
     if (!mSerialPort.isOpen())
@@ -331,7 +331,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
     // Buffer full, append to queue
     if (!isSpaceInBuffer(command))
     {
-        qDebug() << "GrblMachineModel: Buffer full, waiting... " << command.getCommand();
+        qDebug() << "GrblMachineModel: Buffer full, waiting... " << command->getCommand();
         return false;
     }
     // Buffer space available
@@ -340,11 +340,11 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         // Take the command off the queue for processing
         command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
 
-        if (command.getRawCommand() > 0)
+        if (command->getRawCommand() > 0)
         {
             emit appendCommandToConsoleSignal(command);
         }
-        else if (command.getCommand() != "?")
+        else if (command->getCommand() != "?")
         {
             emit appendCommandToConsoleSignal(command);
         }
@@ -353,22 +353,22 @@ bool GrblMachineModel::sendNextCommandFromQueue()
 
         if (!mError)
         {
-            if (command.getRawCommand() > 0)
+            if (command->getRawCommand() > 0)
             {
-                char c = command.getRawCommand();
+                char c = command->getRawCommand();
                 qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
                 mSerialPort.write(&c ,1);
                 mSerialPort.write("\r");
             }
             else
             {
-                mSerialPort.write((command.getCommand() + "\r").toLatin1());
-                command.setState(GcodeCommandState::Sent);
+                mSerialPort.write((command->getCommand() + "\r").toLatin1());
+                command->setState(GcodeCommandState::Sent);
             }
         }
-        else if (command.getRawCommand() > 0) // for real-time commands
+        else if (command->getRawCommand() > 0) // for real-time commands
         {
-            char c = command.getRawCommand();
+            char c = command->getRawCommand();
             qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
             mSerialPort.write(&c, 1);
             mSerialPort.write("\r");
@@ -387,7 +387,7 @@ void GrblMachineModel::grblReset()
     clearCommandBuffer();
     clearCommandQueue();
     // Prepare reset response catch
-    GcodeCommand cX = GcodeCommand::ControlXCommand();
+    GcodeCommand* cX = GcodeCommand::ControlXCommand();
     emit appendCommandToConsoleSignal(cX);
     mCommandBuffer.append(cX);
     // Write the C^X
@@ -404,7 +404,7 @@ void GrblMachineModel::onSendProgram(const GcodeFileModel& gcodeFile)
     mCountProcessedCommands = 0;
 
     int index = 0;
-    for (GcodeCommand next : gcodeFile.getData())
+    for (GcodeCommand* next : gcodeFile.getData())
     {
         if (index != 0 && (index % mUpdateRate) == 0)
         {
@@ -425,7 +425,7 @@ void GrblMachineModel::onSendProgramFromLine(const GcodeFileModel& gcodeFile, lo
     clearCommandQueue();
     mCountProcessedCommands = 0;
 
-    int index = gcodeFile.getCommandByID(id).getLine();
+    int index = gcodeFile.getCommandByID(id)->getLine();
     int size = gcodeFile.getData().count();
 
     for (; index < size; index++)
@@ -535,7 +535,7 @@ void GrblMachineModel::onSettingChanged(QString group, QString param, QVariant v
     }
 }
 
-void GrblMachineModel::onGcodeCommandManualSend(const GcodeCommand& command)
+void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
 {
     queueCommand(command);
     startProgramSendTimer();
@@ -551,7 +551,7 @@ void GrblMachineModel::onUpdateFeedRate(float rate)
 
 }
 
-void GrblMachineModel::queueCommand(const GcodeCommand& command)
+void GrblMachineModel::queueCommand(GcodeCommand* command)
 {
     mCommandQueue.append(command);
 }
@@ -560,24 +560,24 @@ int GrblMachineModel::bufferLengthInUse()
 {
     int length = 0;
 
-    for (GcodeCommand gc : mCommandBuffer)
+    for (GcodeCommand* gc : mCommandBuffer)
     {
-        length += gc.getCommandLength()+1;
+        length += gc->getCommandLength()+1;
     }
 
     qDebug() << "GrblMachineModel: Buffer in use:" << length;
     return length;
 }
 
-bool GrblMachineModel::isSpaceInBuffer(const GcodeCommand& cmd)
+bool GrblMachineModel::isSpaceInBuffer(GcodeCommand* cmd)
 {
     int bufferLeft = BUFFER_LENGTH_LIMIT - bufferLengthInUse();
     int bufferUsed = BUFFER_LENGTH_LIMIT - bufferLeft;
     emit setBufferProgressSignal(((float)bufferUsed/BUFFER_LENGTH_LIMIT)*100);
-    return (bufferLeft) > (cmd.getCommandLength()+1);
+    return (bufferLeft) > (cmd->getCommandLength()+1);
 }
 
-GcodeCommand GrblMachineModel::feedOverride(GcodeCommand& command, double overridePercent)
+GcodeCommand GrblMachineModel::feedOverride(GcodeCommand* command, double overridePercent)
 {
     return GcodeParser::overrideSpeed(command,overridePercent);
 }

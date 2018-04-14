@@ -23,11 +23,11 @@
 #include <QtSerialPort>
 #include <QTimer>
 #include <QColor>
-#include "Model/GrblMachineState.h"
+#include "Model/Grbl/GrblMachineState.h"
 #include <QVector3D>
-#include "Model/GcodeFileModel.h"
-#include "Model/GcodeCommand.h"
-#include "Model/GrblResponse.h"
+#include "Model/Gcode/GcodeFileModel.h"
+#include "Model/Gcode/GcodeCommand.h"
+#include "Model/Grbl/GrblResponse.h"
 
 using namespace std;
 
@@ -66,11 +66,11 @@ public:
     float getWorkPositionX();
     float getWorkPositionY();
     float getWorkPositionZ();
-    void queueCommand(const GcodeCommand& command);
+    void queueCommand(GcodeCommand* command);
     static QString stateToString(GrblMachineState state);
 
 signals:
-    void updateProgramTableStatusSignal(const GcodeCommand& state);
+    void updateProgramTableStatusSignal(GcodeCommand* state);
     void updateFeedRateSignal(float);
     void updateSpindleSpeedSignal(float);
     void updateMachinePositionSignal(const QVector3D);
@@ -86,7 +86,7 @@ signals:
     void jobCompletedSignal();
 
     void appendResponseToConsoleSignal(const GrblResponse&);
-    void appendCommandToConsoleSignal(const GcodeCommand&);
+    void appendCommandToConsoleSignal(GcodeCommand*);
     void commandResponseSignal(const GrblResponse&);
     void setCompletionProgressSignal(int);
     void setBufferProgressSignal(int);
@@ -96,7 +96,7 @@ public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
     void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
     void onSettingChanged(QString group, QString param, QVariant value);
-    void onGcodeCommandManualSend(const GcodeCommand&);
+    void onGcodeCommandManualSend(GcodeCommand*);
     void onUpdateSpindleSpeed(float speed);
     void onUpdateFeedRate(float rate);
 
@@ -109,8 +109,8 @@ private slots:
 private: // Members
     const static int BUFFER_LENGTH_LIMIT;
     QSerialPort mSerialPort;
-    QList<GcodeCommand> mCommandBuffer;
-    QList<GcodeCommand> mCommandQueue;
+    QList<GcodeCommand*> mCommandBuffer;
+    QList<GcodeCommand*> mCommandQueue;
     GrblMachineState mState;
     GrblMachineState mLastState;
     QVector3D mMachinePosition;
@@ -136,14 +136,14 @@ private: // Members
     QString mGrblVersion;
 
 private: // Member Functions
-    GcodeCommand feedOverride(GcodeCommand& command, double overridePercent);
+    GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
     GcodeCommand getNextCommand(GcodeFileModel& gcodeFile);
     void processResponse(const GrblResponse& data);
     void updateMachineCoordinates(const GrblResponse& data);
     void updateWorkCoordinates(const GrblResponse& data);
     void updateToolCoordinates();
     void setupSerialPort();
-    bool isSpaceInBuffer(const GcodeCommand& cmd);
+    bool isSpaceInBuffer(GcodeCommand* cmd);
     void startProgramSendTimer();
     void stopProgramSendTimer();
     double getProcessedPercent();

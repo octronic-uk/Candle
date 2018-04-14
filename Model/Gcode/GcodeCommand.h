@@ -45,11 +45,12 @@
 #include <QString>
 #include <QStringList>
 #include <QMetaType>
-#include "Model/GrblResponse.h"
+#include "Model/Grbl/GrblResponse.h"
 
 enum GcodeCommandState
 {
     None,
+    Marker,
     InQueue,
     Sent,
     Processed,
@@ -71,18 +72,19 @@ public:
     );
 
     GcodeCommand(const GcodeCommand& other);
+    GcodeCommand(const GcodeCommand* other);
     GcodeCommand(char rawCmd);
     ~GcodeCommand();
 
     static long ID;
-    static GcodeCommand AbsoluteCoordinatesCommand();
-    static GcodeCommand ControlXCommand();
-    static GcodeCommand UnlockCommand();
-    static GcodeCommand StatusUpdateCommand();
-    static GcodeCommand ResetCommand();
-    static GcodeCommand SpindleCounterClockwiseCommand();
-    static GcodeCommand SpindleClockwiseCommand();
-    static GcodeCommand SpindleStopCommand();
+    static GcodeCommand* AbsoluteCoordinatesCommand();
+    static GcodeCommand* ControlXCommand();
+    static GcodeCommand* UnlockCommand();
+    static GcodeCommand* StatusUpdateCommand();
+    static GcodeCommand* ResetCommand();
+    static GcodeCommand* SpindleCounterClockwiseCommand();
+    static GcodeCommand* SpindleClockwiseCommand();
+    static GcodeCommand* SpindleStopCommand();
 
     bool operator==(const GcodeCommand& other);
 
@@ -120,6 +122,9 @@ public:
     bool hasID(long id);
     char getRawCommand();
 
+    QString getMarker() const;
+    void setMarker(const QString marker);
+
 private:
     static long nextID();
 
@@ -137,4 +142,5 @@ private:
     int mTableIndex;
     int mConsoleIndex;
     bool mShowInConsole;
+    QString mMarker;
 };

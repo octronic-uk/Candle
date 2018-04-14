@@ -49,57 +49,70 @@ GcodeCommand::GcodeCommand(const GcodeCommand& other)
       mConsoleIndex(other.mConsoleIndex),
       mShowInConsole(other.mShowInConsole) {}
 
+GcodeCommand::GcodeCommand(const GcodeCommand* other)
+    : mRawCommand(other->mRawCommand),
+      mCommand(other->mCommand),
+      mResponse(other->mResponse),
+      mState(other->mState),
+      mArgs(other->mArgs),
+      mID(other->mID),
+      mLine(other->mLine),
+      mTableIndex(other->mTableIndex),
+      mConsoleIndex(other->mConsoleIndex),
+      mShowInConsole(other->mShowInConsole) {}
+
+
 GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
 
 GcodeCommand::~GcodeCommand() {}
 
-GcodeCommand GcodeCommand::AbsoluteCoordinatesCommand()
+GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
 {
     static GcodeCommand gc("G90");
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::ControlXCommand()
+GcodeCommand* GcodeCommand::ControlXCommand()
 {
     static GcodeCommand gc("[CTRL+X]");
-    return gc;
+    return &gc;
 }
 
 
-GcodeCommand GcodeCommand::UnlockCommand()
+GcodeCommand* GcodeCommand::UnlockCommand()
 {
     static GcodeCommand gc("$X");
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::ResetCommand()
+GcodeCommand* GcodeCommand::ResetCommand()
 {
     static GcodeCommand gc(0x18);
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::StatusUpdateCommand()
+GcodeCommand* GcodeCommand::StatusUpdateCommand()
 {
     static GcodeCommand gc("?");
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::SpindleCounterClockwiseCommand()
+GcodeCommand* GcodeCommand::SpindleCounterClockwiseCommand()
 {
     static GcodeCommand gc("M4");
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::SpindleClockwiseCommand()
+GcodeCommand* GcodeCommand::SpindleClockwiseCommand()
 {
     static GcodeCommand gc("M3");
-    return gc;
+    return &gc;
 }
 
-GcodeCommand GcodeCommand::SpindleStopCommand()
+GcodeCommand* GcodeCommand::SpindleStopCommand()
 {
     static GcodeCommand gc("M5");
-    return gc;
+    return &gc;
 }
 
 bool GcodeCommand::operator==(const GcodeCommand& other)
@@ -170,6 +183,16 @@ bool GcodeCommand::hasID(long id)
 long GcodeCommand::nextID()
 {
     return ID++;
+}
+
+QString GcodeCommand::getMarker() const
+{
+    return mMarker;
+}
+
+void GcodeCommand::setMarker(const QString marker)
+{
+    mMarker = marker;
 }
 
 GrblResponse GcodeCommand::getResponse() const

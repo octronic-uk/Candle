@@ -1,6 +1,6 @@
 ![Screenshot](github/s1.png "Screenshot")
 
-CocoanutCNC
+CoconutCNC
 -----------
 A G-Code Controller and Visualiser for GRBL Machines. 
 
@@ -21,7 +21,7 @@ Planned Features
 * Tool Change Alerts/Management
 * Tool Path Crash Prediction (Intersecting Stock/Fixtures During Rapids)
 
-System Requirements for Running CocoanutCNC:
+System Requirements for Running CoconutCNC:
 -------------------
 * Windows/Linux/MacOS X 
 * A Graphics Card with OpenGL 2.0 Support
@@ -34,5 +34,5 @@ Build Requirements:
 
 Credits:
 ------------
-* Huge Thanks go to the developers/contributers of Candle, the basis of CocoanutCNC. https://github.com/Denvi/Candle.git
+* Huge Thanks go to the developers/contributers of Candle, the basis of CoconutCNC. https://github.com/Denvi/Candle.git
 * Using Icons from FontAwesome https://fontawesome.com

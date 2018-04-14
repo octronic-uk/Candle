@@ -318,7 +318,7 @@ void VisualisationFormController::timerEvent(QTimerEvent *te)
     mUi.glwVisualizer->timerEvent(te);
 }
 
-void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
+void VisualisationFormController::onGcodeFileLoadFinished(QList<GcodeCommand*> items)
 {
     Q_UNUSED(items)
     qDebug() << "VisualisationFormController: onGcodeFileLoadFinished";

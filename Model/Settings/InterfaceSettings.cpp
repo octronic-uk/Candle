@@ -29,11 +29,19 @@ InterfaceSettings::InterfaceSettings(Profile* parent, int id)
       mVsync(true),
       mMsaa(true),
       mZbuffer(true),
-      mGcodeDrawMode(false),
-      mSimplifyGeometry(false),
-      mSimplifyPrecision(1.0),
-      mGrayscaleSegments(false),
-      mGrayscaleCode(false)
+      mShowUiCommands(false),
+      mVisualiserColor(""),
+      mBackgroundColor(""),
+      mToolColor(""),
+      mToolPathColor(""),
+      mNormalColor(""),
+      mHighlightColor(""),
+      mStartPointColor(""),
+      mEndPointColor(""),
+      mTextColor(""),
+      mDrawnColor(""),
+      mZMovementColor("")
+
 {
     qDebug() << "InterfaceSettings: Constructing";
 }
@@ -108,52 +116,122 @@ void InterfaceSettings::setZbuffer(bool zbuffer)
     mZbuffer = zbuffer;
 }
 
-bool InterfaceSettings::getGcodeDrawMode() const
+bool InterfaceSettings::getShowUiCommands() const
 {
-    return mGcodeDrawMode;
+    return mShowUiCommands;
 }
 
-void InterfaceSettings::setGcodeDrawMode(bool gcodeDrawMode)
+void InterfaceSettings::setShowUiCommands(bool show)
 {
-    mGcodeDrawMode = gcodeDrawMode;
+    mShowUiCommands = show;
 }
 
-bool InterfaceSettings::getSimplifyGeometry() const
+QString InterfaceSettings::getVisualiserColor() const
 {
-    return mSimplifyGeometry;
+    return mVisualiserColor;
 }
 
-void InterfaceSettings::setSimplifyGeometry(bool simplifyGeometry)
+void InterfaceSettings::setVisualiserColor(const QString& visualiserColor)
 {
-    mSimplifyGeometry = simplifyGeometry;
+    mVisualiserColor = visualiserColor;
 }
 
-float InterfaceSettings::getSimplifyPrecision() const
+QString InterfaceSettings::getBackgroundColor() const
 {
-    return mSimplifyPrecision;
+    return mBackgroundColor;
 }
 
-void InterfaceSettings::setSimplifyPrecision(float simplifyPrecision)
+void InterfaceSettings::setBackgroundColor(const QString& backgroundColor)
 {
-    mSimplifyPrecision = simplifyPrecision;
+    mBackgroundColor = backgroundColor;
 }
 
-bool InterfaceSettings::getGrayscaleSegments() const
+QString InterfaceSettings::getToolColor() const
 {
-    return mGrayscaleSegments;
+    return mToolColor;
 }
 
-void InterfaceSettings::setGrayscaleSegments(bool grayscaleSegments)
+void InterfaceSettings::setToolColor(const QString& toolColor)
 {
-    mGrayscaleSegments = grayscaleSegments;
+    mToolColor = toolColor;
 }
 
-bool InterfaceSettings::getGrayscaleCode() const
+QString InterfaceSettings::getToolPathColor() const
 {
-    return mGrayscaleCode;
+    return mToolPathColor;
 }
 
-void InterfaceSettings::setGrayscaleCode(bool grayscaleCode)
+void InterfaceSettings::setToolPathColor(const QString& toolPathColor)
 {
-    mGrayscaleCode = grayscaleCode;
+    mToolPathColor = toolPathColor;
+}
+
+QString InterfaceSettings::getNormalColor() const
+{
+    return mNormalColor;
+}
+
+void InterfaceSettings::setNormalColor(const QString& normalColor)
+{
+    mNormalColor = normalColor;
+}
+
+QString InterfaceSettings::getHighlightColor() const
+{
+    return mHighlightColor;
+}
+
+void InterfaceSettings::setHighlightColor(const QString& highlightColor)
+{
+    mHighlightColor = highlightColor;
+}
+
+QString InterfaceSettings::getStartPointColor() const
+{
+    return mStartPointColor;
+}
+
+void InterfaceSettings::setStartPointColor(const QString& startPointColor)
+{
+    mStartPointColor = startPointColor;
+}
+
+QString InterfaceSettings::getEndPointColor() const
+{
+    return mEndPointColor;
+}
+
+void InterfaceSettings::setEndPointColor(const QString& endPointColor)
+{
+    mEndPointColor = endPointColor;
+}
+
+QString InterfaceSettings::getTextColor() const
+{
+    return mTextColor;
+}
+
+void InterfaceSettings::setTextColor(const QString& textColor)
+{
+    mTextColor = textColor;
+}
+
+QString InterfaceSettings::getDrawnColor() const
+{
+    return mDrawnColor;
+}
+
+void InterfaceSettings::setDrawnColor(const QString& drawnColor)
+{
+    mDrawnColor = drawnColor;
+}
+
+QString InterfaceSettings::getZMovementColor() const
+{
+    return mZMovementColor;
+}
+
+void InterfaceSettings::setZMovementColor(const QString& zMovementColor)
+{
+    mZMovementColor = zMovementColor;
 }

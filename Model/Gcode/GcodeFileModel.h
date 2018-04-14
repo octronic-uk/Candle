@@ -23,8 +23,8 @@
 #include <QTime>
 #include <QSharedPointer>
 
-#include "Model/Tables/GcodeTableModel.h"
-#include "Parser/GcodeParser.h"
+#include "Model/Gcode/GcodeTableModel.h"
+#include "Model/Gcode/Parser/GcodeParser.h"
 
 class LineSegment;
 
@@ -44,15 +44,15 @@ public:
     void setFileChanged(bool changed);
     QTime updateProgramEstimatedTime(QList<LineSegment*> lines);
     QString getCurrentFileName();
-    GcodeCommand getCommand(int index) const;
-    GcodeCommand& getCommandByID(long ) const;
+    GcodeCommand* getCommand(int index) const;
+    GcodeCommand* getCommandByID(long ) const;
     int countCommands();
-    QList<GcodeCommand> getData() const;
+    QList<GcodeCommand*> getData() const;
 
 signals:
     void statusBarUpdateSignal(QString);
     void gcodeFileLoadStartedSignal();
-    void gcodeFileLoadFinishedSignal(QList<GcodeCommand>&);
+    void gcodeFileLoadFinishedSignal(GcodeFileModel*);
     void nextGcodeLineReadySignal(GcodeCommand*);
     void clearExistingGcodeFileSignal();
     void reserveGcodeRowsSignal(int count);
@@ -62,6 +62,10 @@ private:
     bool mProgramLoading;
     bool mFileChanged;
     QFile mFile;
-    QList<GcodeCommand> mData;
+    QList<GcodeCommand*> mData;
     QSharedPointer<GcodeParser> mGcodeParser;
+    QList<GcodeCommand*> mMarkers;
+
+private:
+    void printMarkers();
 };

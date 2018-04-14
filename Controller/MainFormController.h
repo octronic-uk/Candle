@@ -1,4 +1,4 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
@@ -17,14 +17,14 @@
 #include <exception>
 #include <QHBoxLayout>
 
-#include "Model/Parser/GcodeViewParser.h"
+#include "Model/Gcode/Parser/GcodeViewParser.h"
 #include "Model/Settings/Sql/SqlSettingsModel.h"
-#include "Model/HeightMapFileModel.h"
+#include "Model/HeightMap/HeightMapFileModel.h"
 #include "Model/RecentFilesModel.h"
-#include "Model/GcodeFileModel.h"
-#include "Model/Tables/GcodeTableModel.h"
-#include "Model/Tables/HeightMapTableModel.h"
-#include "Model/GrblMachineModel.h"
+#include "Model/Gcode/GcodeFileModel.h"
+#include "Model/Gcode/GcodeTableModel.h"
+#include "Model/HeightMap/HeightMapTableModel.h"
+#include "Model/Grbl/GrblMachineModel.h"
 
 #include "View/Drawers/OriginDrawer.h"
 #include "View/Drawers/GcodeDrawer.h"
@@ -83,7 +83,7 @@ public slots:
     void onStatusBarUpdate(QString status);
     void onStatusTextUpdate(QString status);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand>& items);
+    void onGcodeFileLoadFinished(GcodeFileModel* items);
     void onSendProgram();
     void onSendProgramFromLine(long);
     void onSerialPortError(QString error);

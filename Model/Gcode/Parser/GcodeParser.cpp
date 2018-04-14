@@ -1,4 +1,4 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // This file was originally ported from "GcodeParser.java" class
 // of "Universal GcodeSender" application written by Will Winder
 // (https://github.com/winder/Universal-G-Code-Sender)
@@ -123,7 +123,7 @@ void GcodeParser::setTruncateDecimalLength(int truncateDecimalLength)
 // Resets the current state.
 void GcodeParser::reset(const QVector3D &initialPoint)
 {
-    qDebug() << "GcodeParser: Reseting parser with initial point" << initialPoint;
+    //qDebug() << "GcodeParser: Reseting parser with initial point" << initialPoint;
     mPoints.clear();
     /*
     foreach (PointSegment *ps, mPoints)
@@ -155,7 +155,7 @@ PointSegment GcodeParser::addCommand(const QStringList &args)
 {
     if (args.isEmpty())
     {
-        qDebug() << "GcodeParser: Adding Empty Args PointSegment";
+        //qDebug() << "GcodeParser: Adding Empty Args PointSegment";
         return PointSegment();
     }
     return processCommand(args);
@@ -184,7 +184,7 @@ QVector3D GcodeParser::getCurrentPoint()
 */
 QList<PointSegment> GcodeParser::expandArc()
 {
-    qDebug() << "GcodeParser::expandArc()";
+    //qDebug() << "GcodeParser::expandArc()";
     PointSegment startSegment = mPoints[mPoints.size() - 2];
     PointSegment lastSegment = mPoints[mPoints.size() - 1];
 
@@ -314,10 +314,11 @@ PointSegment GcodeParser::processCommand(const QStringList &args)
 
 PointSegment GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse)
 {
-    qDebug() << "GcodeParser: addLinearPointSegment"
+    /*qDebug() << "GcodeParser: addLinearPointSegment"
              << "Current" << mCurrentPoint
              << "Next" << nextPoint
              << "Fast Traverse" << fastTraverse;
+             */
 
     PointSegment ps(nextPoint, mCommandNumber++);
 
@@ -328,7 +329,7 @@ PointSegment GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, bool
         (mCurrentPoint.y() == nextPoint.y() || qIsNaN(mCurrentPoint.y())) &&
         (mCurrentPoint.z() != nextPoint.z()))
     {
-        qDebug() << "GcodeParser: zOnly";
+        //qDebug() << "GcodeParser: zOnly";
         zOnly = true;
     }
 
@@ -403,7 +404,7 @@ void GcodeParser::handleMCode(float code, const QStringList &args)
 
 PointSegment GcodeParser::handleGCode(float code, const QStringList &args)
 {
-    qDebug() << "GcodeParser: handleGCode" << code << args;
+    //qDebug() << "GcodeParser: handleGCode" << code << args;
 
     PointSegment ps;
     QVector3D nextPoint = updatePointWithCommand(args, mCurrentPoint, mInAbsoluteMode);
@@ -611,9 +612,9 @@ QString GcodeParser::overrideSpeed(QString command, double speed)
 * In that way all speed values become a ratio of the provided speed
 * and don't get overridden with just a fixed speed.
 */
-GcodeCommand GcodeParser::overrideSpeed(const GcodeCommand &command, double speed)
+GcodeCommand* GcodeParser::overrideSpeed(const GcodeCommand *command, double speed)
 {
-    QString cmd = command.getCommand();
+    QString cmd = command->getCommand();
     static QRegExp re("[Ff]([0-9.]+)");
 
     if (re.indexIn(cmd) != -1)
@@ -621,8 +622,9 @@ GcodeCommand GcodeParser::overrideSpeed(const GcodeCommand &command, double spee
         double speedMagnitude = (speed/100); // from percentage to magnitude
         cmd.replace(re, QString("F%1").arg(re.cap(1).toDouble() * speedMagnitude));
     }
-    GcodeCommand overriddenFR(command);
-    overriddenFR.setCommand(cmd);
+    // TODO - Leak Spin
+    GcodeCommand* overriddenFR = new GcodeCommand(command);
+    overriddenFR->setCommand(cmd);
     return overriddenFR;
 }
 
@@ -652,11 +654,14 @@ QString GcodeParser::parseComment(const QString command)
     // "(?<=\()[^\(\)]*|(?<=\;)[^;]*"
     // "(?<=\\()[^\\(\\)]*|(?<=\\;)[^;]*"
 
+    qDebug() << "GcodeParser: Parsing comment in command " << command;
     static QRegExp re("(\\([^\\(\\)]*\\)|;[^;].*)");
 
     if (re.indexIn(command) != -1)
     {
-        return re.cap(1);
+        QString cap = re.cap(1);
+        qDebug() << "GcodeParser: Found comment right here" << cap;
+        return cap;
     }
     return "";
 }
@@ -951,7 +956,7 @@ QVector3D GcodeParser::convertRToCenter(QVector3D start, QVector3D end, double r
     double height_x2_div_diameter = 4 * radius * radius - x * x - y * y;
     if (height_x2_div_diameter < 0)
     {
-        qDebug() << "Error computing arc radius.";
+        //qDebug() << "Error computing arc radius.";
     }
     height_x2_div_diameter = (-sqrt(height_x2_div_diameter)) / hypot(x, y);
 

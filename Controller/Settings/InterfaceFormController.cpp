@@ -18,12 +18,15 @@
 
 #include "InterfaceFormController.h"
 #include "Model/Settings/Settings.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
+#include <QColorDialog>
 
 InterfaceFormController::InterfaceFormController(QWidget *parent)
     : AbstractFormController(parent),
       mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 InterfaceFormController::~InterfaceFormController() {}
@@ -32,23 +35,25 @@ void InterfaceFormController::setupSignalSlots()
 {
     // Visualiser
     connect(mUi.txtLineWidth, SIGNAL(valueChanged(QString)), this, SLOT(onLineWidthValueChanged(QString)));
-    connect(mUi.cboFps, SIGNAL(currentIndexChanged(QString)), this, SLOT(onFpsCurrentIndexChanged(QString)));
+    connect(mUi.cboFps, SIGNAL(activated(QString)), this, SLOT(onFpsCurrentIndexChanged(QString)));
     connect(mUi.chkAntialiasing, SIGNAL(toggled(bool)), this, SLOT(onAntiAliasingToggled(bool)));
     connect(mUi.radMSAA, SIGNAL(toggled(bool)), this, SLOT(onMsaaToggled(bool)));
     connect(mUi.chkVSync, SIGNAL(toggled(bool)), this, SLOT(onVsyncToggled(bool)));
     connect(mUi.chkZBuffer, SIGNAL(toggled(bool)), this, SLOT(onZBufferToggled(bool)));
-    connect(mUi.radDrawModeVectors, SIGNAL(toggled(bool)), this, SLOT(onDrawModeVectorsToggled(bool)));
-    connect(mUi.radDrawModeRaster,  SIGNAL(toggled(bool)), this, SLOT(onDrawModeRasterToggled(bool)));
-    connect(mUi.chkSimplify, SIGNAL(toggled(bool)), this, SLOT(onSimplifyToggled(bool)));
-    connect(mUi.txtSimplifyPrecision, SIGNAL(valueChanged(QString)), this, SLOT(onSimplifyPrecisionValueChanged(QString)));
-    connect(mUi.chkGrayscale, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleToggled(bool)));
-    connect(mUi.radGrayscaleS, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleSToggled(bool)));
-    connect(mUi.radGrayscaleZ, SIGNAL(toggled(bool)), this, SLOT(onGrayscaleZToggled(bool)));
     // Console
-    connect(mUi.chkShowProgramCommands, SIGNAL(toggled(bool)), this, SLOT(onShowProgramCommandsToggled(bool)));
     connect(mUi.chkShowUICommands, SIGNAL(toggled(bool)), this, SLOT(onShowUiCommandsToggled(bool)));
-    connect(mUi.chkAutocompletion, SIGNAL(toggled(bool)), this, SLOT(onAutoCompletionToggled(bool)));
     // Colors
+    connect(mUi.visualiserColorButton, SIGNAL(clicked()),this,SLOT(onVisualiserColorButtonClicked()));
+    connect(mUi.backgroundColorButton, SIGNAL(clicked()),this,SLOT(onBackgroundColorButtonClicked()));
+    connect(mUi.toolColorButton, SIGNAL(clicked()),this,SLOT(onToolColorButtonClicked()));
+    connect(mUi.toolpathColorButton, SIGNAL(clicked()),this,SLOT(onToolPathColorButtonClicked()));
+    connect(mUi.normalColorButton, SIGNAL(clicked()),this,SLOT(onNormalColorButtonClicked()));
+    connect(mUi.highlightColorButton, SIGNAL(clicked()),this,SLOT(onHighlightColorButtonClicked()));
+    connect(mUi.startPointColorButton, SIGNAL(clicked()),this,SLOT(onStartPointColorButtonClicked()));
+    connect(mUi.endPointColorButton, SIGNAL(clicked()),this,SLOT(onEndPointColorButtonClicked()));
+    connect(mUi.textColorButton, SIGNAL(clicked()),this,SLOT(onTextColorButtonClicked()));
+    connect(mUi.drawnColorButton, SIGNAL(clicked()),this,SLOT(onDrawnColorButtonClicked()));
+    connect(mUi.zMovementColorButton, SIGNAL(clicked()),this,SLOT(onZMovementColorButtonClicked()));
 }
 
 void InterfaceFormController::setFormActive(bool)
@@ -58,41 +63,17 @@ void InterfaceFormController::setFormActive(bool)
 
 void InterfaceFormController::initialise()
 {
-    setLineWidth(1.5);
-    setAntialiasing(true);
-    setMsaa(true);
-    setSimplify(true);
-    setSimplifyPrecision(0.0);
-    setFps(60);
-    setZBuffer(false);
-    setGrayscaleSegments(false);
-    setGrayscaleSCode(true);
-    setDrawModeVectors(true);
-    setShowProgramCommands(false);
-    setAutoCompletion(true);
-}
-
-void InterfaceFormController::onDrawModeVectorsToggled(bool checked)
-{
-    mUi.chkSimplify->setEnabled(checked);
-    mUi.lblSimpilyPrecision->setEnabled(checked && mUi.chkSimplify->isChecked());
-    mUi.txtSimplifyPrecision->setEnabled(checked && mUi.chkSimplify->isChecked());
-    mUi.radDrawModeRaster->setChecked(!checked);
-}
-
-void InterfaceFormController::onDrawModeRasterToggled(bool checked)
-{
-    mUi.radDrawModeVectors->setChecked(!checked);
-}
-
-void InterfaceFormController::onGrayscaleSToggled(bool checked)
-{
-    mUi.radGrayscaleZ->setChecked(!checked);
-}
-
-void InterfaceFormController::onGrayscaleZToggled(bool checked)
-{
-    mUi.radGrayscaleS->setChecked(!checked);
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        setLineWidth(settings->getLineWidth());
+        setAntialiasing(settings->getAntiAliasing());
+        setMsaa(settings->getMsaa());
+        setFps(settings->getFpsLock());
+        setVsync(settings->getVsync());
+        setZBuffer(settings->getZbuffer());
+        setShowUiCommands(settings->getShowUiCommands());
+    }
 }
 
 bool InterfaceFormController::antialiasing()
@@ -125,22 +106,12 @@ void InterfaceFormController::setLineWidth(double lineWidth)
     mUi.txtLineWidth->setValue(lineWidth);
 }
 
-bool InterfaceFormController::showProgramCommands()
-{
-    return mUi.chkShowProgramCommands->isChecked();
-}
-
-void InterfaceFormController::setShowProgramCommands(bool showAllCommands)
-{
-    mUi.chkShowProgramCommands->setChecked(showAllCommands);
-}
-
-bool InterfaceFormController::showUICommands()
+bool InterfaceFormController::showUiCommands()
 {
     return mUi.chkShowUICommands->isChecked();
 }
 
-void InterfaceFormController::setShowUICommands(bool showUICommands)
+void InterfaceFormController::setShowUiCommands(bool showUICommands)
 {
     mUi.chkShowUICommands->setChecked(showUICommands);
 }
@@ -175,128 +146,251 @@ void InterfaceFormController::setMsaa(bool msaa)
     mUi.radMSAA->setChecked(msaa);
 }
 
-bool InterfaceFormController::autoCompletion()
-{
-    return mUi.chkAutocompletion->isChecked();
-}
-
-void InterfaceFormController::setAutoCompletion(bool autoCompletion)
-{
-    mUi.chkAutocompletion->setChecked(autoCompletion);
-}
-
-bool InterfaceFormController::simplify()
-{
-    return mUi.chkSimplify->isChecked();
-}
-
-void InterfaceFormController::setSimplify(bool simplify)
-{
-    mUi.chkSimplify->setChecked(simplify);
-}
-
-double InterfaceFormController::simplifyPrecision()
-{
-    return mUi.txtSimplifyPrecision->value();
-}
-
-void InterfaceFormController::setSimplifyPrecision(double simplifyPrecision)
-{
-    mUi.txtSimplifyPrecision->setValue(simplifyPrecision);
-}
-
-bool InterfaceFormController::grayscaleSegments()
-{
-    return mUi.chkGrayscale->isChecked();
-}
-
-void InterfaceFormController::setGrayscaleSegments(bool value)
-{
-    mUi.chkGrayscale->setChecked(value);
-}
-
-bool InterfaceFormController::grayscaleSCode()
-{
-    return mUi.radGrayscaleS->isChecked();
-}
-
-void InterfaceFormController::setGrayscaleSCode(bool value)
-{
-    mUi.radGrayscaleS->setChecked(value);
-    mUi.radGrayscaleZ->setChecked(!value);
-}
-
-bool InterfaceFormController::drawModeVectors()
-{
-    return mUi.radDrawModeVectors->isChecked();
-}
-
-void InterfaceFormController::setDrawModeVectors(bool value)
-{
-    mUi.radDrawModeVectors->setChecked(value);
-    mUi.radDrawModeRaster->setChecked(!value);
-}
-
 void InterfaceFormController::setSettingsModel(SqlSettingsModel* handle)
 {
     mSettingsModelHandle = handle;
+    initialise();
 }
 
 void InterfaceFormController::onProfileChanged(Profile* profile)
 {
-
+    qDebug() << "InterfaceFormController: onProfileChanged";
+    initialise();
 }
 
-void InterfaceFormController::onLineWidthValueChanged(QString)
+void InterfaceFormController::onLineWidthValueChanged(QString value)
 {
-
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: LineWidth" << value.toFloat();
+        auto settings = getSettings();
+        settings->setLineWidth(value.toFloat());
+        commit();
+    }
 }
 
-void InterfaceFormController::onFpsCurrentIndexChanged(QString)
+void InterfaceFormController::onFpsCurrentIndexChanged(QString value)
 {
-
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: fps";
+        auto settings = getSettings();
+        settings->setFpsLock(value.toInt());
+        commit();
+    }
 }
 
-void InterfaceFormController::onAntiAliasingToggled(bool)
+void InterfaceFormController::onAntiAliasingToggled(bool value)
 {
-
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: alntialiasing";
+        auto settings = getSettings();
+        settings->setAntiAliasing(value);
+        commit();
+    }
 }
 
-void InterfaceFormController::onMsaaToggled(bool)
+void InterfaceFormController::onMsaaToggled(bool value)
 {
-
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Msaa";
+        auto settings = getSettings();
+        settings->setMsaa(value);
+        commit();
+    }
 }
 
-void InterfaceFormController::onVsyncToggled(bool)
+void InterfaceFormController::onVsyncToggled(bool value)
 {
-
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Vsync";
+        auto settings = getSettings();
+        settings->setVsync(value);
+        commit();
+    }
 }
 
-void InterfaceFormController::onZBufferToggled(bool)
+void InterfaceFormController::onZBufferToggled(bool value)
 {
-
-}
-
-void InterfaceFormController::onSimplifyToggled(bool value)
-{
-}
-
-void InterfaceFormController::onSimplifyPrecisionValueChanged(QString value)
-{
-}
-
-void InterfaceFormController::onGrayscaleToggled(bool value)
-{
-}
-
-void InterfaceFormController::onShowProgramCommandsToggled(bool value)
-{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: zbuffer";
+        auto settings = getSettings();
+        settings->setZbuffer(value);
+        commit();
+    }
 }
 
 void InterfaceFormController::onShowUiCommandsToggled(bool value)
 {
+        if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: show ui commands";
+        auto settings = getSettings();
+        settings->setShowUiCommands(value);
+        commit();
+    }
 }
 
-void InterfaceFormController::onAutoCompletionToggled(bool value)
+void InterfaceFormController::onVisualiserColorButtonClicked()
 {
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: visualiser Color";
+        auto settings = getSettings();
+        settings->setVisualiserColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onBackgroundColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: background Color";
+        auto settings = getSettings();
+        settings->setBackgroundColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onToolColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Tool Color";
+        auto settings = getSettings();
+        settings->setToolColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onToolPathColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: ToolPath Color";
+        auto settings = getSettings();
+        settings->setToolPathColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onNormalColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Normal Color";
+        auto settings = getSettings();
+        settings->setNormalColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onHighlightColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Highlight Color";
+        auto settings = getSettings();
+        settings->setHighlightColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onStartPointColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: StartPoint Color";
+        auto settings = getSettings();
+        settings->setStartPointColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onEndPointColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: EndPoint Color";
+        auto settings = getSettings();
+        settings->setEndPointColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onTextColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: TextColor Color";
+        auto settings = getSettings();
+        settings->setTextColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onDrawnColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: Drawn Color";
+        auto settings = getSettings();
+        settings->setDrawnColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+void InterfaceFormController::onZMovementColorButtonClicked()
+{
+    if (isModelValid())
+    {
+        qDebug() << "InterfaceFormController: ZMovement Color";
+        auto settings = getSettings();
+        settings->setZMovementColor(QColorDialog::getColor().name());
+        commit();
+    }
+}
+
+InterfaceSettings* InterfaceFormController::getSettings()
+{
+    return mSettingsModelHandle
+            ->getCurrentProfileHandle()
+            ->getInterfaceSettingsHandle();
+}
+
+bool InterfaceFormController::isModelValid()
+{
+    if (!mSettingsModelHandle)
+    {
+        qDebug() << "InterfaceFormController: mSettingsModel = nullptr";
+        return false;
+    }
+
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+
+    if(!profile)
+    {
+        qDebug() << "InterfaceFormController: profile = nullptr";
+        return false;
+    }
+
+    InterfaceSettings* settings = profile->getInterfaceSettingsHandle();
+
+    if (!settings)
+    {
+        qDebug() << "InterfaceFormController: settings = nullptr";
+        return false;
+    }
+    return true;
+}
+
+void InterfaceFormController::commit()
+{
+    auto settings = getSettings();
+    mSettingsModelHandle->onInterfaceSettingsUpdated(settings);
 }

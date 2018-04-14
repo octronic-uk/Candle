@@ -748,6 +748,8 @@ int SqlSettingsModel::getProfilesFromDB()
     for (auto p : mProfilesListModel->getDataHandles())
     {
         getConnectionSettingsFromDB(p);
+        getInterfaceSettingsFromDB(p);
+        getMachineSettingsFromDB(p);
         getRecentGcodeFilesFromDB(p);
         getToolsFromDB(p);
         getToolGeometryFromDB(p);
@@ -802,9 +804,12 @@ bool SqlSettingsModel::createInterfaceSettingsTable()
 
 int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
 {
+    qDebug() << "SqlSettingsModel: getInterfaceSettingsFromDB for"
+             << profile->getID();
+
     int numRecords = 0;
     QSqlQuery query;
-    query.prepare(SELECT_FROM_INTERFACE_QUERY);
+    query.prepare(SELECT_FROM_INTERFACE_BY_PROFILE_ID_QUERY);
     query.addBindValue(profile->getID());
 
     if (!query.exec())
@@ -821,29 +826,49 @@ int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
     int vSyncFieldNum = query.record().indexOf("v_sync");
     int msaaFieldNum = query.record().indexOf("msaa");
     int zBufferFieldNum = query.record().indexOf("z_buffer");
-    int gcodeDrawModeFieldNum = query.record().indexOf("gcode_draw_mode");
-    int simplifyGeomFieldNum = query.record().indexOf("simplify_geometry");
-    int simplifyPrecisionFieldNum = query.record().indexOf("simplify_precision");
-    int grayscaleSegmentsFieldNum = query.record().indexOf("grayscale_segments");
-    int grayscaleCodeFieldNum = query.record().indexOf("grayscale_code");
+    int showUiCmdsFieldNum = query.record().indexOf("show_ui_cmds");
+    int visualiserColorFieldNum  = query.record().indexOf("visualiser_color");
+    int backgroundColorFieldNum  = query.record().indexOf("background_color");
+    int toolColorFieldNum  = query.record().indexOf("tool_color");
+    int toolPathColorFieldNum  = query.record().indexOf("toolpath_color");
+    int normalColorFieldNum  = query.record().indexOf("normal_color");
+    int highlightColorFieldNum  = query.record().indexOf("highlight_color");
+    int startPointColorFieldNum  = query.record().indexOf("start_point_color");
+    int endPointColorFieldNum  = query.record().indexOf("end_point_color");
+    int textColorFieldNum  = query.record().indexOf("text_color");
+    int drawnColorFieldNum  = query.record().indexOf("drawn_color");
+    int zMovementColorFieldNum  = query.record().indexOf("z_movement_color");
 
     while(query.next())
     {
-        qDebug() << "SqlSettingsModel: Got Interface settings for" << profile->getID();
         int id = query.value(idFieldNum).toInt();
+
+        qDebug() << "SqlSettingsModel: Got Interface settings for"
+                 << profile->getID()
+                 << "row id"
+                 << id;
+
         float lineWidth = query.value(lineWidthFieldNum).toFloat();
         int fpsLock = query.value(fpsLockFieldNum).toInt();
         bool antiAliasing = query.value(antiAliasingFieldNum).toBool();
         bool vSync = query.value(vSyncFieldNum).toBool();
         bool msaa = query.value(msaaFieldNum).toBool();
         bool zBuffer = query.value(zBufferFieldNum).toBool();
-        bool gcodeDrawMode = query.value(gcodeDrawModeFieldNum).toBool();
-        bool simplifyGeom = query.value(simplifyGeomFieldNum).toBool();
-        float simplifyPrecision = query.value(simplifyPrecisionFieldNum).toFloat();
-        int grayscaleSegments = query.value(grayscaleSegmentsFieldNum).toInt();
-        bool grayscaleCode = query.value(grayscaleCodeFieldNum).toBool();
+        bool showUiCmds = query.value(showUiCmdsFieldNum).toBool();
+        QString visualiserColor = query.value(visualiserColorFieldNum).toString();
+        QString backgroundColor = query.value(backgroundColorFieldNum).toString();
+        QString toolColor = query.value(toolColorFieldNum).toString();
+        QString toolPathColor = query.value(toolPathColorFieldNum).toString();
+        QString normalColor = query.value(normalColorFieldNum).toString();
+        QString highlightColor = query.value(highlightColorFieldNum).toString();
+        QString startPointColor = query.value(startPointColorFieldNum).toString();
+        QString endPointColor = query.value(endPointColorFieldNum).toString();
+        QString textColor = query.value(textColorFieldNum).toString();
+        QString drawnColor = query.value(drawnColorFieldNum).toString();
+        QString zMovementColor = query.value(zMovementColorFieldNum).toString();
 
         InterfaceSettings* iface = profile->getInterfaceSettingsHandle();
+
         iface->setID(id);
         iface->setLineWidth(lineWidth);
         iface->setFpsLock(fpsLock);
@@ -851,11 +876,18 @@ int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
         iface->setVsync(vSync);
         iface->setMsaa(msaa);
         iface->setZbuffer(zBuffer);
-        iface->setGcodeDrawMode(gcodeDrawMode);
-        iface->setSimplifyGeometry(simplifyGeom);
-        iface->setSimplifyPrecision(simplifyPrecision);
-        iface->setGrayscaleSegments(grayscaleSegments);
-        iface->setGrayscaleCode(grayscaleCode);
+        iface->setShowUiCommands(showUiCmds);
+        iface->setVisualiserColor(visualiserColor);
+        iface->setBackgroundColor(backgroundColor);
+        iface->setToolColor(toolColor);
+        iface->setToolPathColor(toolPathColor);
+        iface->setNormalColor(normalColor);
+        iface->setHighlightColor(highlightColor);
+        iface->setStartPointColor(startPointColor);
+        iface->setEndPointColor(endPointColor);
+        iface->setTextColor(textColor);
+        iface->setDrawnColor(drawnColor);
+        iface->setZMovementColor(zMovementColor);
     }
     numRecords++;
     return numRecords;
@@ -863,7 +895,7 @@ int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
 
 bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
 {
-    qDebug() << "SqlSettingsModel: insertConnectionInDB";
+    qDebug() << "SqlSettingsModel: insertInterfaceInDB";
     QSqlQuery query;
     query.prepare(INSERT_INTERFACE_QUERY);
 
@@ -874,11 +906,18 @@ bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
     query.addBindValue(settings->getVsync());
     query.addBindValue(settings->getMsaa());
     query.addBindValue(settings->getZbuffer());
-    query.addBindValue(settings->getGcodeDrawMode());
-    query.addBindValue(settings->getSimplifyGeometry());
-    query.addBindValue(settings->getSimplifyPrecision());
-    query.addBindValue(settings->getGrayscaleSegments());
-    query.addBindValue(settings->getGrayscaleCode());
+    query.addBindValue(settings->getShowUiCommands());
+    query.addBindValue(settings->getVisualiserColor());
+    query.addBindValue(settings->getBackgroundColor());
+    query.addBindValue(settings->getToolColor());
+    query.addBindValue(settings->getToolPathColor());
+    query.addBindValue(settings->getNormalColor());
+    query.addBindValue(settings->getHighlightColor());
+    query.addBindValue(settings->getStartPointColor());
+    query.addBindValue(settings->getEndPointColor());
+    query.addBindValue(settings->getTextColor());
+    query.addBindValue(settings->getDrawnColor());
+    query.addBindValue(settings->getZMovementColor());
 
     if (!query.exec())
     {
@@ -897,10 +936,11 @@ bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
 
 bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
 {
-    qDebug() << "SqlSettingsModel: updateConnectionInDB";
+    qDebug() << "SqlSettingsModel: updateInterfaceInDB";
     QSqlQuery query;
     Profile* profile = settings->getParentHandle();
     query.prepare(UPDATE_INTERFACE_QUERY);
+
     query.addBindValue(profile->getID());
     query.addBindValue(settings->getLineWidth());
     query.addBindValue(settings->getFpsLock());
@@ -908,11 +948,18 @@ bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
     query.addBindValue(settings->getVsync());
     query.addBindValue(settings->getMsaa());
     query.addBindValue(settings->getZbuffer());
-    query.addBindValue(settings->getGcodeDrawMode());
-    query.addBindValue(settings->getSimplifyGeometry());
-    query.addBindValue(settings->getSimplifyPrecision());
-    query.addBindValue(settings->getGrayscaleSegments());
-    query.addBindValue(settings->getGrayscaleCode());
+    query.addBindValue(settings->getShowUiCommands());
+    query.addBindValue(settings->getVisualiserColor());
+    query.addBindValue(settings->getBackgroundColor());
+    query.addBindValue(settings->getToolColor());
+    query.addBindValue(settings->getToolPathColor());
+    query.addBindValue(settings->getNormalColor());
+    query.addBindValue(settings->getHighlightColor());
+    query.addBindValue(settings->getStartPointColor());
+    query.addBindValue(settings->getEndPointColor());
+    query.addBindValue(settings->getTextColor());
+    query.addBindValue(settings->getDrawnColor());
+    query.addBindValue(settings->getZMovementColor());
     query.addBindValue(settings->getID());
 
     if (!query.exec())
@@ -951,9 +998,12 @@ bool SqlSettingsModel::createMachineSettingsTable()
 
 int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
 {
+    qDebug() << "SqlSettingsModel: Getting Machine Settings for "
+             << profile->getID();
+
     int numRecords = 0;
     QSqlQuery query;
-    query.prepare(SELECT_FROM_MACHINE_QUERY);
+    query.prepare(SELECT_FROM_MACHINE_BY_PROFILE_ID_QUERY);
     query.addBindValue(profile->getID());
 
     if (!query.exec())
@@ -964,15 +1014,60 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
     }
 
     int idFieldNum = query.record().indexOf("id");
-
+    int queryPeriodFieldNum = query.record().indexOf("query_period");
+    int unitsFieldNum = query.record().indexOf("units");
+    int rapidSpeedFieldNum = query.record().indexOf("rapid_speed");
+    int accelerationFieldNum = query.record().indexOf("acceleration");
+    int spindleMinFieldNum = query.record().indexOf("spindle_min");
+    int spindleMaxFieldNum = query.record().indexOf("spindle_max");
+    int probeCmdsFieldNum = query.record().indexOf("probe_cmds");
+    int safePositionCmdsFieldNum = query.record().indexOf("safe_pos_cmds");
+    int restoreOriginFieldNum = query.record().indexOf("restore_origin");
+    int restoreTypeFieldNum = query.record().indexOf("restore_type");
+    int userCmd1FieldNum = query.record().indexOf("user_cmd_1");
+    int userCmd2FieldNum = query.record().indexOf("user_cmd_2");
+    int userCmd3FieldNum = query.record().indexOf("user_cmd_3");
+    int userCmd4FieldNum = query.record().indexOf("user_cmd_4");
+    int heightMapProbeFeedFieldNum = query.record().indexOf("hm_probe_feed");
 
     while(query.next())
     {
         qDebug() << "SqlSettingsModel: Got Interface settings for" << profile->getID();
+
         int id = query.value(idFieldNum).toInt();
+        int queryPeriod = query.value(queryPeriodFieldNum).toInt();
+        bool units = query.value(unitsFieldNum).toBool();
+        float rapidSpeed = query.value(rapidSpeedFieldNum).toFloat();
+        float acceleration = query.value(accelerationFieldNum).toFloat();
+        int spindleMin = query.value(spindleMinFieldNum).toInt();
+        int spindleMax = query.value(spindleMaxFieldNum).toInt();
+        QString probeCmds = query.value(probeCmdsFieldNum).toString();
+        QString safePos = query.value(safePositionCmdsFieldNum).toString();
+        bool restoreOrigin = query.value(restoreOriginFieldNum).toBool();
+        bool restoreType = query.value(restoreTypeFieldNum).toBool();
+        QString userCmd1 = query.value(userCmd1FieldNum).toString();
+        QString userCmd2 = query.value(userCmd2FieldNum).toString();
+        QString userCmd3 = query.value(userCmd3FieldNum).toString();
+        QString userCmd4 = query.value(userCmd4FieldNum).toString();
+        int heightMapProbe = query.value(heightMapProbeFeedFieldNum).toInt();
 
         MachineSettings* machine = profile->getMachineSettingsHandle();
         machine->setID(id);
+        machine->setQueryPeriod(queryPeriod);
+        machine->setUnits(units);
+        machine->setRapidSpeed(rapidSpeed);
+        machine->setAcceleration(acceleration);
+        machine->setSpindleMin(spindleMin);
+        machine->setSpindleMax(spindleMax);
+        machine->setProbeCmds(probeCmds);
+        machine->setSafePositionCmds(safePos);
+        machine->setRestoreOrigin(restoreOrigin);
+        machine->setRestoreType(restoreType);
+        machine->setUserCmd1(userCmd1);
+        machine->setUserCmd2(userCmd2);
+        machine->setUserCmd3(userCmd3);
+        machine->setUserCmd4(userCmd4);
+        machine->setHeightMapProbeFeed(heightMapProbe);
 
     }
     numRecords++;
@@ -1025,7 +1120,7 @@ bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
     Profile* profile = settings->getParentHandle();
     query.prepare(UPDATE_MACHINE_QUERY);
 
-    query.addBindValue(settings->getParentID());
+    query.addBindValue(profile->getID());
     query.addBindValue(settings->getQueryPeriod());
     query.addBindValue(settings->getUnits());
     query.addBindValue(settings->getRapidSpeed());
@@ -1041,7 +1136,8 @@ bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
     query.addBindValue(settings->getUserCmd3());
     query.addBindValue(settings->getUserCmd4());
     query.addBindValue(settings->getHeightMapProbeFeed());
-    query.addBindValue(profile->getID());
+
+    query.addBindValue(settings->getID());
 
     if (!query.exec())
     {
@@ -1091,7 +1187,6 @@ int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
     }
 
     int idFieldNum = query.record().indexOf("id");
-    int profileIdFieldNum = query.record().indexOf("profile_id");
     int serialPortFieldNum = query.record().indexOf("serial_port");
     int serialBaudFieldNum = query.record().indexOf("serial_baud");
     int ignoreErrorReponsesFieldNum = query.record().indexOf("ignore_error_responses");
@@ -1105,7 +1200,6 @@ int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
     while (query.next())
     {
         int id = query.value(idFieldNum).toInt();
-        int profile_id = query.value(profileIdFieldNum).toInt();
         QString serial_port = query.value(serialPortFieldNum).toString();
         int serial_baud = query.value(serialBaudFieldNum).toInt();
         bool ignore_error_responses = query.value(ignoreErrorReponsesFieldNum).toBool();
@@ -1115,9 +1209,7 @@ int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
         float arc_approximation_degrees = query.value(arcApproximationDegreesFieldNum).toFloat();
 
         auto connection = profile->getConnectionSettingsHandle();
-        qDebug() << "SqlSettingsModel: Retrieving connection record for new id" << connection->getID();
         connection->setID(id);
-        qDebug() << "SqlSettingsModel: Retrieving connection record now with id" << connection->getID();
         connection->setSerialPort(serial_port);
         connection->setSerialBaudRate(serial_baud);
         connection->setIgnoreErrorMessages(ignore_error_responses);
@@ -1138,6 +1230,7 @@ bool SqlSettingsModel::insertConnectionSettingsInDB(ConnectionSettings* connecti
     qDebug() << "SqlSettingsModel: insertConnectionInDB";
     QSqlQuery query;
     query.prepare(INSERT_CONNECTION_QUERY);
+
     query.addBindValue(connection->getProfileID());
     query.addBindValue(connection->getSerialPort());
     query.addBindValue(connection->getSerialBaudRate());

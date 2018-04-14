@@ -1,4 +1,4 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #ifndef HEIGHTMAPINTERPOLATIONDRAWER_H

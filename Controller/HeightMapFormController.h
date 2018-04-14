@@ -23,8 +23,8 @@
 #include "View/Drawers/HeightMapBorderDrawer.h"
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapInterpolationDrawer.h"
-#include "Model/Tables/HeightMapTableModel.h"
-#include "Model/Tables/GcodeTableModel.h"
+#include "Model/HeightMap/HeightMapTableModel.h"
+#include "Model/Gcode/GcodeTableModel.h"
 
 class LineSegment;
 

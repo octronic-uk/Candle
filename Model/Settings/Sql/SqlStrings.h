@@ -22,7 +22,7 @@
 
 const static QString SQLITE_DB = "QSQLITE";
 
-const static QString DB_FILE_NAME = "co.uk.octronic.cocoanut_cnc.sqlite";
+const static QString DB_FILE_NAME = "co.uk.octronic.coconut_cnc.sqlite";
 
 // Profiles ----------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ const static QString UPDATE_PROFILE_WHERE_ID_QUERY =
     "UPDATE 'profiles' SET name=?, selected=? WHERE id=?";
 
 const static QString DELETE_PROFILE_QUERY =
-    "DELETE FROM 'profiles' WHERE 'id'=?";
+    "DELETE FROM 'profiles' WHERE id=?";
 
 // Recent Gcode Files ------------------------------------------------------------
 const static QString CREATE_RECENT_GCODE_FILES_TABLE_QUERY =
@@ -78,9 +78,9 @@ const static QString CREATE_CONNECTION_TABLE_QUERY =
         "'profile_id'                INTEGER NOT NULL,"
         "'serial_port'               TEXT,"
         "'serial_baud'               INTEGER,"
-        "'ignore_error_responses'    INTEGER,"
-        "'set_parser_state'          INTEGER,"
-        "'arc_approximation'         INTEGER,"
+        "'ignore_error_responses'    BOOL,"
+        "'set_parser_state'          BOOL,"
+        "'arc_approximation'         BOOL,"
         "'arc_approximation_length'  REAL,"
         "'arc_approximation_degrees' REAL,"
         "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
@@ -125,7 +125,7 @@ const static QString UPDATE_CONNECTION_QUERY =
     "id=?";
 
 const static QString DELETE_CONNECTION_QUERY =
-    "DELETE FROM 'connection' WHERE 'id'=?";
+    "DELETE FROM 'connection' WHERE id=?";
 
 // Interface ---------------------------------------------------------------------
 const static QString CREATE_INTERFACE_TABLE_QUERY =
@@ -133,21 +133,28 @@ const static QString CREATE_INTERFACE_TABLE_QUERY =
         "'id'                   INTEGER PRIMARY KEY,"
         "'profile_id'           INTEGER NOT NULL,"
         "'line_width'	        REAL,"
-        "'fps_lock'	            INTEGER,"
-        "'anti_aliasing'        INTEGER,"
-        "'v_sync'	            INTEGER,"
-        "'msaa'		            INTEGER,"
-        "'z_buffer'	            INTEGER,"
-        "'gcode_draw_mode'	    INTEGER,"
-        "'simplify_geometry'	INTEGER,"
-        "'simplify_precision'	REAL,"
-        "'grayscale_segments'	INTEGER,"
-        "'grayscale_code'		INTEGER,"
+        "'fps_lock'	            BOOL,"
+        "'anti_aliasing'        BOOL,"
+        "'v_sync'	            BOOL,"
+        "'msaa'		            BOOL,"
+        "'z_buffer'	            BOOL,"
+        "'show_ui_cmds'         BOOL,"
+        "'visualiser_color'	    TEXT,"
+        "'background_color'	    TEXT,"
+        "'tool_color'	        TEXT,"
+        "'toolpath_color'	    TEXT,"
+        "'normal_color'	        TEXT,"
+        "'highlight_color'	    TEXT,"
+        "'start_point_color'    TEXT,"
+        "'end_point_color'	    TEXT,"
+        "'text_color'	        TEXT,"
+        "'drawn_color'	        TEXT,"
+        "'z_movement_color'	    TEXT,"
         "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
     ")";
 
-const static QString SELECT_FROM_INTERFACE_QUERY =
-    "SELECT * FROM 'interface' WHERE 'id'=?";
+const static QString SELECT_FROM_INTERFACE_BY_PROFILE_ID_QUERY =
+    "SELECT * FROM 'interface' WHERE profile_id=?";
 
 const static QString INSERT_INTERFACE_QUERY =
     "INSERT INTO 'interface' ("
@@ -158,45 +165,51 @@ const static QString INSERT_INTERFACE_QUERY =
         "'v_sync',"
         "'msaa',"
         "'z_buffer',"
-        "'gcode_draw_mode',"
-        "'simplify_geometry',"
-        "'simplify_precision',"
-        "'grayscale_segments',"
-        "'grayscale_code'"
+        "'show_ui_cmds',"
+        "'visualiser_color',"
+        "'background_color',"
+        "'tool_color',"
+        "'toolpath_color',"
+        "'normal_color',"
+        "'highlight_color',"
+        "'start_point_color',"
+        "'end_point_color',"
+        "'text_color',"
+        "'drawn_color',"
+        "'z_movement_color'"
     ")"
-    "VALUES ("
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "?, "
-        "? "
+    " VALUES ("
+        "?,?,?,?,?,"
+        "?,?,?,?,?,"
+        "?,?,?,?,?,"
+        "?,?,?,? "
     ")";
 
 const static QString UPDATE_INTERFACE_QUERY =
-    "UPDATE 'interface' SET"
-        "'profile_id'=?,,"
+    "UPDATE 'interface' SET "
+        "'profile_id'=?,"
         "'line_width'=?,"
         "'fps_lock'=?,"
         "'anti_aliasing'=?,"
         "'v_sync'=?,"
         "'msaa'=?,"
         "'z_buffer'=?,"
-        "'gcode_draw_mode'=?,"
-        "'simplify_geometry'=?,"
-        "'simplify_precision'=?,"
-        "'grayscale_segments'=?,"
-        "'grayscale_code'=?,"
-    "WHERE 'id'=?";
+        "'show_ui_cmds'=?,"
+        "'visualiser_color'=?,"
+        "'background_color'=?,"
+        "'tool_color'=?,"
+        "'toolpath_color'=?,"
+        "'normal_color'=?,"
+        "'highlight_color'=?,"
+        "'start_point_color'=?,"
+        "'end_point_color'=?,"
+        "'text_color'=?,"
+        "'drawn_color'=?,"
+        "'z_movement_color'=?"
+    " WHERE id=?";
 
 const static QString DELETE_INTERFACE_QUERY =
-    "DELETE FROM 'interface' WHERE 'id'=?";
+    "DELETE FROM 'interface' WHERE id=?";
 
 // Machine -----------------------------------------------------------------------
 const static QString CREATE_MACHINE_TABLE_QUERY =
@@ -211,8 +224,8 @@ const static QString CREATE_MACHINE_TABLE_QUERY =
         "'spindle_max'  	INTEGER,"
         "'probe_cmds'	    TEXT,"
         "'safe_pos_cmds'	TEXT,"
-        "'restore_origin'	INTEGER,"
-        "'restore_type'	    INTEGER,"
+        "'restore_origin'	BOOL,"
+        "'restore_type'	    BOOL,"
         "'user_cmd_1'	    TEXT,"
         "'user_cmd_2'   	TEXT,"
         "'user_cmd_3'   	TEXT,"
@@ -221,8 +234,8 @@ const static QString CREATE_MACHINE_TABLE_QUERY =
         "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
     ")";
 
-const static QString SELECT_FROM_MACHINE_QUERY =
-    "SELECT * FROM 'machine' WHERE 'id'=?";
+const static QString SELECT_FROM_MACHINE_BY_PROFILE_ID_QUERY =
+    "SELECT * FROM 'machine' WHERE profile_id=?";
 
 const static QString INSERT_MACHINE_QUERY =
     "INSERT INTO 'machine' ("
@@ -263,7 +276,7 @@ const static QString INSERT_MACHINE_QUERY =
     ")";
 
 const static QString UPDATE_MACHINE_QUERY =
-    "UPDATE 'machine' SET"
+    "UPDATE 'machine' SET "
         "'profile_id'=?,"
         "'query_period'=?,"
         "'units'=?,"
@@ -280,7 +293,7 @@ const static QString UPDATE_MACHINE_QUERY =
         "'user_cmd_3'=?,"
         "'user_cmd_4'=?,"
         "'hm_probe_feed'=?"
-    "WHERE id=?";
+     " WHERE id=?";
 
 const static QString DELETE_MACHINE_QUERY =
     "DELETE FROM 'machine' WHERE id=?";

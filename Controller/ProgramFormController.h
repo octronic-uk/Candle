@@ -22,9 +22,11 @@
 #include <QTimer>
 
 #include "AbstractFormController.h"
-#include "Model/Tables/GcodeTableModel.h"
+#include "Model/Gcode/GcodeTableModel.h"
 
 #include "ui_ProgramForm.h"
+
+class GcodeFileModel;
 
 using namespace Ui;
 
@@ -68,10 +70,10 @@ public slots:
 
     void onScrollBarAction(int action);
     void onGcodeFileLoadStarted();
-    void onGcodeFileLoadFinished(QList<GcodeCommand>&);
+    void onGcodeFileLoadFinished(GcodeFileModel*);
     void onSendActionTriggered();
     void onSendFromCurrentLineActionTriggered();
-    void onUpdateProgramTableStatus(const GcodeCommand& command);
+    void onUpdateProgramTableStatus(GcodeCommand* command);
 private:
     ProgramForm mUi;
     GcodeTableModel mProgramTableModel;
@@ -96,4 +98,4 @@ private:
     void setupProgramTable();
 public:
     void setupSignalSlots() override;
-    };
+};

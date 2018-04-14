@@ -31,39 +31,39 @@ unix {
     QMAKE_CXXFLAGS += -std=c++0x
 }
 
-TARGET = CocoanutCNC
+TARGET = CoconutCNC
 TEMPLATE = app
 VERSION = 0.01a
-#RC_ICONS += images/cocoanut.ico
+#RC_ICONS += images/coconut.ico
 
 DEFINES += sNan=\"65536\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TRANSLATIONS += \
-    translations/cocoanut_es.ts \
-    translations/cocoanut_fr.ts \
-    translations/cocoanut_pt.ts \
-    translations/cocoanut_ru.ts
+    translations/coconut_es.ts \
+    translations/coconut_fr.ts \
+    translations/coconut_pt.ts \
+    translations/coconut_ru.ts
 
 SOURCES +=\
     Main.cpp \
-    Model/Tables/GcodeTableModel.cpp \
-    Model/Tables/HeightMapTableModel.cpp \
-    Model/Parser/ArcProperties.cpp \
-    Model/Parser/GcodeParser.cpp \
-    Model/Parser/LineSegment.cpp \
-    Model/Parser/PointSegment.cpp \
+    Model/Gcode/GcodeTableModel.cpp \
+    Model/HeightMap/HeightMapTableModel.cpp \
+    Model/Gcode/Parser/ArcProperties.cpp \
+    Model/Gcode/Parser/GcodeParser.cpp \
+    Model/Gcode/Parser/LineSegment.cpp \
+    Model/Gcode/Parser/PointSegment.cpp \
     Model/StatusModel.cpp \
-    Model/GcodeFileModel.cpp \
-    Model/HeightMapFileModel.cpp \
+    Model/Gcode/GcodeFileModel.cpp \
+    Model/HeightMap/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
     Model/Settings/AbstractSettingsModel.cpp \
     Model/Settings/Ini/IniFileSettingsModel.cpp \
     Model/Settings/Settings.cpp \
-    Model/GrblMachineModel.cpp \
-    Model/GcodeCommand.cpp \
-    Model/GrblResponse.cpp \
-    Model/Parser/GcodeViewParser.cpp \
+    Model/Grbl/GrblMachineModel.cpp \
+    Model/Gcode/GcodeCommand.cpp \
+    Model/Grbl/GrblResponse.cpp \
+    Model/Gcode/Parser/GcodeViewParser.cpp \
     Model/Settings/Sql/SqlSettingsModel.cpp \
     Model/Settings/Sql/AbstractDatabaseRecord.cpp \
     \
@@ -118,24 +118,24 @@ SOURCES +=\
     Controller/Settings/NameDialogController.cpp
 
 HEADERS  += \
-    Model/Parser/ArcProperties.h \
-    Model/Parser/GcodeParser.h \
-    Model/Parser/LineSegment.h \
-    Model/Parser/PointSegment.h \
-    Model/Tables/HeightMapTableModel.h \
-    Model/Tables/GcodeTableModel.h \
+    Model/Gcode/Parser/ArcProperties.h \
+    Model/Gcode/Parser/GcodeParser.h \
+    Model/Gcode/Parser/LineSegment.h \
+    Model/Gcode/Parser/PointSegment.h \
+    Model/HeightMap/HeightMapTableModel.h \
+    Model/Gcode/GcodeTableModel.h \
     Model/Settings/Ini/IniFileSettingsModel.h \
     Model/StatusModel.h \
-    Model/GcodeFileModel.h \
-    Model/HeightMapFileModel.h \
+    Model/Gcode/GcodeFileModel.h \
+    Model/HeightMap/HeightMapFileModel.h \
     Model/RecentFilesModel.h \
     Model/Settings/AbstractSettingsModel.h \
     Model/SerialBaudRate.h \
-    Model/GrblMachineModel.h \
-    Model/GcodeCommand.h \
-    Model/GrblResponse.h \
-    Model/GrblMachineState.h \
-    Model/Parser/GcodeViewParser.h \
+    Model/Grbl/GrblMachineModel.h \
+    Model/Gcode/GcodeCommand.h \
+    Model/Grbl/GrblResponse.h \
+    Model/Grbl/GrblMachineState.h \
+    Model/Gcode/Parser/GcodeViewParser.h \
     Model/Settings/Sql/SqlSettingsModel.h \
     Model/Settings/Profile/ProfilesListModel.h \
     Model/Settings/Profile/Profile.h \

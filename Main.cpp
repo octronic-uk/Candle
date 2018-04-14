@@ -1,4 +1,4 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include <QApplication>
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     //qSetMessagePattern("%{file}(%{line}):\n\t%{message}");
     QCoreApplication::setOrganizationName("octronic");
     QCoreApplication::setOrganizationDomain("octronic.co.uk");
-    QCoreApplication::setApplicationName("CocoanutCNC");
+    QCoreApplication::setApplicationName("CoconutCNC");
 
     QApplication a(argc, argv);
     a.setApplicationVersion(APP_VERSION);

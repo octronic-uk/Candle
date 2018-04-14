@@ -19,6 +19,7 @@
 #pragma once
 
 #include "Model/Settings/Sql/AbstractDatabaseRecord.h"
+#include <QString>
 
 class Profile;
 
@@ -48,8 +49,8 @@ public:
     bool getZbuffer() const;
     void setZbuffer(bool zbuffer);
 
-    bool getGcodeDrawMode() const;
-    void setGcodeDrawMode(bool gcodeDrawMode);
+    bool getShowUiCommands() const;
+    void setShowUiCommands(bool showUiCommands);
 
     bool getSimplifyGeometry() const;
     void setSimplifyGeometry(bool simplifyGeometry);
@@ -63,6 +64,39 @@ public:
     bool getGrayscaleCode() const;
     void setGrayscaleCode(bool grayscaleCode);
 
+    QString getVisualiserColor() const;
+    void setVisualiserColor(const QString& visualiserColor);
+
+    QString getBackgroundColor() const;
+    void setBackgroundColor(const QString& backgroundColor);
+
+    QString getToolColor() const;
+    void setToolColor(const QString& toolColor);
+
+    QString getToolPathColor() const;
+    void setToolPathColor(const QString& toolPathColor);
+
+    QString getNormalColor() const;
+    void setNormalColor(const QString& normalColor);
+
+    QString getHighlightColor() const;
+    void setHighlightColor(const QString& highlightColor);
+
+    QString getStartPointColor() const;
+    void setStartPointColor(const QString& startPointColor);
+
+    QString getEndPointColor() const;
+    void setEndPointColor(const QString& endPointColor);
+
+    QString getTextColor() const;
+    void setTextColor(const QString& textColor);
+
+    QString getDrawnColor() const;
+    void setDrawnColor(const QString& drawnColor);
+
+    QString getZMovementColor() const;
+    void setZMovementColor(const QString& zMovementColor);
+
 private:
     Profile* mParentHandle;
     float mLineWidth;
@@ -71,9 +105,17 @@ private:
     bool mVsync;
     bool mMsaa;
     bool mZbuffer;
-    bool mGcodeDrawMode;
-    bool mSimplifyGeometry;
-    float mSimplifyPrecision;
-    bool mGrayscaleSegments;
-    bool mGrayscaleCode;
+    bool mShowUiCommands;
+    QString mVisualiserColor;
+    QString mBackgroundColor;
+    QString mToolColor;
+    QString mToolPathColor;
+    QString mNormalColor;
+    QString mHighlightColor;
+    QString mStartPointColor;
+    QString mEndPointColor;
+    QString mTextColor;
+    QString mDrawnColor;
+    QString mZMovementColor;
+
 };

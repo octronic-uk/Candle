@@ -20,9 +20,9 @@
 #include <QShortcut>
 #include <QMessageBox>
 #include <QScrollBar>
-#include "Model/Parser/GcodeViewParser.h"
+#include "Model/Gcode/Parser/GcodeViewParser.h"
+#include "Model/Gcode/GcodeFileModel.h"
 
-#include "ProgramFormController.h"
 #include "ProgramFormController.h"
 
 using namespace Ui;
@@ -369,11 +369,11 @@ void ProgramFormController::setupSignalSlots()
     );
 }
 
-void ProgramFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
+void ProgramFormController::onGcodeFileLoadFinished(GcodeFileModel* fileModel)
 {
     qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
-    mProgramTableModel.insertRows(0,items.count(),QModelIndex());
-    mProgramTableModel.setCommandData(items);
+    mProgramTableModel.insertRows(0,fileModel->getData().count(),QModelIndex());
+    mProgramTableModel.setCommandData(fileModel->getData());
 }
 
 void ProgramFormController::onSendActionTriggered()
@@ -404,8 +404,8 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
     int row = mUi.programTable->currentIndex().row();
     if (row >= 0 && row <= mProgramTableModel.data().count())
     {
-        GcodeCommand startingAt = mProgramTableModel.data().at(row);
-        emit sendProgramFromLineSignal(startingAt.getID());
+        GcodeCommand* startingAt = mProgramTableModel.data().at(row);
+        emit sendProgramFromLineSignal(startingAt->getID());
         setAutoScrollChecked(true);
     }
 
@@ -517,19 +517,19 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
     */
 }
 
-void ProgramFormController::onUpdateProgramTableStatus(const GcodeCommand& command)
+void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
 {
     qDebug() << "ProgramFormController: onUpdateProgramTableStatus"
-             << "C" << command.getCommand()
-             << "L" << command.getLine()
-             << "I" << command.getTableIndex()
-             << "RData" << command.getResponse().getData();
+             << "C" << command->getCommand()
+             << "L" << command->getLine()
+             << "I" << command->getTableIndex()
+             << "RData" << command->getResponse().getData();
 
-    QModelIndex stateIndex = mProgramTableModel.index(command.getTableIndex(),1);
-    QModelIndex responseIndex = mProgramTableModel.index(command.getTableIndex(),2);
+    QModelIndex stateIndex = mProgramTableModel.index(command->getTableIndex(),1);
+    QModelIndex responseIndex = mProgramTableModel.index(command->getTableIndex(),2);
 
-    mProgramTableModel.setData(stateIndex, QVariant::fromValue(command.getState()));
-    mProgramTableModel.setData(responseIndex, QVariant::fromValue(command.getResponse()));
+    mProgramTableModel.setData(stateIndex, QVariant::fromValue(command->getState()));
+    mProgramTableModel.setData(responseIndex, QVariant::fromValue(command->getResponse()));
 
     if (isAutoScrollChecked())
     {

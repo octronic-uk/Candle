@@ -15,6 +15,8 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 #include "MachineFormController.h"
 #include "ui_MachineForm.h"
 
@@ -23,6 +25,7 @@ MachineFormController::MachineFormController(QWidget *parent) :
     mSettingsModelHandle(nullptr)
 {
     mUi.setupUi(this);
+    setupSignalSlots();
 }
 
 MachineFormController::~MachineFormController() {}
@@ -31,23 +34,23 @@ void MachineFormController::setupSignalSlots()
 {
     // Machine Information
     connect(mUi.txtQueryStateTime, SIGNAL(valueChanged(QString)), this, SLOT(onQueryStateTimeValueChanged(QString)));
-    connect(mUi.cboUnits, SIGNAL(currentIndexChanged(QString)), this, SLOT(onUnitsCurrentIndexChanged(QString)));
+    connect(mUi.cboUnits, SIGNAL(activated(QString)), this, SLOT(onUnitsCurrentIndexChanged(QString)));
     connect(mUi.txtRapidSpeed, SIGNAL(valueChanged(QString)), this, SLOT(onRapidSpeedValueChanged(QString)));
     connect(mUi.txtAcceleration, SIGNAL(valueChanged(QString)), this, SLOT(onAccelerationValueChanged(QString)));
     connect(mUi.txtSpindleSpeedMin, SIGNAL(valueChanged(QString)), this, SLOT(onSpindleSpeedMinValueChanged(QString)));
     connect(mUi.txtSpindleSpeedMax, SIGNAL(valueChanged(QString)), this, SLOT(onSpindleSpeedMaxValueChanged(QString)));
     // Control
-    connect(mUi.txtTouchCommand, SIGNAL(textChanged(QString)), this, SLOT(onTouchCommandValueChanged(QString)));
-    connect(mUi.txtSafeCommand, SIGNAL(textChanged(QString)), this, SLOT(onSafeCommandValueChanged(QString)));
+    connect(mUi.txtTouchCommand, SIGNAL(textEdited(QString)), this, SLOT(onTouchCommandValueChanged(QString)));
+    connect(mUi.txtSafeCommand, SIGNAL(textEdited(QString)), this, SLOT(onSafeCommandValueChanged(QString)));
     connect(mUi.chkMoveOnRestore, SIGNAL(toggled(bool)), this, SLOT(onMoveOnRestoreToggled(bool)));
-    connect(mUi.cboRestoreMode, SIGNAL(currentIndexChanged(QString)), this, SLOT(onRestoreModeCurrentIndexChanged(QString)));
+    connect(mUi.cboRestoreMode, SIGNAL(activated(QString)), this, SLOT(onRestoreModeCurrentIndexChanged(QString)));
     // User Commands
-    connect(mUi.txtUserCommand0, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand1ValueChanged(QString)));
-    connect(mUi.txtUserCommand1, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand2ValueChanged(QString)));
-    connect(mUi.txtUserCommand2, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand3ValueChanged(QString)));
-    connect(mUi.txtUserCommand3, SIGNAL(textChanged(QString)), this, SLOT(onUserCommand4ValueChanged(QString)));
+    connect(mUi.txtUserCommand0, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand1ValueChanged(QString)));
+    connect(mUi.txtUserCommand1, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand2ValueChanged(QString)));
+    connect(mUi.txtUserCommand2, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand3ValueChanged(QString)));
+    connect(mUi.txtUserCommand3, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand4ValueChanged(QString)));
     // Height Mep
-    connect(mUi.txtHeightMapProbingFeed, SIGNAL(textChanged(QString)), this, SLOT(onHeightMapProbingFeedValueChanged(QString)));
+    connect(mUi.txtHeightMapProbingFeed, SIGNAL(textEdited(QString)), this, SLOT(onHeightMapProbingFeedValueChanged(QString)));
 }
 
 void MachineFormController::setFormActive(bool)
@@ -57,17 +60,21 @@ void MachineFormController::setFormActive(bool)
 
 void MachineFormController::initialise()
 {
-    setQueryStateTime(40);
-    setRapidSpeed(2000);
-    setAcceleration(100);
-    setSpindleSpeedMin(0);
-    setSpindleSpeedMax(10000);
-    setTouchCommand("G21G91G38.2Z-30F100; G0Z1; G38.2Z-2F10");
-    setSafePositionCommand("G21G90; G53G0Z0");
-    setMoveOnRestore(false);
-    setRestoreMode(0);
-    setHeightmapProbingFeed("10");
-    setUnits(0);
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        setQueryStateTime(settings->getQueryPeriod());
+        setRapidSpeed(settings->getRapidSpeed());
+        setAcceleration(settings->getAcceleration());
+        setSpindleSpeedMin(settings->getSpindleMin());
+        setSpindleSpeedMax(settings->getSpindleMax());
+        setTouchCommand(settings->getProbeCmds());
+        setSafePositionCommand(settings->getSafePositionCmds());
+        setMoveOnRestore(settings->getRestoreOrigin());
+        setRestoreMode(settings->getRestoreType());
+        setHeightmapProbingFeed(QString::number(settings->getHeightMapProbeFeed()));
+        setUnits(settings->getUnits());
+    }
 }
 
 QString MachineFormController::safePositionCommand()
@@ -193,69 +200,222 @@ void MachineFormController::setUserCommands(int index, QString commands)
 void MachineFormController::setSettingsModel(SqlSettingsModel* handle)
 {
     mSettingsModelHandle = handle;
+    initialise();
 }
 
 void MachineFormController::onProfileChanged(Profile* profile)
 {
-
+    qDebug() << "MachineFormController: onProfileChanged";
+    initialise();
 }
 
 void MachineFormController::onQueryStateTimeValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: state time" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setQueryPeriod(value.toInt());
+        commit();
+    }
 }
 
 void MachineFormController::onUnitsCurrentIndexChanged(QString value)
 {
+    qDebug() << "MachineFormController: units" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setUnits(value == "mm" ? false : true);
+        commit();
+    }
+
 }
 
 void MachineFormController::onRapidSpeedValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: rapid speed" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setRapidSpeed(value.toFloat());
+        commit();
+    }
+
 }
 
 void MachineFormController::onAccelerationValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: acceleration" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setAcceleration(value.toFloat());
+        commit();
+    }
+
 }
 
 void MachineFormController::onSpindleSpeedMinValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: spindle min" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSpindleMin(value.toInt());
+        commit();
+    }
+
 }
 
 void MachineFormController::onSpindleSpeedMaxValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: spindle max" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSpindleMax(value.toInt());
+        commit();
+    }
+
 }
 
 void MachineFormController::onTouchCommandValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: probe command" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setProbeCmds(value);
+        commit();
+    }
+
 }
 
 void MachineFormController::onSafeCommandValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: safe command" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setSafePositionCmds(value);
+        commit();
+    }
+
 }
 
 void MachineFormController::onMoveOnRestoreToggled(bool value)
 {
+    qDebug() << "MachineFormController: move on restore" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setRestoreOrigin(value);
+        commit();
+    }
 }
 
 void MachineFormController::onRestoreModeCurrentIndexChanged(QString value)
 {
+    qDebug() << "MachineFormController: restore mode" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setRestoreType(value == "Plane" ? false : true);
+        commit();
+    }
 }
 
 void MachineFormController::onUserCommand1ValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: uc1" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setUserCmd1(value);
+        commit();
+    }
 }
 
 void MachineFormController::onUserCommand2ValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: uc2" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setUserCmd2(value);
+        commit();
+    }
 }
 
 void MachineFormController::onUserCommand3ValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: uc3" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setUserCmd3(value);
+        commit();
+    }
 }
 
 void MachineFormController::onUserCommand4ValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: uc4" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setUserCmd4(value);
+        commit();
+    }
 }
 
 void MachineFormController::onHeightMapProbingFeedValueChanged(QString value)
 {
+    qDebug() << "MachineFormController: height map" << value;
+    if (isModelValid())
+    {
+        auto settings = getSettings();
+        settings->setHeightMapProbeFeed(value.toInt());
+        commit();
+    }
+}
+
+MachineSettings* MachineFormController::getSettings()
+{
+    return mSettingsModelHandle
+            ->getCurrentProfileHandle()
+            ->getMachineSettingsHandle();
+}
+
+bool MachineFormController::isModelValid()
+{
+    if (!mSettingsModelHandle)
+    {
+        qDebug() << "MachineFormController: mSettingsModel = nullptr";
+        return false;
+    }
+
+    Profile* profile = mSettingsModelHandle->getCurrentProfileHandle();
+
+    if(!profile)
+    {
+        qDebug() << "MachineFormController: profile = nullptr";
+        return false;
+    }
+
+    MachineSettings* settings = profile->getMachineSettingsHandle();
+
+    if (!settings)
+    {
+        qDebug() << "MachineFormController: settings = nullptr";
+        return false;
+    }
+    return true;
+}
+
+void MachineFormController::commit()
+{
+    auto settings = getSettings();
+    mSettingsModelHandle->onMachineSettingsUpdated(settings);
 }

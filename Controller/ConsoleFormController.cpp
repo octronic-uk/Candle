@@ -63,7 +63,8 @@ void ConsoleFormController::onCommandSendAction()
     }
     // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
-    emit gcodeCommandSendSignal(GcodeCommand(commandText));
+    // TODO - Leak Spin
+    emit gcodeCommandSendSignal(new GcodeCommand(commandText));
 }
 
 void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& response)
@@ -78,9 +79,9 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
     mUi.txtConsole->append("CNC --> "+txt);
 }
 
-void ConsoleFormController::onAppendCommandToConsole(const GcodeCommand& command)
+void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
 {
-    QString cmd = command.getCommand();
+    QString cmd = command->getCommand();
     qDebug() << "ConsoleFormController: Appending Command:" << cmd;
     mUi.txtConsole->setTextColor(QColor("Black"));
     mUi.txtConsole->append("CNC <-- "+cmd);

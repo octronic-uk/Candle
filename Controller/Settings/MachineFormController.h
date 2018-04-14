@@ -23,6 +23,7 @@
 #include "ui_MachineForm.h"
 
 class SqlSettingsModel;
+class MachineSettings;
 class Profile;
 
 class MachineFormController : public AbstractFormController
@@ -98,4 +99,7 @@ private:
     SqlSettingsModel* mSettingsModelHandle;
 
 
+    MachineSettings*getSettings();
+    bool isModelValid();
+    void commit();
 };

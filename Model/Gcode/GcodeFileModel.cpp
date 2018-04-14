@@ -24,7 +24,7 @@
 #include <QProgressDialog>
 
 #include "GcodeFileModel.h"
-#include "Model/Tables/GcodeTableModel.h"
+#include "Model/Gcode/GcodeTableModel.h"
 #include "Utils/GcodeCommandNotFoundException.h"
 
 GcodeFileModel::GcodeFileModel(QObject *parent)
@@ -44,12 +44,6 @@ GcodeFileModel::~GcodeFileModel()
 
 void GcodeFileModel::initialise()
 {
-    /*
-    for (int i=0; i<mData.length(); i++)
-    {
-        delete mData[i];
-    }
-    */
     mData.clear();
     mProgramLoading = false;
     mFileChanged = false;
@@ -85,7 +79,7 @@ void GcodeFileModel::load(QList<QString> data)
         QString stripped;
         QString trimmed;
         QList<QString> args;
-        GcodeCommand item;// = new GcodeCommand();
+        GcodeCommand* item = new GcodeCommand();
         command = data.takeFirst();
         qDebug() << "GcodeFileModel: Next Line" << command;
         // Trim command
@@ -96,17 +90,30 @@ void GcodeFileModel::load(QList<QString> data)
             stripped = GcodeParser::removeComment(command);
             args = GcodeParser::splitCommand(stripped);
             mGcodeParser->addCommand(args);
-            item.setCommand(trimmed);
-            item.setState(GcodeCommandState::InQueue);
-            item.setLine(mGcodeParser->getCommandNumber());
-            item.setArgs(args);
-            item.setTableIndex(index);
+
+            if (args.isEmpty())
+            {
+                QString marker = GcodeParser::parseComment(command);
+                qDebug() << "GcodeFileModel: marker " << marker;
+                item->setMarker(marker);
+                item->setState(GcodeCommandState::Marker);
+                mMarkers.append(item);
+            }
+            else
+            {
+                item->setCommand(trimmed);
+                item->setState(GcodeCommandState::InQueue);
+            }
+            item->setLine(mGcodeParser->getCommandNumber());
+            item->setArgs(args);
+            item->setTableIndex(index);
             index++;
             mData.append(item);
         }
     }
     mProgramLoading = false;
-    emit gcodeFileLoadFinishedSignal(mData);
+    printMarkers();
+    emit gcodeFileLoadFinishedSignal(this);
     emit gcodeParserUpdatedSignal(mGcodeParser);
 }
 
@@ -181,11 +188,11 @@ QString GcodeFileModel::getCurrentFileName()
    return mFile.fileName();
 }
 
-GcodeCommand& GcodeFileModel::getCommandByID(long id) const
+GcodeCommand* GcodeFileModel::getCommandByID(long id) const
 {
-   for (GcodeCommand next : mData)
+   for (GcodeCommand* next : mData)
    {
-       if (next.hasID(id))
+       if (next->hasID(id))
        {
            return next;
        }
@@ -193,7 +200,7 @@ GcodeCommand& GcodeFileModel::getCommandByID(long id) const
    throw GcodeCommandNotFoundException(id);
 }
 
-GcodeCommand GcodeFileModel::getCommand(int index) const
+GcodeCommand* GcodeFileModel::getCommand(int index) const
 {
     if (index < 0 || index > mData.count() -1)
     {
@@ -208,9 +215,19 @@ int GcodeFileModel::countCommands()
     return mData.count();
 }
 
-QList<GcodeCommand> GcodeFileModel::getData() const
+QList<GcodeCommand*> GcodeFileModel::getData() const
 {
-   return mData;
+    return mData;
+}
+
+void GcodeFileModel::printMarkers()
+{
+   qDebug() << "GcodeFileModel: Markers";
+   for (GcodeCommand* marker : mMarkers)
+   {
+       qDebug() << "GcodeFileModel: " << marker->getTableIndex()
+                << ":" << marker->getMarker();
+   }
 }
 
 

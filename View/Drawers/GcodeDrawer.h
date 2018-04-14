@@ -1,12 +1,12 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #pragma once
 
 #include <QObject>
 #include <QVector3D>
-#include "../../Model/Parser/LineSegment.h"
-#include "../../Model/Parser/GcodeViewParser.h"
+#include "Model/Gcode/Parser/LineSegment.h"
+#include "Model/Gcode/Parser/GcodeViewParser.h"
 #include "ShaderDrawable.h"
 
 class GcodeDrawer : public QObject, public ShaderDrawable

@@ -1,12 +1,6 @@
-// This file is a part of "CocoanutCNC" application.
+// This file is a part of "CoconutCNC" application.
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
-//#define INITTIME //QTime time; time.start();
-//#define PRINTTIME(x) //qDebug() << "time elapse" << QString("%1:").arg(x) << time.elapsed(); time.start();
-
-
-#define PROGRESS_MIN_LINES 10000
-#define PROGRESS_STEP     1000
 
 #include <QFileDialog>
 #include <QTextStream>
@@ -36,8 +30,8 @@
 #include "Controller/VisualisationFormController.h"
 #include "Model/RecentFile.h"
 
-#include "Model/Parser/GcodeParser.h"
-#include "Model/GrblMachineState.h"
+#include "Model/Gcode/Parser/GcodeParser.h"
+#include "Model/Grbl/GrblMachineState.h"
 
 #include "MainFormController.h"
 #include "ui_MainForm.h"
@@ -202,16 +196,16 @@ void MainFormController::setupGcodeFileModelSignals()
     );
     // Gcode Loading Finished
     connect(
-        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-        mUi.programFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(GcodeFileModel*)),
+        mUi.programFormController, SLOT(onGcodeFileLoadFinished(GcodeFileModel*))
     );
     connect(
-        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-        mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(GcodeFileModel*)),
+        mUi.visualisationFormController, SLOT(onGcodeFileLoadFinished(GcodeFileModel*))
     );
     connect(
-        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(QList<GcodeCommand>&)),
-        this, SLOT(onGcodeFileLoadFinished(QList<GcodeCommand>&))
+        &mGcodeFileModel, SIGNAL(gcodeFileLoadFinishedSignal(GcodeFileModel*)),
+        this, SLOT(onGcodeFileLoadFinished(GcodeFileModel*))
     );
     // Gcode Loading Finished
     connect(
@@ -340,16 +334,16 @@ void MainFormController::setupConsoleFormSignals()
 {
     // Console Form
     connect(
-        &mGrblMachineModel, SIGNAL(appendCommandToConsoleSignal(const GcodeCommand&)),
-        mUi.consoleFormController, SLOT(onAppendCommandToConsole(const GcodeCommand&))
+        &mGrblMachineModel, SIGNAL(appendCommandToConsoleSignal(GcodeCommand*)),
+        mUi.consoleFormController, SLOT(onAppendCommandToConsole(GcodeCommand*))
     );
     connect(
         &mGrblMachineModel, SIGNAL(appendResponseToConsoleSignal(const GrblResponse&)),
         mUi.consoleFormController, SLOT(onAppendResponseToConsole(const GrblResponse&))
     );
     connect(
-        mUi.consoleFormController, SIGNAL(gcodeCommandSendSignal(const GcodeCommand&)),
-        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(const GcodeCommand&)));
+        mUi.consoleFormController, SIGNAL(gcodeCommandSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*)));
 }
 
 void MainFormController::setupProgramFormSignals()
@@ -372,8 +366,8 @@ void MainFormController::setupProgramFormSignals()
     );
     connect
     (
-        &mGrblMachineModel, SIGNAL(updateProgramTableStatusSignal(const GcodeCommand&)),
-        mUi.programFormController, SLOT(onUpdateProgramTableStatus(const GcodeCommand&))
+        &mGrblMachineModel, SIGNAL(updateProgramTableStatusSignal(GcodeCommand*)),
+        mUi.programFormController, SLOT(onUpdateProgramTableStatus(GcodeCommand*))
     );
 }
 
@@ -436,8 +430,8 @@ void MainFormController::onActionClearAllTriggered()
 void MainFormController::setupControlFormSignals()
 {
     connect(
-        mUi.controlFormController, SIGNAL(gcodeCommandManualSendSignal(const GcodeCommand&)),
-        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(const GcodeCommand&))
+        mUi.controlFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
     );
 }
 
@@ -758,7 +752,7 @@ void MainFormController::onGcodeFileLoadStarted()
     qDebug() << "MainFormController: onGcodeFileLoadStarted";
 }
 
-void MainFormController::onGcodeFileLoadFinished(QList<GcodeCommand>& items)
+void MainFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
 {
     Q_UNUSED(items)
     qDebug() << "MainFormController: onGcodeFileLoadFinished";

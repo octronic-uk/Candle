@@ -20,7 +20,7 @@
 
 #include "AbstractFormController.h"
 #include "ui_ControlForm.h"
-#include "Model/GcodeCommand.h"
+#include "Model/Gcode/GcodeCommand.h"
 
 using namespace Ui;
 
@@ -42,7 +42,7 @@ public:
 
     void highlightUnlockReset(bool highlight);
 signals:
-    void gcodeCommandManualSendSignal(const GcodeCommand&);
+    void gcodeCommandManualSendSignal(GcodeCommand*);
 
 public slots:
     void onCmdResetClicked();

@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>About CocoanutCNC</string>
+   <string>About CoconutCNC</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../Resources/Images.qrc">
-    <normaloff>:/Images/PNG/Cocoanut.png</normaloff>:/Images/PNG/Cocoanut.png</iconset>
+    <normaloff>:/Images/PNG/Coconut.png</normaloff>:/Images/PNG/Coconut.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -47,7 +47,7 @@
         </size>
        </property>
        <property name="styleSheet">
-        <string notr="true">image: url(:/Images/PNG/Cocoanut.png);</string>
+        <string notr="true">image: url(:/Images/PNG/Coconut.png);</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -60,7 +60,7 @@
      <item>
       <widget class="QLabel" name="lblAbout">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CocoanutCNC&lt;br/&gt;Version: %1&lt;br/&gt;License: GNU GENERAL PUBLIC LICENSE&lt;br/&gt;Visit: &lt;a href=&quot;https://github.com/octronic-uk/CocoanutCNC.git&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/octronic-uk/CocoanutCNC.git&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;© 2018 octronic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;CoconutCNC&lt;br/&gt;Version: %1&lt;br/&gt;License: GNU GENERAL PUBLIC LICENSE&lt;br/&gt;Visit: &lt;a href=&quot;https://github.com/octronic-uk/CoconutCNC.git&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/octronic-uk/CoconutCNC.git&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;© 2018 octronic&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

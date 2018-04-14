@@ -20,8 +20,8 @@
 
 #include "AbstractFormController.h"
 #include "ui_ConsoleForm.h"
-#include "Model/GcodeCommand.h"
-#include "Model/GrblResponse.h"
+#include "Model/Gcode/GcodeCommand.h"
+#include "Model/Grbl/GrblResponse.h"
 #include <QMenu>
 
 using namespace Ui;
@@ -38,11 +38,11 @@ public:
 
     void initialise() override;
 signals:
-    void gcodeCommandSendSignal(const GcodeCommand&);
+    void gcodeCommandSendSignal(GcodeCommand*);
 public slots:
     void onCommandSendAction();
     void onAppendResponseToConsole(const GrblResponse&);
-    void onAppendCommandToConsole(const GcodeCommand&);
+    void onAppendCommandToConsole(GcodeCommand*);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

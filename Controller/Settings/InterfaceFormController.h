@@ -23,6 +23,7 @@
 
 class SqlSettingsModel;
 class Profile;
+class InterfaceSettings;
 
 class InterfaceFormController : public AbstractFormController
 {
@@ -48,8 +49,8 @@ public:
     bool showProgramCommands();
     void setShowProgramCommands(bool showProgramCommands);
 
-    bool showUICommands();
-    void setShowUICommands(bool showUICommands);
+    bool showUiCommands();
+    void setShowUiCommands(bool showUICommands);
 
     int fps();
     void setFps(int fps);
@@ -59,24 +60,6 @@ public:
 
     bool msaa();
     void setMsaa(bool msaa);
-
-    bool autoCompletion();
-    void setAutoCompletion(bool autoCompletion);
-
-    bool simplify();
-    void setSimplify(bool simplify);
-
-    double simplifyPrecision();
-    void setSimplifyPrecision(double simplifyPrecision);
-
-    bool grayscaleSegments();
-    void setGrayscaleSegments(bool value);
-
-    bool grayscaleSCode();
-    void setGrayscaleSCode(bool value);
-
-    bool drawModeVectors();
-    void setDrawModeVectors(bool value);
 
     void setSettingsModel(SqlSettingsModel* handle);
     void onProfileChanged(Profile* profile);
@@ -89,18 +72,25 @@ private slots:
     void onMsaaToggled(bool);
     void onVsyncToggled(bool);
     void onZBufferToggled(bool);
-    void onDrawModeVectorsToggled(bool checked);
-    void onDrawModeRasterToggled(bool checked);
-    void onSimplifyToggled(bool);
-    void onSimplifyPrecisionValueChanged(QString);
-    void onGrayscaleToggled(bool);
-    void onGrayscaleSToggled(bool checked);
-    void onGrayscaleZToggled(bool checked);
-    void onShowProgramCommandsToggled(bool);
     void onShowUiCommandsToggled(bool);
-    void onAutoCompletionToggled(bool);
+    void onVisualiserColorButtonClicked();
+    void onBackgroundColorButtonClicked();
+    void onToolColorButtonClicked();
+    void onToolPathColorButtonClicked();
+    void onNormalColorButtonClicked();
+    void onHighlightColorButtonClicked();
+    void onStartPointColorButtonClicked();
+    void onEndPointColorButtonClicked();
+    void onTextColorButtonClicked();
+    void onDrawnColorButtonClicked();
+    void onZMovementColorButtonClicked();
+
+private:
+    InterfaceSettings* getSettings();
 
 private:
     Ui::InterfaceForm mUi;
     SqlSettingsModel* mSettingsModelHandle;
+    bool isModelValid();
+    void commit();
 };
