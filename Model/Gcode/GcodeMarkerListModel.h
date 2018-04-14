@@ -32,6 +32,7 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     void setMarkers(QList<GcodeCommand*> data);
     GcodeCommand* at(int);
+    void clear();
 
 private:
     QList<GcodeCommand*> mData;

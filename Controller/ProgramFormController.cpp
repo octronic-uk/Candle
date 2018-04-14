@@ -140,6 +140,7 @@ void ProgramFormController::setFormActive(bool active)
 void ProgramFormController::initialise()
 {
     mProgramTableModel.clear();
+    mMarkerListModel.clear();
     setFormActive(false);
 }
 

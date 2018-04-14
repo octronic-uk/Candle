@@ -58,5 +58,11 @@ void GcodeMarkerListModel::setMarkers(QList<GcodeCommand*> data)
 
 GcodeCommand* GcodeMarkerListModel::at(int index)
 {
-   return mData.at(index);
+    return mData.at(index);
+}
+
+void GcodeMarkerListModel::clear()
+{
+   mData.clear();
+   emit dataChanged(QModelIndex(),QModelIndex());
 }
