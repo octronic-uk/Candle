@@ -33,4 +33,5 @@
 
 ## Credits
 * Huge Thanks go to the developers/contributers of Candle, the basis of CoconutCNC. https://github.com/Denvi/Candle.git
-* Using Icons from FontAwesome https://fontawesome.com
+* Thanks to https://icons8.com/icon/24979/coconut for the icon.
+* Using UI Icons from FontAwesome https://fontawesome.com

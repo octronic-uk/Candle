@@ -37,7 +37,7 @@
        <item>
         <widget class="QListView" name="markerListView">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -54,14 +54,20 @@
          <property name="editTriggers">
           <set>QAbstractItemView::NoEditTriggers</set>
          </property>
+         <property name="defaultDropAction">
+          <enum>Qt::IgnoreAction</enum>
+         </property>
          <property name="alternatingRowColors">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
+         <property name="movement">
+          <enum>QListView::Free</enum>
+         </property>
          <property name="resizeMode">
-          <enum>QListView::Adjust</enum>
+          <enum>QListView::Fixed</enum>
          </property>
         </widget>
        </item>

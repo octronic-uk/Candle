@@ -11,7 +11,7 @@ GcodeTableModel::GcodeTableModel(QObject *parent) :
     mHeaders /*<< "#" not needed, on the left already */
             << "Line"
             << "Command"
-            << "Args"
+            //<< "Args"
             << "Status"
             << "Response";
 
@@ -55,6 +55,7 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
             {
                 return gCmd->getCommand();
             }
+            /*
         case 2: // Args
             if (gCmd->getArgs().empty())
             {
@@ -64,7 +65,8 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
             {
                 return QVariant(gCmd->getArgs());
             }
-        case 3: // Status
+            */
+        case 2: // Status
             if (index.row() == rowCount() - 1)
             {
                 return QString();
@@ -85,7 +87,7 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
                 default:
                     return tr("Unknown");
             }
-        case 4: // Response
+        case 3: // Response
             return QVariant(gCmd->getResponse().getData());
 
 
@@ -96,23 +98,7 @@ QVariant GcodeTableModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::TextAlignmentRole)
     {
-        switch (index.column())
-        {
-            case 2:
-                // Center empty responses
-                if (mData.at(index.row())->getResponse().getData() == "")
-                {
-                    return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
-                }
-                break;
-            case 4:
-                if (mData.at(index.row())->getArgs().empty())
-                {
-                   return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
-                }
-                break;
-        }
-        return QVariant::fromValue(Qt::AlignLeft | Qt::AlignVCenter);
+        return QVariant::fromValue(Qt::AlignCenter | Qt::AlignVCenter);
     }
 
     //qDebug() << "GcodeTableModel: Returning empty GcodeCommand for role" << role;

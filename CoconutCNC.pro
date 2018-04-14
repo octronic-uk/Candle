@@ -35,6 +35,7 @@ TARGET = CoconutCNC
 TEMPLATE = app
 VERSION = 0.01a
 #RC_ICONS += images/coconut.ico
+ICON = CoconutCNC.icns
 
 DEFINES += sNan=\"65536\"
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"

@@ -6,6 +6,7 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QFile>
+#include <QSplashScreen>
 
 #include "Controller/MainFormController.h"
 
@@ -47,11 +48,18 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("octronic.co.uk");
     QCoreApplication::setApplicationName("CoconutCNC");
 
-    QApplication a(argc, argv);
-    a.setApplicationVersion(APP_VERSION);
+    QApplication app(argc, argv);
+    QPixmap pixmap(":/Images/PNG/splash.png");
+    QSplashScreen splash(pixmap);
+    app.setApplicationVersion(APP_VERSION);
+
+    splash.show();
+    app.processEvents();
+    MainFormController window;
     initGL();
-    initLocales(a);
-    MainFormController w;
-    w.showMainWindow();
-    return a.exec();
+    initLocales(app);
+    window.showMainWindow();
+    window.setWindowState(Qt::WindowMaximized);
+    splash.finish(&window);
+    return app.exec();
 }
