@@ -70,6 +70,9 @@ void ConnectionFormController::initialise()
         setArcDegreeMode(settings->getArcApproximation());
         setArcLength(settings->getArcApproximationLength());
         setArcDegree(settings->getArcApproximationDegrees());
+
+        emit serialPortNameChangedSignal(settings->getSerialPort());
+        emit serialPortBaudRateChangedSignal(settings->getSerialBaudRate());
     }
 }
 
@@ -125,6 +128,7 @@ void ConnectionFormController::onSerialPortNameChanged(QString port)
         auto settings = getSettings();
         settings->setSerialPort(port);
         commit();
+        emit serialPortNameChangedSignal(port);
     }
 }
 
@@ -134,8 +138,10 @@ void ConnectionFormController::onSerialBaudRateChanged(QString baud)
     if (isModelValid())
     {
         auto settings = getSettings();
-        settings->setSerialBaudRate(baud.toInt());
+        int baudInt = baud.toInt();
+        settings->setSerialBaudRate(baudInt);
         commit();
+        emit serialPortBaudRateChangedSignal(baudInt);
     }
 }
 
@@ -177,7 +183,7 @@ void ConnectionFormController::onArcLengthModeToggled(bool value)
 
 void ConnectionFormController::onArcLengthValueChanged(QString value)
 {
-qDebug() << "ConnectionFormController: onArcLengthValueChanged" << value;
+    qDebug() << "ConnectionFormController: onArcLengthValueChanged" << value;
     if (isModelValid())
     {
         auto settings = getSettings();
@@ -188,7 +194,7 @@ qDebug() << "ConnectionFormController: onArcLengthValueChanged" << value;
 
 void ConnectionFormController::onArcDegreeModeToggled(bool value)
 {
-qDebug() << "ConnectionFormController: onArcDegreeChanged" << value;
+    qDebug() << "ConnectionFormController: onArcDegreeChanged" << value;
     if (isModelValid())
     {
         auto settings = getSettings();
@@ -202,7 +208,7 @@ qDebug() << "ConnectionFormController: onArcDegreeChanged" << value;
 
 void ConnectionFormController::onArcDegreeValueChanged(QString value)
 {
-qDebug() << "ConnectionFormController: onArcDegreeValueChanged" << value;
+    qDebug() << "ConnectionFormController: onArcDegreeValueChanged" << value;
     if (isModelValid())
     {
         auto settings = getSettings();

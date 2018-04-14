@@ -61,6 +61,10 @@ public:
 
     void setSettingsModel(SqlSettingsModel* handle);
     void onProfileChanged(Profile*);
+signals:
+    void serialPortNameChangedSignal(QString);
+    void serialPortBaudRateChangedSignal(int);
+
 public slots:
 
     void onSerialPortRefreshClicked();

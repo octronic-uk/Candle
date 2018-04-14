@@ -22,6 +22,9 @@
 #include "ui_ControlForm.h"
 #include "Model/Gcode/GcodeCommand.h"
 
+class SqlSettingsModel;
+class MachineSettings;
+
 using namespace Ui;
 
 class ControlFormController : public AbstractFormController
@@ -32,31 +35,35 @@ public:
     ~ControlFormController() override;
 
     void updateControlsState();
-    bool isHoming();
-    bool isResetCompleted();
-    void onCmdZeroZClicked();
     void setupSignalSlots() override;
     void setFormActive(bool active) override;
-
     void initialise() override;
-
     void highlightUnlockReset(bool highlight);
+
 signals:
     void gcodeCommandManualSendSignal(GcodeCommand*);
 
 public slots:
-    void onCmdResetClicked();
-    void onCmdUnlockClicked();
-    void onCmdSafePositionClicked();
-    void onCmdHomeClicked();
-    void onCmdTouchClicked();
-    void onCmdZeroXYClicked();
-    void onCmdRestoreOriginClicked();
-    void onChkTestModeClicked(bool checked);
+    void onSettingsModelReady(SqlSettingsModel* model);
+
+private slots:
+    void onResetButtonClicked();
+    void onUnlockButtonClicked();
+    void onSafePositionButtonClicked();
+    void onHomeButtonClicked();
+    void onProbeButtonClicked();
+    void onZeroXYButtonClicked();
+    void onRestoreOriginButtonClicked();
+    void onZeroZButtonClicked();
+    void onUserCommand1ButtonClicked();
+    void onUserCommand2ButtonClicked();
+    void onUserCommand3ButtonClicked();
+    void onUserCommand4ButtonClicked();
+
 private:
     ControlForm mUi;
-    bool mIsReseting = false;
-    bool mIsResetCompleted = true;
-    bool mIsAborting = false;
-    bool mIsHoming = false;
+    SqlSettingsModel* mSettingsModelHandle;
+
+    bool isModelValid();
+    MachineSettings* getMachineSettingsHandle();
 };

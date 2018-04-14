@@ -77,7 +77,9 @@ public slots:
     void onUpdateProgramTableStatus(GcodeCommand* command);
 
 private slots:
+
     void onMarkerSelectionChanged(const QItemSelection&, const QItemSelection&);
+    void onTestModeButtonChecked(bool checked);
 
 private:
     ProgramForm mUi;

@@ -95,7 +95,6 @@ signals:
 public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
     void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
-    void onSettingChanged(QString group, QString param, QVariant value);
     void onGcodeCommandManualSend(GcodeCommand*);
     void onUpdateSpindleSpeed(float speed);
     void onUpdateFeedRate(float rate);
@@ -104,6 +103,8 @@ private slots:
     void onConnectionTimer();
     void onSerialPortReadyRead();
     void onSerialPortError(QSerialPort::SerialPortError);
+    void onSerialPortNameChanged(QString);
+    void onSerialPortBaudRateChanged(int);
     void onProgramSendTimerTimeout();
 
 private: // Members
