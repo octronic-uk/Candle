@@ -18,6 +18,7 @@
 #include "StateFormController.h"
 
 
+
 StateFormController::StateFormController(QWidget *parent)
     : AbstractFormController(parent)
 {
@@ -57,6 +58,47 @@ void StateFormController::onToolTextUpdate(QString text, QColor textColor, QColo
     p.setColor(mUi.toolText->foregroundRole(), textColor);
     p.setColor(mUi.toolText->backgroundRole(), bgColor);
     mUi.toolText->setPalette(p);
+}
+
+/*
+    Shoutouts to Bootstrap!
+*/
+void StateFormController::setClass(StateClass _class)
+{
+    QColor textColor, bgColor;
+
+   switch (_class)
+   {
+       case StateClass::Primary:
+           textColor = QColor("White");
+           bgColor = QColor("Blue");
+           break;
+       case StateClass::Secondary:
+           textColor = QColor("White");
+           bgColor = QColor("Gray");
+           break;
+       case StateClass::Info:
+           textColor = QColor("White");
+           bgColor = QColor("LightBlue");
+           break;
+       case StateClass::Success:
+           textColor = QColor("White");
+           bgColor = QColor("LightGreen");
+           break;
+       case StateClass::Warning:
+           textColor = QColor("White");
+           bgColor = QColor("Orange");
+           break;
+       case StateClass::Danger:
+           textColor = QColor("White");
+           bgColor = QColor("Red");
+           break;
+   }
+
+   QPalette p = mUi.statusText->palette();
+   p.setColor(mUi.statusText->foregroundRole(), textColor);
+   p.setColor(mUi.statusText->backgroundRole(), bgColor);
+   mUi.statusText->setPalette(p);
 }
 
 void StateFormController::onUpdateMachinePosition(const QVector3D pos)

@@ -26,9 +26,22 @@
 
 using namespace Ui;
 
+enum class StateClass
+{
+    Primary,
+    Secondary,
+    Info,
+    Success,
+    Warning,
+    Danger
+};
+
 class StateFormController : public AbstractFormController
 {
     Q_OBJECT
+
+
+
 public:
     explicit StateFormController(QWidget *parent = nullptr);
     ~StateFormController() override;
@@ -47,4 +60,5 @@ private:
     // AbstractFormController interface
 public:
     void setupSignalSlots() override;
+    void setClass(StateClass _class);
 };

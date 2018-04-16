@@ -169,22 +169,20 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
         case GrblResponseType::Startup:
             //qDebug() << "GrblMachineModel: Got a Startup Message";
             parseGrblVersion(response);
-            emit statusTextUpdateSignal("Found Machine",QColor("Gray"),QColor("LightGreen"));
             emit appendResponseToConsoleSignal(response);
             mStatusRequested = false;
             mWaitingForStatus = false;
             break;
         case GrblResponseType::Locked:
             mState = GrblMachineState::Locked;
-            emit statusTextUpdateSignal("Locked",QColor("Gray"),QColor("Orange"));
             emit appendResponseToConsoleSignal(response);
             break;
         case GrblResponseType::Unlocked:
             mState = GrblMachineState::Unlocked;
-            emit statusTextUpdateSignal("Unlocked",QColor("Gray"),QColor("LightGreen"));
             emit appendResponseToConsoleSignal(response);
             break;
         case GrblResponseType::Status:
+            updateStatus(response);
             updateMachinePosition(response);
             updateWorkCoordinateOffset(response);
             updateWorkPosition();
@@ -205,7 +203,6 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
                 emit updateProgramTableStatusSignal(next);
                 mCountProcessedCommands++;
                 emit setCompletionProgressSignal(getProcessedPercent());
-                emit statusTextUpdateSignal("Busy",QColor("Gray"),QColor("Orange"));
                 //emit appendResponseToConsoleSignal(response);
             }
             break;
@@ -356,7 +353,6 @@ bool GrblMachineModel::openPort()
     if (mSerialPort.open(QIODevice::ReadWrite))
     {
         emit statusBarUpdateSignal(QString("Connected on Serial Port %1 @ %2 baud").arg(getPortName()).arg(getBaudRate()));
-        emit statusTextUpdateSignal(QString("Port Open"),QColor("Gray"),QColor("LightGreen"));
         emit machineConnectedSigal(true);
         return true;
     }
@@ -544,6 +540,23 @@ void GrblMachineModel::stopStatusTimer()
 {
     //qDebug() << "GrblMachineController: Stopping status timer";
     mStatusTimer.stop();
+}
+
+void GrblMachineModel::updateStatus(GrblResponse response)
+{
+    static QRegExp statusRegex("<([^|<]\\w+)\\|");
+
+    if (statusRegex.indexIn(response.getData()) >=0)
+    {
+        QString stateStr = statusRegex.cap(1);
+        //qDebug() << "GrblMachineModel: parsing state from" << stateStr;
+        mLastState = mState;
+        mState = stateFromString(stateStr);
+        if (mState != mLastState)
+        {
+            emit machineStateUpdatedSignal(mState);
+        }
+    }
 }
 
 void GrblMachineModel::clearCommandQueue()

@@ -417,8 +417,9 @@ void MainFormController::setupProgramFormSignals()
 
 void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
 {
-   switch (state)
-   {
+    onStatusTextUpdate(stateToString(state));
+    switch (state)
+    {
        case GrblMachineState::Unlocked:
             mUi.programFormController->setFormActive(true);
             mUi.consoleFormController->setFormActive(true);
@@ -427,6 +428,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.jogFormController->setFormActive(true);
             mUi.spindleFormController->setFormActive(true);
             mUi.feedFormController->setFormActive(true);
+            mUi.stateFormController->setClass(StateClass::Warning);
             break;
         case GrblMachineState::Locked:
             mUi.consoleFormController->setFormActive(false);
@@ -436,8 +438,37 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.jogFormController->setFormActive(false);
             mUi.spindleFormController->setFormActive(false);
             mUi.feedFormController->setFormActive(false);
+            mUi.stateFormController->setClass(StateClass::Danger);
             break;
-   }
+        case GrblMachineState::Unknown:
+            mUi.stateFormController->setClass(StateClass::Primary);
+            break;
+        case GrblMachineState::Idle:
+            mUi.stateFormController->setClass(StateClass::Info);
+            break;
+        case GrblMachineState::Alarm:
+            mUi.stateFormController->setClass(StateClass::Danger);
+            break;
+        case GrblMachineState::Run:
+            mUi.stateFormController->setClass(StateClass::Success);
+            break;
+        case GrblMachineState::Home:
+            mUi.stateFormController->setClass(StateClass::Info);
+            break;
+        case GrblMachineState::Hold:
+            mUi.stateFormController->setClass(StateClass::Warning);
+            break;
+        case GrblMachineState::Queue:
+            mUi.stateFormController->setClass(StateClass::Warning);
+            break;
+        case GrblMachineState::Check:
+            mUi.stateFormController->setClass(StateClass::Warning);
+            break;
+        case GrblMachineState::Door:
+            mUi.stateFormController->setClass(StateClass::Danger);
+            break;
+
+    }
 }
 
 void MainFormController::onActionClearAllTriggered()

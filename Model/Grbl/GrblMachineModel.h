@@ -68,6 +68,7 @@ public:
     void queueCommand(GcodeCommand* command);
     static QString stateToString(GrblMachineState state);
 
+
     void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
 signals:
@@ -80,7 +81,6 @@ signals:
     void serialPortErrorSignal(QString errorMessage);
 
     void statusBarUpdateSignal(QString status);
-    void statusTextUpdateSignal(QString status, QColor = QColor("Black"), QColor = QColor("White"));
 
     void toolPositionChangedSignal(QVector3D);
     void machineStateUpdatedSignal(const GrblMachineState&);
@@ -162,4 +162,5 @@ private: // Member Functions
     void parseGrblVersion(const GrblResponse& response);
     void startStatusTimer();
     void stopStatusTimer();
+    void updateStatus(GrblResponse response);
 };
