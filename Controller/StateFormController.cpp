@@ -41,7 +41,7 @@ StateFormController::~StateFormController()
 
 void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QColor bgColor)
 {
-    qDebug() << "StateFormController: Status" << text << textColor << bgColor;
+    //qDebug() << "StateFormController: Status" << text << textColor << bgColor;
     mUi.statusText->setText(text);
     QPalette p = mUi.statusText->palette();
     p.setColor(mUi.statusText->foregroundRole(), textColor);
@@ -51,7 +51,7 @@ void StateFormController::onStatusTextUpdate(QString text, QColor textColor, QCo
 
 void StateFormController::onToolTextUpdate(QString text, QColor textColor, QColor bgColor)
 {
-    qDebug() << "StateFormController: Tool" << text << textColor << bgColor;
+    //qDebug() << "StateFormController: Tool" << text << textColor << bgColor;
     mUi.toolText->setText(text);
     QPalette p = mUi.toolText->palette();
     p.setColor(mUi.toolText->foregroundRole(), textColor);
@@ -86,7 +86,7 @@ void StateFormController::initialise()
 void StateFormController::setupSignalSlots()
 {
 
-    qDebug() << "StateFormController: Setup Signals/Slots";
+    //qDebug() << "StateFormController: Setup Signals/Slots";
 }
 
 

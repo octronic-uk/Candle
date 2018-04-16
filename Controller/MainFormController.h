@@ -78,6 +78,7 @@ signals:
    void sendProgramFromLineSignal(const GcodeFileModel&, long);
 
 public slots:
+    void onGrblMachineConnected(bool);
     void onRecentHeightMapFilesChanged();
     void onRecentGcodeFilesChanged();
     void onStatusBarUpdate(QString status);

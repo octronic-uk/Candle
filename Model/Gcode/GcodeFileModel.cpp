@@ -30,6 +30,7 @@
 GcodeFileModel::GcodeFileModel(QObject *parent)
     : QObject(parent),
       mProgramLoading(false),
+      mFileOpen(false),
       mFileChanged(false)
 {
     qDebug() << "GcodeFileModel: Constructing";
@@ -118,6 +119,7 @@ void GcodeFileModel::load(QList<QString> data)
     printMarkers();
     emit gcodeFileLoadFinishedSignal(this);
     emit gcodeParserUpdatedSignal(mGcodeParser.data());
+    mFileOpen = true;
 }
 
 void GcodeFileModel::load(QString fileName)
@@ -226,6 +228,11 @@ QList<GcodeCommand*> GcodeFileModel::getData() const
 QList<GcodeCommand*> GcodeFileModel::getMarkers() const
 {
     return mMarkers;
+}
+
+bool GcodeFileModel::isOpen()
+{
+   return mFileOpen;
 }
 
 void GcodeFileModel::printMarkers()

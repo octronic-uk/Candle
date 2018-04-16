@@ -29,6 +29,8 @@
 #include "Model/Gcode/GcodeCommand.h"
 #include "Model/Grbl/GrblResponse.h"
 
+class SqlSettingsModel;
+
 using namespace std;
 
 class GrblMachineModel : public QObject
@@ -45,9 +47,6 @@ public:
     bool sendNextCommandFromQueue();
     void grblReset();
     bool isPortOpen();
-    bool isStatusReceived();
-    void setStatusReceived(bool);
-    void write(QByteArray);
     int commandsQueueLength();
     QString getPortName();
     void setPortName(QString name);
@@ -68,6 +67,8 @@ public:
     float getWorkPositionZ();
     void queueCommand(GcodeCommand* command);
     static QString stateToString(GrblMachineState state);
+
+    void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
 signals:
     void updateProgramTableStatusSignal(GcodeCommand* state);
@@ -91,6 +92,7 @@ signals:
     void setCompletionProgressSignal(int);
     void setBufferProgressSignal(int);
     void errorSignal(QString);
+    void machineConnectedSigal(bool);
 
 public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
@@ -100,12 +102,14 @@ public slots:
     void onUpdateFeedRate(float rate);
 
 private slots:
-    void onConnectionTimer();
+    void onConnect();
     void onSerialPortReadyRead();
     void onSerialPortError(QSerialPort::SerialPortError);
     void onSerialPortNameChanged(QString);
     void onSerialPortBaudRateChanged(int);
     void onProgramSendTimerTimeout();
+    void onStatusTimerTimeout();
+    void onSerialBytesWritten(qint64 bytes);
 
 private: // Members
     const static int BUFFER_LENGTH_LIMIT;
@@ -116,16 +120,18 @@ private: // Members
     GrblMachineState mLastState;
     QVector3D mMachinePosition;
     QVector3D mWorkPosition;
-    bool mStatusReceived;
+    QVector3D mWorkCoordinateOffset;
+    SqlSettingsModel* mSettingsModelHandle;
     bool mFileEndSent;
     double mFeedOverrideRate;
     bool mProcessingFile;
     bool mTransferCompleted;
     bool mAborting;
     bool mAbsoluteCoordinates;
-    QTimer mConnectionTimer;
     QTimer mProgramSendTimer;
+    QTimer mStatusTimer;
     int mProgramSendInterval;
+    int mStatusInterval;
     int mCountProcessedCommands;
     int mCommandQueueInitialSize;
     int mUpdateRate;
@@ -135,20 +141,25 @@ private: // Members
     int mErrorCode;
     QString mErrorString;
     QString mGrblVersion;
+    qint64 mBytesWaiting;
+    bool mStatusRequested;
+    bool mWaitingForStatus;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
     GcodeCommand getNextCommand(GcodeFileModel& gcodeFile);
     void processResponse(const GrblResponse& data);
-    void updateMachineCoordinates(const GrblResponse& data);
-    void updateWorkCoordinates(const GrblResponse& data);
-    void updateToolCoordinates();
+    void updateMachinePosition(const GrblResponse& data);
+    void updateWorkPosition();
+    void updateWorkCoordinateOffset(const GrblResponse& data);
     void setupSerialPort();
     bool isSpaceInBuffer(GcodeCommand* cmd);
     void startProgramSendTimer();
     void stopProgramSendTimer();
-    double getProcessedPercent();
+    int getProcessedPercent();
     void parseError(const GrblResponse& error);
     const static std::map<int,QString> ERROR_STRINGS;
     void parseGrblVersion(const GrblResponse& response);
+    void startStatusTimer();
+    void stopStatusTimer();
 };

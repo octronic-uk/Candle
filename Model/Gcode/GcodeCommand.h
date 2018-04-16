@@ -89,6 +89,7 @@ public:
     static GcodeCommand* ZeroXYCommand();
     static GcodeCommand* GetGcodeParamsCommand();
     static GcodeCommand* ZeroZCommand();
+    static GcodeCommand* CyclePauseResume();
 
     bool operator==(const GcodeCommand& other);
 
@@ -131,11 +132,6 @@ public:
 
 private:
     static long nextID();
-
-    const static QRegExp spindleSpeedExpression;
-    const static QRegExp fileEndExpression;
-    const static QRegExp feedRateExpression;
-
     char mRawCommand;
     QString mCommand;
     GrblResponse mResponse;

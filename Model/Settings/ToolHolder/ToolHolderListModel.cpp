@@ -96,9 +96,14 @@ void ToolHolderListModel::deleteItem(ToolHolder* item)
     }
 }
 
-QList<QSharedPointer<ToolHolder>>& ToolHolderListModel::getAllData()
+QList<ToolHolder*> ToolHolderListModel::getDataHandles()
 {
-    return mData;
+    QList<ToolHolder*> holders;
+    for (auto holder : mData)
+    {
+        holders.append(holder.data());
+    }
+    return holders;
 }
 
 void ToolHolderListModel::clear()

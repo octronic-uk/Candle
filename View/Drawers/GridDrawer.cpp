@@ -29,6 +29,9 @@ GridDrawer::GridDrawer(float size, float major, float minor)
       mTextColor(QColor(255,255,255))
 {
     mLineWidth = 1;
+    mMajorColor.setAlpha(255);
+    mMinorColor.setAlpha(255);
+    mTextColor.setAlpha(255);
 }
 
 GridDrawer::~GridDrawer()
@@ -67,7 +70,7 @@ bool GridDrawer::updateData()
     // X Lines
     for (float yPos = start; yPos <= end; yPos += mMinorSpacing)
     {
-        QVector3D color = fmod(abs(yPos), mMajorSpacing) == 0.0f ?
+        QVector4D color = fmod(abs(yPos), mMajorSpacing) == 0.0f ?
             Util::colorToVector(mMajorColor) :
             Util::colorToVector(mMinorColor);
 
@@ -78,7 +81,7 @@ bool GridDrawer::updateData()
     // Y Lines
     for (float xPos = start; xPos <= end; xPos += mMinorSpacing)
     {
-        QVector3D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
+        QVector4D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
             Util::colorToVector(mMajorColor) :
             Util::colorToVector(mMinorColor);
 

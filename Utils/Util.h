@@ -31,9 +31,9 @@ public:
         else return qQNaN();
     }
 
-    static QVector3D colorToVector(QColor color)
+    static QVector4D colorToVector(QColor color)
     {
-        return QVector3D(color.redF(), color.greenF(), color.blueF());
+        return QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
     static void waitEvents(int ms)

@@ -39,7 +39,7 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     ToolHolder* getData(int);
     void remove(ToolHolder* item);
-    QList<QSharedPointer<ToolHolder>>& getAllData();
+    QList<ToolHolder*> getDataHandles();
     void clear();
     QModelIndex indexOf(ToolHolder* holder);
     QModelIndex getIndexByID(int id);

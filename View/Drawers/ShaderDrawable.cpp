@@ -93,10 +93,10 @@ void ShaderDrawable::updateGeometry(QOpenGLShaderProgram *shaderProgram)
         // Tell OpenGL programmable pipeline how to locate vertex color data
         int color = shaderProgram->attributeLocation("a_color");
         shaderProgram->enableAttributeArray(color);
-        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 3, sizeof(VertexData));
+        shaderProgram->setAttributeBuffer(color, GL_FLOAT, offset, 4, sizeof(VertexData));
 
         // Offset for line start point
-        offset += sizeof(QVector3D);
+        offset += sizeof(QVector4D);
 
         // Tell OpenGL programmable pipeline how to locate vertex line start point
         int start = shaderProgram->attributeLocation("a_start");
@@ -134,27 +134,22 @@ bool ShaderDrawable::needsUpdateGeometry() const
 
 void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 {
-    //qDebug() << "ShaderDrawable: draw";
     if (!mVisible)
     {
-        //qDebug() << "ShaderDrawable: Not Visible";
         return;
     }
 
     if (mVAO.isCreated())
     {
         // Prepare vao
-        //qDebug() << "ShaderDrawable: Binding VAO";
         mVAO.bind();
     }
     else
     {
         // Prepare vbo
-        //qDebug() << "ShaderDrawable: Binding VBO";
         mVBO.bind();
 
         // Offset for position
-        //qDebug() << "ShaderDrawable: Setting up shader";
         int offset = 0;
 
         // Tell OpenGL programmable pipeline how to locate vertex position data
@@ -182,7 +177,7 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
     // TODO: Add triangles
     if (!mTriangles.isEmpty())
     {
-        //qDebug() << "ShaderDrawable: Add Triangles";
+        //qDebug() << "ShaderDrawable: Drawing triangles" << mTriangles.count();
         if (mTexture)
         {
             mTexture->bind();
@@ -193,25 +188,21 @@ void ShaderDrawable::draw(QOpenGLShaderProgram *shaderProgram)
 
     if (!mLines.isEmpty())
     {
-        //qDebug() << "ShaderDrawable: Add Lines";
         glLineWidth(mLineWidth);
         glDrawArrays(GL_LINES, mTriangles.count(), mLines.count());
     }
 
     if (!mPoints.isEmpty())
     {
-        //qDebug() << "ShaderDrawable: Add Points";
         glDrawArrays(GL_POINTS, mTriangles.count() + mLines.count(), mPoints.count());
     }
 
     if (mVAO.isCreated())
     {
-        //qDebug() << "ShaderDrawable: Release VAO";
         mVAO.release();
     }
     else
     {
-        //qDebug() << "ShaderDrawable: Release VBO";
         mVBO.release();
     }
 }

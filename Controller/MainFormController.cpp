@@ -60,6 +60,7 @@ MainFormController::MainFormController(QWidget *parent) :
         mGcodeFileModel.load(qApp->arguments().last());
     }
     mSqlSettingsModel->onLoadSettings();
+    mUi.stateFormController->onStatusTextUpdate("Not Connected",QColor("Gray"),QColor("LightBlue"));
 }
 
 MainFormController::~MainFormController()
@@ -108,6 +109,11 @@ void MainFormController::setupToolbarSignals()
         mUi.actionClearAll, SIGNAL(triggered()),
         this, SLOT(onActionClearAllTriggered())
     );
+    connect
+    (
+        mUi.actionConnect, SIGNAL(triggered()),
+        &mGrblMachineModel, SLOT(onConnect())
+    );
 }
 
 void MainFormController::setupSettingsModelSignals()
@@ -125,6 +131,13 @@ void MainFormController::setupSettingsModelSignals()
         mSqlSettingsModel.data(),
         SIGNAL(settingsModelReadySignal(SqlSettingsModel*)),
         mUi.controlFormController,
+        SLOT(onSettingsModelReady(SqlSettingsModel*))
+    );
+    connect
+    (
+        mSqlSettingsModel.data(),
+        SIGNAL(settingsModelReadySignal(SqlSettingsModel*)),
+        mUi.visualisationFormController,
         SLOT(onSettingsModelReady(SqlSettingsModel*))
     );
     // Serial Port
@@ -193,7 +206,7 @@ void MainFormController::setupHeightMapFileModelSignals()
 
 void MainFormController::setupGcodeFileModelSignals()
 {
-    qDebug() << "MainFormController: setupGcodeFileModelSignals";
+    //qDebug() << "MainFormController: setupGcodeFileModelSignals";
     // Gcode File Model
     connect(
         &mGcodeFileModel, SIGNAL(statusBarUpdateSignal(QString)),
@@ -312,6 +325,11 @@ void MainFormController::setupGrblMachineModelSignals()
     );
     connect
     (
+        &mGrblMachineModel, SIGNAL(updateWorkPositionSignal(const QVector3D)),
+        mUi.visualisationFormController, SLOT(onUpdateWorkPosition(const QVector3D))
+    );
+    connect
+    (
         &mGrblMachineModel, SIGNAL(updateSpindleSpeedSignal(float)),
         mUi.spindleFormController, SLOT(onUpdateSpindleSpeed(float))
     );
@@ -334,6 +352,11 @@ void MainFormController::setupGrblMachineModelSignals()
     (
         &mGrblMachineModel, SIGNAL(errorSignal(QString)),
         this, SLOT(onGrblMachineError(QString))
+    );
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(machineConnectedSigal(bool)),
+        this, SLOT(onGrblMachineConnected(bool))
     );
 
 }
@@ -386,6 +409,10 @@ void MainFormController::setupProgramFormSignals()
         &mGrblMachineModel, SIGNAL(updateProgramTableStatusSignal(GcodeCommand*)),
         mUi.programFormController, SLOT(onUpdateProgramTableStatus(GcodeCommand*))
     );
+    connect(
+        mUi.programFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
+    );
 }
 
 void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
@@ -426,7 +453,7 @@ void MainFormController::onActionClearAllTriggered()
     switch (result)
     {
         case QMessageBox::Ok:
-            qDebug() << "MainFormController: Clearing all data";
+            //qDebug() << "MainFormController: Clearing all data";
             mUi.consoleFormController->initialise();
             mUi.controlFormController->initialise();
             mUi.feedFormController->initialise();
@@ -471,7 +498,7 @@ void MainFormController::onSerialPortError(QString error)
 
 void MainFormController::setupSignalSlots()
 {
-    qDebug() << "MainFormController: Setup Signals/Slots";
+    //qDebug() << "MainFormController: Setup Signals/Slots";
     setupMenuBarSignals();
     setupToolbarSignals();
     setupSettingsModelSignals();
@@ -487,13 +514,13 @@ void MainFormController::setupSignalSlots()
 
 void MainFormController::showMainWindow()
 {
-    qDebug() << "MainFormController: showMainWindow ";
+    //qDebug() << "MainFormController: showMainWindow ";
     mMainWindow.show();
 }
 
 bool MainFormController::saveChanges(bool heightMapMode)
 {
-    qDebug() << "MainFormController: saveChanges ";
+    //qDebug() << "MainFormController: saveChanges ";
     return true;
 }
 
@@ -504,7 +531,7 @@ void MainFormController::setFormActive(bool active)
 
 void MainFormController::onSetFormMode(MainFormMode mode)
 {
-    qDebug() << "MainFormController: setFormMode";
+    //qDebug() << "MainFormController: setFormMode";
     mFormMode = mode;
     switch (mFormMode)
     {
@@ -527,7 +554,7 @@ void MainFormController::onSetFormMode(MainFormMode mode)
 
 void MainFormController::onGrblMachineError(QString error)
 {
-    qDebug() << "MainFormController: Got Error" << error;
+    //qDebug() << "MainFormController: Got Error" << error;
     QMessageBox::critical
     (
         &mMainWindow,
@@ -546,7 +573,7 @@ void MainFormController::onJobCompleted()
 void MainFormController::resizeEvent(QResizeEvent *re)
 {
     Q_UNUSED(re)
-    qDebug() << "MainFormController: resizeEvent";
+    //qDebug() << "MainFormController: resizeEvent";
 
     mUi.visualisationFormController->placeVisualizerButtons();
 }
@@ -554,7 +581,7 @@ void MainFormController::resizeEvent(QResizeEvent *re)
 void MainFormController::closeEvent(QCloseEvent *ce)
 {
     Q_UNUSED(ce)
-    qDebug() << "MainFormController: closeEvent";
+    //qDebug() << "MainFormController: closeEvent";
     bool mode = mHeightMapMode;
     mHeightMapMode = false;
 }
@@ -562,36 +589,36 @@ void MainFormController::closeEvent(QCloseEvent *ce)
 void MainFormController::dragEnterEvent(QDragEnterEvent *dee)
 {
     Q_UNUSED(dee)
-    qDebug() << "MainFormController: dragEnterEvent";
+    //qDebug() << "MainFormController: dragEnterEvent";
 }
 
 void MainFormController::dropEvent(QDropEvent *de)
 {
     Q_UNUSED(de)
-    qDebug() << "MainFormController: dropEvent";
+    //qDebug() << "MainFormController: dropEvent";
 }
 
 void MainFormController::onActFileExitTriggered()
 {
-    qDebug() << "MainFormController: onActFileExitTriggered";
+    //qDebug() << "MainFormController: onActFileExitTriggered";
     mMainWindow.close();
 }
 
 void MainFormController::onActSettingsTriggered()
 {
-    qDebug() << "MainFormController: onActSettingsTriggered";
+    //qDebug() << "MainFormController: onActSettingsTriggered";
     mSettingsFormController.exec();
 }
 
 bool buttonLessThan(QPushButton *b1, QPushButton *b2)
 {
-    qDebug() << "MainFormController: buttonLessThan";
+    //qDebug() << "MainFormController: buttonLessThan";
     return b1->text().toDouble() < b2->text().toDouble();
 }
 
 void MainFormController::onActFileOpenTriggered()
 {
-    qDebug() << "MainFormController: onActFileOpenTriggered";
+    //qDebug() << "MainFormController: onActFileOpenTriggered";
     if (!saveChanges(false))
     {
         return;
@@ -604,14 +631,14 @@ void MainFormController::onActFileOpenTriggered()
                 tr("G-Code files (*.nc *.ncc *.ngc *.tap *.txt);;Heightmap files (*.map);;All files (*.*)")
                 );
 
-    qDebug() << "MainFormController: Opening File " << fileName;
+    //qDebug() << "MainFormController: Opening File " << fileName;
 
 
     if (!fileName.isEmpty())
     {
         if (mHeightMapFileModel.isHeightMapFile(fileName))
         {
-            qDebug() << "MainFormController: HeightMap file format";
+            //qDebug() << "MainFormController: HeightMap file format";
             mHeightMapFileModel.load(fileName);
             if (mRecentHeightMapFilesModelHande)
             {
@@ -620,7 +647,7 @@ void MainFormController::onActFileOpenTriggered()
         }
         else if (mGcodeFileModel.isGcodeFile(fileName))
         {
-            qDebug() << "MainFormController: Gcode file format";
+            //qDebug() << "MainFormController: Gcode file format";
             mGcodeFileModel.load(fileName);
             if (mRecentGcodeFilesModelHandle)
             {
@@ -629,20 +656,20 @@ void MainFormController::onActFileOpenTriggered()
         }
         else
         {
-            qDebug() << "MainFormController: Unrecognised file format";
+            //qDebug() << "MainFormController: Unrecognised file format";
         }
     }
 }
 
 bool MainFormController::isInHeightMapMode()
 {
-    qDebug() << "MainFormController: isInHeightMapMode";
+    //qDebug() << "MainFormController: isInHeightMapMode";
     return mFormMode == MainFormMode::HeightMap;
 }
 
 bool MainFormController::isInGerberMode()
 {
-    qDebug() << "MainFormController: isInGerberMode";
+    //qDebug() << "MainFormController: isInGerberMode";
     return mFormMode == MainFormMode::Gerber;
 }
 
@@ -651,16 +678,21 @@ void MainFormController::initialise()
 
 }
 
+void MainFormController::onGrblMachineConnected(bool connected)
+{
+    mUi.programFormController->setFormActive(mGcodeFileModel.isOpen() && connected);
+}
+
 void MainFormController::onActFileNewTriggered()
 {
-    qDebug() << "MainFormController: onActFileNewTriggered";
-    qDebug() << "MainFormController: changes:" << mGcodeFileModel.hasFileChanged()
-             << mHeightMapFileModel.hasFileChanged();
+    //qDebug() << "MainFormController: onActFileNewTriggered";
+    //qDebug() << "MainFormController: changes:" << mGcodeFileModel.hasFileChanged()
+     //        << mHeightMapFileModel.hasFileChanged();
 }
 
 void MainFormController::onActFileSaveTransformedAsTriggered()
 {
-    qDebug() << "MainFormController: onActFileSaveTransformAsTriggered";
+    //qDebug() << "MainFormController: onActFileSaveTransformAsTriggered";
     QString fileName = (
                 QFileDialog::getSaveFileName(
                     &mMainWindow,
@@ -673,29 +705,29 @@ void MainFormController::onActFileSaveTransformedAsTriggered()
 
 void MainFormController::onActFileSaveAsTriggered()
 {
-    qDebug() << "MainFormController: onActFileSaveAsTriggered";
+    //qDebug() << "MainFormController: onActFileSaveAsTriggered";
 }
 
 void MainFormController::onActFileSaveTriggered()
 {
-    qDebug() << "MainFormController: onActFIleSaveTriggered";
+    //qDebug() << "MainFormController: onActFIleSaveTriggered";
 }
 
 void MainFormController::onActAboutTriggered()
 {
-    qDebug() << "MainFormController: onActAboutTriggered";
+    //qDebug() << "MainFormController: onActAboutTriggered";
     mAboutFormController.exec();
 }
 
 void MainFormController::onHeightMapFileLoadStarted()
 {
-    qDebug() << "MainFormController: onHeightMapFileLoadStarted";
+    //qDebug() << "MainFormController: onHeightMapFileLoadStarted";
 
 }
 
 void MainFormController::onHeightMapFileLoadFinished()
 {
-    qDebug() << "MainFormController: onHeightMapFileLoadFinished";
+    //qDebug() << "MainFormController: onHeightMapFileLoadFinished";
     onSetFormMode(MainFormMode::HeightMap);
     onStatusBarUpdate
     (
@@ -708,7 +740,7 @@ void MainFormController::showEvent(QShowEvent* se)
 {
 
     Q_UNUSED(se)
-    qDebug() << "MainFormController: showEvent";
+    //qDebug() << "MainFormController: showEvent";
 
 }
 
@@ -716,36 +748,36 @@ void MainFormController::hideEvent(QHideEvent* he)
 {
 
     Q_UNUSED(he)
-    qDebug() << "MainFormController: hideEvent";
+    //qDebug() << "MainFormController: hideEvent";
 
 }
 
 bool MainFormController::eventFilter(QObject *obj, QEvent *event)
 {
-    qDebug() << "MainFormController: eventFilter";
+    //qDebug() << "MainFormController: eventFilter";
     return mMainWindow.eventFilter(obj, event);
 }
 
 void MainFormController::onActRecentFileTriggered()
 {
-    qDebug() << "MainFormController: onActRecentFileTriggered";
+    //qDebug() << "MainFormController: onActRecentFileTriggered";
 }
 
 void MainFormController::updateRecentFilesMenu()
 {
-    qDebug() << "MainFormController: updateRecentFilesMenu";
+    //qDebug() << "MainFormController: updateRecentFilesMenu";
 }
 
 void MainFormController::onRecentHeightMapFilesChanged()
 {
-    qDebug() << "MainFormController: onRecentHeightMapFilesChanged";
+    //qDebug() << "MainFormController: onRecentHeightMapFilesChanged";
     clearRecentHeightMapFilesMenu();
     populateRecentHeightMapFilesMenu();
 }
 
 void MainFormController::onRecentGcodeFilesChanged()
 {
-    qDebug() << "MainFormController: onRecentGerberFilesChanged";
+    //qDebug() << "MainFormController: onRecentGerberFilesChanged";
     clearRecentGcodeFilesMenu();
     populateRecentGcodeFilesMenu();
 }
@@ -757,30 +789,32 @@ void MainFormController::onStatusTextUpdate(QString status)
 
 void MainFormController::onStatusBarUpdate(QString status)
 {
-    //qDebug() << "MainFormController: onStatusUpdate";
     mUi.statusBar->showMessage(status);
 }
 
 void MainFormController::onGcodeFileLoadStarted()
 {
-    qDebug() << "MainFormController: onGcodeFileLoadStarted";
+    //qDebug() << "MainFormController: onGcodeFileLoadStarted";
 }
 
 void MainFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
 {
     Q_UNUSED(items)
-    qDebug() << "MainFormController: onGcodeFileLoadFinished";
+    //qDebug() << "MainFormController: onGcodeFileLoadFinished";
     onSetFormMode(MainFormMode::Gerber);
     onStatusBarUpdate
     (
         QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName())
     );
-    mUi.programFormController->setFormActive(true);
+    if (mGrblMachineModel.isPortOpen())
+    {
+        mUi.programFormController->setFormActive(true);
+    }
 }
 
 void MainFormController::populateRecentGcodeFilesMenu()
 {
-    qDebug() << "MainFormController: populateRecentGcodeFilesMenu";
+    //qDebug() << "MainFormController: populateRecentGcodeFilesMenu";
     foreach (RecentFile file, mRecentGcodeFilesModelHandle->getRecentFiles())
     {
         QAction *action = new QAction(file.getPath(), this);
@@ -794,7 +828,7 @@ void MainFormController::populateRecentGcodeFilesMenu()
 
 void MainFormController::populateRecentHeightMapFilesMenu()
 {
-    qDebug() << "MainFormController: populateRecentHeightMapFilesMenu";
+    //qDebug() << "MainFormController: populateRecentHeightMapFilesMenu";
     foreach (RecentFile file, mRecentHeightMapFilesModelHande->getRecentFiles())
     {
         QAction *action = new QAction(file.getPath(), this);
@@ -808,7 +842,7 @@ void MainFormController::populateRecentHeightMapFilesMenu()
 
 void MainFormController::clearRecentGcodeFilesMenu()
 {
-    qDebug() << "MainFormController: clearRecentGcodeFilesMenu";
+    //qDebug() << "MainFormController: clearRecentGcodeFilesMenu";
     foreach (QAction * action, mUi.recentHeightMapFilesMenu->actions())
     {
         if (action->text() == "")
@@ -825,7 +859,7 @@ void MainFormController::clearRecentGcodeFilesMenu()
 
 void MainFormController::clearRecentHeightMapFilesMenu()
 {
-    qDebug() << "MainFormController: clearRecentHeightMapFilesMenu";
+    //qDebug() << "MainFormController: clearRecentHeightMapFilesMenu";
     foreach (QAction * action, mUi.recentGcodeFilesMenu->actions())
     {
         if (action->text() == "")
@@ -842,13 +876,13 @@ void MainFormController::clearRecentHeightMapFilesMenu()
 
 void MainFormController::onSetBufferProgressValue(int value)
 {
-    qDebug() << "MainFormController: setBufferProgressValue" << value;
+    //qDebug() << "MainFormController: setBufferProgressValue" << value;
     mBufferProgressBar.setValue(100-value);
 }
 
 void MainFormController::onSetCompletionProgressValue(int value)
 {
-    qDebug() << "MainFormController: setCompletionProgressValue" << value;
+    //qDebug() << "MainFormController: setCompletionProgressValue" << value;
     mCompletionProgressBar.setValue(value);
 }
 
@@ -861,7 +895,7 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mCompletionProgressBar.setMinimumWidth(200);
     mCompletionProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mCompletionProgressBar);
-    mUi.statusBar->addPermanentWidget(new QLabel("Buffer"));
+    mUi.statusBar->addPermanentWidget(new QLabel("Buffer Free"));
     mBufferProgressBar.setMinimum(0);
     mBufferProgressBar.setMaximum(100);
     mBufferProgressBar.setTextVisible(false);

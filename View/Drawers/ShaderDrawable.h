@@ -11,7 +11,7 @@
 struct VertexData
 {
     QVector3D position;
-    QVector3D color;
+    QVector4D color;
     QVector3D start;
 };
 

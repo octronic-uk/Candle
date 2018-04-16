@@ -112,9 +112,10 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
     //qDebug() << "GcodeTableModel: setData";
     if (index.isValid())
     {
-        qDebug() << "GcodeTableModel: Index IS valid"
+        /*qDebug() << "GcodeTableModel: Index IS valid"
                  << index
                 << "Updating...";
+                */
         switch (index.column())
         {
         case 0:
@@ -137,7 +138,7 @@ bool GcodeTableModel::setData(const QModelIndex &index, const QVariant &value, i
     }
     else
     {
-        qDebug() << "GcodeTableModel: Index not valid " << index;
+        //qDebug() << "GcodeTableModel: Index not valid " << index;
     }
     return true;
 }

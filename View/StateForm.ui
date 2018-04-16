@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>154</height>
+    <width>330</width>
+    <height>134</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,11 +43,20 @@
    </property>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>4</number>
+     </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetMinimumSize</enum>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,1,1">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
        <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
@@ -58,7 +67,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>60</width>
+           <width>40</width>
            <height>20</height>
           </size>
          </property>
@@ -169,7 +178,13 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,1,1">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
        <item>
         <widget class="QLabel" name="wLabel">
          <property name="sizePolicy">
@@ -180,19 +195,19 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>40</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>60</width>
+           <width>40</width>
            <height>0</height>
           </size>
          </property>
@@ -348,7 +363,16 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,1,1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,1,1">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMinimumSize</enum>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QLabel" name="mLabel">
          <property name="sizePolicy">
@@ -359,19 +383,19 @@
          </property>
          <property name="minimumSize">
           <size>
-           <width>80</width>
+           <width>40</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>60</width>
+           <width>40</width>
            <height>16777215</height>
           </size>
          </property>
          <property name="baseSize">
           <size>
-           <width>60</width>
+           <width>40</width>
            <height>0</height>
           </size>
          </property>

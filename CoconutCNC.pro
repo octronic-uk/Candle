@@ -24,7 +24,7 @@ contains(QT_CONFIG, opengles.) {
     warning("GL ES detected. VAO will be disabled.")
     DEFINES += GLES
     INSTALLS += target
-    target.path = /home/pi
+    target.path = /opt/
 }
 
 unix {
@@ -218,7 +218,7 @@ FORMS    += \
     View/Settings/NameDialog.ui
 
 DEFINES += _USE_MATH_DEFINES
-DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS
+#DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS
 
 RESOURCES += \
     Resources/Shaders.qrc \

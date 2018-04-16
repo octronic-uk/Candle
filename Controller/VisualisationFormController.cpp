@@ -15,12 +15,16 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "VisualisationFormController.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
 
 VisualisationFormController::VisualisationFormController(QWidget *parent)
     : AbstractFormController(parent),
       mButtonPadding(4),
-      mSpindleClockwise(false)
+      mSpindleClockwise(false),
+      mSettingsModelHandle(nullptr)
+
 {
     qDebug() << "VisualisationFormController: Constructing ";
 
@@ -59,7 +63,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     placeVisualizerButtons();
     setupSignalSlots();
 
-    mToolAnimationTimer.start(250, this);
+    mToolAnimationTimer.start(static_cast<int>(1000.0f/5.0f), this);
     //mUi.cmdSpindle->setChecked(true);
     emit spindleEnabledSignal(true);
 }
@@ -342,5 +346,31 @@ void VisualisationFormController::onToggleGridButtonToggled(bool toggled)
 
 void VisualisationFormController::onToggleToolButtonToggled(bool toggled)
 {
-   mToolDrawer.setVisible(toggled);
+    mToolDrawer.setVisible(toggled);
+}
+
+void VisualisationFormController::onUpdateWorkPosition(const QVector3D pos)
+{
+    mToolDrawer.setToolPosition(pos);
+}
+
+void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* settings)
+{
+    mSettingsModelHandle = settings;
+    if (mSettingsModelHandle)
+    {
+        mToolDrawer.setSettingsModelHandle(mSettingsModelHandle);
+
+        Tool* tool = mSettingsModelHandle
+               ->getCurrentProfileHandle()
+               ->getToolListModelHandle()
+               ->getData(0);
+        if (tool)
+        {
+            // TODO - Set the current tool dynamically based to tool change events
+            qDebug() << "VisualisationFormController: settings tool";
+            mToolDrawer.setToolHandle(tool);
+            mToolDrawer.update();
+        }
+    }
 }

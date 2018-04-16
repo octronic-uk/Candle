@@ -146,13 +146,13 @@ void ProgramFormController::initialise()
 
 void ProgramFormController::onReserveGcodeRowsSignal(int rows)
 {
-    qDebug() << "ProgramFormController: Reserving " << rows << " rows";
+    //qDebug() << "ProgramFormController: Reserving " << rows << " rows";
     mProgramTableModel.data().reserve(rows);
 }
 
 void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoint &pos)
 {
-    qDebug() << "ProgramFormController: onTableProgramCustomContextMenuRequested(const QPoint &pos)";
+    //qDebug() << "ProgramFormController: onTableProgramCustomContextMenuRequested(const QPoint &pos)";
     if (mProcessingFile)
     {
         return;
@@ -221,7 +221,7 @@ void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 
 void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2)
 {
-    qDebug() << "ProgramFormController: TableCurrentChanged" << i1 << i2;
+    //qDebug() << "ProgramFormController: TableCurrentChanged" << i1 << i2;
     // Update toolpath hightlighting
     /*
     if (idx1.row() > mProgramTableModel.rowCount() - 2)
@@ -299,7 +299,7 @@ void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2
 
 void ProgramFormController::onTableInsertLine()
 {
-    qDebug() << "ProgramFormController: onTableInsertLine";
+    //qDebug() << "ProgramFormController: onTableInsertLine";
     if (mUi.programTable->selectionModel()->selectedRows().count() == 0 )
     {
         return;
@@ -317,7 +317,7 @@ void ProgramFormController::onTableInsertLine()
 
 void ProgramFormController::onTableDeleteLines()
 {
-    qDebug() << "ProgramFormController: onTableDeleteLine";
+    //qDebug() << "ProgramFormController: onTableDeleteLine";
     if (
         mUi.programTable->selectionModel()->selectedRows().count() == 0 ||
         QMessageBox::warning(
@@ -338,7 +338,7 @@ void ProgramFormController::onTableDeleteLines()
         rowsCount--;
     }
 
-    qDebug() << "ProgramFormController: Deleting lines" << firstRow.row() << rowsCount;
+    //qDebug() << "ProgramFormController: Deleting lines" << firstRow.row() << rowsCount;
 
     if (firstRow.row() != mProgramTableModel.rowCount() - 1)
     {
@@ -356,13 +356,13 @@ void ProgramFormController::onTableDeleteLines()
 
 void ProgramFormController::clearTable()
 {
-    qDebug() << "ProgramFormController: clearTable";
+    //qDebug() << "ProgramFormController: clearTable";
     mProgramTableModel.clear();
 }
 
 void ProgramFormController::setupSignalSlots()
 {
-    qDebug() << "ProgramFormController: Setup Signals/Slots";
+    //qDebug() << "ProgramFormController: Setup Signals/Slots";
     setupSendMenu();
     setupProgramTable();
     mUi.markerListView->setModel(&mMarkerListModel);
@@ -380,6 +380,12 @@ void ProgramFormController::setupSignalSlots()
         this,
         SLOT(onMarkerSelectionChanged(const QItemSelection&, const QItemSelection&))
     );
+
+    connect
+    (
+        mUi.pauseButton, SIGNAL(toggled(bool)),
+        this, SLOT(onPauseButtonClicked(bool))
+    );
 }
 
 void ProgramFormController::onMarkerSelectionChanged
@@ -388,6 +394,7 @@ void ProgramFormController::onMarkerSelectionChanged
     /*qDebug() << "ProgramFormController: MarkerSelectionChanged"
              << selected << deselected;
              */
+    Q_UNUSED(deselected)
     GcodeCommand *marker = mMarkerListModel.at(selected.indexes().first().row());
     if (marker)
     {
@@ -398,8 +405,9 @@ void ProgramFormController::onMarkerSelectionChanged
             index = mUi.programTable->model()->rowCount()-1;
         }
 
-        qDebug() << "ProgramFormController: Scrolling to marker"
+        /*qDebug() << "ProgramFormController: Scrolling to marker"
                  << index;
+                 */
 
         mUi.programTable->selectRow(index);
     }
@@ -408,7 +416,7 @@ void ProgramFormController::onMarkerSelectionChanged
 
 void ProgramFormController::onGcodeFileLoadFinished(GcodeFileModel* fileModel)
 {
-    qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
+    //qDebug() << "ProgramFormController: onGcodeFileLoadFinished";
     mProgramTableModel.insertRows(0,fileModel->getData().count(),QModelIndex());
     mProgramTableModel.setCommandData(fileModel->getData());
     mMarkerListModel.setMarkers(fileModel->getMarkers());
@@ -416,7 +424,7 @@ void ProgramFormController::onGcodeFileLoadFinished(GcodeFileModel* fileModel)
 
 void ProgramFormController::onSendActionTriggered()
 {
-    qDebug() << "ProgramFormController: onSendActionTriggered";
+    //qDebug() << "ProgramFormController: onSendActionTriggered";
 
     if (mProgramTableModel.rowCount() == 0)
     {
@@ -431,7 +439,7 @@ void ProgramFormController::onSendActionTriggered()
 
 void ProgramFormController::onSendFromCurrentLineActionTriggered()
 {
-    qDebug() << "ProgramFormController: onActSendFormLineTriggered";
+    //qDebug() << "ProgramFormController: onActSendFormLineTriggered";
 
     if (mProgramTableModel.rowCount() == 0)
     {
@@ -557,11 +565,12 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
 
 void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
 {
-    qDebug() << "ProgramFormController: onUpdateProgramTableStatus"
+    /*qDebug() << "ProgramFormController: onUpdateProgramTableStatus"
              << "C" << command->getCommand()
              << "L" << command->getLine()
              << "I" << command->getTableIndex()
              << "RData" << command->getResponse().getData();
+    */
 
     QModelIndex stateIndex = mProgramTableModel.index(command->getTableIndex(),1);
     QModelIndex responseIndex = mProgramTableModel.index(command->getTableIndex(),2);
@@ -591,24 +600,32 @@ void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
 void ProgramFormController::onTestModeButtonClicked(bool checked)
 {
     Q_UNUSED(checked)
-    qDebug() << "ProgramFormController: onChkBoxTestClicked";
+    //qDebug() << "ProgramFormController: onChkBoxTestClicked";
 }
 
 void ProgramFormController::onAbortButtonClicked()
 {
-    qDebug() << "ProgramFormController: onCmdFileAbortClicked";
+    //qDebug() << "ProgramFormController: onCmdFileAbortClicked";
     emit programAbortSignal();
 }
 
 void ProgramFormController::onPauseButtonClicked(bool checked)
 {
-    qDebug() << "ProgramFormController: onCmdFilePauseClicked";
-    emit programPauseSignal(checked ? "!" : "~");
+    //qDebug() << "ProgramFormController: onPauseButtonClicked";
+    if (checked)
+    {
+        mUi.pauseButton->setText("Resume");
+    }
+    else
+    {
+        mUi.pauseButton->setText("Pause");
+    }
+    emit gcodeCommandManualSendSignal(GcodeCommand::CyclePauseResume());
 }
 
 void ProgramFormController::onResetButtonClicked()
 {
-    qDebug() << "ProgramFormController: onCmdFileResetClicked";
+    //qDebug() << "ProgramFormController: onCmdFileResetClicked";
     emit programResetSignal();
 }
 
@@ -620,7 +637,7 @@ void ProgramFormController::onScrollBarAction(int action)
 
 void ProgramFormController::onGcodeFileLoadStarted()
 {
-    qDebug() << "ProgramFormController: onGcodeFileLoadStarted";
+    //qDebug() << "ProgramFormController: onGcodeFileLoadStarted";
     clearTable();
 }
 

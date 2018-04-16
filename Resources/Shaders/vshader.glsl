@@ -20,5 +20,5 @@ void main()
 {
     gl_PointSize = a_start.z;
     gl_Position = mvp_matrix * a_position;
-    v_color.xyz = a_color.xyz;
+    v_color.wxyz = a_color.wxyz;
 }

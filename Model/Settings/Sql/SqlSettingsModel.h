@@ -41,6 +41,7 @@ public:
     bool updateProfileName(Profile* profile, QString name);
     bool createNewProfile(QString);
     ProfilesListModel* getProfilesListModelHandle();
+    ToolHolder* getToolHolderByID(int id);
 
 signals:
     void settingsModelReadySignal(SqlSettingsModel*);

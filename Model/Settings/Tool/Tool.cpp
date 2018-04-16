@@ -123,6 +123,16 @@ void Tool::setToolHolderID(int toolHolderID)
     mToolHolderID = toolHolderID;
 }
 
+float Tool::getTotalHeight()
+{
+    float height = 0;
+   for (auto geom : mGeometryTableModel->getDataHandles())
+   {
+      height += geom->getHeight();
+   }
+   return height;
+}
+
 Profile* Tool::getParentHandle() const
 {
     return mParentHandle;

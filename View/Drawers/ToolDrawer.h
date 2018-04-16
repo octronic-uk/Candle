@@ -9,6 +9,9 @@
 #include <cmath>
 #include "ShaderDrawable.h"
 
+class Tool;
+class SqlSettingsModel;
+
 class ToolDrawer : public ShaderDrawable
 {
 public:
@@ -34,8 +37,16 @@ public:
     QColor color() const;
     void setColor(const QColor &color);
 
+    Tool* getToolHandle() const;
+    void setToolHandle(Tool* toolHandle);
+
+    SqlSettingsModel* getSettingsModelHandle() const;
+    void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
+
 protected:
-    QVector<VertexData> createCircle(QVector3D center, float radius, int arcs, QVector3D color);
+    void doItTheOldWay();
+    void doItTheNewWay();
+    QVector<VertexData> createCircle(QVector3D center, float radius, int arcs, QVector4D color);
     float normalizeAngle(float angle);
     bool updateData() override;
 
@@ -47,5 +58,9 @@ private:
     float mRotationAngle;
     float mToolAngle;
     QColor mColor;
+    SqlSettingsModel* mSettingsModelHandle;
+    Tool* mToolHandle;
 
+    void generateToolGeometry();
+    void generateToolHolderGeometry();
 };

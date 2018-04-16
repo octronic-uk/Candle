@@ -20,8 +20,8 @@ GcodeDrawer::GcodeDrawer()
     mColorEnd(QColor("Red")),
     mGeometryUpdated(false)
 {
-    mPointSize = 10;
-    mLineWidth = 4;
+    mPointSize = 4;
+    mLineWidth = 3;
     mViewParser = QSharedPointer<GcodeViewParser>::create();
     connect(&mTimerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
     mTimerVertexUpdate.start(100);
@@ -405,7 +405,7 @@ void GcodeDrawer::setImagePixelColor(QImage &image, double x, double y, QRgb col
     *(pixel + (int)x * 3 + 2) = qBlue(color);
 }
 
-QVector3D GcodeDrawer::getSegmentColorVector(const LineSegment & segment)
+QVector4D GcodeDrawer::getSegmentColorVector(const LineSegment & segment)
 {
     return Util::colorToVector(getSegmentColor(segment));
 }

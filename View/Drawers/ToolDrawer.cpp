@@ -2,16 +2,23 @@
 // Copyright 2015-2016 Hayrullin Denis Ravilevich
 
 #include "ToolDrawer.h"
+#include "Model/Settings/Sql/SqlSettingsModel.h"
+#include "Model/Settings/ToolHolder/ToolHolderGeometry.h"
 
 ToolDrawer::ToolDrawer()
+    : mToolDiameter(4.0),
+      mToolLength(30.0),
+      mEndLength(0.0),
+      mToolPosition(QVector3D(0, 0, 0)),
+      mRotationAngle(0.0),
+      mToolAngle(0.0),
+      mColor(QColor("Orange")),
+      mSettingsModelHandle(nullptr),
+      mToolHandle(nullptr)
+
 {
     qDebug() << "ToolDrawer: Constructing";
-    mToolDiameter = 3.0f;
-    mToolLength = 15.0f;
-    mToolPosition = QVector3D(0, 0, 0);
-    mRotationAngle = 0.0f;
-    setColor(QColor("DarkGray"));
-    mLineWidth = 3.0f;
+    mLineWidth= 3.0f;
 }
 
 ToolDrawer::~ToolDrawer()
@@ -19,24 +26,22 @@ ToolDrawer::~ToolDrawer()
     qDebug() << "ToolDrawer: Destructing";
 }
 
-bool ToolDrawer::updateData()
+void ToolDrawer::doItTheOldWay()
 {
-    const int arcs = 8;
-
-    // Clear data
-    mLines.clear();
-    mPoints.clear();
+    const int arcs = 4;
 
     // Prepare vertex
     VertexData vertex;
     vertex.color = Util::colorToVector(mColor);
-    vertex.start = QVector3D(sNan, sNan, sNan);
+    vertex.start = QVector3D(0,0,0);
+
+    float pi = static_cast<float>(M_PI);
 
     // Draw lines
     for (int i = 0; i < arcs; i++)
     {
-        float x = mToolPosition.x() + mToolDiameter / 2.0f * cos(mRotationAngle / 180.0f * M_PI + (2.0f * M_PI / arcs) * i);
-        float y = mToolPosition.y() + mToolDiameter / 2.0f * sin(mRotationAngle / 180.0f * M_PI + (2.0f * M_PI / arcs) * i);
+        float x = mToolPosition.x() + mToolDiameter / 2.0f * cos(mRotationAngle / 180.0f * pi + (2.0f * pi / arcs) * i);
+        float y = mToolPosition.y() + mToolDiameter / 2.0f * sin(mRotationAngle / 180.0f * pi + (2.0f * pi / arcs) * i);
 
         // Side lines
         vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
@@ -98,8 +103,307 @@ bool ToolDrawer::updateData()
             mToolDiameter / 2, 20, vertex.color
         );
     }
+}
+
+void ToolDrawer::doItTheNewWay()
+{
+    if (!mToolHandle)
+    {
+        qDebug() << "ToolDrawer: Can't do it the new way, no tool handle set";
+        return;
+    }
+    generateToolGeometry();
+    generateToolHolderGeometry();
+}
+
+void ToolDrawer::generateToolGeometry()
+{
+   //qDebug() << "ToolDrawer: Doing it the new way...";
+   QVector4D color = Util::colorToVector(mColor);
+   color.setW(0.3);
+
+   float currentZ = 0;
+   int slices = 16;
+
+   for (ToolGeometry* geom : mToolHandle->getGeometryTableModelHandle()->getDataHandles())
+   {
+       /*qDebug() << "ToolDrawer: Doing it the new way with tool"
+                << geom->getToolID()
+                << "geom" << geom->getID();
+                */
+
+       float upperRadius = geom->getUpperDiameter()/2;
+       float lowerRadius = geom->getLowerDiameter()/2;
+       float height = geom->getHeight();
+
+
+       for(int i=0; i<slices; i++)
+       {
+           //qDebug() << "ToolDrawer: Making a slice" << i;
+
+            float theta = 2 * static_cast<float>(M_PI) * i / slices;
+            float nextTheta = 2 * static_cast<float>(M_PI) * (i+1) / slices;
+
+            /*vertex at top middle */
+            QVector3D topMiddlePos(
+                mToolPosition.x(),
+                mToolPosition.y(),
+                mToolPosition.z() + currentZ + height
+            );
+            VertexData topMiddle;
+            topMiddle.color = color;
+            topMiddle.position = topMiddlePos;
+            topMiddle.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topMiddle" << topMiddlePos;
+
+            /*vertices at top edges of circle*/
+            QVector3D topEdge1Pos(
+                mToolPosition.x() + upperRadius*cos(theta),
+                mToolPosition.y() + upperRadius*sin(theta),
+                mToolPosition.z() + currentZ + height
+            );
+            VertexData topEdge1;
+            topEdge1.color = color;
+            topEdge1.position = topEdge1Pos;
+            topEdge1.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topEdge1" << topEdge1Pos;
+
+            QVector3D topEdge2Pos(
+                mToolPosition.x() + upperRadius*cos(nextTheta),
+                mToolPosition.y() + upperRadius*sin(nextTheta),
+                mToolPosition.z() + currentZ+height
+            );
+            VertexData topEdge2;
+            topEdge2.color = color;
+            topEdge2.position = topEdge2Pos;
+            topEdge2.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topEdge2" << topEdge2Pos;
+
+            /*vertex at bottom middle */
+            QVector3D bottomMiddlePos(
+                mToolPosition.x(),
+                mToolPosition.y(),
+                mToolPosition.z() + currentZ
+            );
+            VertexData bottomMiddle;
+            bottomMiddle.color = color;
+            bottomMiddle.position = bottomMiddlePos;
+            bottomMiddle.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomMiddle" << bottomMiddlePos;
+
+            /*vertices at bottom edges of circle*/
+            QVector3D bottomEdge1Pos(
+                mToolPosition.x() + lowerRadius*cos(theta),
+                mToolPosition.y() + lowerRadius*sin(theta),
+                mToolPosition.z()  + currentZ
+            );
+
+            VertexData bottomEdge1;
+            bottomEdge1.color = color;
+            bottomEdge1.position = bottomEdge1Pos;
+            bottomEdge1.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomEdge1" << bottomEdge1Pos;
+
+            QVector3D bottomEdge2Pos(
+                mToolPosition.x() + lowerRadius*cos(nextTheta),
+                mToolPosition.y() + lowerRadius*sin(nextTheta),
+                mToolPosition.z() + currentZ
+            );
+
+            VertexData bottomEdge2;
+            bottomEdge2.color = color;
+            bottomEdge2.position = bottomEdge2Pos;
+            bottomEdge2.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomEdge2" << bottomEdge2Pos;
+
+            // Top
+            mTriangles.append(topMiddle);
+            mTriangles.append(topEdge1);
+            mTriangles.append(topEdge2);
+
+            // Side1
+            mTriangles.append(topEdge1);
+            mTriangles.append(topEdge2);
+            mTriangles.append(bottomEdge2);
+
+            // Side2
+            mTriangles.append(bottomEdge2);
+            mTriangles.append(topEdge1);
+            mTriangles.append(bottomEdge1);
+
+            // Bottom
+            mTriangles.append(bottomMiddle);
+            mTriangles.append(bottomEdge1);
+            mTriangles.append(bottomEdge2);
+
+        }
+
+        currentZ += height;
+   }
+}
+
+void ToolDrawer::generateToolHolderGeometry()
+{
+    ToolHolder* holder = mSettingsModelHandle->getToolHolderByID(mToolHandle->getToolHolderID());
+   if (!holder)
+   {
+        qDebug() << "ToolDrawer: No tool holder assigned";
+       return;
+   }
+
+   //qDebug() << "ToolDrawer: Doing it the new way...";
+   QVector4D color(0.25,0.25,0.25,0.5);
+
+   float currentZ = mToolHandle->getTotalHeight();
+   int slices = 16;
+
+   for (ToolHolderGeometry* geom : holder->getGeometryTableModelHandle()->getDataHandles())
+   {
+       /*qDebug() << "ToolDrawer: Doing it the new way with tool"
+                << geom->getToolID()
+                << "geom" << geom->getID();
+                */
+
+       float upperRadius = geom->getUpperDiameter()/2;
+       float lowerRadius = geom->getLowerDiameter()/2;
+       float height = geom->getHeight();
+
+
+       for(int i=0; i<slices; i++)
+       {
+           //qDebug() << "ToolDrawer: Making a slice" << i;
+
+            float theta = 2 * static_cast<float>(M_PI) * i / slices;
+            float nextTheta = 2 * static_cast<float>(M_PI) * (i+1) / slices;
+
+            /*vertex at top middle */
+            QVector3D topMiddlePos(
+                mToolPosition.x(),
+                mToolPosition.y(),
+                mToolPosition.z() + currentZ + height
+            );
+            VertexData topMiddle;
+            topMiddle.color = color;
+            topMiddle.position = topMiddlePos;
+            topMiddle.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topMiddle" << topMiddlePos;
+
+            /*vertices at top edges of circle*/
+            QVector3D topEdge1Pos(
+                mToolPosition.x() + upperRadius*cos(theta),
+                mToolPosition.y() + upperRadius*sin(theta),
+                mToolPosition.z() + currentZ + height
+            );
+            VertexData topEdge1;
+            topEdge1.color = color;
+            topEdge1.position = topEdge1Pos;
+            topEdge1.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topEdge1" << topEdge1Pos;
+
+            QVector3D topEdge2Pos(
+                mToolPosition.x() + upperRadius*cos(nextTheta),
+                mToolPosition.y() + upperRadius*sin(nextTheta),
+                mToolPosition.z() + currentZ+height
+            );
+            VertexData topEdge2;
+            topEdge2.color = color;
+            topEdge2.position = topEdge2Pos;
+            topEdge2.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: topEdge2" << topEdge2Pos;
+
+            /*vertex at bottom middle */
+            QVector3D bottomMiddlePos(
+                mToolPosition.x(),
+                mToolPosition.y(),
+                mToolPosition.z() + currentZ
+            );
+            VertexData bottomMiddle;
+            bottomMiddle.color = color;
+            bottomMiddle.position = bottomMiddlePos;
+            bottomMiddle.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomMiddle" << bottomMiddlePos;
+
+            /*vertices at bottom edges of circle*/
+            QVector3D bottomEdge1Pos(
+                mToolPosition.x() + lowerRadius*cos(theta),
+                mToolPosition.y() + lowerRadius*sin(theta),
+                mToolPosition.z()  + currentZ
+            );
+
+            VertexData bottomEdge1;
+            bottomEdge1.color = color;
+            bottomEdge1.position = bottomEdge1Pos;
+            bottomEdge1.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomEdge1" << bottomEdge1Pos;
+
+            QVector3D bottomEdge2Pos(
+                mToolPosition.x() + lowerRadius*cos(nextTheta),
+                mToolPosition.y() + lowerRadius*sin(nextTheta),
+                mToolPosition.z() + currentZ
+            );
+
+            VertexData bottomEdge2;
+            bottomEdge2.color = color;
+            bottomEdge2.position = bottomEdge2Pos;
+            bottomEdge2.start = QVector3D(0,0,0);
+            //qDebug() << "ToolDrawer: bottomEdge2" << bottomEdge2Pos;
+
+            // Top
+            mTriangles.append(topMiddle);
+            mTriangles.append(topEdge1);
+            mTriangles.append(topEdge2);
+
+            // Side1
+            mTriangles.append(topEdge1);
+            mTriangles.append(topEdge2);
+            mTriangles.append(bottomEdge2);
+
+            // Side2
+            mTriangles.append(bottomEdge2);
+            mTriangles.append(topEdge1);
+            mTriangles.append(bottomEdge1);
+
+            // Bottom
+            mTriangles.append(bottomMiddle);
+            mTriangles.append(bottomEdge1);
+            mTriangles.append(bottomEdge2);
+
+        }
+
+        currentZ += height;
+   }
+}
+
+bool ToolDrawer::updateData()
+{
+    mLines.clear();
+    mPoints.clear();
+    mTriangles.clear();
+
+    //doItTheOldWay();
+    doItTheNewWay();
 
     return true;
+}
+
+SqlSettingsModel* ToolDrawer::getSettingsModelHandle() const
+{
+    return mSettingsModelHandle;
+}
+
+void ToolDrawer::setSettingsModelHandle(SqlSettingsModel* settingsModelHandle)
+{
+    mSettingsModelHandle = settingsModelHandle;
+}
+
+Tool* ToolDrawer::getToolHandle() const
+{
+    return mToolHandle;
+}
+
+void ToolDrawer::setToolHandle(Tool* toolHandle)
+{
+    mToolHandle = toolHandle;
 }
 
 QColor ToolDrawer::color() const
@@ -113,7 +417,7 @@ void ToolDrawer::setColor(const QColor &color)
 }
 
 
-QVector<VertexData> ToolDrawer::createCircle(QVector3D center, float radius, int arcs, QVector3D color)
+QVector<VertexData> ToolDrawer::createCircle(QVector3D center, float radius, int arcs, QVector4D color)
 {
     // Vertices
     QVector<VertexData> circle;
@@ -126,7 +430,7 @@ QVector<VertexData> ToolDrawer::createCircle(QVector3D center, float radius, int
     // Create line loop
     for (int i = 0; i <= arcs; i++)
     {
-        float angle = 2 * M_PI * i / arcs;
+        float angle = 2 * static_cast<float>(M_PI) * i / arcs;
         float x = center.x() + radius * cos(angle);
         float y = center.y() + radius * sin(angle);
 
@@ -216,7 +520,10 @@ void ToolDrawer::setToolAngle(float toolAngle)
     if (mToolAngle != toolAngle)
     {
         mToolAngle = toolAngle;
-        mEndLength = mToolAngle > 0 && mToolAngle < 180 ? mToolDiameter / 2 / tan(mToolAngle / 180 * M_PI / 2) : 0;
+        mEndLength =
+                mToolAngle > 0 && mToolAngle < 180.0f ?
+                    mToolDiameter / 2 / tan(mToolAngle / 180.0f * static_cast<float>(M_PI) / 2) :
+                    0;
         if (mToolLength < mEndLength)
         {
             mToolLength = mEndLength;

@@ -49,6 +49,7 @@ public:
     int countCommands();
     QList<GcodeCommand*> getData() const;
     QList<GcodeCommand*> getMarkers() const;
+    bool isOpen();
 
 signals:
     void statusBarUpdateSignal(QString);
@@ -63,6 +64,7 @@ private:
     bool mProgramLoading;
     bool mFileChanged;
     QFile mFile;
+    bool mFileOpen;
     QList<GcodeCommand*> mData;
     QSharedPointer<GcodeParser> mGcodeParser;
     QList<GcodeCommand*> mMarkers;

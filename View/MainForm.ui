@@ -199,7 +199,7 @@
     <string>Spindle</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="SpindleFormController" name="spindleFormController"/>
   </widget>
@@ -261,6 +261,7 @@
    <addaction name="actFileSave"/>
    <addaction name="actionClearAll"/>
    <addaction name="separator"/>
+   <addaction name="actionConnect"/>
    <addaction name="actFileSettings"/>
    <addaction name="separator"/>
   </widget>
@@ -415,6 +416,15 @@
    </property>
    <property name="text">
     <string>Tool Holder</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/plug.svg</normaloff>:/Images/SVG/plug.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
    </property>
   </action>
  </widget>

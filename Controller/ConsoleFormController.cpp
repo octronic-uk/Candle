@@ -74,7 +74,7 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
     {
         return;
     }
-    qDebug() << "ConsoleFormController: Appending Response:" << txt;
+    //qDebug() << "ConsoleFormController: Appending Response:" << txt;
     mUi.txtConsole->setTextColor(QColor("Gray"));
     mUi.txtConsole->append("CNC --> "+txt);
 }
@@ -82,14 +82,14 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
 void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
 {
     QString cmd = command->getCommand();
-    qDebug() << "ConsoleFormController: Appending Command:" << cmd;
+    //qDebug() << "ConsoleFormController: Appending Command:" << cmd;
     mUi.txtConsole->setTextColor(QColor("Black"));
     mUi.txtConsole->append("CNC <-- "+cmd);
 }
 
 void ConsoleFormController::setupSignalSlots()
 {
-    qDebug() << "ConsoleFormController: Setup Signals/Slots";
+    //qDebug() << "ConsoleFormController: Setup Signals/Slots";
     connect(
         mUi.commandSendButton, SIGNAL(clicked()),
         this, SLOT(onCommandSendAction())

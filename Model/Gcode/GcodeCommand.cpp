@@ -16,7 +16,6 @@
  * this file belongs to.
  */
 #include "GcodeCommand.h"
-#include <QRegExp>
 
 GcodeCommand::GcodeCommand
 (
@@ -137,6 +136,12 @@ GcodeCommand*GcodeCommand::ZeroZCommand()
 {
    static GcodeCommand gc("G92Z0");
    return &gc;
+}
+
+GcodeCommand* GcodeCommand::CyclePauseResume()
+{
+    static GcodeCommand gc("~");
+    return &gc;
 }
 
 

@@ -97,6 +97,18 @@ ProfilesListModel* SqlSettingsModel::getProfilesListModelHandle()
     return mProfilesListModel.data();
 }
 
+ToolHolder* SqlSettingsModel::getToolHolderByID(int id)
+{
+   for (auto toolHolder : getCurrentProfileHandle()->getToolHolderListModelHandle()->getDataHandles())
+   {
+       if (toolHolder->getID() == id)
+       {
+           return toolHolder;
+       }
+   }
+   return nullptr;
+}
+
 bool SqlSettingsModel::createNewProfile(Profile* profile)
 {
     if (!insertProfileInDB(profile))
@@ -346,7 +358,7 @@ int SqlSettingsModel::getToolHoldersFromDB(Profile* profile)
 int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
 {
     int numRecords = 0;
-    for (const QSharedPointer<ToolHolder>& nextHolder : profile->getToolHolderListModelHandle()->getAllData())
+    for (ToolHolder* nextHolder : profile->getToolHolderListModelHandle()->getDataHandles())
     {
         QSqlQuery query;
         query.prepare(SELECT_TOOL_HOLDER_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY);

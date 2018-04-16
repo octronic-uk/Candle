@@ -35,6 +35,7 @@
 using namespace Ui;
 
 class GcodeFileModel;
+class SqlSettingsModel;
 
 class VisualisationFormController : public AbstractFormController
 {
@@ -69,6 +70,8 @@ public slots:
 
     void onToggleGridButtonToggled(bool toggled);
     void onToggleToolButtonToggled(bool toggled);
+    void onUpdateWorkPosition(const QVector3D);
+    void onSettingsModelReady(SqlSettingsModel*);
 private slots:
 
 private:
@@ -93,6 +96,7 @@ private:
     int mLastDrawnLineIndex;
     void updateParser();
     bool mSpindleClockwise;
+    SqlSettingsModel* mSettingsModelHandle;
 
 public:
     void setupSignalSlots() override;

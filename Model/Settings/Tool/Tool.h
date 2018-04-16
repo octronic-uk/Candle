@@ -58,6 +58,8 @@ public:
     int getToolHolderID() const;
     void setToolHolderID(int toolHolderID);
 
+    float getTotalHeight();
+
     Profile* getParentHandle() const;
 
     void setSelectedGeometryRow(int row);

@@ -121,7 +121,7 @@ private:
     bool updateRaster();
 
     int getSegmentType(const LineSegment& segment);
-    QVector3D getSegmentColorVector(const LineSegment& segment);
+    QVector4D getSegmentColorVector(const LineSegment& segment);
     QColor getSegmentColor(const LineSegment& segment);
     void setImagePixelColor(QImage &image, double x, double y, const QRgb color) const;
 };

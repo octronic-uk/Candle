@@ -56,6 +56,8 @@ signals:
     void programResetSignal();
     void sendProgramSignal();
     void sendProgramFromLineSignal(long);
+    void gcodeCommandManualSendSignal(GcodeCommand*);
+
 public slots:
     void onReserveGcodeRowsSignal(int);
     void onTestModeButtonClicked(bool checked);
