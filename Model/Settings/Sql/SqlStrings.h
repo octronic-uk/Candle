@@ -231,6 +231,8 @@ const static QString CREATE_MACHINE_TABLE_QUERY =
         "'user_cmd_3'   	TEXT,"
         "'user_cmd_4'   	TEXT,"
         "'hm_probe_feed'	REAL,"
+        "'work_width'   	INTEGER,"
+        "'work_height'	    INTEGER,"
         "FOREIGN KEY('profile_id') REFERENCES profiles('id')"
     ")";
 
@@ -254,9 +256,13 @@ const static QString INSERT_MACHINE_QUERY =
         "'user_cmd_2',"
         "'user_cmd_3',"
         "'user_cmd_4',"
-        "'hm_probe_feed'"
+        "'hm_probe_feed',"
+        "'work_width',"
+        "'work_height'"
     ")"
     "VALUES ("
+        "?,"
+        "?,"
         "?,"
         "?,"
         "?,"
@@ -292,7 +298,9 @@ const static QString UPDATE_MACHINE_QUERY =
         "'user_cmd_2'=?,"
         "'user_cmd_3'=?,"
         "'user_cmd_4'=?,"
-        "'hm_probe_feed'=?"
+        "'hm_probe_feed'=?,"
+        "'work_width'=?,"
+        "'work_height'=?"
      " WHERE id=?";
 
 const static QString DELETE_MACHINE_QUERY =
@@ -336,6 +344,7 @@ const static QString CREATE_TOOL_GEOMETRY_TABLE_QUERY =
         "'height'         REAL NOT NULL,"
         "'upper_diameter' REAL NOT NULL,"
         "'lower_diameter' REAL NOT NULL,"
+        "'faces'          INTEGER NOT NULL,"
         "FOREIGN KEY('tool_id') REFERENCES tools('id')"
     ")";
 
@@ -345,9 +354,11 @@ const static QString INSERT_TOOL_GEOMETRY_QUERY =
         "'index',"
         "'height', "
         "'upper_diameter',"
-        "'lower_diameter'"
+        "'lower_diameter',"
+        "'faces'"
     ")"
     "values ("
+        "?, "
         "?, "
         "?, "
         "?, "
@@ -360,7 +371,8 @@ const static QString UPDATE_TOOL_GEOMETRY_QUERY =
         "'index'=?, "
         "'height'=?, "
         "'upper_diameter'=?, "
-        "'lower_diameter'=?  "
+        "'lower_diameter'=?,  "
+        "'faces'=? "
     "WHERE id=?";
 
 const static QString SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY =
@@ -404,6 +416,7 @@ const static QString CREATE_TOOL_HOLDER_GEOMETRY_TABLE_QUERY =
         "'height'         REAL NOT NULL,"
         "'upper_diameter' REAL NOT NULL,"
         "'lower_diameter' REAL NOT NULL,"
+        "'faces'          INTEGER NOT NULL,"
         "FOREIGN KEY('tool_holder_id') REFERENCES tool_holder('id')"
     ")";
 
@@ -413,9 +426,11 @@ const static QString INSERT_TOOL_HOLDER_GEOMETRY_QUERY =
         "'index',"
         "'height', "
         "'upper_diameter',"
-        "'lower_diameter'"
+        "'lower_diameter',"
+        "'faces'"
     ")"
     "values ("
+        "?, "
         "?, "
         "?, "
         "?, "
@@ -428,7 +443,8 @@ const static QString UPDATE_TOOL_HOLDER_GEOMETRY_QUERY =
         "'index'=?, "
         "'height'=?, "
         "'upper_diameter'=?, "
-        "'lower_diameter'=?  "
+        "'lower_diameter'=?,  "
+        "'faces'=? "
     "WHERE id=?";
 
 const static QString SELECT_TOOL_HOLDER_GEOMETRY_BY_TOOL_HOLDER_ID_QUERY =

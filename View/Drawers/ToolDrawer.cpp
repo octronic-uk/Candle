@@ -109,7 +109,7 @@ void ToolDrawer::doItTheNewWay()
 {
     if (!mToolHandle)
     {
-        qDebug() << "ToolDrawer: Can't do it the new way, no tool handle set";
+        //qDebug() << "ToolDrawer: Can't do it the new way, no tool handle set";
         return;
     }
     generateToolGeometry();
@@ -120,10 +120,9 @@ void ToolDrawer::generateToolGeometry()
 {
    //qDebug() << "ToolDrawer: Doing it the new way...";
    QVector4D color = Util::colorToVector(mColor);
-   color.setW(0.3);
+   color.setW(0.5f);
 
    float currentZ = 0;
-   int slices = 16;
 
    for (ToolGeometry* geom : mToolHandle->getGeometryTableModelHandle()->getDataHandles())
    {
@@ -132,18 +131,21 @@ void ToolDrawer::generateToolGeometry()
                 << "geom" << geom->getID();
                 */
 
+        int slices = geom->getFaces();
        float upperRadius = geom->getUpperDiameter()/2;
        float lowerRadius = geom->getLowerDiameter()/2;
        float height = geom->getHeight();
-
+       float twoPi = 2 * static_cast<float>(M_PI);
 
        for(int i=0; i<slices; i++)
        {
            //qDebug() << "ToolDrawer: Making a slice" << i;
 
-            float theta = 2 * static_cast<float>(M_PI) * i / slices;
-            float nextTheta = 2 * static_cast<float>(M_PI) * (i+1) / slices;
+            float theta = (twoPi / slices) * i;
+            float nextTheta = (twoPi / slices) * (i+1);
 
+            //qDebug () << "ToolDrawer: theta " << theta;
+            //qDebug () << "ToolDrawer: nextTheta " << nextTheta;
             /*vertex at top middle */
             QVector3D topMiddlePos(
                 mToolPosition.x(),
@@ -222,14 +224,14 @@ void ToolDrawer::generateToolGeometry()
             mTriangles.append(topEdge2);
 
             // Side1
-            mTriangles.append(topEdge1);
             mTriangles.append(topEdge2);
-            mTriangles.append(bottomEdge2);
-
-            // Side2
-            mTriangles.append(bottomEdge2);
             mTriangles.append(topEdge1);
             mTriangles.append(bottomEdge1);
+
+            // Side2
+            mTriangles.append(bottomEdge1);
+            mTriangles.append(bottomEdge2);
+            mTriangles.append(topEdge2);
 
             // Bottom
             mTriangles.append(bottomMiddle);
@@ -252,10 +254,9 @@ void ToolDrawer::generateToolHolderGeometry()
    }
 
    //qDebug() << "ToolDrawer: Doing it the new way...";
-   QVector4D color(0.25,0.25,0.25,0.5);
+   QVector4D color(0.25f,0.25f,0.25f,0.75f);
 
    float currentZ = mToolHandle->getTotalHeight();
-   int slices = 16;
 
    for (ToolHolderGeometry* geom : holder->getGeometryTableModelHandle()->getDataHandles())
    {
@@ -264,6 +265,7 @@ void ToolDrawer::generateToolHolderGeometry()
                 << "geom" << geom->getID();
                 */
 
+       int slices = geom->getFaces();
        float upperRadius = geom->getUpperDiameter()/2;
        float lowerRadius = geom->getLowerDiameter()/2;
        float height = geom->getHeight();

@@ -295,11 +295,6 @@ void MainFormController::setupGrblMachineModelSignals()
     );
     connect
     (
-        &mGrblMachineModel, SIGNAL(statusTextUpdateSignal(QString,QColor,QColor)),
-        mUi.stateFormController, SLOT(onStatusTextUpdate(QString,QColor,QColor))
-    );
-    connect
-    (
         this, SIGNAL(sendProgramSignal(const GcodeFileModel&)),
         &mGrblMachineModel, SLOT(onSendProgram(const GcodeFileModel&))
     );

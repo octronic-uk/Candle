@@ -33,7 +33,8 @@ public:
         int index = -1,
         float height = 1,
         float upper=1,
-        float lower = 1
+        float lower = 1,
+            int faces = 6
     );
 
     ToolHolderGeometry(const ToolHolderGeometry& other);
@@ -56,10 +57,14 @@ public:
 
     ToolHolder* getParentHandle() const;
 
+    int getFaces() const;
+    void setFaces(int faces);
+
 private:
     ToolHolder* mParentHandle;
     int mIndex;
     float mHeight;
     float mUpperDiameter;
     float mLowerDiameter;
+    int mFaces;
 };

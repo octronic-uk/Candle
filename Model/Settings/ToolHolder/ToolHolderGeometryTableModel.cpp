@@ -28,7 +28,7 @@ ToolHolderGeometryTableModel::ToolHolderGeometryTableModel
     : QAbstractTableModel(parent),
       mParentHandle(parentHolder)
 {
-    mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter";
+    mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter" << "Faces";
 }
 
 QVariant ToolHolderGeometryTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -74,6 +74,8 @@ QVariant ToolHolderGeometryTableModel::data(const QModelIndex &index, int role) 
                 return mData.at(index.row())->getUpperDiameter();
             case 2: // Lower Diameter
                 return mData.at(index.row())->getLowerDiameter();
+            case 3: // Faces
+                return mData.at(index.row())->getFaces();
         }
     }
     return QVariant();
@@ -95,6 +97,9 @@ bool ToolHolderGeometryTableModel::setData(const QModelIndex &index, const QVari
                     break;
                 case 2: // Lower Diameter
                     mData[index.row()]->setLowerDiameter(value.toFloat());
+                    break;
+                case 3: // Faces
+                    mData[index.row()]->setFaces(value.toInt());
                     break;
             }
             emit geometryUpdatedSignal(mData[index.row()].data());

@@ -314,7 +314,7 @@ void ConnectionFormController::searchPorts()
 
     mUi.serialBaudRateBox->clear();
 
-    for (int baud : SERIAL_BAUD_RATES)
+    for (int baud : SERIAL_BAUDS)
     {
         mUi.serialBaudRateBox->addItem(QString::number(baud),baud);
     }

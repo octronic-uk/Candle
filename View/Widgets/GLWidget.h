@@ -91,6 +91,7 @@ signals:
     void resized();
 
 public slots:
+    void onLookAt(QVector3D lookAt);
 
 private slots:
     void onFramesTimer();
@@ -104,10 +105,10 @@ private:
 
     ProjectionMode mProjectionMode;
     float mXRot, mYRot, mXLastRot, mYLastRot;
-    float mXPan, mYPan, mXLastPan, mYLastPan;
-    float mXLookAt, mYLookAt, mZLookAt;
-    QPoint mLastPos;
-    float mZoom;
+    float mXPan, mYPan, mXLastPan, mYLastPan, mZPan, mLastZPan;
+    QVector3D mLookAt;
+    QVector3D mLastPos;
+    //float mZoom;
     float mDistance;
     float mXMin, mXMax, mYMin, mYMax, mZMin, mZMax, mXSize, mYSize, mZSize;
     float mLineWidth;

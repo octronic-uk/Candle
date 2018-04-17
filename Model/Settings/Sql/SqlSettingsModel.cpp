@@ -33,7 +33,15 @@ SqlSettingsModel::SqlSettingsModel(QObject* parent)
 
     if (!mSettingsDirectory.exists())
     {
-        QDir().mkdir(mSettingsDirectory.absolutePath());
+        QString absPath =  mSettingsDirectory.absolutePath();
+        qInfo() << "SqlSettings Model:" << absPath << "Does not exist, creating";
+        bool result = QDir().mkdir(mSettingsDirectory.absolutePath());
+        if (result)
+            qInfo() << "SqlSettings Model:" << absPath << "Does not exist, creating";
+        else
+            qWarning() << "SqlSettings Model: Unable to create settings path" << absPath;
+
+
     }
 
     QString mFilePath = mSettingsDirectory.filePath(DB_FILE_NAME);
@@ -376,13 +384,15 @@ int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
         int heightFieldNum = query.record().indexOf("height");
         int upperDiameterFieldNum = query.record().indexOf("upper_diameter");
         int lowerDiameterFieldNum = query.record().indexOf("lower_diameter");
+        int facesFieldNum = query.record().indexOf("faces");
 
         qDebug() << "SqlSettingsModel: ToolHolderGeometry"
                  << "tool_holder_id " << toolHolderIdFieldNum
                  << "index" << indexFieldNum
                  << "height" << heightFieldNum
                  << "upper_d" << upperDiameterFieldNum
-                 << "lower_d" << lowerDiameterFieldNum;
+                 << "lower_d" << lowerDiameterFieldNum
+                 << "faces" << facesFieldNum;
 
         while(query.next())
         {
@@ -393,10 +403,12 @@ int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
             float height = query.value(heightFieldNum).toFloat();
             float upper = query.value(upperDiameterFieldNum).toFloat();
             float lower = query.value(lowerDiameterFieldNum).toFloat();
+            int faces = query.value(facesFieldNum).toInt();
+
             ToolHolder* parent = profile->getToolHolderListModelHandle()->getToolHolderByID(parentId);
             QSharedPointer<ToolHolderGeometry> nextTHG =
                     QSharedPointer<ToolHolderGeometry>::create
-                    (parent, id, index, height, upper, lower);
+                    (parent, id, index, height, upper, lower, faces);
             nextHolder->insertItem(nextTHG);
         }
         numRecords += nextHolder->getGeometryTableModelHandle()->rowCount();
@@ -414,6 +426,7 @@ bool SqlSettingsModel::insertToolHolderGeometryInDB(ToolHolderGeometry* toolHold
     query.addBindValue(toolHolder->getHeight());
     query.addBindValue(toolHolder->getUpperDiameter());
     query.addBindValue(toolHolder->getLowerDiameter());
+    query.addBindValue(toolHolder->getFaces());
 
     if (!query.exec())
     {
@@ -444,6 +457,8 @@ bool SqlSettingsModel::updateToolHolderGeometryInDB(ToolHolderGeometry* toolHold
     query.addBindValue(toolHolder->getHeight());
     query.addBindValue(toolHolder->getUpperDiameter());
     query.addBindValue(toolHolder->getLowerDiameter());
+    query.addBindValue(toolHolder->getFaces());
+
     query.addBindValue(toolHolder->getID());
 
     if (!query.exec())
@@ -638,13 +653,15 @@ int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
         int heightFieldNum = query.record().indexOf("height");
         int upperDiameterFieldNum = query.record().indexOf("upper_diameter");
         int lowerDiameterFieldNum = query.record().indexOf("lower_diameter");
+        int facesFieldNum = query.record().indexOf("faces");
 
         qDebug() << "SqlSettingsModel: ToolGeometry"
                  << "tool_id " << toolIdFieldNum
                  << "index" << indexFieldNum
                  << "height" << heightFieldNum
                  << "upper_d" << upperDiameterFieldNum
-                 << "lower_d" << lowerDiameterFieldNum;
+                 << "lower_d" << lowerDiameterFieldNum
+                 << "faces" << facesFieldNum;
 
         while(query.next())
         {
@@ -654,9 +671,11 @@ int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
             float height = query.value(heightFieldNum).toFloat();
             float upper = query.value(upperDiameterFieldNum).toFloat();
             float lower = query.value(lowerDiameterFieldNum).toFloat();
+            int faces = query.value(facesFieldNum).toInt();
+
             QSharedPointer<ToolGeometry> nextTG =
                     QSharedPointer<ToolGeometry>::create
-                    (next.data(), id, index, height, upper, lower);
+                    (next.data(), id, index, height, upper, lower, faces);
             next->insertItem(nextTG);
         }
         numRecords += next->getGeometryTableModelHandle()->rowCount();
@@ -675,6 +694,7 @@ bool SqlSettingsModel::insertToolGeometryInDB(ToolGeometry* tool)
     query.addBindValue(tool->getHeight());
     query.addBindValue(tool->getUpperDiameter());
     query.addBindValue(tool->getLowerDiameter());
+    query.addBindValue(tool->getFaces());
 
     if (!query.exec())
     {
@@ -705,6 +725,8 @@ bool SqlSettingsModel::updateToolGeometryInDB(ToolGeometry* tool)
     query.addBindValue(tool->getHeight());
     query.addBindValue(tool->getUpperDiameter());
     query.addBindValue(tool->getLowerDiameter());
+    query.addBindValue(tool->getFaces());
+
     query.addBindValue(tool->getID());
 
     if (!query.exec())
@@ -739,6 +761,7 @@ int SqlSettingsModel::getProfilesFromDB()
     int idFieldNum = query.record().indexOf("id");
     int nameFieldNum = query.record().indexOf("name");
     int selectedFieldNum = query.record().indexOf("selected");
+
     // Populate
     while (query.next())
     {
@@ -1041,6 +1064,8 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
     int userCmd3FieldNum = query.record().indexOf("user_cmd_3");
     int userCmd4FieldNum = query.record().indexOf("user_cmd_4");
     int heightMapProbeFeedFieldNum = query.record().indexOf("hm_probe_feed");
+    int workWidthFieldNum = query.record().indexOf("work_width");
+    int workHeightFieldNum = query.record().indexOf("work_height");
 
     while(query.next())
     {
@@ -1062,6 +1087,8 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
         QString userCmd3 = query.value(userCmd3FieldNum).toString();
         QString userCmd4 = query.value(userCmd4FieldNum).toString();
         int heightMapProbe = query.value(heightMapProbeFeedFieldNum).toInt();
+        int workWidth = query.value(workWidthFieldNum).toInt();
+        int workHeight = query.value(workHeightFieldNum).toInt();
 
         MachineSettings* machine = profile->getMachineSettingsHandle();
         machine->setID(id);
@@ -1080,6 +1107,8 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
         machine->setUserCmd3(userCmd3);
         machine->setUserCmd4(userCmd4);
         machine->setHeightMapProbeFeed(heightMapProbe);
+        machine->setWorkAreaWidth(workWidth);
+        machine->setWorkAreaHeight(workHeight);
 
     }
     numRecords++;
@@ -1109,6 +1138,9 @@ bool SqlSettingsModel::insertMachineSettingsInDB(MachineSettings* settings)
     query.addBindValue(settings->getUserCmd3());
     query.addBindValue(settings->getUserCmd4());
     query.addBindValue(settings->getHeightMapProbeFeed());
+    query.addBindValue(settings->getWorkAreaWidth());
+    query.addBindValue(settings->getWorkAreaHeight());
+
 
     if (!query.exec())
     {
@@ -1148,6 +1180,8 @@ bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
     query.addBindValue(settings->getUserCmd3());
     query.addBindValue(settings->getUserCmd4());
     query.addBindValue(settings->getHeightMapProbeFeed());
+     query.addBindValue(settings->getWorkAreaWidth());
+    query.addBindValue(settings->getWorkAreaHeight());
 
     query.addBindValue(settings->getID());
 

@@ -38,15 +38,14 @@ GLWidget::GLWidget(QWidget *parent)
     mXRotTarget = 90;
     mYRotTarget = 0;
 
-    mZoom = 1;
+    //mZoom = 1;
 
     mXPan = 0;
     mYPan = 0;
+    mZPan = 0;
     mDistance = 100;
 
-    mXLookAt = 0;
-    mYLookAt = 0;
-    mZLookAt = 0;
+    mLookAt = QVector3D(0.0f,0.0f,0.0f);
 
     mXMin = 0;
     mXMax = 0;
@@ -103,13 +102,13 @@ void GLWidget::fitDrawable(const ShaderDrawable &drawable)
         mDistance = 200;
     }
 
-    mXLookAt = (mXMax - mXMin) / 2 + mXMin;
-    mZLookAt = -((mYMax - mYMin) / 2 + mYMin);
-    mYLookAt = (mZMax - mZMin) / 2 + mZMin;
+    mLookAt.setX((mXMax - mXMin) / 2 + mXMin);
+    mLookAt.setY(-((mYMax - mYMin) / 2 + mYMin));
+    mLookAt.setZ((mZMax - mZMin) / 2 + mZMin);
 
     mXPan = 0;
     mYPan = 0;
-    mZoom = 1;
+    //mZoom = 1;
 
     updateProjection();
     updateView();
@@ -418,7 +417,7 @@ void GLWidget::updateProjection()
         -0.5f + mYPan,
         0.5f + mYPan,
         mNearPlane,
-        mDistance * 2
+        1000.0f//mDistance * 2
     );
 }
 
@@ -432,11 +431,11 @@ void GLWidget::updateView()
     float angX = M_PI / 180 * mXRot;
 
     QVector3D eye(
-        r * cos(angX) * sin(angY) + mXLookAt,
-        r * sin(angX) + mYLookAt,
-        r * cos(angX) * cos(angY) + mZLookAt
+        r * cos(angX) * sin(angY) + mLookAt.x(),
+        r * sin(angX) + mLookAt.y(),
+        r * cos(angX) * cos(angY) + mLookAt.z()
     );
-    QVector3D center(mXLookAt, mYLookAt, mZLookAt);
+    QVector3D center(mLookAt);
     QVector3D up(
         fabs(mXRot) == 90 ?
         -sin(angY + (mXRot < 0 ? M_PI : 0)) :
@@ -447,9 +446,9 @@ void GLWidget::updateView()
 
     mViewMatrix.lookAt(eye, center, up.normalized());
 
-    mViewMatrix.translate(mXLookAt, mYLookAt, mZLookAt);
-    mViewMatrix.scale(mZoom, mZoom, mZoom);
-    mViewMatrix.translate(-mXLookAt, -mYLookAt, -mZLookAt);
+    mViewMatrix.translate(mLookAt.x(), mLookAt.y(), mLookAt.z());
+    //mViewMatrix.scale(mZoom, mZoom, mZoom);
+    mViewMatrix.translate(-mLookAt.x(), -mLookAt.y(), mLookAt.z());
 
     mViewMatrix.rotate(-90, 1.0, 0.0, 0.0);
 }
@@ -479,6 +478,11 @@ void GLWidget::paintEvent(QPaintEvent *pe)
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    /*
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+    */
+
 
     // Shader drawable points
     glEnable(GL_PROGRAM_POINT_SIZE);
@@ -597,7 +601,8 @@ void GLWidget::paintEvent(QPaintEvent *pe)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    mLastPos = event->pos();
+    mLastPos.setX(event->pos().x());
+    mLastPos.setY(event->pos().y());
     mXLastRot = mXRot;
     mYLastRot = mYRot;
     mXLastPan = mXPan;
@@ -617,7 +622,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         )
     {
 
-        stopViewAnimation();
+        //stopViewAnimation();
 
         mYRot = normalizeAngle(mYLastRot - (event->pos().x() - mLastPos.x()) * 0.5);
         mXRot = mXLastRot + (event->pos().y() - mLastPos.y()) * 0.5;
@@ -648,7 +653,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 
 void GLWidget::wheelEvent(QWheelEvent *we)
 {
-    if (mZoom > 0.1 && we->delta() < 0)
+    /*if (mZoom > 0.1 && we->delta() < 0)
     {
         mXPan -= ((float)we->pos().x() / width() - 0.5 + mXPan) * (1 - 1 / ZOOMSTEP);
         mYPan += ((float)we->pos().y() / height() - 0.5 - mYPan) * (1 - 1 / ZOOMSTEP);
@@ -661,6 +666,14 @@ void GLWidget::wheelEvent(QWheelEvent *we)
         mYPan += ((float)we->pos().y() / height() - 0.5 - mYPan) * (1 - ZOOMSTEP);
 
         mZoom *= ZOOMSTEP;
+    }
+    */
+    //mLastZPan = mZPan;
+    //mZPan = mLastZPan + (we->pos().y() - mLastPos.z());// * 1 / (float)height();
+    mDistance -= we->delta();
+    if (mDistance < 5.0f)
+    {
+        mDistance = 5.0f;
     }
 
     updateProjection();
@@ -687,6 +700,12 @@ void GLWidget::timerEvent(QTimerEvent *te)
 #endif
     }
     */
+}
+
+void GLWidget::onLookAt(QVector3D lookAt)
+{
+    mLookAt = lookAt;
+    updateView();
 }
 
 float GLWidget::normalizeAngle(float angle)

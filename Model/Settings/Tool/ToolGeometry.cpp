@@ -21,13 +21,14 @@
 #include <QtDebug>
 
 ToolGeometry::ToolGeometry
-(Tool* parent, int id, int index, float height, float upper, float lower)
+(Tool* parent, int id, int index, float height, float upper, float lower, int faces)
     : AbstractDatabaseRecord(id),
       mParentHandle(parent),
       mIndex(index),
       mHeight(height),
       mUpperDiameter(upper),
-      mLowerDiameter(lower)
+      mLowerDiameter(lower),
+      mFaces(faces)
 {
     qDebug() << "ToolModelGeometryItem: Creating with index" << index;
 }
@@ -37,7 +38,8 @@ ToolGeometry::ToolGeometry(const ToolGeometry& other)
       mIndex(other.mIndex),
       mHeight(other.mHeight),
       mUpperDiameter(other.mUpperDiameter),
-      mLowerDiameter(other.mLowerDiameter)
+      mLowerDiameter(other.mLowerDiameter),
+      mFaces(other.mFaces)
 {
     qDebug() << "ToolModelGeometryItem: Creating ToolGeometry(other&)"
              << "ID" << getID()
@@ -45,7 +47,8 @@ ToolGeometry::ToolGeometry(const ToolGeometry& other)
              << "IDX" <<  mIndex
              << "H" <<  mHeight
              << "L_D" <<  mLowerDiameter
-             << "U_D" <<  mUpperDiameter;
+             << "U_D" <<  mUpperDiameter
+             << "Faces "<< mFaces;
 }
 
 bool ToolGeometry::operator==(const ToolGeometry& other)
@@ -106,4 +109,14 @@ Tool* ToolGeometry::getParentHandle() const
 void ToolGeometry::setParentHandle(Tool* parentHandle)
 {
     mParentHandle = parentHandle;
+}
+
+int ToolGeometry::getFaces() const
+{
+    return mFaces;
+}
+
+void ToolGeometry::setFaces(int faces)
+{
+    mFaces = faces;
 }

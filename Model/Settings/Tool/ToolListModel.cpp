@@ -196,6 +196,10 @@ bool ToolListModel::setData(const QModelIndex& index, const QVariant& value, int
 
 Tool* ToolListModel::getData(int index)
 {
+    if (index < 0 || index > mData.count()-1)
+    {
+        return nullptr;
+    }
     return mData[index].data();
 }
 

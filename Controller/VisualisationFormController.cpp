@@ -22,6 +22,7 @@
 VisualisationFormController::VisualisationFormController(QWidget *parent)
     : AbstractFormController(parent),
       mButtonPadding(4),
+      mFollowTool(false),
       mSpindleClockwise(false),
       mSettingsModelHandle(nullptr)
 
@@ -31,6 +32,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.setupUi(this);
     mViewParser = QSharedPointer<GcodeViewParser>::create(this);
     mProbeParser = QSharedPointer<GcodeViewParser>::create(this);
+
     /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
     mUi.cmdIsometric->setParent(mUi.glwVisualizer);
@@ -52,6 +54,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.glwVisualizer->addDrawable(&mOriginDrawer);
     mUi.glwVisualizer->addDrawable(&mCodeDrawer);
     mUi.glwVisualizer->addDrawable(&mToolDrawer);
+    mUi.glwVisualizer->addDrawable(&mWorkAreaDrawer);
     mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
     /*
     mUi.glwVisualizer->addDrawable(&mProbeDrawer);
@@ -80,6 +83,7 @@ void VisualisationFormController::setFormActive(bool active)
     mUi.cmdIsometric->setEnabled(active);
     mUi.cmdLeft->setEnabled(active);
     mUi.cmdTop->setEnabled(active);
+    mUi.toggleFollowToolButton->setEnabled(active);
 }
 
 void VisualisationFormController::initialise()
@@ -267,6 +271,10 @@ void VisualisationFormController::setupSignalSlots()
         mUi.toggleToolButton, SIGNAL(toggled(bool)),
         this, SLOT(onToggleToolButtonToggled(bool))
     );
+    connect(
+        mUi.toggleFollowToolButton, SIGNAL(toggled(bool)),
+        this, SLOT(onFollowToolButtonToggled(bool))
+    );
 
 }
 
@@ -349,9 +357,18 @@ void VisualisationFormController::onToggleToolButtonToggled(bool toggled)
     mToolDrawer.setVisible(toggled);
 }
 
+void VisualisationFormController::onFollowToolButtonToggled(bool toggled)
+{
+    mFollowTool = toggled;
+}
+
 void VisualisationFormController::onUpdateWorkPosition(const QVector3D pos)
 {
     mToolDrawer.setToolPosition(pos);
+    if (mFollowTool)
+    {
+        mUi.glwVisualizer->onLookAt(pos);
+    }
 }
 
 void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* settings)

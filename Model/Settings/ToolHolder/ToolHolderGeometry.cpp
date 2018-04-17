@@ -22,13 +22,14 @@
 class ToolHolder;
 
 ToolHolderGeometry::ToolHolderGeometry
-(ToolHolder* parent, int id, int index, float height, float upper, float lower)
+(ToolHolder* parent, int id, int index, float height, float upper, float lower, int faces)
     : AbstractDatabaseRecord(id),
       mParentHandle(parent),
       mIndex(index),
       mHeight(height),
       mUpperDiameter(upper),
-      mLowerDiameter(lower)
+      mLowerDiameter(lower),
+      mFaces(faces)
 {
     qDebug() << "ToolHolderModelGeometryItem: Creating with index" << index;
 }
@@ -39,7 +40,8 @@ ToolHolderGeometry::ToolHolderGeometry(const ToolHolderGeometry& other)
       mIndex(other.mIndex),
       mHeight(other.mHeight),
       mUpperDiameter(other.mUpperDiameter),
-      mLowerDiameter(other.mLowerDiameter)
+      mLowerDiameter(other.mLowerDiameter),
+      mFaces(other.mFaces)
 {
     qDebug() << "ToolHolderModelGeometryItem: Creating ToolHolderGeometry(other&)"
              << "ID" << getID()
@@ -47,7 +49,8 @@ ToolHolderGeometry::ToolHolderGeometry(const ToolHolderGeometry& other)
              << "IDX" <<  mIndex
              << "H" <<  mHeight
              << "L_D" <<  mLowerDiameter
-             << "U_D" <<  mUpperDiameter;
+             << "U_D" <<  mUpperDiameter
+             << "Faces" << mFaces;
 }
 
 bool ToolHolderGeometry::operator==(const ToolHolderGeometry& other)
@@ -103,4 +106,14 @@ int ToolHolderGeometry::getToolHolderID() const
 ToolHolder* ToolHolderGeometry::getParentHandle() const
 {
     return mParentHandle;
+}
+
+int ToolHolderGeometry::getFaces() const
+{
+    return mFaces;
+}
+
+void ToolHolderGeometry::setFaces(int faces)
+{
+    mFaces = faces;
 }

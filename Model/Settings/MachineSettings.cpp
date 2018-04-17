@@ -38,7 +38,9 @@ MachineSettings::MachineSettings(Profile* profile,int id)
       mUserCmd2(""),
       mUserCmd3(""),
       mUserCmd4(""),
-      mHeightMapProbeFeed(1.0)
+      mHeightMapProbeFeed(1.0),
+      mWorkAreaWidth(1),
+      mWorkAreaHeight(1)
 {
 
     qDebug() << "MachineSettings: Constructing";
@@ -202,4 +204,24 @@ int MachineSettings::getHeightMapProbeFeed() const
 void MachineSettings::setHeightMapProbeFeed(int heightMapProbeFeed)
 {
     mHeightMapProbeFeed = heightMapProbeFeed;
+}
+
+int MachineSettings::getWorkAreaWidth() const
+{
+    return mWorkAreaWidth;
+}
+
+void MachineSettings::setWorkAreaWidth(int workAreaWidth)
+{
+    mWorkAreaWidth = workAreaWidth;
+}
+
+int MachineSettings::getWorkAreaHeight() const
+{
+    return mWorkAreaHeight;
+}
+
+void MachineSettings::setWorkAreaHeight(int workAreaHeight)
+{
+    mWorkAreaHeight = workAreaHeight;
 }

@@ -94,6 +94,8 @@ private slots:
     void onUserCommand3ValueChanged(QString);
     void onUserCommand4ValueChanged(QString);
     void onHeightMapProbingFeedValueChanged(QString);
+    void onWorkAreaWidthValueChanged(int);
+    void onWorkAreaHeightValueChanged(int);
 private:
     Ui::MachineForm mUi;
     SqlSettingsModel* mSettingsModelHandle;

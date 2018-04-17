@@ -117,7 +117,8 @@ SOURCES +=\
     Model/Settings/InterfaceSettings.cpp \
     Model/Settings/MachineSettings.cpp \
     Controller/Settings/NameDialogController.cpp \
-    Model/Gcode/GcodeMarkerListModel.cpp
+    Model/Gcode/GcodeMarkerListModel.cpp \
+    View/Drawers/WorkAreaDrawer.cpp
 
 HEADERS  += \
     Model/Gcode/Parser/ArcProperties.h \
@@ -194,7 +195,8 @@ HEADERS  += \
     Model/Settings/InterfaceSettings.h \
     Model/Settings/MachineSettings.h \
     Controller/Settings/NameDialogController.h \
-    Model/Gcode/GcodeMarkerListModel.h
+    Model/Gcode/GcodeMarkerListModel.h \
+    View/Drawers/WorkAreaDrawer.h
 
 FORMS    += \
     View/AboutForm.ui \

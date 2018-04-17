@@ -171,7 +171,7 @@ void IniFileSettingsModel::initialiseDefaults()
     // Settings::SERIAL
     mSettings->beginGroup(Settings::SERIAL);
     mSettings->setValue(Settings::SERIAL_PORT_NAME,"");
-    mSettings->setValue(Settings::SERIAL_BAUD_RATE,SerialBaudRate::BAUD_115200);
+    mSettings->setValue(Settings::SERIAL_BAUD_RATE,QSerialPort::Baud115200);
     mSettings->endGroup();
     // Settings::TOOL
     mSettings->beginGroup(Settings::TOOL);

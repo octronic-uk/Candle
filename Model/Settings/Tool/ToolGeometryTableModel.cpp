@@ -27,7 +27,7 @@ ToolGeometryTableModel::ToolGeometryTableModel(Tool* parentTool, QObject *parent
       mSelectedGeometryHandle(nullptr),
       mParentHandle(parentTool)
 {
-    mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter";
+    mTableHeaders << "Height" << "Upper Diameter" << "Lower Diameter" << "Faces";
 }
 
 QVariant ToolGeometryTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -73,6 +73,8 @@ QVariant ToolGeometryTableModel::data(const QModelIndex &index, int role) const
                 return mData.at(index.row())->getUpperDiameter();
             case 2: // Lower Diameter
                 return mData.at(index.row())->getLowerDiameter();
+            case 3: // Faces
+                return mData.at(index.row())->getFaces();
         }
     }
     return QVariant();
@@ -95,6 +97,9 @@ bool ToolGeometryTableModel::setData(const QModelIndex &index, const QVariant &v
                 case 2: // Lower Diameter
                     mData[index.row()]->setLowerDiameter(value.toFloat());
                     break;
+                case 3: // Faces
+                    mData[index.row()]->setFaces(value.toInt());
+
             }
             emit geometryUpdatedSignal(mData[index.row()].data());
             emit dataChanged(index, index, QVector<int>() << role);

@@ -26,6 +26,7 @@
 #include "View/Drawers/GcodeDrawer.h"
 #include "View/Drawers/ToolDrawer.h"
 #include "View/Drawers/GridDrawer.h"
+#include "View/Drawers/WorkAreaDrawer.h"
 #include "View/Drawers/SelectionDrawer.h"
 #include "View/Drawers/HeightMapGridDrawer.h"
 #include "View/Drawers/HeightMapBorderDrawer.h"
@@ -74,6 +75,7 @@ public slots:
     void onSettingsModelReady(SqlSettingsModel*);
 private slots:
 
+    void onFollowToolButtonToggled(bool toggled);
 private:
     int mButtonPadding;
     VisualisationForm mUi;
@@ -84,10 +86,12 @@ private:
     OriginDrawer mOriginDrawer;
     GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
+    WorkAreaDrawer mWorkAreaDrawer;
     SelectionDrawer mSelectionDrawer;
     HeightMapBorderDrawer mHeightMapBorderDrawer;
     HeightMapGridDrawer mHeightMapGridDrawer;
     HeightMapInterpolationDrawer mHeightMapInterpolationDrawer;
+    bool mFollowTool;
 
     // Parsers
     QSharedPointer<GcodeViewParser> mViewParser;

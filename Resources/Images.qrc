@@ -102,5 +102,6 @@
         <file>Images/SVG/sliders-h.svg</file>
         <file>Images/SVG/tachometer-alt.svg</file>
         <file>Images/PNG/splash.png</file>
+        <file>Images/SVG/search.svg</file>
     </qresource>
 </RCC>

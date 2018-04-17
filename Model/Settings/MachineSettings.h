@@ -75,6 +75,12 @@ public:
     int getHeightMapProbeFeed() const;
     void setHeightMapProbeFeed(int heightMapProbeFeed);
 
+    int getWorkAreaWidth() const;
+    void setWorkAreaWidth(int workAreaWidth);
+
+    int getWorkAreaHeight() const;
+    void setWorkAreaHeight(int workAreaHeight);
+
 private:
     Profile* mParentHandle;
     int mQueryPeriod;
@@ -92,4 +98,6 @@ private:
     QString mUserCmd3;
     QString mUserCmd4;
     int mHeightMapProbeFeed;
+    int mWorkAreaWidth;
+    int mWorkAreaHeight;
 };

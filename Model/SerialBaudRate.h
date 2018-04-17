@@ -18,44 +18,17 @@
 
 #pragma once
 
-#include <QMetaType>
 #include <QList>
+#include <QSerialPort>
 
-enum SerialBaudRate
+static QList<int> SERIAL_BAUDS =
 {
-    BAUD_110 = 110,
-    BAUD_300 = 300,
-    BAUD_600 = 600 ,
-    BAUD_1200 = 1200,
-    BAUD_2400 = 2400,
-    BAUD_4800 = 4000,
-    BAUD_9600 = 9600,
-    BAUD_14400 = 14400,
-    BAUD_19200 = 19200,
-    BAUD_38400 = 38400,
-    BAUD_57600 = 57600,
-    BAUD_115200 = 115200,
-    BAUD_128000 = 128000,
-    BAUD_256000 = 256000
+    QSerialPort::Baud1200,
+    QSerialPort::Baud2400,
+    QSerialPort::Baud4800,
+    QSerialPort::Baud9600,
+    QSerialPort::Baud19200,
+    QSerialPort::Baud38400,
+    QSerialPort::Baud57600,
+    QSerialPort::Baud115200
 };
-
-static QList<int> SERIAL_BAUD_RATES =
-{
-    BAUD_110,
-    BAUD_300,
-    BAUD_600,
-    BAUD_1200,
-    BAUD_2400,
-    BAUD_4800,
-    BAUD_9600,
-    BAUD_14400,
-    BAUD_19200,
-    BAUD_38400,
-    BAUD_57600,
-    BAUD_115200,
-    BAUD_128000,
-    BAUD_256000
-
-};
-
-Q_DECLARE_METATYPE(SerialBaudRate)

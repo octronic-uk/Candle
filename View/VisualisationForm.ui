@@ -222,6 +222,26 @@
         </widget>
        </item>
        <item>
+        <widget class="QToolButton" name="toggleFollowToolButton">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>PushButton</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/SVG/search.svg</normaloff>:/Images/SVG/search.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
