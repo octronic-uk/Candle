@@ -12,7 +12,7 @@ ToolDrawer::ToolDrawer()
       mToolPosition(QVector3D(0, 0, 0)),
       mRotationAngle(0.0),
       mToolAngle(0.0),
-      mColor(QColor("Orange")),
+      mColor(QColor("DarkGray")),
       mSettingsModelHandle(nullptr),
       mToolHandle(nullptr)
 
@@ -26,101 +26,11 @@ ToolDrawer::~ToolDrawer()
     qDebug() << "ToolDrawer: Destructing";
 }
 
-void ToolDrawer::doItTheOldWay()
-{
-    const int arcs = 4;
-
-    // Prepare vertex
-    VertexData vertex;
-    vertex.color = Util::colorToVector(mColor);
-    vertex.start = QVector3D(0,0,0);
-
-    float pi = static_cast<float>(M_PI);
-
-    // Draw lines
-    for (int i = 0; i < arcs; i++)
-    {
-        float x = mToolPosition.x() + mToolDiameter / 2.0f * cos(mRotationAngle / 180.0f * pi + (2.0f * pi / arcs) * i);
-        float y = mToolPosition.y() + mToolDiameter / 2.0f * sin(mRotationAngle / 180.0f * pi + (2.0f * pi / arcs) * i);
-
-        // Side lines
-        vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
-        mLines.append(vertex);
-        vertex.position = QVector3D(x, y, mToolPosition.z() + mToolLength);
-        mLines.append(vertex);
-
-        // Bottom lines
-        vertex.position = QVector3D(
-            mToolPosition.x(), mToolPosition.y(), mToolPosition.z()
-        );
-
-        mLines.append(vertex);
-        vertex.position = QVector3D(x, y, mToolPosition.z() + mEndLength);
-        mLines.append(vertex);
-
-        // Top lines
-        vertex.position = QVector3D(
-            mToolPosition.x(),
-            mToolPosition.y(),
-            mToolPosition.z() + mToolLength
-        );
-
-        mLines.append(vertex);
-        vertex.position = QVector3D(x, y, mToolPosition.z() + mToolLength);
-        mLines.append(vertex);
-
-        // Zero Z lines
-        vertex.position = QVector3D(mToolPosition.x(), mToolPosition.y(), 0);
-        mLines.append(vertex);
-        vertex.position = QVector3D(x, y, 0);
-        mLines.append(vertex);
-    }
-
-    // Draw circles
-    // Bottom
-    mLines += createCircle(
-        QVector3D(
-            mToolPosition.x(), mToolPosition.y(),
-            mToolPosition.z() + mEndLength
-        ),
-        mToolDiameter / 2, 20, vertex.color
-    );
-
-    // Top
-    mLines += createCircle(
-        QVector3D(
-            mToolPosition.x(), mToolPosition.y(),
-            mToolPosition.z() + mToolLength
-        ),
-        mToolDiameter / 2, 20, vertex.color
-    );
-
-    // Zero Z circle
-    if (mEndLength == 0)
-    {
-        mLines += createCircle(
-            QVector3D(mToolPosition.x(), mToolPosition.y(), 0),
-            mToolDiameter / 2, 20, vertex.color
-        );
-    }
-}
-
-void ToolDrawer::doItTheNewWay()
-{
-    if (!mToolHandle)
-    {
-        //qDebug() << "ToolDrawer: Can't do it the new way, no tool handle set";
-        return;
-    }
-    generateToolGeometry();
-    generateToolHolderGeometry();
-}
-
 void ToolDrawer::generateToolGeometry()
 {
    //qDebug() << "ToolDrawer: Doing it the new way...";
    QVector4D color = Util::colorToVector(mColor);
-   color.setW(0.5f);
+   color.setW(1.0f);
 
    float currentZ = 0;
 
@@ -241,6 +151,11 @@ void ToolDrawer::generateToolGeometry()
         }
 
         currentZ += height;
+        // Fade away
+        color.setX(color.x() * 1.1f);
+        color.setY(color.y() * 1.1f);
+        color.setZ(color.z() * 1.1f);
+
    }
 }
 
@@ -254,7 +169,7 @@ void ToolDrawer::generateToolHolderGeometry()
    }
 
    //qDebug() << "ToolDrawer: Doing it the new way...";
-   QVector4D color(0.25f,0.25f,0.25f,0.75f);
+   QVector4D color(0.1f,0.1f,0.1f,1.0f);
 
    float currentZ = mToolHandle->getTotalHeight();
 
@@ -373,6 +288,11 @@ void ToolDrawer::generateToolHolderGeometry()
         }
 
         currentZ += height;
+
+        // Fade away
+        color.setX(color.x() * 1.1f);
+        color.setY(color.y() * 1.1f);
+        color.setZ(color.z() * 1.1f);
    }
 }
 
@@ -382,8 +302,13 @@ bool ToolDrawer::updateData()
     mPoints.clear();
     mTriangles.clear();
 
-    //doItTheOldWay();
-    doItTheNewWay();
+    if (!mToolHandle)
+    {
+        return true;
+    }
+
+    generateToolGeometry();
+    generateToolHolderGeometry();
 
     return true;
 }
@@ -418,39 +343,6 @@ void ToolDrawer::setColor(const QColor &color)
     mColor = color;
 }
 
-
-QVector<VertexData> ToolDrawer::createCircle(QVector3D center, float radius, int arcs, QVector4D color)
-{
-    // Vertices
-    QVector<VertexData> circle;
-
-    // Prepare vertex
-    VertexData vertex;
-    vertex.color = color;
-    vertex.start = QVector3D(sNan, sNan, sNan);
-
-    // Create line loop
-    for (int i = 0; i <= arcs; i++)
-    {
-        float angle = 2 * static_cast<float>(M_PI) * i / arcs;
-        float x = center.x() + radius * cos(angle);
-        float y = center.y() + radius * sin(angle);
-
-        if (i > 1)
-        {
-            circle.append(circle.last());
-        }
-        else if (i == arcs)
-        {
-            circle.append(circle.first());
-        }
-
-        vertex.position = QVector3D(x, y, center.z());
-        circle.append(vertex);
-    }
-
-    return circle;
-}
 
 float ToolDrawer::toolDiameter() const
 {

@@ -544,6 +544,10 @@ void GrblMachineModel::stopStatusTimer()
 
 void GrblMachineModel::updateStatus(GrblResponse response)
 {
+    /*qDebug() << "GrblMachineModel: Updating status from response"
+             << response.getData();
+             */
+
     static QRegExp statusRegex("<([^|<]\\w+)\\|");
 
     if (statusRegex.indexIn(response.getData()) >=0)

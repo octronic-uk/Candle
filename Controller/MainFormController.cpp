@@ -363,6 +363,12 @@ void MainFormController::setupJogFormSignals()
         mUi.jogFormController, SIGNAL(statusBarUpdateSignal(QString)),
         this, SLOT(onStatusBarUpdate(QString))
     );
+    connect(
+        mUi.jogFormController,
+        SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel,
+        SLOT(onGcodeCommandManualSend(GcodeCommand*))
+    );
 }
 
 void MainFormController::setupConsoleFormSignals()
@@ -461,6 +467,9 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             break;
         case GrblMachineState::Door:
             mUi.stateFormController->setClass(StateClass::Danger);
+            break;
+        case GrblMachineState::Jog:
+            mUi.stateFormController->setClass(StateClass::Warning);
             break;
 
     }

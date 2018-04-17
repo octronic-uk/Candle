@@ -144,6 +144,28 @@ GcodeCommand* GcodeCommand::CyclePauseResume()
     return &gc;
 }
 
+GcodeCommand* GcodeCommand::JogCommand
+(
+    double x, double y, double z,
+    int feedRate,
+    bool inches,
+    bool machineCoordinates
+)
+{
+    static QString jogString = "$J=%1 %2 X%3 Y%4 Z%5 F%6";
+    static GcodeCommand gc;
+    gc = GcodeCommand(
+        jogString
+            .arg(inches?"G20":"G21")
+            .arg(machineCoordinates?"G53":"G91")
+            .arg(QString::number(x,'g',3))
+            .arg(QString::number(y,'g',3))
+            .arg(QString::number(z,'g',3))
+            .arg(feedRate)
+    );
+    return &gc;
+}
+
 
 bool GcodeCommand::operator==(const GcodeCommand& other)
 {

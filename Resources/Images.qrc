@@ -103,5 +103,6 @@
         <file>Images/SVG/tachometer-alt.svg</file>
         <file>Images/PNG/splash.png</file>
         <file>Images/SVG/search.svg</file>
+        <file>Images/SVG/gamepad.svg</file>
     </qresource>
 </RCC>

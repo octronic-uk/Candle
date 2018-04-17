@@ -33,7 +33,8 @@ enum class GrblMachineState
     Check,
     Door,
     Locked,
-    Unlocked
+    Unlocked,
+    Jog
 };
 
 static QString stateToString(GrblMachineState state)
@@ -62,6 +63,8 @@ static QString stateToString(GrblMachineState state)
             return "Locked";
         case GrblMachineState::Unlocked:
             return "Unlocked";
+        case GrblMachineState::Jog:
+            return "Jog";
     }
     return "Unknown";
 }
@@ -106,6 +109,10 @@ static GrblMachineState stateFromString(QString stateStr)
     else if (stateStr.toUpper() == "UNLOCKED")
     {
         return GrblMachineState::Unlocked;
+    }
+    else if (stateStr.toUpper() == "JOG")
+    {
+        return GrblMachineState::Jog;
     }
 
     return GrblMachineState::Unknown;

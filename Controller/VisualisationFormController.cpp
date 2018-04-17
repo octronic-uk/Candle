@@ -54,7 +54,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.glwVisualizer->addDrawable(&mOriginDrawer);
     mUi.glwVisualizer->addDrawable(&mCodeDrawer);
     mUi.glwVisualizer->addDrawable(&mToolDrawer);
-    mUi.glwVisualizer->addDrawable(&mWorkAreaDrawer);
+//    mUi.glwVisualizer->addDrawable(&mWorkAreaDrawer);
     mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
     /*
     mUi.glwVisualizer->addDrawable(&mProbeDrawer);
@@ -377,17 +377,24 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
     if (mSettingsModelHandle)
     {
         mToolDrawer.setSettingsModelHandle(mSettingsModelHandle);
+        Profile* currentProfile =  mSettingsModelHandle->getCurrentProfileHandle();
+        Tool* tool = currentProfile->getToolListModelHandle()->getData(0);
+        MachineSettings* machine = currentProfile->getMachineSettingsHandle();
 
-        Tool* tool = mSettingsModelHandle
-               ->getCurrentProfileHandle()
-               ->getToolListModelHandle()
-               ->getData(0);
         if (tool)
         {
             // TODO - Set the current tool dynamically based to tool change events
             qDebug() << "VisualisationFormController: settings tool";
             mToolDrawer.setToolHandle(tool);
             mToolDrawer.update();
+        }
+
+        if (machine)
+        {
+            int width = machine->getWorkAreaWidth();
+            int height = machine->getWorkAreaHeight();
+            // Choose biggest
+            mGridDrawer.setSize(width > height ? width : height);
         }
     }
 }

@@ -91,6 +91,12 @@ public:
     static GcodeCommand* ZeroZCommand();
     static GcodeCommand* CyclePauseResume();
 
+    static GcodeCommand* JogCommand
+    (
+        double x, double y, double z,
+        int feedRate, bool inches, bool machineCoordinates
+    );
+
     bool operator==(const GcodeCommand& other);
 
     bool isEmpty();

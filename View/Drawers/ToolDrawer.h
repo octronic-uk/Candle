@@ -44,9 +44,6 @@ public:
     void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
 protected:
-    void doItTheOldWay();
-    void doItTheNewWay();
-    QVector<VertexData> createCircle(QVector3D center, float radius, int arcs, QVector4D color);
     float normalizeAngle(float angle);
     bool updateData() override;
 

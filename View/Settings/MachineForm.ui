@@ -291,7 +291,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="workAreaWidthSpinBox"/>
+         <widget class="QSpinBox" name="workAreaWidthSpinBox">
+          <property name="maximum">
+           <number>999</number>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="workAreaHeightLabel">
@@ -301,7 +305,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="workAreaHeightSpinBox"/>
+         <widget class="QSpinBox" name="workAreaHeightSpinBox">
+          <property name="maximum">
+           <number>999</number>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

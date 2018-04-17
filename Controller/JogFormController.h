@@ -21,6 +21,8 @@
 #include "AbstractFormController.h"
 #include "ui_JogForm.h"
 
+class GcodeCommand;
+
 using namespace Ui;
 
 class JogFormController : public AbstractFormController
@@ -32,45 +34,45 @@ public:
 
     void blockJogForRapidMovement(bool repeated = false);
     void setFormActive(bool active) override;
-
     void initialise() override;
-
-signals:
-    void statusBarUpdateSignal(QString);
-public slots:
-    // Jog
-    void onCmdYPlusClicked();
-    void onCmdYMinusClicked();
-    void onCmdXPlusClicked();
-    void onCmdXMinusClicked();
-    void onCmdZPlusClicked();
-    void onCmdZMinusClicked();
-    void onKeyboardControlToggled(bool checked);
-    void onJogPresetButtonToggled(bool);
-
-private slots:
-    void onJogTimer();
-    void onCmdJogStepClicked();
-private:
-    JogForm mUi;
-    double mJogDelta;
-    double mJogDistance;
-    // Flags
-    bool mIsSettingZeroXY = false;
-    bool mIsSettingZeroZ = false;
-    bool mIsHoming = false;
-    // Keyboard
-    bool mKeyPressed = false;
-    bool mJogBlock = false;
-    bool mAbsoluteCoordinates;
-    bool mStoredKeyboardControl;
-    bool keyIsMovement(int key);
-
-    // AbstractFormController interface
-public:
     void setupSignalSlots() override;
     double getJogDelta() const;
     void setJogDelta(double jogDelta);
     double getJogDistance() const;
     void setJogDistance(double jogDistance);
+
+signals:
+    void statusBarUpdateSignal(QString);
+    void gcodeCommandManualSendSignal(GcodeCommand*);
+
+private slots:
+    void onJogDirectionButtonClicked();
+
+    void onStepPresetButtonClicked();
+    void onFeedRateValueChanged(int value);
+    void onStepValueChanged(double value);
+
+    void onGotoXButtonClicked();
+    void onGotoYButtonClicked();
+    void onGotoZButtonClicked();
+
+
+    void onKeyboardControlToggled(bool checked);
+    void onJoystickControlToggled(bool checked);
+
+private:
+    JogForm mUi;
+    double mJogDelta;
+    double mJogDistance;
+    int mFeedRate;
+
+    // Keyboard
+    bool mKeyboardControl;
+    bool mJoystickControl;
+
+private: // functions
+    bool keyIsMovement(int key);
+    double getStepValue();
+    int getFeedRate();
+
 };

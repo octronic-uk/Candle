@@ -19,13 +19,16 @@
 #include <QPushButton>
 #include <QtDebug>
 
+#include "Model/Gcode/GcodeCommand.h"
+
 JogFormController::JogFormController(QWidget *parent)
     : AbstractFormController(parent),
-      mJogDelta(1.0)
+      mJogDelta(1.0),
+      mKeyboardControl(false),
+      mJoystickControl(false)
 {
     qDebug() << "JogFormController: Constructing";
     mUi.setupUi(this);
-    mUi.jogStepSpinner->setLocale(QLocale::C);
     setupSignalSlots();
 }
 
@@ -36,53 +39,15 @@ JogFormController::~JogFormController()
 
 void JogFormController::onKeyboardControlToggled(bool checked)
 {
-    /*
-    mUi.grpJog->setProperty("overrided", checked);
-    style()->unpolish(mUi.grpJog);
-    mUi.grpJog->ensurePolished();
-
-    // Store/restore coordinate system
-    if (checked) {
-        sendCommand("$G", -2, mSettingsForm->showUICommands());
-        if (!mUi.grpJog->isChecked()) mUi.grpJog->setTitle(tr("Jog") + QString(tr(" (%1)")).arg(mUi.txtJogStep->text()));
-    } else {
-        if (m_absoluteCoordinates) sendCommand("G90", -1, mSettingsForm->showUICommands());
-        mUi.grpJog->setTitle(tr("Jog"));
-    }
-
-    if (!m_processingFile) m_storedKeyboardControl = checked;
-
-    updateControlsState();
-    */
+   mKeyboardControl = checked;
 }
 
-void JogFormController::blockJogForRapidMovement(bool repeated)
+void JogFormController::onJoystickControlToggled(bool checked)
 {
-    Q_UNUSED(repeated)
-    /*
-    mJogBlock = true;
-
-    const double acc = mSettingsForm->acceleration();    // Acceleration mm/sec^2
-    double v = mSettingsForm->rapidSpeed() / 60;         // Rapid speed mm/sec
-    double at = v / acc;                                // Acceleration time
-    double s = acc * at * at / 2;                       // Distance on acceleration
-    double time;
-    double step = mUi.txtJogStep->text().toDouble();
-
-    if (repeated) {
-        time = step / v;
-    } else {
-        if (2 * s > step) {
-            time = sqrt(step / acc);
-        } else {
-            time = (step - 2 * s) / v + 1 * at;
-        }
-    }
-
-//    qDebug() << QString("acc: %1; v: %2; at: %3; s: %4; time: %5").arg(acc).arg(v).arg(at).arg(s).arg(time);
-    QTimer::singleShot(time * 1000, Qt::PreciseTimer, this, SLOT(onJogTimer()));
-    */
+    mJoystickControl=checked;
 }
+
+
 
 void JogFormController::setFormActive(bool active)
 {
@@ -98,121 +63,8 @@ void JogFormController::initialise()
 
 }
 
-
-void JogFormController::onCmdYPlusClicked()
+void JogFormController::onStepPresetButtonClicked()
 {
-    // Query parser state to restore coordinate system, hide from table and console
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0Y" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-void JogFormController::onCmdYMinusClicked()
-{
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0Y-" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-void JogFormController::onCmdXPlusClicked()
-{
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0X" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-void JogFormController::onCmdXMinusClicked()
-{
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0X-" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-void JogFormController::onCmdZPlusClicked()
-{
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0Z" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-void JogFormController::onCmdZMinusClicked()
-{
-//    sendCommand("$G", -2, mSettingsForm->showUICommands());
-//    sendCommand("G91G0Z-" + mUi.txtJogStep->text(), -1, mSettingsForm->showUICommands());
-}
-
-
-void JogFormController::onCmdJogStepClicked()
-{
-    /*
-    mUi.txtJogStep->setValue(static_cast<QPushButton*>(sender())->text().toDouble());
-
-    foreach (StyledToolButton* button, mUi.grpJog->findChildren<StyledToolButton*>(QRegExp("cmdJogStep\\d")))
-    {
-        button->setChecked(false);
-    }
-    static_cast<QPushButton*>(sender())->setChecked(true);
-    */
-}
-
-double JogFormController::getJogDistance() const
-{
-    return mJogDistance;
-}
-
-void JogFormController::setJogDistance(double jogDistance)
-{
-    mJogDistance = jogDistance;
-}
-
-double JogFormController::getJogDelta() const
-{
-    return mJogDelta;
-}
-
-void JogFormController::setJogDelta(double jogDelta)
-{
-    mJogDelta = jogDelta;
-}
-
-
-void JogFormController::onJogTimer()
-{
-    mJogBlock = false;
-}
-
-// Jog
-
-bool JogFormController::keyIsMovement(int key)
-{
-    return key == Qt::Key_4 || key == Qt::Key_6 || key == Qt::Key_8 || key == Qt::Key_2 || key == Qt::Key_9 || key == Qt::Key_3;
-}
-
-void JogFormController::setupSignalSlots()
-{
-    qDebug() << "JogFormController: Setup Signals/Slots";
-
-    connect(
-        mUi.jogPreset_0_01,SIGNAL(toggled(bool)),
-        this, SLOT(onJogPresetButtonToggled(bool))
-    );
-    connect(
-        mUi.jogPreset_0_1,SIGNAL(toggled(bool)),
-        this, SLOT(onJogPresetButtonToggled(bool))
-    );
-    connect(
-        mUi.jogPreset_1,SIGNAL(toggled(bool)),
-        this, SLOT(onJogPresetButtonToggled(bool))
-    );
-    connect(
-        mUi.jogPreset_10,SIGNAL(toggled(bool)),
-        this, SLOT(onJogPresetButtonToggled(bool))
-    );
-    connect(
-        mUi.jogPreset_100,SIGNAL(toggled(bool)),
-        this, SLOT(onJogPresetButtonToggled(bool))
-    );
-}
-
-void JogFormController::onJogPresetButtonToggled(bool checked)
-{
-    Q_UNUSED(checked)
-
     if (mUi.jogPreset_0_01->isChecked())
     {
         mJogDelta = 0.01;
@@ -234,7 +86,204 @@ void JogFormController::onJogPresetButtonToggled(bool checked)
         mJogDelta = 100.0;
     }
 
-    mUi.jogStepSpinner->setSingleStep(mJogDelta);
+    mUi.stepSpinner->setSingleStep(mJogDelta);
+    mUi.stepSpinner->setValue(mJogDelta);
 
     emit statusUpdateSignal(QString("Jog by %1 mm").arg(mJogDelta));
+}
+
+void JogFormController::onFeedRateValueChanged(int value)
+{
+    mFeedRate = value;
+}
+
+void JogFormController::onStepValueChanged(double value)
+{
+    emit statusUpdateSignal(QString("Jog by %1 mm").arg(value));
+}
+
+void JogFormController::onGotoXButtonClicked()
+{
+
+}
+
+void JogFormController::onGotoYButtonClicked()
+{
+
+}
+
+void JogFormController::onGotoZButtonClicked()
+{
+
+}
+
+double JogFormController::getJogDistance() const
+{
+    return mJogDistance;
+}
+
+void JogFormController::setJogDistance(double jogDistance)
+{
+    mJogDistance = jogDistance;
+}
+
+void JogFormController::onJogDirectionButtonClicked()
+{
+    QObject* senderBtn = sender();
+
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+
+    // Top Row
+    if (senderBtn == mUi.jogXMinusYPlus)
+    {
+        x = -getStepValue();
+        y = getStepValue();
+    }
+    else if (senderBtn == mUi.jogYPlus)
+    {
+        y = getStepValue();
+    }
+    else if (senderBtn == mUi.jogXPlusYPlus)
+    {
+        x = getStepValue();
+        y = getStepValue();
+    }
+    // Middle Row
+    else if (senderBtn == mUi.jogXMinus)
+    {
+        x = -getStepValue();
+    }
+    else if (senderBtn == mUi.jogOrigin)
+    {
+        // TODO - origin command
+    }
+    else if (senderBtn == mUi.jogXPlus)
+    {
+       x = getStepValue();
+    }
+    // Bottom Row
+    else if (senderBtn == mUi.jogXMinusYMinus)
+    {
+        x = -getStepValue();
+        y = -getStepValue();
+    }
+    else if (senderBtn == mUi.jogYMinus)
+    {
+        y = -getStepValue();
+    }
+    else if (senderBtn == mUi.jogXPlusYMinus)
+    {
+        x = getStepValue();
+        y = -getStepValue();
+    }
+    // Z Axis
+    else if (senderBtn == mUi.jogZPlus)
+    {
+        z = getStepValue();
+    }
+    else if (senderBtn == mUi.jogZMinus)
+    {
+        z = -getStepValue();
+    }
+
+    qDebug() << QString("JogFormController: Stepping: X:%1 Y:%2 Z:%3 @ F:%4")
+                    .arg(x)
+                    .arg(y)
+                    .arg(z)
+                    .arg(getFeedRate()
+                );
+
+    GcodeCommand* jogCmd = GcodeCommand::JogCommand(x,y,z,getFeedRate(),false,false);
+
+    qDebug() << "JogFormController:" << jogCmd->getCommand();
+
+    emit gcodeCommandManualSendSignal(jogCmd);
+}
+
+double JogFormController::getJogDelta() const
+{
+    return mJogDelta;
+}
+
+void JogFormController::setJogDelta(double jogDelta)
+{
+    mJogDelta = jogDelta;
+}
+
+// Jog
+
+bool JogFormController::keyIsMovement(int key)
+{
+    return key == Qt::Key_4 || key == Qt::Key_6 || key == Qt::Key_8 || key == Qt::Key_2 || key == Qt::Key_9 || key == Qt::Key_3;
+}
+
+double JogFormController::getStepValue()
+{
+    return mUi.stepSpinner->value();
+}
+
+int JogFormController::getFeedRate()
+{
+   return mUi.feedRateSpinBox->value();
+}
+
+void JogFormController::setupSignalSlots()
+{
+    qDebug() << "JogFormController: Setup Signals/Slots";
+
+    // Jog buttons
+    // Top Row
+    connect(mUi.jogXMinusYPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogYPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogXPlusYPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    // Middle Row
+    connect(mUi.jogXMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogOrigin,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogXPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    // Bottom Row
+    connect(mUi.jogXMinusYMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogYMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogXPlusYMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    // Z Axis
+    connect(mUi.jogZPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogZMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+
+    // Step Spinner
+    connect(mUi.stepSpinner,SIGNAL(valueChanged(double)),this,SLOT(onStepValueChanged(double)));
+
+    // Step Preset Buttons
+    connect(
+        mUi.jogPreset_0_01,SIGNAL(clicked()),
+        this, SLOT(onStepPresetButtonClicked())
+    );
+    connect(
+        mUi.jogPreset_0_1,SIGNAL(clicked()),
+        this, SLOT(onStepPresetButtonClicked())
+    );
+    connect(
+        mUi.jogPreset_1,SIGNAL(clicked()),
+        this, SLOT(onStepPresetButtonClicked())
+    );
+    connect(
+        mUi.jogPreset_10,SIGNAL(clicked()),
+        this, SLOT(onStepPresetButtonClicked())
+    );
+    connect(
+        mUi.jogPreset_100,SIGNAL(clicked()),
+        this, SLOT(onStepPresetButtonClicked())
+    );
+
+    // Feed Rate Spinner
+    connect(mUi.feedRateSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onFeedRateValueChanged(int)));
+
+    // Goto x,y,z
+    connect(mUi.gotoXButton,SIGNAL(clicked()),this,SLOT(onGotoXButtonClicked()));
+    connect(mUi.gotoYButton,SIGNAL(clicked()),this,SLOT(onGotoYButtonClicked()));
+    connect(mUi.gotoZButton,SIGNAL(clicked()),this,SLOT(onGotoZButtonClicked()));
+
+    // Keyboard/Joystic control
+    connect(mUi.keyboardControlToolButton,SIGNAL(toggled(bool)),this,SLOT(onKeyboardControlToggled(bool)));
+    connect(mUi.joystickControlToolButton,SIGNAL(toggled(bool)),this,SLOT(onJoystickControlToggled(bool)));
 }

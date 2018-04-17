@@ -86,7 +86,7 @@ private:
     OriginDrawer mOriginDrawer;
     GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
-    WorkAreaDrawer mWorkAreaDrawer;
+    //WorkAreaDrawer mWorkAreaDrawer;
     SelectionDrawer mSelectionDrawer;
     HeightMapBorderDrawer mHeightMapBorderDrawer;
     HeightMapGridDrawer mHeightMapGridDrawer;
