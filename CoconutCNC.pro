@@ -118,7 +118,9 @@ SOURCES +=\
     Model/Settings/MachineSettings.cpp \
     Controller/Settings/NameDialogController.cpp \
     Model/Gcode/GcodeMarkerListModel.cpp \
-    View/Drawers/WorkAreaDrawer.cpp
+    View/Drawers/WorkAreaDrawer.cpp \
+    Controller/Settings/GrblConfigurationFormController.cpp \
+    Model/Grbl/GrblConfigurationModel.cpp
 
 HEADERS  += \
     Model/Gcode/Parser/ArcProperties.h \
@@ -196,7 +198,9 @@ HEADERS  += \
     Model/Settings/MachineSettings.h \
     Controller/Settings/NameDialogController.h \
     Model/Gcode/GcodeMarkerListModel.h \
-    View/Drawers/WorkAreaDrawer.h
+    View/Drawers/WorkAreaDrawer.h \
+    Controller/Settings/GrblConfigurationFormController.h \
+    Model/Grbl/GrblConfigurationModel.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -217,7 +221,8 @@ FORMS    += \
     View/Settings/InterfaceForm.ui \
     View/Settings/MachineForm.ui \
     View/Settings/ToolForm.ui \
-    View/Settings/NameDialog.ui
+    View/Settings/NameDialog.ui \
+    View/Settings/GrblConfigurationForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 #DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

@@ -74,7 +74,6 @@ public:
     GcodeCommand(const GcodeCommand& other);
     GcodeCommand(const GcodeCommand* other);
     GcodeCommand(char rawCmd);
-    ~GcodeCommand();
 
     static long ID;
     static GcodeCommand* AbsoluteCoordinatesCommand();
@@ -91,6 +90,8 @@ public:
     static GcodeCommand* ZeroZCommand();
     static GcodeCommand* CyclePauseResume();
     static GcodeCommand* StopCommand();
+    static GcodeCommand* GetConfigurationCommand();
+    static GcodeCommand* SetConfigurationCommand(int param, QString value);
 
     static GcodeCommand* JogCommand
     (

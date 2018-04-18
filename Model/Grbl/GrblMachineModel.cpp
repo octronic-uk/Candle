@@ -158,7 +158,7 @@ void GrblMachineModel::parseGrblVersion(const GrblResponse& response)
 
 void GrblMachineModel::processResponse(const GrblResponse& response)
 {
-    //qDebug() << "GrblMachineModel: Process Response";
+//    qDebug() << "GrblMachineModel: Process Response" << response.getData();
 
     mLastState = mState;
     GcodeCommand* next = nullptr;
@@ -213,6 +213,9 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             //stopStatusTimer();
             emit errorSignal(mErrorString);
             emit appendResponseToConsoleSignal(response);
+            break;
+        case GrblResponseType::Configuration:
+            parseConfigurationResponse(response);
             break;
     };
 
@@ -561,6 +564,23 @@ void GrblMachineModel::updateStatus(GrblResponse response)
             emit machineStateUpdatedSignal(mState);
         }
     }
+}
+
+void GrblMachineModel::parseConfigurationResponse(GrblResponse response)
+{
+   static QRegExp configRegex("\\$(\\d+)=(\\S*)");
+   int param = -1;
+   QString value = "";
+
+   if (configRegex.indexIn(response.getData()) > -1)
+   {
+      param = configRegex.cap(1).toInt();
+      value = configRegex.cap(2);
+      qDebug() << "GrblMachineModel: Got configuration parameter"
+               << param << "-->" << value;
+      mFirmwareConfiguration[param] = value;
+      emit firmwareConfigurationReadSignal(param,value);
+   }
 }
 
 void GrblMachineModel::clearCommandQueue()

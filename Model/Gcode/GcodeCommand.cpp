@@ -63,8 +63,6 @@ GcodeCommand::GcodeCommand(const GcodeCommand* other)
 
 GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
 
-GcodeCommand::~GcodeCommand() {}
-
 GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
 {
     static GcodeCommand gc("G90");
@@ -77,6 +75,18 @@ GcodeCommand* GcodeCommand::ControlXCommand()
     return &gc;
 }
 
+GcodeCommand* GcodeCommand::GetConfigurationCommand()
+{
+    static GcodeCommand doubleBuck("$$");
+    return &doubleBuck;
+}
+
+GcodeCommand* GcodeCommand::SetConfigurationCommand(int param, QString value)
+{
+    static GcodeCommand doubleBuck;
+    doubleBuck = (QString("$%1=%2").arg(param).arg(value));
+    return &doubleBuck;
+}
 
 GcodeCommand* GcodeCommand::UnlockCommand()
 {

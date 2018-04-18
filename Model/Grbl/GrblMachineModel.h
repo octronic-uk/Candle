@@ -94,6 +94,8 @@ signals:
     void errorSignal(QString);
     void machineConnectedSigal(bool);
 
+    void firmwareConfigurationReadSignal(int,QString);
+
 public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
     void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
@@ -143,6 +145,7 @@ private: // Members
     qint64 mBytesWaiting;
     bool mStatusRequested;
     bool mWaitingForStatus;
+    QMap<int,QString> mFirmwareConfiguration;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
@@ -162,4 +165,5 @@ private: // Member Functions
     void startStatusTimer();
     void stopStatusTimer();
     void updateStatus(GrblResponse response);
+    void parseConfigurationResponse(GrblResponse response);
 };

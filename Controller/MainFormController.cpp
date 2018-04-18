@@ -164,6 +164,19 @@ void MainFormController::setupSettingsModelSignals()
         mSettingsFormController.getConnectionFormController(), SIGNAL(serialPortBaudRateChangedSignal(int)),
         &mGrblMachineModel, SLOT(onSerialPortBaudRateChanged(int))
     );
+    // Firmware Config
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(firmwareConfigurationReadSignal(int,QString)),
+        &mSettingsFormController, SLOT(onFirmwareConfigurationRead(int,QString))
+    );
+    connect(
+        mSettingsFormController.getGrblConfigurationFormControllerHandle(),
+        SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel,
+        SLOT(onGcodeCommandManualSend(GcodeCommand*))
+
+    );
 }
 
 void MainFormController::setupMenuBarSignals()
@@ -730,6 +743,7 @@ void MainFormController::initialise()
 void MainFormController::onGrblMachineConnected(bool connected)
 {
     mUi.programFormController->setFormActive(mGcodeFileModel.isOpen() && connected);
+    mUi.actionConnect->setEnabled(!connected);
 }
 
 void MainFormController::onActFileNewTriggered()

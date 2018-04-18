@@ -8,6 +8,7 @@
 #include <QScrollBar>
 #include <QColorDialog>
 #include "Controller/Settings/NameDialogController.h"
+#include "Controller/Settings/GrblConfigurationFormController.h"
 #include "ui_SettingsForm.h"
 
 SettingsFormController::SettingsFormController(QWidget *parent)
@@ -69,7 +70,12 @@ MachineFormController* SettingsFormController::getMachineFormController()
 
 InterfaceFormController* SettingsFormController::getInterfaceFormController()
 {
-   return mUi.interfaceFormController;
+    return mUi.interfaceFormController;
+}
+
+GrblConfigurationFormController* SettingsFormController::getGrblConfigurationFormControllerHandle()
+{
+   return &mGrblConfigurationFormController;
 }
 
 void SettingsFormController::onSettingsModelReady
@@ -166,13 +172,23 @@ void SettingsFormController::onProfileRemoveButtonClicked()
    }
 }
 
+void SettingsFormController::onGrblConfigButtonClicked()
+{
+    mGrblConfigurationFormController.exec();
+}
+
+void SettingsFormController::onFirmwareConfigurationRead(int param, QString value)
+{
+    mGrblConfigurationFormController.onFirmwareConfigurationRead(param,value);
+}
+
 void SettingsFormController::setupSignalSlots()
 {
     qDebug() << "SettingsFormController: Setup Signals/Slots";
 
     // Lower Buttons
     connect(mUi.closeButton, SIGNAL(clicked()),SLOT(onCloseButtonClicked()));
-    connect(mUi.restoreDefaultsButton, SIGNAL(clicked()),SLOT(onRestoreDefaultsButtonClicked()));
+    connect(mUi.grblConfigButton, SIGNAL(clicked()),SLOT(onGrblConfigButtonClicked()));
 
     // Profile Controls
     connect(

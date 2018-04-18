@@ -99,6 +99,11 @@ void GrblResponse::identifyType()
         mType = GrblResponseType::Probe;
         return;
     }
+    if (mData.startsWith("$") && mData.contains("="))
+    {
+        mType = GrblResponseType::Configuration;
+        return;
+    }
     mType = GrblResponseType::ParserState;
 }
 
