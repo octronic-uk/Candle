@@ -243,6 +243,13 @@ bool SqlSettingsModel::createRecentHeightMapFilesTable()
 bool SqlSettingsModel::insertToolHolderInDB(ToolHolder* item)
 {
     qDebug() << "SqlSettingsModel: insertToolHolderIntoDB";
+
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
+
     Profile* profile = item->getParentHandle();
     if (!profileValid(profile))
     {
@@ -266,6 +273,11 @@ bool SqlSettingsModel::insertToolHolderInDB(ToolHolder* item)
 bool SqlSettingsModel::updateToolHolderInDB(ToolHolder* toolHolder)
 {
     qDebug() << "SqlSettingsModel::updateToolHolderInDB(ToolHolder& toolHolder)";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     Profile* profile = toolHolder->getParentHandle();
     if (!profileValid(profile) || !toolHolder->isIdValid())
     {
@@ -296,6 +308,11 @@ bool SqlSettingsModel::updateToolHolderInDB(ToolHolder* toolHolder)
 bool SqlSettingsModel::deleteToolHolderFromDB(ToolHolder* toolHolder)
 {
     qDebug() << "SqlSettingsModel: deleteToolHolderFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_TOOL_HOLDER_QUERY);
     query.addBindValue(toolHolder->getID());
@@ -305,6 +322,11 @@ bool SqlSettingsModel::deleteToolHolderFromDB(ToolHolder* toolHolder)
 int SqlSettingsModel::getToolHoldersFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getToolHoldersFromDB()";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     // Remove existing
     ToolHolderListModel* modelHandle = profile->getToolHolderListModelHandle();
     if (modelHandle == nullptr)
@@ -365,6 +387,11 @@ int SqlSettingsModel::getToolHoldersFromDB(Profile* profile)
 
 int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
 {
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     int numRecords = 0;
     for (ToolHolder* nextHolder : profile->getToolHolderListModelHandle()->getDataHandles())
     {
@@ -419,6 +446,11 @@ int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
 bool SqlSettingsModel::insertToolHolderGeometryInDB(ToolHolderGeometry* toolHolder)
 {
     qDebug() << "SqlSettingsModel: insertToolHolderGeometryInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(INSERT_TOOL_HOLDER_GEOMETRY_QUERY);
     query.addBindValue(toolHolder->getToolHolderID());
@@ -444,6 +476,12 @@ bool SqlSettingsModel::updateToolHolderGeometryInDB(ToolHolderGeometry* toolHold
 {
     qDebug() << "SqlSettingsModel: updateToolHolderGeometryInDB with id"
              << toolHolder->getID();
+
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
 
     if (toolHolder->getID() < 0)
     {
@@ -473,6 +511,11 @@ bool SqlSettingsModel::updateToolHolderGeometryInDB(ToolHolderGeometry* toolHold
 bool SqlSettingsModel::deleteToolHolderGeometryFromDB(ToolHolderGeometry* toolHolder)
 {
     qDebug() << "SqlSettingsModel: deleteToolHolderGeometryInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_TOOL_HOLDER_GEOMETRY_QUERY);
     query.addBindValue(toolHolder->getID());
@@ -487,6 +530,11 @@ bool SqlSettingsModel::deleteToolHolderGeometryFromDB(ToolHolderGeometry* toolHo
 bool SqlSettingsModel::insertToolInDB(Tool* item)
 {
     qDebug() << "SqlSettingsModel: insertToolIntoDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     Profile *profile = item->getParentHandle();
     if (!profileValid(profile))
     {
@@ -517,7 +565,11 @@ bool SqlSettingsModel::insertToolInDB(Tool* item)
 bool SqlSettingsModel::updateToolInDB(Tool* tool)
 {
     qDebug() << "SqlSettingsModel::updateToolInDB";
-
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     Profile *profile = tool->getParentHandle();
     if (!profileValid(profile) || !tool->isIdValid())
     {
@@ -554,6 +606,11 @@ bool SqlSettingsModel::updateToolInDB(Tool* tool)
 bool SqlSettingsModel::deleteToolFromDB(Tool* tool)
 {
     qDebug() << "SqlSettingsModel: deleteToolFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_TOOL_QUERY);
     query.addBindValue(tool->getID());
@@ -563,6 +620,11 @@ bool SqlSettingsModel::deleteToolFromDB(Tool* tool)
 int SqlSettingsModel::getToolsFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getToolsFromDB()";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     // Remove existing
     ToolListModel* modelHandle = profile->getToolListModelHandle();
     if (modelHandle == nullptr)
@@ -633,6 +695,11 @@ int SqlSettingsModel::getToolsFromDB(Profile* profile)
 
 int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
 {
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     int numRecords = 0;
     ToolListModel* modelHandle = profile->getToolListModelHandle();
     for (const QSharedPointer<Tool>& next : modelHandle->getAllData())
@@ -686,6 +753,11 @@ int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
 bool SqlSettingsModel::insertToolGeometryInDB(ToolGeometry* tool)
 {
     qDebug() << "SqlSettingsModel: insertToolGeometryInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
 
     query.prepare(INSERT_TOOL_GEOMETRY_QUERY);
@@ -712,6 +784,11 @@ bool SqlSettingsModel::updateToolGeometryInDB(ToolGeometry* tool)
 {
     qDebug() << "SqlSettingsModel: updateToolGeometryInDB with id"
              << tool->getID();
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
 
     if (tool->getID() < 0)
     {
@@ -741,6 +818,11 @@ bool SqlSettingsModel::updateToolGeometryInDB(ToolGeometry* tool)
 bool SqlSettingsModel::deleteToolGeometryFromDB(ToolGeometry* tool)
 {
     qDebug() << "SqlSettingsModel: deleteToolGeometryInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_TOOL_GEOMETRY_QUERY);
     query.addBindValue(tool->getID());
@@ -755,6 +837,11 @@ bool SqlSettingsModel::deleteToolGeometryFromDB(ToolGeometry* tool)
 int SqlSettingsModel::getProfilesFromDB()
 {
     qDebug() << "SqlSettingsModel::getProfilesFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     mProfilesListModel = QSharedPointer<ProfilesListModel>::create();
     // Get form DB
     QSqlQuery query(SELECT_ALL_PROFILES_QUERY);
@@ -827,6 +914,11 @@ Profile* SqlSettingsModel::getProfileFromModelAtIndex(int index)
 bool SqlSettingsModel::createInterfaceSettingsTable()
 {
     qDebug() << "SqlSettingsModel:createInterfaceTable Creating table";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(CREATE_INTERFACE_TABLE_QUERY);
     if (!query.exec())
@@ -841,6 +933,11 @@ int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel: getInterfaceSettingsFromDB for"
              << profile->getID();
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
 
     int numRecords = 0;
     QSqlQuery query;
@@ -931,6 +1028,11 @@ int SqlSettingsModel::getInterfaceSettingsFromDB(Profile* profile)
 bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
 {
     qDebug() << "SqlSettingsModel: insertInterfaceInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(INSERT_INTERFACE_QUERY);
 
@@ -972,6 +1074,11 @@ bool SqlSettingsModel::insertInterfaceSettingsInDB(InterfaceSettings* settings)
 bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
 {
     qDebug() << "SqlSettingsModel: updateInterfaceInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     Profile* profile = settings->getParentHandle();
     query.prepare(UPDATE_INTERFACE_QUERY);
@@ -1012,6 +1119,11 @@ bool SqlSettingsModel::updateInterfaceSettingsInDB(InterfaceSettings* settings)
 bool SqlSettingsModel::deleteInterfaceSettingsFromDB(InterfaceSettings* settings)
 {
     qDebug() << "SqlSettingsModel: deleteInterfaceFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_INTERFACE_QUERY);
     query.addBindValue(settings->getID());
@@ -1021,6 +1133,11 @@ bool SqlSettingsModel::deleteInterfaceSettingsFromDB(InterfaceSettings* settings
 bool SqlSettingsModel::createMachineSettingsTable()
 {
     qDebug() << "SqlSettingsModel:creatMachineTable";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(CREATE_MACHINE_TABLE_QUERY);
     if (!query.exec())
@@ -1035,6 +1152,11 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel: Getting Machine Settings for "
              << profile->getID();
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
 
     int numRecords = 0;
     QSqlQuery query;
@@ -1118,6 +1240,11 @@ int SqlSettingsModel::getMachineSettingsFromDB(Profile* profile)
 bool SqlSettingsModel::insertMachineSettingsInDB(MachineSettings* settings)
 {
     qDebug() << "SqlSettingsModel: insertMachineInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
 
     query.prepare(INSERT_MACHINE_QUERY);
@@ -1160,6 +1287,11 @@ bool SqlSettingsModel::insertMachineSettingsInDB(MachineSettings* settings)
 bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
 {
     qDebug() << "SqlSettingsModel: updateMachineInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     Profile* profile = settings->getParentHandle();
     query.prepare(UPDATE_MACHINE_QUERY);
@@ -1200,6 +1332,11 @@ bool SqlSettingsModel::updateMachineSettingsInDB(MachineSettings* settings)
 bool SqlSettingsModel::deleteMachineSettingsFromDB(MachineSettings* settings)
 {
     qDebug() << "SqlSettingsModel: deleteMachineFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_MACHINE_QUERY);
     query.addBindValue(settings->getID());
@@ -1209,6 +1346,11 @@ bool SqlSettingsModel::deleteMachineSettingsFromDB(MachineSettings* settings)
 bool SqlSettingsModel::createConnectionSettingsTable()
 {
     qDebug() << "SqlSettingsModel:createConnectionTable Creating table";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(CREATE_CONNECTION_TABLE_QUERY);
     if (!query.exec())
@@ -1222,6 +1364,11 @@ bool SqlSettingsModel::createConnectionSettingsTable()
 int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getConnectionFromDB for " << profile->getID();
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     // Get form DB
     QSqlQuery query;
     query.prepare(SELECT_CONNECTION_BY_PROFILE_ID_QUERY);
@@ -1274,6 +1421,11 @@ int SqlSettingsModel::getConnectionSettingsFromDB(Profile* profile)
 bool SqlSettingsModel::insertConnectionSettingsInDB(ConnectionSettings* connection)
 {
     qDebug() << "SqlSettingsModel: insertConnectionInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(INSERT_CONNECTION_QUERY);
 
@@ -1301,6 +1453,11 @@ bool SqlSettingsModel::insertConnectionSettingsInDB(ConnectionSettings* connecti
 bool SqlSettingsModel::updateConnectionSettingsInDB(ConnectionSettings* connection)
 {
     qDebug() << "SqlSettingsModel: updateConnectionInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     Profile* profile = connection->getParentHandle();
     query.prepare(UPDATE_CONNECTION_QUERY);
@@ -1328,6 +1485,11 @@ bool SqlSettingsModel::updateConnectionSettingsInDB(ConnectionSettings* connecti
 bool SqlSettingsModel::deleteConnectionSettingsFromDB(ConnectionSettings* connection)
 {
     qDebug() << "SqlSettingsModel: deleteConnectionFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_CONNECTION_QUERY);
     query.addBindValue(connection->getID());
@@ -1347,6 +1509,11 @@ bool SqlSettingsModel::updateProfileName(Profile* profile, QString name)
 bool SqlSettingsModel::updateProfileInDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::updateProfileInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(UPDATE_PROFILE_WHERE_ID_QUERY);
     query.addBindValue(profile->getName());
@@ -1358,6 +1525,11 @@ bool SqlSettingsModel::updateProfileInDB(Profile* profile)
 bool SqlSettingsModel::deleteProfileFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel: deleteProfileFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(DELETE_PROFILE_QUERY);
     query.addBindValue(profile->getID());
@@ -1367,6 +1539,11 @@ bool SqlSettingsModel::deleteProfileFromDB(Profile* profile)
 int SqlSettingsModel::getRecentGcodeFilesFromDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::getRecentGcodeFilesFromDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     RecentFilesModel* modelHandle = profile->getRecentGcodeFilesModelHandle();
     modelHandle->clear();
     // Get form DB
@@ -1557,6 +1734,11 @@ void SqlSettingsModel::onToolGeometryDeleted(ToolGeometry* toolGeometry)
 bool SqlSettingsModel::insertProfileInDB(Profile* profile)
 {
     qDebug() << "SqlSettingsModel::insertProfileInDB";
+    if (!QSqlDatabase::database().isOpen())
+    {
+        qDebug() << "SqlSettingsModel: Database is not open";
+        return false;
+    }
     QSqlQuery query;
     query.prepare(INSERT_PROFILE_QUERY);
     query.addBindValue(profile->getName());
