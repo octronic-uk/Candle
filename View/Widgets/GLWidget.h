@@ -55,9 +55,6 @@ public:
     void setFrontView();
     void setLeftView();
 
-    int fps();
-    void setFps(int fps);
-
     QString parserStatus() const;
     void setParserStatus(const QString &parserStatus);
 
@@ -84,7 +81,6 @@ public:
 
     bool vsync() const;
     void setVsync(bool vsync);
-    void timerEvent(QTimerEvent *);
 
 signals:
     void rotationChanged();
@@ -96,6 +92,7 @@ public slots:
 private slots:
     void onFramesTimer();
     void viewAnimation();
+    void onRepaintTimerTimeout();
 
 private:
     float normalizeAngle(float angle);
@@ -124,7 +121,6 @@ private:
     int mAnimationFrame;
     QTime mSpendTime;
     QTime mEstimatedTime;
-    QBasicTimer mTimerPaint;
     float mXRotTarget, mYRotTarget;
     float mXRotStored, mYRotStored;
     bool mAnimateView;
@@ -135,10 +131,10 @@ private:
     QOpenGLShaderProgram *mShaderProgram;
     QMatrix4x4 mProjectionMatrix;
     QMatrix4x4 mViewMatrix;
-
     QColor mColorBackground;
     QColor mColorText;
-
+    QTimer mFramesTimer;
+    QTimer mRepaintTimer;
 protected:
     void initializeGL();
     void resizeGL(int width, int height);

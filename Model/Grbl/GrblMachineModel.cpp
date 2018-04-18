@@ -35,11 +35,10 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mProcessingFile(false),
       mTransferCompleted(false),
       mAborting(false),
-      mProgramSendInterval(1000/100), // 100hz
-      mStatusInterval(1000/10), // 10hz
+      mProgramSendInterval(1000/50),
+      mStatusInterval(1000/20),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
-      mUpdateRate(2),
       mCurrentFeedRate(0),
       mCurrentSpindleSpeed(0),
       mError(false),
@@ -75,9 +74,9 @@ void GrblMachineModel::setupSerialPort()
     mSerialPort.setDataBits(QSerialPort::Data8);
     mSerialPort.setFlowControl(QSerialPort::NoFlowControl);
     mSerialPort.setStopBits(QSerialPort::OneStop);
-    connect(&mSerialPort, SIGNAL(readyRead()),this, SLOT(onSerialPortReadyRead()),Qt::QueuedConnection);
+    connect(&mSerialPort, SIGNAL(readyRead()),this, SLOT(onSerialPortReadyRead()),Qt::DirectConnection);
+    connect(&mSerialPort, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialBytesWritten(qint64)),Qt::DirectConnection);
     connect(&mSerialPort, SIGNAL(error(QSerialPort::SerialPortError)),this, SLOT(onSerialPortError(QSerialPort::SerialPortError)));
-    connect(&mSerialPort, SIGNAL(bytesWritten(qint64)), this, SLOT(onSerialBytesWritten(qint64)));
 }
 
 void GrblMachineModel::onConnect()
@@ -211,7 +210,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             mError = true;
             //qDebug() << "GrblMachineModel: Error" << response.getData();
             stopProgramSendTimer();
-            stopStatusTimer();
+            //stopStatusTimer();
             emit errorSignal(mErrorString);
             emit appendResponseToConsoleSignal(response);
             break;
@@ -408,23 +407,23 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
-    // Buffer space available
+    // Serial port has been flushed
     if (mBytesWaiting == 0)
     {
-        // Take the command off the queue for processing
-        command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
-
-        // Don't append raw commands
-        if (command->getRawCommand() == 0)
-        {
-            emit appendCommandToConsoleSignal(command);
-        }
-
-
-        mCommandBuffer.append(command);
-
         if (!mError)
         {
+            // Take the command off the queue for processing
+            command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
+
+            // Don't append raw commands
+            if (command->getRawCommand() == 0)
+            {
+                emit appendCommandToConsoleSignal(command);
+            }
+
+
+            mCommandBuffer.append(command);
+
             if (command->getRawCommand() > 0)
             {
                 char c = command->getRawCommand();
@@ -437,20 +436,21 @@ bool GrblMachineModel::sendNextCommandFromQueue()
                 mBytesWaiting += mSerialPort.write(QString(command->getCommand() + "\r").toLatin1());
                 command->setState(GcodeCommandState::Sent);
             }
+
+            return true;
         }
-        else if (command->getRawCommand() > 0) // for real-time commands
+        else
         {
-            char c = command->getRawCommand();
-            //qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
-            mBytesWaiting += mSerialPort.write(&c, 1);
-            //mBytesWaiting += mSerialPort.write("\r");
+            qDebug() << "GrblMachineController: Cannot send command, in error state" << command->getCommand();
         }
-        return true;
     }
     else
     {
-        //qDebug() << "GrblMachineModel: Can't send program yet, port busy";
+        qDebug() << "GrblMachineController: Cannot send command, bytes waiting:"
+                 << mBytesWaiting
+                 << command->getCommand();
     }
+    mSerialPort.flush();
     return false;
 }
 
@@ -611,7 +611,20 @@ void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
 {
     if (mSerialPort.isOpen())
     {
-        mBytesWaiting += mSerialPort.write(QString(command->getCommand()+"\r").toLatin1());
+        //mSerialPort.flush();
+        if (command->getRawCommand() > 0)
+        {
+            qDebug() << "GrblMachineController: Manual Raw Gcode Send 0x"
+                     << QString::number(command->getRawCommand(),16).toUpper();
+            char c = command->getRawCommand();
+            mBytesWaiting += mSerialPort.write(&c,1);
+        }
+        else
+        {
+            qDebug() << "GrblMachineController: Manual ASCII Gcode Send" << command->getCommand();
+            mBytesWaiting += mSerialPort.write(QString(command->getCommand()+"\r").toLatin1());
+        }
+        mSerialPort.flush();
     }
 }
 

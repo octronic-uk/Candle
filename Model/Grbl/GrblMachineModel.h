@@ -134,7 +134,6 @@ private: // Members
     int mStatusInterval;
     int mCountProcessedCommands;
     int mCommandQueueInitialSize;
-    int mUpdateRate;
     float mCurrentFeedRate;
     float mCurrentSpindleSpeed;
     bool mError;

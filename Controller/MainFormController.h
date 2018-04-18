@@ -5,11 +5,8 @@
 
 #include <QMainWindow>
 #include <QSettings>
-#include <QTimer>
-#include <QBasicTimer>
 #include <QStringList>
 #include <QList>
-#include <QTime>
 #include <QMenu>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -111,6 +108,7 @@ private slots:
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
 
+    void onStopTriggered();
 protected:
     void showEvent(QShowEvent *se) override;
     void hideEvent(QHideEvent *he) override;
@@ -126,9 +124,6 @@ private: // Members
 
     MainFormMode mFormMode;
     QString mLastFolder;
-    QTimer mConnectionTimer;
-    QTimer mStateQueryTimer;
-    //QSharedPointer<IniFileSettingsModel> mSettingsModel;
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
     RecentFilesModel* mRecentGcodeFilesModelHandle;
     RecentFilesModel* mRecentHeightMapFilesModelHande;

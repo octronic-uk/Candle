@@ -94,6 +94,12 @@ void MainFormController::setupToolbarActions()
     state->setIcon(QIcon(":/Images/SVG/eye.svg"));
     mUi.toolBar->addAction(state);
 
+    QWidget* toolbarSpacer = new QWidget();
+    toolbarSpacer->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+    mUi.toolBar->addWidget(toolbarSpacer);
+
+    QAction *eStop = mUi.actionStop;
+    mUi.toolBar->addAction(eStop);
 }
 
 void MainFormController::setupToolbarSignals()
@@ -109,11 +115,19 @@ void MainFormController::setupToolbarSignals()
         mUi.actionClearAll, SIGNAL(triggered()),
         this, SLOT(onActionClearAllTriggered())
     );
+    // Connect
     connect
     (
         mUi.actionConnect, SIGNAL(triggered()),
         &mGrblMachineModel, SLOT(onConnect())
     );
+    // Stop
+    connect
+    (
+        mUi.actionStop, SIGNAL(triggered()),
+        this, SLOT(onStopTriggered())
+    );
+
 }
 
 void MainFormController::setupSettingsModelSignals()
@@ -937,4 +951,9 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mBufferProgressBar.setMinimumWidth(200);
     mBufferProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mBufferProgressBar);
+}
+
+void MainFormController::onStopTriggered()
+{
+    mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::StopCommand());
 }

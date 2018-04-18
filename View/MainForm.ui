@@ -244,6 +244,12 @@
    <property name="allowedAreas">
     <set>Qt::TopToolBarArea</set>
    </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
@@ -425,6 +431,18 @@
    </property>
    <property name="text">
     <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset resource="../Resources/Images.qrc">
+     <normaloff>:/Images/SVG/hand-paper.svg</normaloff>:/Images/SVG/hand-paper.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop</string>
    </property>
   </action>
  </widget>

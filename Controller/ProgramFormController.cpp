@@ -431,7 +431,6 @@ void ProgramFormController::onSendActionTriggered()
         return;
     }
     onResetButtonClicked();
-    mStartTime.start();
     emit setKeyboardControlSignal(false);
     mUi.pauseButton->setFocus();
     emit sendProgramSignal();

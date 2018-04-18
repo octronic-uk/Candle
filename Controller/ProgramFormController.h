@@ -19,7 +19,6 @@
 #pragma once
 
 #include <QMenu>
-#include <QTimer>
 
 #include "AbstractFormController.h"
 #include "Model/Gcode/GcodeTableModel.h"
@@ -88,7 +87,6 @@ private:
     GcodeTableModel mProgramTableModel;
     GcodeMarkerListModel mMarkerListModel;
     bool mCellChanged;
-    QTimer mStartTime;
     bool mTransferCompleted;
     bool mProcessingFile;
     bool mFileEndSent;

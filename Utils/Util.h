@@ -10,7 +10,6 @@
 #include <QVector3D>
 #include <QVector4D>
 #include <QEventLoop>
-#include <QTimer>
 
 class Util
 {
@@ -34,14 +33,6 @@ public:
     static QVector4D colorToVector(QColor color)
     {
         return QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF());
-    }
-
-    static void waitEvents(int ms)
-    {
-        QEventLoop loop;
-
-        QTimer::singleShot(ms, &loop, SLOT(quit()));
-        loop.exec();
     }
 
     static QIcon invertIconColors(QIcon icon)

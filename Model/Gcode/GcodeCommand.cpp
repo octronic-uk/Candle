@@ -144,6 +144,12 @@ GcodeCommand* GcodeCommand::CyclePauseResume()
     return &gc;
 }
 
+GcodeCommand* GcodeCommand::StopCommand()
+{
+   static GcodeCommand gc("~");
+   return &gc;
+}
+
 GcodeCommand* GcodeCommand::JogCommand
 (
     double x, double y, double z,

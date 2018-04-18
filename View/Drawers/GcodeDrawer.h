@@ -92,7 +92,6 @@ signals:
 public slots:
 
 private slots:
-    void onTimerVertexUpdate();
 
 private:
     QSharedPointer<GcodeViewParser> mViewParser;
@@ -110,7 +109,6 @@ private:
     QColor mColorZMovement;
     QColor mColorStart;
     QColor mColorEnd;
-    QTimer mTimerVertexUpdate;
     QImage mImage;
     QList<int> mIndexes;
     bool mGeometryUpdated;

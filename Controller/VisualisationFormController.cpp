@@ -66,7 +66,7 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     placeVisualizerButtons();
     setupSignalSlots();
 
-    mToolAnimationTimer.start(static_cast<int>(1000.0f/5.0f), this);
+    //mToolAnimationTimer.start(static_cast<int>(1000.0f/5.0f), this);
     //mUi.cmdSpindle->setChecked(true);
     emit spindleEnabledSignal(true);
 }
@@ -313,21 +313,17 @@ GLWidget* VisualisationFormController::getVisualiser()
 
 void VisualisationFormController::setGLWBufferState(QString state)
 {
-    //qDebug() << "VisualisationFormController: setGLWBufferState";
     Q_UNUSED(state)
 }
 
 void VisualisationFormController::timerEvent(QTimerEvent *te)
 {
-    //qDebug() << "VisualisationFormController: timerEvent";
     if (te->timerId() == mToolAnimationTimer.timerId())
     {
         mToolDrawer.rotate(mSpindleClockwise ? -1 : 1);
-            /*(double)(mUi.txtSpindleSpeed->value()) / */
-            /*(mUi.txtSpindleSpeed->maximum())*/
     }
     mUi.glwVisualizer->repaint();
-    mUi.glwVisualizer->timerEvent(te);
+    te->accept();
 }
 
 void VisualisationFormController::onGcodeFileLoadFinished(GcodeFileModel* items)

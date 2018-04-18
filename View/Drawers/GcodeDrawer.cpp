@@ -5,26 +5,24 @@
 
 GcodeDrawer::GcodeDrawer()
     : QObject(),
-    mDrawMode(GcodeDrawer::Vectors),
-    mSimplify(false),
-    mIgnoreZ(false),
-    mGrayscaleSegments(false),
-    mGrayscaleCode(GcodeDrawer::S),
-    mGrayscaleMin(0),
-    mGrayscaleMax(255),
-    mColorNormal(QColor("Blue")),
-    mColorDrawn(QColor("Black")),
-    mColorHighlight(QColor("Red")),
-    mColorZMovement(QColor("Yellow")),
-    mColorStart(QColor("Green")),
-    mColorEnd(QColor("Red")),
-    mGeometryUpdated(false)
+      mDrawMode(GcodeDrawer::Vectors),
+      mSimplify(false),
+      mIgnoreZ(false),
+      mGrayscaleSegments(false),
+      mGrayscaleCode(GcodeDrawer::S),
+      mGrayscaleMin(0),
+      mGrayscaleMax(255),
+      mColorNormal(QColor("Blue")),
+      mColorDrawn(QColor("Black")),
+      mColorHighlight(QColor("Red")),
+      mColorZMovement(QColor("Yellow")),
+      mColorStart(QColor("Green")),
+      mColorEnd(QColor("Red")),
+      mGeometryUpdated(false)
 {
     mPointSize = 4;
     mLineWidth = 3;
     mViewParser = QSharedPointer<GcodeViewParser>::create();
-    connect(&mTimerVertexUpdate, SIGNAL(timeout()), SLOT(onTimerVertexUpdate()));
-    mTimerVertexUpdate.start(100);
 }
 
 GcodeDrawer::GcodeDrawer(const GcodeDrawer& other)
@@ -72,24 +70,24 @@ bool GcodeDrawer::updateData()
 {
     switch (mDrawMode)
     {
-    case GcodeDrawer::Vectors:
-        if (mIndexes.isEmpty())
-        {
-            return prepareVectors();
-        }
-        else
-        {
-            return updateVectors();
-        }
-    case GcodeDrawer::Raster:
-        if (mIndexes.isEmpty())
-        {
-            return prepareRaster();
-        }
-        else
-        {
-            return updateRaster();
-        }
+        case GcodeDrawer::Vectors:
+            if (mIndexes.isEmpty())
+            {
+                return prepareVectors();
+            }
+            else
+            {
+                return updateVectors();
+            }
+        case GcodeDrawer::Raster:
+            if (mIndexes.isEmpty())
+            {
+                return prepareRaster();
+            }
+            else
+            {
+                return updateRaster();
+            }
     }
     return false;
 }
@@ -181,16 +179,16 @@ bool GcodeDrawer::prepareVectors()
                 {
                     next = list.at(i).getEnd() - list.at(i).getStart();
                     length += next.length();
-//                    straight = start.crossProduct(start.normalized(), next.normalized()).length() < 0.025;
+                    //                    straight = start.crossProduct(start.normalized(), next.normalized()).length() < 0.025;
                 }
-            // Split short & straight lines
+                // Split short & straight lines
             }
             while
-            (
-                (length < mSimplifyPrecision || straight) &&
-                i < list.count() &&
-                getSegmentType(list.at(i)) == getSegmentType(list.at(j))
-            );
+                    (
+                     (length < mSimplifyPrecision || straight) &&
+                     i < list.count() &&
+                     getSegmentType(list.at(i)) == getSegmentType(list.at(j))
+                     );
             i--;
         }
         else
@@ -289,12 +287,12 @@ bool GcodeDrawer::prepareRaster()
             if (!qIsNaN(list.at(i).getEnd().length()))
             {
                 setImagePixelColor
-                (
-                    image,
-                    (list.at(i).getEnd().x() - origin.x()) / pixelSize,
-                    (list.at(i).getEnd().y() - origin.y()) / pixelSize,
-                    getSegmentColor(list.at(i)).rgb()
-                );
+                        (
+                            image,
+                            (list.at(i).getEnd().x() - origin.x()) / pixelSize,
+                            (list.at(i).getEnd().y() - origin.y()) / pixelSize,
+                            getSegmentColor(list.at(i)).rgb()
+                            );
             }
         }
     }
@@ -375,12 +373,12 @@ bool GcodeDrawer::updateRaster()
 
         foreach (int i, mIndexes)
             setImagePixelColor
-            (
-                mImage,
-                (list.at(i).getEnd().x() - origin.x()) / pixelSize,
-                (list.at(i).getEnd().y() - origin.y()) / pixelSize,
-                getSegmentColor(list.at(i)).rgb()
-            );
+                    (
+                        mImage,
+                        (list.at(i).getEnd().x() - origin.x()) / pixelSize,
+                        (list.at(i).getEnd().y() - origin.y()) / pixelSize,
+                        getSegmentColor(list.at(i)).rgb()
+                        );
 
         if (mTexture)
             mTexture->setData(QOpenGLTexture::RGB, QOpenGLTexture::UInt8, mImage.bits());
@@ -425,27 +423,27 @@ QColor GcodeDrawer::getSegmentColor(const LineSegment& segment)
         {
             case GrayscaleCode::S:
                 return QColor::fromHsl
-                (
-                    0, 0,
-                    qBound<int>
-                    (
-                        0,
-                        255 - 255.0 / (mGrayscaleMax - mGrayscaleMin) *
-                        segment.getSpindleSpeed(),
-                        255
-                    )
-                );
+                        (
+                            0, 0,
+                            qBound<int>
+                            (
+                                0,
+                                255 - 255.0 / (mGrayscaleMax - mGrayscaleMin) *
+                                segment.getSpindleSpeed(),
+                                255
+                                )
+                            );
             case GrayscaleCode::Z:
                 return QColor::fromHsl
-                (
-                    0, 0,
-                    qBound<int>
-                    (
-                        0, 255 - 255.0 / (mGrayscaleMax - mGrayscaleMin) *
-                        segment.getStart().z(),
-                        255
-                    )
-                );
+                        (
+                            0, 0,
+                            qBound<int>
+                            (
+                                0, 255 - 255.0 / (mGrayscaleMax - mGrayscaleMin) *
+                                segment.getStart().z(),
+                                255
+                                )
+                            );
         }
     return mColorNormal;//QVector3D(0.0, 0.0, 0.0);
 }
@@ -606,11 +604,6 @@ bool GcodeDrawer::getIgnoreZ() const
 void GcodeDrawer::setIgnoreZ(bool ignoreZ)
 {
     mIgnoreZ = ignoreZ;
-}
-
-void GcodeDrawer::onTimerVertexUpdate()
-{
-    if (!mIndexes.isEmpty()) ShaderDrawable::update();
 }
 
 GcodeDrawer::DrawMode GcodeDrawer::drawMode() const

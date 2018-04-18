@@ -4,7 +4,6 @@
 #pragma once
 
 #include <QVector3D>
-#include <QTimer>
 #include <QColor>
 #include <cmath>
 #include "ShaderDrawable.h"

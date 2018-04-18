@@ -66,7 +66,11 @@ GLWidget::GLWidget(QWidget *parent)
     mVsync = false;
     mTargetFps = 60;
 
-    QTimer::singleShot(1000, this, SLOT(onFramesTimer()));
+    connect(&mFramesTimer,SIGNAL(timeout()),this,SLOT(onFramesTimer()));
+    mFramesTimer.start(1000);
+
+    connect(&mRepaintTimer,SIGNAL(timeout()),this,SLOT(onRepaintTimerTimeout()));
+    mRepaintTimer.start(1000/30);
 }
 
 GLWidget::~GLWidget()
@@ -190,8 +194,6 @@ void GLWidget::onFramesTimer()
 {
     mFps = mFrames;
     mFrames = 0;
-
-    QTimer::singleShot(1000, this, SLOT(onFramesTimer()));
 }
 
 void GLWidget::viewAnimation()
@@ -301,11 +303,6 @@ void GLWidget::setLeftView()
     beginViewAnimation();
 }
 
-int GLWidget::fps()
-{
-    return mTargetFps;
-}
-
 void GLWidget::setIsometricView()
 {
     mXRotTarget = 45;
@@ -345,14 +342,6 @@ void GLWidget::setColorBackground(const QColor &colorBackground)
     mColorBackground = colorBackground;
 }
 
-
-void GLWidget::setFps(int fps)
-{
-    if (fps <= 0) return;
-    mTargetFps = fps;
-    mTimerPaint.stop();
-    mTimerPaint.start(mVsync ? 0 : 1000 / fps, Qt::PreciseTimer, this);
-}
 
 QTime GLWidget::estimatedTime() const
 {
@@ -447,8 +436,8 @@ void GLWidget::updateView()
     mViewMatrix.lookAt(eye, center, up.normalized());
 
     mViewMatrix.translate(mLookAt.x(), mLookAt.y(), mLookAt.z());
-    //mViewMatrix.scale(mZoom, mZoom, mZoom);
-    mViewMatrix.translate(-mLookAt.x(), -mLookAt.y(), mLookAt.z());
+    mViewMatrix.scale(1.0,1.0,1.0);
+    mViewMatrix.translate(-mLookAt.x(), -mLookAt.y(), -mLookAt.z());
 
     mViewMatrix.rotate(-90, 1.0, 0.0, 0.0);
 }
@@ -612,6 +601,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     mXLastPan = mXPan;
     mYLastPan = mYPan;
     repaint();
+    event->accept();
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -653,6 +643,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
         updateProjection();
     }
     repaint();
+    event->accept();
 }
 
 void GLWidget::wheelEvent(QWheelEvent *we)
@@ -683,27 +674,13 @@ void GLWidget::wheelEvent(QWheelEvent *we)
     updateProjection();
     updateView();
     repaint();
+    we->accept();
 }
 
-void GLWidget::timerEvent(QTimerEvent *te)
+void GLWidget::onRepaintTimerTimeout()
 {
-    //qDebug() << "GLWidget: Timer Event!";
-    //if (te->timerId() == mTimerPaint.timerId())
-    {
-        if (mAnimateView) viewAnimation();
-#ifndef GLES
-        if (mUpdatesEnabled) update();
-#endif
-    }
-   /* else
-    {
-#ifdef GLES
-        QOpenGLWidget::timerEvent(te);
-#else
-        QGLWidget::timerEvent(te);
-#endif
-    }
-    */
+    if (mAnimateView) viewAnimation();
+    if (mUpdatesEnabled) update();
 }
 
 void GLWidget::onLookAt(QVector3D lookAt)
@@ -716,6 +693,5 @@ float GLWidget::normalizeAngle(float angle)
 {
     while (angle < 0) angle += 360;
     while (angle > 360) angle -= 360;
-
     return angle;
 }

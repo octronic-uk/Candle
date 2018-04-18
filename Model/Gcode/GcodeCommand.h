@@ -90,6 +90,7 @@ public:
     static GcodeCommand* GetGcodeParamsCommand();
     static GcodeCommand* ZeroZCommand();
     static GcodeCommand* CyclePauseResume();
+    static GcodeCommand* StopCommand();
 
     static GcodeCommand* JogCommand
     (
