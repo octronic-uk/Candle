@@ -36,7 +36,7 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mTransferCompleted(false),
       mAborting(false),
       mProgramSendInterval(1000/50),
-      mStatusInterval(1000/20),
+      mStatusInterval(1000/10),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
       mCurrentFeedRate(0),
@@ -386,7 +386,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
-    GcodeCommand* command = mCommandQueue.first();
+
 
     /*qDebug() << "GrblMachineModel: Attempting to send queued command"
              << (
@@ -403,20 +403,22 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
-    // Buffer full, append to queue
-    if (!isSpaceInBuffer(command))
-    {
-        //qDebug() << "GrblMachineModel: Buffer full, waiting... " << command->getCommand();
-        return false;
-    }
-
     // Serial port has been flushed
     if (mBytesWaiting == 0)
     {
-        if (!mError)
+        while (!mError && !mCommandQueue.isEmpty())
         {
+             GcodeCommand* command = mCommandQueue.first();
+
+            if (!isSpaceInBuffer(command))
+            {
+                qDebug() << "GrblMachineController: Cannot send command, buffer full"
+                         << command->getCommand();
+                break;
+            }
+
             // Take the command off the queue for processing
-            command = mCommandQueue.takeFirst();// feedOverride(mCommandQueue.takeFirst(),mFeedOverrideRate);
+            command = mCommandQueue.takeFirst();
 
             // Don't append raw commands
             if (command->getRawCommand() == 0)
@@ -424,45 +426,24 @@ bool GrblMachineModel::sendNextCommandFromQueue()
                 emit appendCommandToConsoleSignal(command);
             }
 
-
             mCommandBuffer.append(command);
 
-            if (command->getRawCommand() > 0)
-            {
-                char c = command->getRawCommand();
-                //qDebug() << "GrblMachineModel: Writing raw command" << QString::number(c ,16);
-                mBytesWaiting += mSerialPort.write(&c ,1);
-                //mBytesWaiting += mSerialPort.write("\r");
-            }
-            else
-            {
-                mBytesWaiting += mSerialPort.write(QString(command->getCommand() + "\r").toLatin1());
-                command->setState(GcodeCommandState::Sent);
-            }
+            mBytesWaiting += mSerialPort.write(QString(command->getCommand() + "\r").toLatin1());
+            command->setState(GcodeCommandState::Sent);
 
             return true;
         }
-        else
-        {
-            qDebug() << "GrblMachineController: Cannot send command, in error state" << command->getCommand();
-        }
     }
-    else
-    {
-        qDebug() << "GrblMachineController: Cannot send command, bytes waiting:"
-                 << mBytesWaiting
-                 << command->getCommand();
-    }
-    mSerialPort.flush();
+
     return false;
 }
 
 void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
 {
     mBytesWaiting -= bytes;
-    /*qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes
+
+    qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes
              << "/ Remaining:" << mBytesWaiting;
-             */
 }
 
 void GrblMachineModel::grblReset()
