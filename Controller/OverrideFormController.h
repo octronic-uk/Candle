@@ -1,5 +1,5 @@
 /*
- * FeedFormController.h
+ * SpindleFormController.h
  *
  * Created: 22 2018 by Ashley
  *
@@ -19,29 +19,40 @@
 #pragma once
 
 #include "AbstractFormController.h"
-#include "ui_FeedForm.h"
+#include "ui_OverrideForm.h"
 
 using namespace Ui;
 
-class FeedFormController : public AbstractFormController
+class OverrideFormController : public AbstractFormController
 {
     Q_OBJECT
 public:
-    explicit FeedFormController(QWidget *parent = nullptr);
-    ~FeedFormController() override;
-    void setFormActive(bool active) override;
+    explicit OverrideFormController(QWidget *parent = nullptr);
+    ~OverrideFormController() override;
+
     void setupSignalSlots() override;
+    void setFormActive(bool active) override;
     void initialise() override;
 
 signals:
-    void feedOverrideChangedSignal(float);
-    void updateFeedRateSignal(float);
+    void updateSpindleOverrideSignal(float val);
+    void updateFeedOverrideSignal(float val);
+    void updateRapidOverrideSignal(float val);
 
 public slots:
-    void onFeedRateUpdate(float val);
-    void onFeedSliderValueChanged(int value);
+    void onUpdateSpindleOverride(float speed);
+    void onUpdateFeedOverride(float val);
+    void onUpdateRapidOverride(float val);
+
+private slots:
     void onFeedOverrideToggled(bool checked);
+    void onSpindleOverrideToggled(bool checked);
+    void onRapidOverrideToggled(bool checked);
+
+    void onSpindleSliderValueChanged(int value);
+    void onFeedSliderValueChanged(int value);
+    void onRapidSliderValueChanged(int value);
 
 private:
-    FeedForm mUi;
+    OverrideForm mUi;
 };

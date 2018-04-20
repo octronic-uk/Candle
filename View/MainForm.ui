@@ -166,7 +166,7 @@
    </attribute>
    <widget class="JogFormController" name="jogFormController"/>
   </widget>
-  <widget class="QDockWidget" name="spindleDockWidget">
+  <widget class="QDockWidget" name="overridesDockWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
      <horstretch>0</horstretch>
@@ -189,12 +189,12 @@
     <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Spindle</string>
+    <string>Overrides</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="SpindleFormController" name="spindleFormController"/>
+   <widget class="OverrideFormController" name="overrideFormController"/>
   </widget>
   <widget class="QDockWidget" name="consoleDockWidget">
    <property name="sizePolicy">
@@ -263,30 +263,6 @@
    <addaction name="actionConnect"/>
    <addaction name="actFileSettings"/>
    <addaction name="separator"/>
-  </widget>
-  <widget class="QDockWidget" name="feedDockWidget">
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="floating">
-    <bool>false</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::AllDockWidgetFeatures</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
-   </property>
-   <property name="windowTitle">
-    <string>Feed Rate</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>1</number>
-   </attribute>
-   <widget class="FeedFormController" name="feedFormController"/>
   </widget>
   <widget class="QDockWidget" name="stateDockWidget">
    <property name="sizePolicy">
@@ -454,12 +430,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SpindleFormController</class>
-   <extends>QWidget</extends>
-   <header>Controller/SpindleFormController.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>ConsoleFormController</class>
    <extends>QWidget</extends>
    <header>Controller/ConsoleFormController.h</header>
@@ -472,12 +442,6 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FeedFormController</class>
-   <extends>QWidget</extends>
-   <header>Controller/FeedFormController.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>StateFormController</class>
    <extends>QWidget</extends>
    <header>Controller/StateFormController.h</header>
@@ -487,6 +451,12 @@
    <class>VisualisationFormController</class>
    <extends>QOpenGLWidget</extends>
    <header>Controller/VisualisationFormController.h</header>
+  </customwidget>
+  <customwidget>
+   <class>OverrideFormController</class>
+   <extends>QWidget</extends>
+   <header>Controller/OverrideFormController.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>

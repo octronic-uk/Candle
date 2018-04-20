@@ -96,10 +96,8 @@ SOURCES +=\
     Controller/Settings/InterfaceFormController.cpp \
     Controller/Settings/MachineFormController.cpp \
     Controller/ControlFormController.cpp \
-    Controller/FeedFormController.cpp \
     Controller/HeightMapFormController.cpp \
     Controller/ProgramFormController.cpp \
-    Controller/SpindleFormController.cpp \
     Controller/StateFormController.cpp \
     Controller/UserCommandsFormController.cpp \
     Controller/VisualisationFormController.cpp \
@@ -120,7 +118,8 @@ SOURCES +=\
     Model/Gcode/GcodeMarkerListModel.cpp \
     View/Drawers/WorkAreaDrawer.cpp \
     Controller/Settings/GrblConfigurationFormController.cpp \
-    Model/Grbl/GrblConfigurationModel.cpp
+    Model/Grbl/GrblConfigurationModel.cpp \
+    Controller/OverrideFormController.cpp
 
 HEADERS  += \
     Model/Gcode/Parser/ArcProperties.h \
@@ -174,10 +173,8 @@ HEADERS  += \
     Controller/Settings/MachineFormController.h \
     Controller/Settings/ToolFormController.h \
     Controller/ControlFormController.h \
-    Controller/FeedFormController.h \
     Controller/HeightMapFormController.h \
     Controller/ProgramFormController.h \
-    Controller/SpindleFormController.h \
     Controller/StateFormController.h \
     Controller/UserCommandsFormController.h \
     Controller/VisualisationFormController.h \
@@ -200,7 +197,8 @@ HEADERS  += \
     Model/Gcode/GcodeMarkerListModel.h \
     View/Drawers/WorkAreaDrawer.h \
     Controller/Settings/GrblConfigurationFormController.h \
-    Model/Grbl/GrblConfigurationModel.h
+    Model/Grbl/GrblConfigurationModel.h \
+    Controller/OverrideFormController.h
 
 FORMS    += \
     View/AboutForm.ui \
@@ -212,7 +210,6 @@ FORMS    += \
     View/MainForm.ui \
     View/ProgramForm.ui \
     View/Settings/SettingsForm.ui \
-    View/SpindleForm.ui \
     View/StateForm.ui \
     View/UserCommandsForm.ui \
     View/VisualisationForm.ui \
@@ -222,7 +219,8 @@ FORMS    += \
     View/Settings/MachineForm.ui \
     View/Settings/ToolForm.ui \
     View/Settings/NameDialog.ui \
-    View/Settings/GrblConfigurationForm.ui
+    View/Settings/GrblConfigurationForm.ui \
+    View/OverrideForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 #DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

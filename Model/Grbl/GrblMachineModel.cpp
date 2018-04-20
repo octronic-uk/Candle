@@ -31,7 +31,6 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mWorkCoordinateOffset(QVector3D(0.0,0.0,0.0)),
       mSettingsModelHandle(nullptr),
       mFileEndSent(false),
-      mFeedOverrideRate(100.0), // 100% of feed
       mProcessingFile(false),
       mTransferCompleted(false),
       mAborting(false),
@@ -39,8 +38,9 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mStatusInterval(1000/10),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
-      mCurrentFeedRate(0),
-      mCurrentSpindleSpeed(0),
+      mFeedOverride(100),
+      mSpindleOverride(100),
+      mRapidOverride(100),
       mError(false),
       mErrorCode(-1),
       mBytesWaiting(0),
@@ -119,18 +119,37 @@ void GrblMachineModel::updateWorkCoordinateOffset(const GrblResponse& resp)
     }
 }
 
-void GrblMachineModel::updateSpindleSpeed(const GrblResponse& data)
-{
-    // TODO - Do spindle speed regex here
-    // emit updateSpindleSpeedSignal(mCurrentSpindleSpeed);
-    // mCurrentSpindleSpeed = machinePositionExpression.cap(5).toFloat();
-}
+/*
+    Ov:100,100,100
+    indicates current override values in percent of programmed values for
+    feed,
+    rapids,
+    and spindle speed,
+    respectively.
+*/
 
-void GrblMachineModel::updateFeedRate(const GrblResponse& data)
+
+
+
+void GrblMachineModel::updateOverrides(const GrblResponse& data)
 {
-    // TODO - Do spindle speed regex here
-    // emit updateFeedRateSignal(mCurrentFeedRate);
-    // mCurrentFeedRate = machinePositionExpression.cap(4).toFloat();
+    static QRegExp overridesRegex("Ov:(\\d+),(\\d+),(\\d+)");
+
+    if (overridesRegex.indexIn(data.getData()) > -1)
+    {
+       mFeedOverride = overridesRegex.cap(1).toFloat();
+       mRapidOverride = overridesRegex.cap(2).toFloat();
+       mSpindleOverride = overridesRegex.cap(3).toFloat();
+
+       qDebug() << QString("GrblMachineController: Got overrides F%1 R%2 S%3")
+               .arg(mFeedOverride)
+               .arg(mRapidOverride)
+               .arg(mSpindleOverride);
+
+       emit updateFeedOverrideSignal(mFeedOverride);
+       emit updateRapidOverrideSignal(mRapidOverride);
+       emit updateSpindleOverrideSignal(mSpindleOverride);
+    }
 }
 
 void GrblMachineModel::updateWorkPosition()
@@ -161,6 +180,9 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
 
     switch (response.getType())
     {
+        case GrblResponseType::Alarm:
+            parseAlarmResponse(response);
+            break;
         case GrblResponseType::Startup:
             //qDebug() << "GrblMachineModel: Got a Startup Message";
             parseGrblVersion(response);
@@ -180,8 +202,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             updateStatus(response);
             updateMachinePosition(response);
             updateWorkCoordinateOffset(response);
-            updateSpindleSpeed(response);
-            updateFeedRate(response);
+            updateOverrides(response);
             updateWorkPosition();
             //qDebug() << "GrblMachineModel: Got status!";
             mStatusRequested = false;
@@ -564,6 +585,18 @@ void GrblMachineModel::parseConfigurationResponse(GrblResponse response)
    }
 }
 
+void GrblMachineModel::parseAlarmResponse(const GrblResponse& response)
+{
+    static QRegExp alarmRegex("ALARM:(\\d+)");
+    if (alarmRegex.indexIn(response.getData()) > -1)
+    {
+       int alarmNum = alarmRegex.cap(1).toInt();
+       emit alarmSignal(ALARM_STRINGS.at(alarmNum));
+       return;
+    }
+    emit alarmSignal("Unknown Alarm");
+}
+
 void GrblMachineModel::clearCommandQueue()
 {
     mCommandQueue.clear();
@@ -714,8 +747,6 @@ QString GrblMachineModel::stateToString(GrblMachineState state)
 {
     switch (state)
     {
-        case GrblMachineState::Unknown:
-            return QString("Unknown");
         case GrblMachineState::Idle:
             return QString("Idle");
         case GrblMachineState::Alarm:
@@ -736,10 +767,64 @@ QString GrblMachineModel::stateToString(GrblMachineState state)
             return QString("Locked");
         case GrblMachineState::Unlocked:
             return QString("Unlocked");
+        case GrblMachineState::Jog:
+            return QString("Jog");
+        case GrblMachineState::Unknown:
+            break;
     }
+
+    return QString("Unknown");
 }
 
 const int GrblMachineModel::BUFFER_LENGTH_LIMIT = 127;
+
+const map<int,QString> GrblMachineModel::ALARM_STRINGS =
+{
+    {
+        1,
+        "Hard limit triggered.\n"
+        "Machine position is likely lost due to sudden and immediate halt. Re-homing is highly recommended."
+    },
+    {
+        2,
+        "G-code motion target exceeds machine travel.\n"
+        "Machine position safely retained. Alarm may be unlocked."
+    },
+    {
+        3,
+        "Reset while in motion.\n"
+        "Grbl cannot guarantee position. Lost steps are likely. Re-homing is highly recommended."
+    },
+    {
+        4,
+        "Probe fail.\n"
+        "The probe is not in the expected initial state before starting probe cycle, where G38.2 and G38.3 is not triggered and G38.4 and G38.5 is triggered."
+    },
+    {
+        5,
+        "Probe fail.\n"
+        "Probe did not contact the workpiece within the programmed travel for G38.2 and G38.4."
+    },
+    {
+        6,
+        "Homing fail.\n"
+        "Reset during active homing cycle."
+    },
+    {
+        7
+        ,"Homing fail.\n"
+        "Safety door was opened during active homing cycle."
+    },
+    {
+        8,
+        "Homing fail.\n"
+        "Cycle failed to clear limit switch when pulling off. Try increasing pull-off setting or check wiring."
+    },
+    {   9,
+        "Homing fail.\n"
+        "Could not find limit switch within search distance. Defined as 1.5 * max_travel on search and 5 * pulloff on locate phases."
+    }
+};
 
 const map<int,QString> GrblMachineModel::ERROR_STRINGS =
 {

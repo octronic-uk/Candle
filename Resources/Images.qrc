@@ -34,7 +34,6 @@
         <file>Images/32/32x32 up.png</file>
         <file>Images/SVG/axis_return.svg</file>
         <file>Images/SVG/axis_zero.svg</file>
-        <file>Images/SVG/chevron-circle-outline.svg</file>
         <file>Images/SVG/chevron-circle-right.svg</file>
         <file>Images/SVG/cogs.svg</file>
         <file>Images/SVG/document-download-outline.svg</file>
@@ -104,5 +103,6 @@
         <file>Images/PNG/splash.png</file>
         <file>Images/SVG/search.svg</file>
         <file>Images/SVG/gamepad.svg</file>
+        <file>Images/SVG/exchange-alt.svg</file>
     </qresource>
 </RCC>

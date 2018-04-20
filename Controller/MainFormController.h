@@ -90,6 +90,7 @@ public slots:
     void onSetFormMode(MainFormMode mode);
     void onGrblMachineError(QString error);
     void onProfileChanged(Profile* model);
+    void onAlarm(QString alarmMsg);
 
 private slots:
     // Main Menu Actions

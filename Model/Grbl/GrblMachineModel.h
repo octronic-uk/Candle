@@ -73,8 +73,11 @@ public:
 
 signals:
     void updateProgramTableStatusSignal(GcodeCommand* state);
-    void updateFeedRateSignal(float);
-    void updateSpindleSpeedSignal(float);
+
+    void updateFeedOverrideSignal(float);
+    void updateRapidOverrideSignal(float);
+    void updateSpindleOverrideSignal(float);
+
     void updateMachinePositionSignal(const QVector3D);
     void updateWorkPositionSignal(const QVector3D);
     void updateWCOSignal(const QVector3D);
@@ -86,6 +89,7 @@ signals:
     void toolPositionChangedSignal(QVector3D);
     void machineStateUpdatedSignal(const GrblMachineState&);
     void jobCompletedSignal();
+    void alarmSignal(QString);
 
     void appendResponseToConsoleSignal(const GrblResponse&);
     void appendCommandToConsoleSignal(GcodeCommand*);
@@ -126,7 +130,6 @@ private: // Members
     QVector3D mWorkCoordinateOffset;
     SqlSettingsModel* mSettingsModelHandle;
     bool mFileEndSent;
-    double mFeedOverrideRate;
     bool mProcessingFile;
     bool mTransferCompleted;
     bool mAborting;
@@ -137,8 +140,11 @@ private: // Members
     int mStatusInterval;
     int mCountProcessedCommands;
     int mCommandQueueInitialSize;
-    float mCurrentFeedRate;
-    float mCurrentSpindleSpeed;
+
+    float mFeedOverride;
+    float mSpindleOverride;
+    float mRapidOverride;
+
     bool mError;
     int mErrorCode;
     QString mErrorString;
@@ -151,22 +157,29 @@ private: // Members
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
     GcodeCommand getNextCommand(GcodeFileModel& gcodeFile);
-    void processResponse(const GrblResponse& data);
-    void updateMachinePosition(const GrblResponse& data);
-    void updateWorkPosition();
-    void updateWorkCoordinateOffset(const GrblResponse& data);
-    void updateSpindleSpeed(const GrblResponse& data);
-    void updateFeedRate(const GrblResponse& data);
     void setupSerialPort();
+
     bool isSpaceInBuffer(GcodeCommand* cmd);
+    int getProcessedPercent();
+
     void startProgramSendTimer();
     void stopProgramSendTimer();
-    int getProcessedPercent();
-    void parseError(const GrblResponse& error);
-    const static std::map<int,QString> ERROR_STRINGS;
-    void parseGrblVersion(const GrblResponse& response);
+
     void startStatusTimer();
     void stopStatusTimer();
+
+    void updateWorkPosition();
     void updateStatus(GrblResponse response);
+    void updateOverrides(const GrblResponse& data);
+    void updateWorkCoordinateOffset(const GrblResponse& data);
+    void updateMachinePosition(const GrblResponse& data);
+
+    void processResponse(const GrblResponse& data);
+    void parseError(const GrblResponse& error);
+    void parseGrblVersion(const GrblResponse& response);
     void parseConfigurationResponse(GrblResponse response);
+    void parseAlarmResponse(const GrblResponse& response);
+
+    const static map<int,QString> ERROR_STRINGS;
+    const static map<int,QString> ALARM_STRINGS;
 };

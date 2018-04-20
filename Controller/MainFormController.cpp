@@ -21,11 +21,10 @@
 
 #include "Controller/ConsoleFormController.h"
 #include "Controller/ControlFormController.h"
-#include "Controller/FeedFormController.h"
 #include "Controller/HeightMapFormController.h"
 #include "Controller/JogFormController.h"
 #include "Controller/ProgramFormController.h"
-#include "Controller/SpindleFormController.h"
+#include "Controller/OverrideFormController.h"
 #include "Controller/StateFormController.h"
 #include "Controller/VisualisationFormController.h"
 #include "Model/RecentFile.h"
@@ -78,16 +77,12 @@ void MainFormController::setupToolbarActions()
     control->setIcon(QIcon(":/Images/SVG/origin.svg"));
     mUi.toolBar->addAction(control);
 
-    QAction *feed = mUi.feedDockWidget->toggleViewAction();
-    feed->setIcon(QIcon(":/Images/SVG/feed_rate.svg"));
-    mUi.toolBar->addAction(feed);
-
     QAction *jog = mUi.jogDockWidget->toggleViewAction();
     jog->setIcon(QIcon(":/Images/SVG/crosshairs.svg"));
     mUi.toolBar->addAction(jog);
 
-    QAction *spindle = mUi.spindleDockWidget->toggleViewAction();
-    spindle->setIcon(QIcon(":/Images/SVG/dot-circle.svg"));
+    QAction *spindle = mUi.overridesDockWidget->toggleViewAction();
+    spindle->setIcon(QIcon(":/Images/SVG/feed_rate.svg"));
     mUi.toolBar->addAction(spindle);
 
     QAction *state = mUi.stateDockWidget->toggleViewAction();
@@ -297,6 +292,20 @@ void MainFormController::onProfileChanged(Profile* profile)
     mRecentHeightMapFilesModelHande = profile->getRecentHeightMapFilesModelHandle();
 }
 
+void MainFormController::onAlarm(QString alarmMsg)
+{
+    // Wassat now?
+    QMessageBox::critical
+    (
+        &mMainWindow,
+        tr("Grbl Alarm!"),
+        QString("%1").arg(alarmMsg),
+        QMessageBox::Ok
+    );
+    // Lock the UI
+    onMachineStateUpdated(GrblMachineState::Locked);
+}
+
 void MainFormController::setupGrblMachineModelSignals()
 {
     // Grbl Machine Model
@@ -355,25 +364,38 @@ void MainFormController::setupGrblMachineModelSignals()
         &mGrblMachineModel, SIGNAL(updateWCOSignal(const QVector3D)),
         mUi.visualisationFormController, SLOT(onUpdateWCO(const QVector3D))
     );
+    // Rapid
     connect
     (
-        &mGrblMachineModel, SIGNAL(updateSpindleSpeedSignal(float)),
-        mUi.spindleFormController, SLOT(onUpdateSpindleSpeed(float))
+        &mGrblMachineModel, SIGNAL(updateRapidOverrideSignal(float)),
+        mUi.jogFormController, SLOT(onUpdateRapidOverride(float))
     );
     connect
     (
-        mUi.spindleFormController, SIGNAL(updateSpindleSpeedSignal(float)),
-        &mGrblMachineModel, SLOT(onUpdateSpindleSpeed(float))
+        mUi.jogFormController, SIGNAL(updateRapidOverrideSignal(float)),
+        &mGrblMachineModel, SLOT(onUpdateRapidOverride(float))
+    );
+    // Spindle
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(updateSpindleOverrideSignal(float)),
+        mUi.overrideFormController, SLOT(onUpdateSpindleOverride(float))
     );
     connect
     (
-        &mGrblMachineModel, SIGNAL(updateFeedRateSignal(float)),
-        mUi.feedFormController, SLOT(onFeedRateUpdate(float))
+        mUi.overrideFormController, SIGNAL(updateSpindleOverrideSignal(float)),
+        &mGrblMachineModel, SLOT(onUpdateSpindleOverride(float))
+    );
+    // Feed
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(updateFeedOverrideSignal(float)),
+        mUi.overrideFormController, SLOT(onFeedOverrideUpdate(float))
     );
     connect
     (
-        mUi.feedFormController, SIGNAL(updateFeedRateSignal(float)),
-        &mGrblMachineModel, SLOT(onUpdateFeedRate(float))
+        mUi.overrideFormController, SIGNAL(updateFeedOverrideSignal(float)),
+        &mGrblMachineModel, SLOT(onUpdateFeedOverride(float))
     );
     connect
     (
@@ -459,8 +481,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.controlFormController->setFormActive(true);
             mUi.controlFormController->highlightUnlockReset(false);
             mUi.jogFormController->setFormActive(true);
-            mUi.spindleFormController->setFormActive(true);
-            mUi.feedFormController->setFormActive(true);
+            mUi.overrideFormController->setFormActive(true);
             mUi.stateFormController->setClass(StateClass::Warning);
             break;
         case GrblMachineState::Locked:
@@ -469,8 +490,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.controlFormController->setFormActive(false);
             mUi.controlFormController->highlightUnlockReset(true);
             mUi.jogFormController->setFormActive(false);
-            mUi.spindleFormController->setFormActive(false);
-            mUi.feedFormController->setFormActive(false);
+            mUi.overrideFormController->setFormActive(false);
             mUi.stateFormController->setClass(StateClass::Danger);
             break;
         case GrblMachineState::Unknown:
@@ -523,10 +543,9 @@ void MainFormController::onActionClearAllTriggered()
             //qDebug() << "MainFormController: Clearing all data";
             mUi.consoleFormController->initialise();
             mUi.controlFormController->initialise();
-            mUi.feedFormController->initialise();
             mUi.jogFormController->initialise();
             mUi.programFormController->initialise();
-            mUi.spindleFormController->initialise();
+            mUi.overrideFormController->initialise();
             mUi.stateFormController->initialise();
             mUi.visualisationFormController->initialise();
             mSettingsFormController.initialise();
@@ -560,7 +579,15 @@ void MainFormController::onSendProgramFromLine(long line)
 
 void MainFormController::onSerialPortError(QString error)
 {
-
+    /*
+    QMessageBox::critical
+    (
+        &mMainWindow,
+        tr("Serial Port Error!"),
+        QString("Error: %1").arg(error),
+        QMessageBox::Ok
+    );
+    */
 }
 
 void MainFormController::setupSignalSlots()
