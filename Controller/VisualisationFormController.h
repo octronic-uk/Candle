@@ -28,9 +28,6 @@
 #include "View/Drawers/GridDrawer.h"
 #include "View/Drawers/WorkAreaDrawer.h"
 #include "View/Drawers/SelectionDrawer.h"
-#include "View/Drawers/HeightMapGridDrawer.h"
-#include "View/Drawers/HeightMapBorderDrawer.h"
-#include "View/Drawers/HeightMapInterpolationDrawer.h"
 #include "Model/Gcode/GcodeCommand.h"
 
 using namespace Ui;
@@ -89,9 +86,6 @@ private:
     ToolDrawer mToolDrawer;
     //WorkAreaDrawer mWorkAreaDrawer;
     SelectionDrawer mSelectionDrawer;
-    HeightMapBorderDrawer mHeightMapBorderDrawer;
-    HeightMapGridDrawer mHeightMapGridDrawer;
-    HeightMapInterpolationDrawer mHeightMapInterpolationDrawer;
     bool mFollowTool;
 
     // Parsers

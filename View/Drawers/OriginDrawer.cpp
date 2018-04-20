@@ -2,7 +2,7 @@
 
 OriginDrawer::OriginDrawer()
 {
-    mLineWidth = 2;
+    mLineWidth = 4;
     mPosition = QVector3D(0.0,0.0,0.0);
 }
 
@@ -19,6 +19,7 @@ bool OriginDrawer::updateData()
     QVector4D white = QVector4D(1.0,1.0,1.0,1.0);
 
     mLines.clear();
+    mTriangles.clear();
 
     // X-axis
     mLines.append({QVector3D(mPosition.x(),    mPosition.y(),     mPosition.z()), red, QVector3D(sNan, sNan, sNan)});
@@ -56,15 +57,6 @@ bool OriginDrawer::updateData()
     mTriangles.append({QVector3D(mPosition.x(), mPosition.y()+0.5, mPosition.z()+8),  blue, QVector3D(sNan, sNan, sNan)});
     mTriangles.append({QVector3D(mPosition.x(), mPosition.y()-0.5, mPosition.z()+8),  blue, QVector3D(sNan, sNan, sNan)});
 
-    // 2x2 rect
-    mTriangles.append({QVector3D(mPosition.x()+1, mPosition.y()+1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-    mTriangles.append({QVector3D(mPosition.x()+1, mPosition.y()-1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-    mTriangles.append({QVector3D(mPosition.x()-1, mPosition.y()-1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-
-    mTriangles.append({QVector3D(mPosition.x()-1, mPosition.y()-1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-    mTriangles.append({QVector3D(mPosition.x()-1, mPosition.y()+1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-    mTriangles.append({QVector3D(mPosition.x()+1, mPosition.y()+1, mPosition.z()), white, QVector3D(sNan, sNan, sNan)});
-
     return true;
 }
 
@@ -96,4 +88,5 @@ QVector3D OriginDrawer::getPosition() const
 void OriginDrawer::setPosition(const QVector3D& position)
 {
     mPosition = position;
+    update();
 }

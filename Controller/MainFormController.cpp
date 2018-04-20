@@ -21,7 +21,6 @@
 
 #include "Controller/ConsoleFormController.h"
 #include "Controller/ControlFormController.h"
-#include "Controller/HeightMapFormController.h"
 #include "Controller/JogFormController.h"
 #include "Controller/ProgramFormController.h"
 #include "Controller/OverrideFormController.h"
@@ -37,10 +36,8 @@
 
 MainFormController::MainFormController(QWidget *parent) :
     AbstractFormController(parent),
-    mFormMode(MainFormMode::Idle),
     mLastFolder(QDir::homePath()),
     mRecentGcodeFilesModelHandle(nullptr),
-    mRecentHeightMapFilesModelHande(nullptr),
     mOldStatusBarLayout(nullptr)
 {
     qDebug() << "MainFormController: Constructing";
@@ -181,11 +178,6 @@ void MainFormController::setupMenuBarSignals()
         mUi.actAbout, SIGNAL(triggered()),
         this, SLOT(onActAboutTriggered())
     );
-    // File->New
-    connect(
-        mUi.actFileNew, SIGNAL(triggered()),
-        this, SLOT(onActFileNewTriggered())
-    );
     // File->Open
     connect(
         mUi.actFileOpen, SIGNAL(triggered()),
@@ -205,24 +197,6 @@ void MainFormController::setupMenuBarSignals()
     connect(
         mUi.actFileSaveTransformedAs, SIGNAL(triggered()),
         this, SLOT(onActFileSaveTransformedAsTriggered())
-    );
-}
-
-void MainFormController::setupHeightMapFileModelSignals()
-{
-    // On File Load Handlers
-    connect(
-        &mHeightMapFileModel,SIGNAL(heightMapFileLoadStartedSignal()),
-        this, SLOT(onHeightMapFileLoadStarted())
-    );
-    connect(
-        &mHeightMapFileModel,SIGNAL(heightMapFileLoadFinishedSignal()),
-        this, SLOT(onHeightMapFileLoadFinished())
-    );
-    // HeightMap File Model
-    connect(
-        &mHeightMapFileModel, SIGNAL(statusBarUpdateSignal(QString)),
-        this, SLOT(onStatusBarUpdate(QString))
     );
 }
 
@@ -289,7 +263,6 @@ void MainFormController::setupRecentFilesModelsSignals()
 void MainFormController::onProfileChanged(Profile* profile)
 {
     mRecentGcodeFilesModelHandle = profile->getRecentGcodeFilesModelHandle();
-    mRecentHeightMapFilesModelHande = profile->getRecentHeightMapFilesModelHandle();
 }
 
 void MainFormController::onAlarm(QString alarmMsg)
@@ -368,11 +341,11 @@ void MainFormController::setupGrblMachineModelSignals()
     connect
     (
         &mGrblMachineModel, SIGNAL(updateRapidOverrideSignal(float)),
-        mUi.jogFormController, SLOT(onUpdateRapidOverride(float))
+        mUi.overrideFormController, SLOT(onUpdateRapidOverride(float))
     );
     connect
     (
-        mUi.jogFormController, SIGNAL(updateRapidOverrideSignal(float)),
+        mUi.overrideFormController, SIGNAL(updateRapidOverrideSignal(float)),
         &mGrblMachineModel, SLOT(onUpdateRapidOverride(float))
     );
     // Spindle
@@ -390,7 +363,7 @@ void MainFormController::setupGrblMachineModelSignals()
     connect
     (
         &mGrblMachineModel, SIGNAL(updateFeedOverrideSignal(float)),
-        mUi.overrideFormController, SLOT(onFeedOverrideUpdate(float))
+        mUi.overrideFormController, SLOT(onUpdateFeedOverride(float))
     );
     connect
     (
@@ -567,13 +540,11 @@ void MainFormController::setupControlFormSignals()
 
 void MainFormController::onSendProgram()
 {
-    onSetFormMode(MainFormMode::RunningGerber);
     emit sendProgramSignal(mGcodeFileModel);
 }
 
 void MainFormController::onSendProgramFromLine(long line)
 {
-    onSetFormMode(MainFormMode::RunningGerber);
     emit sendProgramFromLineSignal(mGcodeFileModel, line);
 }
 
@@ -597,7 +568,6 @@ void MainFormController::setupSignalSlots()
     setupToolbarSignals();
     setupSettingsModelSignals();
     setupGcodeFileModelSignals();
-    setupHeightMapFileModelSignals();
     setupRecentFilesModelsSignals();
     setupGrblMachineModelSignals();
     setupJogFormSignals();
@@ -612,7 +582,7 @@ void MainFormController::showMainWindow()
     mMainWindow.show();
 }
 
-bool MainFormController::saveChanges(bool heightMapMode)
+bool MainFormController::saveChanges()
 {
     //qDebug() << "MainFormController: saveChanges ";
     return true;
@@ -621,29 +591,6 @@ bool MainFormController::saveChanges(bool heightMapMode)
 void MainFormController::setFormActive(bool active)
 {
 
-}
-
-void MainFormController::onSetFormMode(MainFormMode mode)
-{
-    //qDebug() << "MainFormController: setFormMode";
-    mFormMode = mode;
-    switch (mFormMode)
-    {
-        case MainFormMode::Idle:
-            mUi.jogFormController->setFormActive(true);
-            mUi.consoleFormController->setFormActive(true);
-            mUi.controlFormController->setFormActive(true);
-            break;
-        case MainFormMode::Gerber:
-            break;
-        case MainFormMode::HeightMap:
-            break;
-        case MainFormMode::RunningGerber:
-            mUi.jogFormController->setFormActive(false);
-            mUi.consoleFormController->setFormActive(false);
-            mUi.controlFormController->setFormActive(false);
-            break;
-    }
 }
 
 void MainFormController::onGrblMachineError(QString error)
@@ -660,36 +607,14 @@ void MainFormController::onGrblMachineError(QString error)
 
 void MainFormController::onJobCompleted()
 {
-   mUi.controlFormController->setFormActive(true);
-   mUi.jogFormController->setFormActive(true);
-}
-
-void MainFormController::resizeEvent(QResizeEvent *re)
-{
-    Q_UNUSED(re)
-    //qDebug() << "MainFormController: resizeEvent";
-
-    mUi.visualisationFormController->placeVisualizerButtons();
-}
-
-void MainFormController::closeEvent(QCloseEvent *ce)
-{
-    Q_UNUSED(ce)
-    //qDebug() << "MainFormController: closeEvent";
-    bool mode = mHeightMapMode;
-    mHeightMapMode = false;
-}
-
-void MainFormController::dragEnterEvent(QDragEnterEvent *dee)
-{
-    Q_UNUSED(dee)
-    //qDebug() << "MainFormController: dragEnterEvent";
-}
-
-void MainFormController::dropEvent(QDropEvent *de)
-{
-    Q_UNUSED(de)
-    //qDebug() << "MainFormController: dropEvent";
+    QMessageBox::information
+    (
+        &mMainWindow,
+        tr("Program Finished"),
+        QString("All operations have completed."),
+        QMessageBox::Ok
+    );
+    onMachineStateUpdated(GrblMachineState::Unlocked);
 }
 
 void MainFormController::onActFileExitTriggered()
@@ -704,16 +629,10 @@ void MainFormController::onActSettingsTriggered()
     mSettingsFormController.exec();
 }
 
-bool buttonLessThan(QPushButton *b1, QPushButton *b2)
-{
-    //qDebug() << "MainFormController: buttonLessThan";
-    return b1->text().toDouble() < b2->text().toDouble();
-}
-
 void MainFormController::onActFileOpenTriggered()
 {
     //qDebug() << "MainFormController: onActFileOpenTriggered";
-    if (!saveChanges(false))
+    if (!saveChanges())
     {
         return;
     }
@@ -722,7 +641,7 @@ void MainFormController::onActFileOpenTriggered()
                 this,
                 tr("Open"),
                 mLastFolder,
-                tr("G-Code files (*.nc *.ncc *.ngc *.tap *.txt);;Heightmap files (*.map);;All files (*.*)")
+                tr("G-Code files (*.nc *.ncc *.ngc *.tap *.txt);;All files (*.*)")
                 );
 
     //qDebug() << "MainFormController: Opening File " << fileName;
@@ -730,16 +649,7 @@ void MainFormController::onActFileOpenTriggered()
 
     if (!fileName.isEmpty())
     {
-        if (mHeightMapFileModel.isHeightMapFile(fileName))
-        {
-            //qDebug() << "MainFormController: HeightMap file format";
-            mHeightMapFileModel.load(fileName);
-            if (mRecentHeightMapFilesModelHande)
-            {
-                mRecentHeightMapFilesModelHande->add(RecentFile(fileName));
-            }
-        }
-        else if (mGcodeFileModel.isGcodeFile(fileName))
+        if (mGcodeFileModel.isGcodeFile(fileName))
         {
             //qDebug() << "MainFormController: Gcode file format";
             mGcodeFileModel.load(fileName);
@@ -748,23 +658,7 @@ void MainFormController::onActFileOpenTriggered()
                 mRecentGcodeFilesModelHandle->add(RecentFile(fileName));
             }
         }
-        else
-        {
-            //qDebug() << "MainFormController: Unrecognised file format";
-        }
     }
-}
-
-bool MainFormController::isInHeightMapMode()
-{
-    //qDebug() << "MainFormController: isInHeightMapMode";
-    return mFormMode == MainFormMode::HeightMap;
-}
-
-bool MainFormController::isInGerberMode()
-{
-    //qDebug() << "MainFormController: isInGerberMode";
-    return mFormMode == MainFormMode::Gerber;
 }
 
 void MainFormController::initialise()
@@ -776,13 +670,6 @@ void MainFormController::onGrblMachineConnected(bool connected)
 {
     mUi.programFormController->setFormActive(mGcodeFileModel.isOpen() && connected);
     mUi.actionConnect->setEnabled(!connected);
-}
-
-void MainFormController::onActFileNewTriggered()
-{
-    //qDebug() << "MainFormController: onActFileNewTriggered";
-    //qDebug() << "MainFormController: changes:" << mGcodeFileModel.hasFileChanged()
-     //        << mHeightMapFileModel.hasFileChanged();
 }
 
 void MainFormController::onActFileSaveTransformedAsTriggered()
@@ -814,45 +701,6 @@ void MainFormController::onActAboutTriggered()
     mAboutFormController.exec();
 }
 
-void MainFormController::onHeightMapFileLoadStarted()
-{
-    //qDebug() << "MainFormController: onHeightMapFileLoadStarted";
-
-}
-
-void MainFormController::onHeightMapFileLoadFinished()
-{
-    //qDebug() << "MainFormController: onHeightMapFileLoadFinished";
-    onSetFormMode(MainFormMode::HeightMap);
-    onStatusBarUpdate
-    (
-        QString("Opened HeightMap File %s")
-            .arg(mGcodeFileModel.getCurrentFileName())
-    );
-}
-
-void MainFormController::showEvent(QShowEvent* se)
-{
-
-    Q_UNUSED(se)
-    //qDebug() << "MainFormController: showEvent";
-
-}
-
-void MainFormController::hideEvent(QHideEvent* he)
-{
-
-    Q_UNUSED(he)
-    //qDebug() << "MainFormController: hideEvent";
-
-}
-
-bool MainFormController::eventFilter(QObject *obj, QEvent *event)
-{
-    //qDebug() << "MainFormController: eventFilter";
-    return mMainWindow.eventFilter(obj, event);
-}
-
 void MainFormController::onActRecentFileTriggered()
 {
     //qDebug() << "MainFormController: onActRecentFileTriggered";
@@ -861,13 +709,6 @@ void MainFormController::onActRecentFileTriggered()
 void MainFormController::updateRecentFilesMenu()
 {
     //qDebug() << "MainFormController: updateRecentFilesMenu";
-}
-
-void MainFormController::onRecentHeightMapFilesChanged()
-{
-    //qDebug() << "MainFormController: onRecentHeightMapFilesChanged";
-    clearRecentHeightMapFilesMenu();
-    populateRecentHeightMapFilesMenu();
 }
 
 void MainFormController::onRecentGcodeFilesChanged()
@@ -896,7 +737,6 @@ void MainFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
 {
     Q_UNUSED(items)
     //qDebug() << "MainFormController: onGcodeFileLoadFinished";
-    onSetFormMode(MainFormMode::Gerber);
     onStatusBarUpdate
     (
         QString("Opened Gcode File " + mGcodeFileModel.getCurrentFileName())
@@ -921,24 +761,10 @@ void MainFormController::populateRecentGcodeFilesMenu()
     }
 }
 
-void MainFormController::populateRecentHeightMapFilesMenu()
-{
-    //qDebug() << "MainFormController: populateRecentHeightMapFilesMenu";
-    foreach (RecentFile file, mRecentHeightMapFilesModelHande->getRecentFiles())
-    {
-        QAction *action = new QAction(file.getPath(), this);
-        connect(action, SIGNAL(triggered()), this, SLOT(onActRecentFileTriggered()));
-        mUi.recentHeightMapFilesMenu->insertAction
-        (
-            mUi.recentHeightMapFilesMenu->actions()[0], action
-        );
-    }
-}
-
 void MainFormController::clearRecentGcodeFilesMenu()
 {
     //qDebug() << "MainFormController: clearRecentGcodeFilesMenu";
-    foreach (QAction * action, mUi.recentHeightMapFilesMenu->actions())
+    foreach (QAction * action, mUi.recentGcodeFilesMenu->actions())
     {
         if (action->text() == "")
         {
@@ -952,32 +778,13 @@ void MainFormController::clearRecentGcodeFilesMenu()
     }
 }
 
-void MainFormController::clearRecentHeightMapFilesMenu()
-{
-    //qDebug() << "MainFormController: clearRecentHeightMapFilesMenu";
-    foreach (QAction * action, mUi.recentGcodeFilesMenu->actions())
-    {
-        if (action->text() == "")
-        {
-            break;
-        }
-        else
-        {
-            mUi.recentHeightMapFilesMenu->removeAction(action);
-            delete action;
-        }
-    }
-}
-
 void MainFormController::onSetBufferProgressValue(int value)
 {
-    //qDebug() << "MainFormController: setBufferProgressValue" << value;
-    mBufferProgressBar.setValue(100-value);
+    mBufferProgressBar.setValue(value);
 }
 
 void MainFormController::onSetCompletionProgressValue(int value)
 {
-    //qDebug() << "MainFormController: setCompletionProgressValue" << value;
     mCompletionProgressBar.setValue(value);
 }
 
@@ -990,7 +797,7 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mCompletionProgressBar.setMinimumWidth(200);
     mCompletionProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mCompletionProgressBar);
-    mUi.statusBar->addPermanentWidget(new QLabel("Buffer Free"));
+    mUi.statusBar->addPermanentWidget(new QLabel("Buffer Usage"));
     mBufferProgressBar.setMinimum(0);
     mBufferProgressBar.setMaximum(100);
     mBufferProgressBar.setTextVisible(false);

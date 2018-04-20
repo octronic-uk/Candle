@@ -99,7 +99,6 @@
      </property>
      <addaction name="clearRecentHeightMapFilesAction"/>
     </widget>
-    <addaction name="actFileNew"/>
     <addaction name="actFileOpen"/>
     <addaction name="recentGcodeFilesMenu"/>
     <addaction name="recentHeightMapFilesMenu"/>
@@ -255,7 +254,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actFileNew"/>
    <addaction name="actFileOpen"/>
    <addaction name="actFileSave"/>
    <addaction name="actionClearAll"/>
@@ -322,15 +320,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+,</string>
-   </property>
-  </action>
-  <action name="actFileNew">
-   <property name="icon">
-    <iconset resource="../Resources/Images.qrc">
-     <normaloff>:/Images/SVG/file-alt.svg</normaloff>:/Images/SVG/file-alt.svg</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;New</string>
    </property>
   </action>
   <action name="actFileSave">

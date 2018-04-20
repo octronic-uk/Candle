@@ -151,11 +151,12 @@ void ToolDrawer::generateToolGeometry()
         }
 
         currentZ += height;
-        // Fade away
-        color.setX(color.x() * 1.2f);
-        color.setY(color.y() * 1.2f);
-        color.setZ(color.z() * 1.2f);
+        /* Fade away
+        color.setX(color.x() * 1.5f);
+        color.setY(color.y() * 1.5f);
+        color.setZ(color.z() * 1.5f);
         color.setW(color.w() * 1.2f);
+        */
 
    }
 }
@@ -291,10 +292,10 @@ void ToolDrawer::generateToolHolderGeometry()
         currentZ += height;
 
         // Fade away
-        color.setX(color.x() * 1.2f);
-        color.setY(color.y() * 1.2f);
-        color.setZ(color.z() * 1.2f);
-        color.setW(color.w() * 0.8f);
+        color.setX(color.x() * 1.5f);
+        color.setY(color.y() * 1.5f);
+        color.setZ(color.z() * 1.5f);
+        //color.setW(color.w() * 0.8f);
    }
 }
 

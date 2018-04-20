@@ -67,8 +67,6 @@ public:
     float getWorkPositionZ();
     void queueCommand(GcodeCommand* command);
     static QString stateToString(GrblMachineState state);
-
-
     void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
 signals:
@@ -105,8 +103,10 @@ public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
     void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
     void onGcodeCommandManualSend(GcodeCommand*);
-    void onUpdateSpindleSpeed(float speed);
-    void onUpdateFeedRate(float rate);
+
+    void onUpdateSpindleOverride(float speed);
+    void onUpdateFeedOverride(float rate);
+    void onUpdateRapidOverride(float rate);
 
 private slots:
     void onConnect();
@@ -129,22 +129,15 @@ private: // Members
     QVector3D mWorkPosition;
     QVector3D mWorkCoordinateOffset;
     SqlSettingsModel* mSettingsModelHandle;
-    bool mFileEndSent;
-    bool mProcessingFile;
-    bool mTransferCompleted;
-    bool mAborting;
-    bool mAbsoluteCoordinates;
     QTimer mProgramSendTimer;
     QTimer mStatusTimer;
     int mProgramSendInterval;
     int mStatusInterval;
     int mCountProcessedCommands;
     int mCommandQueueInitialSize;
-
     float mFeedOverride;
     float mSpindleOverride;
     float mRapidOverride;
-
     bool mError;
     int mErrorCode;
     QString mErrorString;
@@ -153,6 +146,7 @@ private: // Members
     bool mStatusRequested;
     bool mWaitingForStatus;
     QMap<int,QString> mFirmwareConfiguration;
+    bool mProgramRunning;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);

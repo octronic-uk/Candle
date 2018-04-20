@@ -47,8 +47,6 @@ void OverrideFormController::setFormActive(bool active)
     mUi.rapidOverrideButton->setChecked(false);
     mUi.rapidOverrideSlider->setEnabled(active);
     mUi.rapidOverrideSlider->setValue(100);
-
-
 }
 
 void OverrideFormController::initialise()
@@ -81,36 +79,42 @@ void OverrideFormController::onSpindleOverrideToggled(bool checked)
 
 void OverrideFormController::onRapidOverrideToggled(bool checked)
 {
+    mUi.rapidOverrideSlider->setEnabled(checked);
+    if (!checked)
+    {
+        mUi.rapidOverrideSlider->setValue(100);
+    }
+    emit updateRapidOverrideSignal(mUi.rapidOverrideSlider->value());
 
 }
 
-void OverrideFormController::onSpindleSliderValueChanged(int value)
+void OverrideFormController::onFeedOverrideToggled(bool checked)
 {
-    emit updateSpindleOverrideSignal(value);
-}
-
-void OverrideFormController::onUpdateSpindleOverride(float speed)
-{
-    bool enabled = speed != 100;
-    mUi.spindleOverrideButton->setChecked(enabled);
-    mUi.spindleOverrideSlider->setValue(speed);
+    mUi.feedOverrideSlider->setEnabled(checked);
+    if (!checked)
+    {
+        mUi.feedOverrideSlider->setValue(100);
+    }
+    emit updateFeedOverrideSignal(mUi.feedOverrideSlider->value());
 }
 
 void OverrideFormController::setupSignalSlots()
 {
     qDebug() << "OverrideFormController: Setup Signals/Slots";
 
+    // Spindle
     connect
     (
         mUi.spindleOverrideSlider, SIGNAL(valueChanged(int)),
-        this, SLOT(onSliderValueChanged(int))
+        this, SLOT(onSpindleSliderValueChanged(int))
     );
     connect
     (
         mUi.spindleOverrideButton, SIGNAL(toggled(bool)),
-        this, SLOT(onCmdSpindleClicked(bool))
+        this, SLOT(onSpindleOverrideToggled(bool))
     );
 
+    // Feed
     connect(
         mUi.feedOverrideSlider, SIGNAL(valueChanged(int)),
         this, SLOT(onFeedSliderValueChanged(int))
@@ -119,32 +123,34 @@ void OverrideFormController::setupSignalSlots()
         mUi.feedOverrideButton, SIGNAL(toggled(bool)),
         this, SLOT(onFeedOverrideToggled(bool))
     );
+
+    connect(
+        mUi.rapidOverrideSlider, SIGNAL(valueChanged(int)),
+        this, SLOT(onRapidSliderValueChanged(int))
+    );
+    connect(
+        mUi.rapidOverrideButton, SIGNAL(toggled(bool)),
+        this, SLOT(onRapidOverrideToggled(bool))
+    );
 }
 
 void OverrideFormController::onUpdateFeedOverride(float val)
 {
-    mUi.feedOverrideButton->setChecked(val == 100);
+    mUi.feedOverrideButton->setChecked(val != 100);
     mUi.feedOverrideSlider->setValue(val);
 }
 
 void OverrideFormController::onUpdateRapidOverride(float val)
 {
-
+    mUi.rapidOverrideButton->setChecked(val != 100);
+    mUi.rapidOverrideSlider->setValue(val);
 }
 
-void OverrideFormController::onFeedOverrideToggled(bool checked)
+void OverrideFormController::onUpdateSpindleOverride(float val)
 {
-    if (!checked)
-    {
-        mUi.feedOverrideSlider->setValue(100);
-        emit updateFeedOverrideSignal(100);
-    }
-    else
-    {
-        emit updateFeedOverrideSignal(mUi.feedOverrideSlider->value());
-    }
+    mUi.spindleOverrideButton->setChecked(val != 100);
+    mUi.spindleOverrideSlider->setValue(val);
 }
-
 
 void OverrideFormController::onFeedSliderValueChanged(int value)
 {
@@ -154,5 +160,11 @@ void OverrideFormController::onFeedSliderValueChanged(int value)
 
 void OverrideFormController::onRapidSliderValueChanged(int value)
 {
-
+    mUi.rapidOverrideButton->setChecked(value != 100);
+    emit updateRapidOverrideSignal(value);
+}
+void OverrideFormController::onSpindleSliderValueChanged(int value)
+{
+    mUi.spindleOverrideButton->setChecked(value != 100);
+    emit updateSpindleOverrideSignal(value);
 }

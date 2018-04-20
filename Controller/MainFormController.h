@@ -16,19 +16,14 @@
 
 #include "Model/Gcode/Parser/GcodeViewParser.h"
 #include "Model/Settings/Sql/SqlSettingsModel.h"
-#include "Model/HeightMap/HeightMapFileModel.h"
 #include "Model/RecentFilesModel.h"
 #include "Model/Gcode/GcodeFileModel.h"
 #include "Model/Gcode/GcodeTableModel.h"
-#include "Model/HeightMap/HeightMapTableModel.h"
 #include "Model/Grbl/GrblMachineModel.h"
 
 #include "View/Drawers/OriginDrawer.h"
 #include "View/Drawers/GcodeDrawer.h"
 #include "View/Drawers/ToolDrawer.h"
-#include "View/Drawers/HeightMapBorderDrawer.h"
-#include "View/Drawers/HeightMapGridDrawer.h"
-#include "View/Drawers/HeightMapInterpolationDrawer.h"
 #include "View/Drawers/ShaderDrawable.h"
 #include "View/Drawers/SelectionDrawer.h"
 
@@ -47,14 +42,6 @@
 #include "shobjidl.h" // What the quadralateral fuck is this Microsoft?
 #endif
 
-enum class MainFormMode
-{
-    Idle,
-    Gerber,
-    RunningGerber,
-    HeightMap
-};
-
 class MainFormController : public AbstractFormController
 {
     Q_OBJECT
@@ -65,8 +52,6 @@ public:
 
     void showMainWindow();
     void setupSignalSlots() override;
-    bool isInHeightMapMode();
-    bool isInGerberMode();
 
     void initialise() override;
 
@@ -76,7 +61,6 @@ signals:
 
 public slots:
     void onGrblMachineConnected(bool);
-    void onRecentHeightMapFilesChanged();
     void onRecentGcodeFilesChanged();
     void onStatusBarUpdate(QString status);
     void onStatusTextUpdate(QString status);
@@ -87,7 +71,6 @@ public slots:
     void onSerialPortError(QString error);
     void onSetBufferProgressValue(int);
     void onSetCompletionProgressValue(int);
-    void onSetFormMode(MainFormMode mode);
     void onGrblMachineError(QString error);
     void onProfileChanged(Profile* model);
     void onAlarm(QString alarmMsg);
@@ -97,41 +80,26 @@ private slots:
     void onJobCompleted();
     void onActFileExitTriggered();
     void onActFileOpenTriggered();
-    void onActFileNewTriggered();
     void onActFileSaveAsTriggered();
     void onActFileSaveTriggered();
     void onActFileSaveTransformedAsTriggered();
     void onActSettingsTriggered();
     void onActAboutTriggered();
     void onActRecentFileTriggered();
-    void onHeightMapFileLoadStarted();
-    void onHeightMapFileLoadFinished();
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
-
     void onStopTriggered();
-protected:
-    void showEvent(QShowEvent *se) override;
-    void hideEvent(QHideEvent *he) override;
-    void resizeEvent(QResizeEvent *re) override;
-    void closeEvent(QCloseEvent *ce) override;
-    void dragEnterEvent(QDragEnterEvent *dee) override;
-    void dropEvent(QDropEvent *de) override;
 
 private: // Members
     Ui::MainForm mUi;
     AboutFormController mAboutFormController;
     SettingsFormController mSettingsFormController;
 
-    MainFormMode mFormMode;
     QString mLastFolder;
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
     RecentFilesModel* mRecentGcodeFilesModelHandle;
-    RecentFilesModel* mRecentHeightMapFilesModelHande;
     QMainWindow mMainWindow;
     GcodeFileModel mGcodeFileModel;
-    HeightMapFileModel mHeightMapFileModel;
-    bool mHeightMapMode = false;
     GrblMachineModel mGrblMachineModel;
     QProgressBar mCompletionProgressBar;
     QProgressBar mBufferProgressBar;
@@ -140,21 +108,17 @@ private: // Members
 
 
 private: // Member Functions
-    bool eventFilter(QObject *obj, QEvent *event) override;
     bool keyIsMovement(int key);
     void updateRecentFilesMenu();
-    bool saveChanges(bool heightMapMode);
+    bool saveChanges();
     void setFormActive(bool active) override;
     void populateRecentGcodeFilesMenu();
-    void populateRecentHeightMapFilesMenu();
     void clearRecentGcodeFilesMenu();
-    void clearRecentHeightMapFilesMenu();
     void setupToolbarActions();
     void setupToolbarSignals();
     void setupSettingsModelSignals();
     void setupMenuBarSignals();
     void setupGcodeFileModelSignals();
-    void setupHeightMapFileModelSignals();
     void setupRecentFilesModelsSignals();
     void setupGrblMachineModelSignals();
     void setupConsoleFormSignals();

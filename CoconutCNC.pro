@@ -49,14 +49,12 @@ TRANSLATIONS += \
 SOURCES +=\
     Main.cpp \
     Model/Gcode/GcodeTableModel.cpp \
-    Model/HeightMap/HeightMapTableModel.cpp \
     Model/Gcode/Parser/ArcProperties.cpp \
     Model/Gcode/Parser/GcodeParser.cpp \
     Model/Gcode/Parser/LineSegment.cpp \
     Model/Gcode/Parser/PointSegment.cpp \
     Model/StatusModel.cpp \
     Model/Gcode/GcodeFileModel.cpp \
-    Model/HeightMap/HeightMapFileModel.cpp \
     Model/RecentFilesModel.cpp \
     Model/Settings/AbstractSettingsModel.cpp \
     Model/Settings/Ini/IniFileSettingsModel.cpp \
@@ -85,9 +83,6 @@ SOURCES +=\
     View/Drawers/GridDrawer.cpp \
     View/Widgets/GLWidget.cpp \
     View/Drawers/GcodeDrawer.cpp \
-    View/Drawers/HeightMapBorderDrawer.cpp \
-    View/Drawers/HeightMapGridDrawer.cpp \
-    View/Drawers/HeightMapInterpolationDrawer.cpp \
     View/Drawers/OriginDrawer.cpp \
     View/Drawers/SelectionDrawer.cpp \
     View/Drawers/ShaderDrawable.cpp \
@@ -96,7 +91,6 @@ SOURCES +=\
     Controller/Settings/InterfaceFormController.cpp \
     Controller/Settings/MachineFormController.cpp \
     Controller/ControlFormController.cpp \
-    Controller/HeightMapFormController.cpp \
     Controller/ProgramFormController.cpp \
     Controller/StateFormController.cpp \
     Controller/UserCommandsFormController.cpp \
@@ -126,12 +120,10 @@ HEADERS  += \
     Model/Gcode/Parser/GcodeParser.h \
     Model/Gcode/Parser/LineSegment.h \
     Model/Gcode/Parser/PointSegment.h \
-    Model/HeightMap/HeightMapTableModel.h \
     Model/Gcode/GcodeTableModel.h \
     Model/Settings/Ini/IniFileSettingsModel.h \
     Model/StatusModel.h \
     Model/Gcode/GcodeFileModel.h \
-    Model/HeightMap/HeightMapFileModel.h \
     Model/RecentFilesModel.h \
     Model/Settings/AbstractSettingsModel.h \
     Model/SerialBaudRate.h \
@@ -153,9 +145,6 @@ HEADERS  += \
     Model/RecentFile.h \
     View/Drawers/GridDrawer.h \
     View/Drawers/GcodeDrawer.h \
-    View/Drawers/HeightMapBorderDrawer.h \
-    View/Drawers/HeightMapGridDrawer.h \
-    View/Drawers/HeightMapInterpolationDrawer.h \
     View/Drawers/OriginDrawer.h \
     View/Drawers/SelectionDrawer.h \
     View/Drawers/ShaderDrawable.h \
@@ -173,7 +162,6 @@ HEADERS  += \
     Controller/Settings/MachineFormController.h \
     Controller/Settings/ToolFormController.h \
     Controller/ControlFormController.h \
-    Controller/HeightMapFormController.h \
     Controller/ProgramFormController.h \
     Controller/StateFormController.h \
     Controller/UserCommandsFormController.h \
@@ -205,7 +193,6 @@ FORMS    += \
     View/ConsoleForm.ui \
     View/ControlForm.ui \
     View/FeedForm.ui \
-    View/HeightMapForm.ui \
     View/JogForm.ui \
     View/MainForm.ui \
     View/ProgramForm.ui \
