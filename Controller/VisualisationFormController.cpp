@@ -394,3 +394,8 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
         }
     }
 }
+
+void VisualisationFormController::onUpdateWCO(const QVector3D wco)
+{
+   mOriginDrawer.setPosition(wco);
+}

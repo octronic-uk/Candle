@@ -83,10 +83,11 @@ void GrblMachineModel::onConnect()
 {
     if (!mSerialPort.isOpen())
     {
-        /*qDebug() << "GrblMachineModel: Attempting to open port"
+        /*
+        qDebug() << "GrblMachineModel: Attempting to open port"
              << getPortName()
              << getBaudRate();
-             */
+        */
         openPort();
     }
 }
@@ -96,30 +97,12 @@ void GrblMachineModel::updateMachinePosition(const GrblResponse& response)
     // Update machine coordinates
     QString data = response.getData();
     static QRegExp machinePositionExpression("MPos:([^,]*),([^,]*),([^,|]*)");
-    int caps = machinePositionExpression.indexIn(data);
-    if (caps != -1)
+    if (machinePositionExpression.indexIn(data) != -1)
     {
-        for (int ix=0; ix<caps+1; ix++)
-        {
-            //qDebug() << "GrblMachineModel: Status Cap"
-             //        << ix
-              //       <<  machinePositionExpression.cap(ix);
-        }
-        mMachinePosition = QVector3D
-        (
-            machinePositionExpression.cap(1).toFloat(),
-            machinePositionExpression.cap(2).toFloat(),
-            machinePositionExpression.cap(3).toFloat()
-        );
-
-        //qDebug() << "GrblMachineModel: got MPos" << mMachinePosition;
-
-//        mCurrentFeedRate = machinePositionExpression.cap(4).toFloat();
-//        mCurrentSpindleSpeed = machinePositionExpression.cap(5).toFloat();
-
+        mMachinePosition.setX(machinePositionExpression.cap(1).toFloat());
+        mMachinePosition.setY(machinePositionExpression.cap(2).toFloat());
+        mMachinePosition.setZ(machinePositionExpression.cap(3).toFloat());
         emit updateMachinePositionSignal(mMachinePosition);
-        emit updateFeedRateSignal(mCurrentFeedRate);
-        emit updateSpindleSpeedSignal(mCurrentSpindleSpeed);
     }
 }
 
@@ -132,8 +115,22 @@ void GrblMachineModel::updateWorkCoordinateOffset(const GrblResponse& resp)
         mWorkCoordinateOffset.setX(workCoordExpression.cap(1).toFloat());
         mWorkCoordinateOffset.setY(workCoordExpression.cap(2).toFloat());
         mWorkCoordinateOffset.setZ(workCoordExpression.cap(3).toFloat());
-        //qDebug() << "GrblMachineModel: Got WCO" << mWorkCoordinateOffset;
+        emit updateWCOSignal(mWorkCoordinateOffset);
     }
+}
+
+void GrblMachineModel::updateSpindleSpeed(const GrblResponse& data)
+{
+    // TODO - Do spindle speed regex here
+    // emit updateSpindleSpeedSignal(mCurrentSpindleSpeed);
+    // mCurrentSpindleSpeed = machinePositionExpression.cap(5).toFloat();
+}
+
+void GrblMachineModel::updateFeedRate(const GrblResponse& data)
+{
+    // TODO - Do spindle speed regex here
+    // emit updateFeedRateSignal(mCurrentFeedRate);
+    // mCurrentFeedRate = machinePositionExpression.cap(4).toFloat();
 }
 
 void GrblMachineModel::updateWorkPosition()
@@ -141,7 +138,6 @@ void GrblMachineModel::updateWorkPosition()
     mWorkPosition.setX(mMachinePosition.x() - mWorkCoordinateOffset.x());
     mWorkPosition.setY(mMachinePosition.y() - mWorkCoordinateOffset.y());
     mWorkPosition.setZ(mMachinePosition.z() - mWorkCoordinateOffset.z());
-    //qDebug() << "GrblMachineModel: Got WPos" << mWorkPosition;
     emit updateWorkPositionSignal(mWorkPosition);
 }
 
@@ -158,7 +154,7 @@ void GrblMachineModel::parseGrblVersion(const GrblResponse& response)
 
 void GrblMachineModel::processResponse(const GrblResponse& response)
 {
-//    qDebug() << "GrblMachineModel: Process Response" << response.getData();
+    qDebug() << "GrblMachineModel: Process Response" << response.getData();
 
     mLastState = mState;
     GcodeCommand* next = nullptr;
@@ -184,6 +180,8 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             updateStatus(response);
             updateMachinePosition(response);
             updateWorkCoordinateOffset(response);
+            updateSpindleSpeed(response);
+            updateFeedRate(response);
             updateWorkPosition();
             //qDebug() << "GrblMachineModel: Got status!";
             mStatusRequested = false;
@@ -442,8 +440,10 @@ void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
 {
     mBytesWaiting -= bytes;
 
+    /*
     qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes
              << "/ Remaining:" << mBytesWaiting;
+             */
 }
 
 void GrblMachineModel::grblReset()

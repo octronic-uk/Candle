@@ -352,6 +352,11 @@ void MainFormController::setupGrblMachineModelSignals()
     );
     connect
     (
+        &mGrblMachineModel, SIGNAL(updateWCOSignal(const QVector3D)),
+        mUi.visualisationFormController, SLOT(onUpdateWCO(const QVector3D))
+    );
+    connect
+    (
         &mGrblMachineModel, SIGNAL(updateSpindleSpeedSignal(float)),
         mUi.spindleFormController, SLOT(onUpdateSpindleSpeed(float))
     );

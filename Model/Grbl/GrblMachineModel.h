@@ -77,6 +77,7 @@ signals:
     void updateSpindleSpeedSignal(float);
     void updateMachinePositionSignal(const QVector3D);
     void updateWorkPositionSignal(const QVector3D);
+    void updateWCOSignal(const QVector3D);
 
     void serialPortErrorSignal(QString errorMessage);
 
@@ -154,6 +155,8 @@ private: // Member Functions
     void updateMachinePosition(const GrblResponse& data);
     void updateWorkPosition();
     void updateWorkCoordinateOffset(const GrblResponse& data);
+    void updateSpindleSpeed(const GrblResponse& data);
+    void updateFeedRate(const GrblResponse& data);
     void setupSerialPort();
     bool isSpaceInBuffer(GcodeCommand* cmd);
     void startProgramSendTimer();

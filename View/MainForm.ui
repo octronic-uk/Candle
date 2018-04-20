@@ -109,12 +109,6 @@
     <addaction name="separator"/>
     <addaction name="actFileExit"/>
    </widget>
-   <widget class="QMenu" name="mnuService">
-    <property name="title">
-     <string>&amp;Service</string>
-    </property>
-    <addaction name="actFileSettings"/>
-   </widget>
    <widget class="QMenu" name="mnuHelp">
     <property name="title">
      <string>&amp;Help</string>
@@ -122,7 +116,6 @@
     <addaction name="actAbout"/>
    </widget>
    <addaction name="mnuFile"/>
-   <addaction name="mnuService"/>
    <addaction name="mnuHelp"/>
   </widget>
   <widget class="QDockWidget" name="controlDockWidget">

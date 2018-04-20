@@ -73,6 +73,7 @@ public slots:
     void onToggleToolButtonToggled(bool toggled);
     void onUpdateWorkPosition(const QVector3D);
     void onSettingsModelReady(SqlSettingsModel*);
+    void onUpdateWCO(const QVector3D);
 private slots:
 
     void onFollowToolButtonToggled(bool toggled);
