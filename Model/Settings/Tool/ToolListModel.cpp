@@ -165,6 +165,18 @@ Tool* ToolListModel::getSelected() const
     return mSelectedToolHandle;
 }
 
+Tool*ToolListModel::getToolByNumber(int num)
+{
+   for (auto tool : mData)
+   {
+       if (tool->getToolNumber() == num)
+       {
+           return tool.data();
+       }
+   }
+   return nullptr;
+}
+
 void ToolListModel::setSelectedToolHandle(Tool* selectedToolHandle)
 {
     mSelectedToolHandle = selectedToolHandle;

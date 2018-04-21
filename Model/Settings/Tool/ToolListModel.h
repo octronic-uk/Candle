@@ -57,6 +57,7 @@ public:
     QModelIndex getToolNumberIndex(Tool* holder);
 
     Tool* getSelected() const;
+    Tool* getToolByNumber(int num);
     void setSelectedToolHandle(Tool* selectedToolHandle);
 
 signals:

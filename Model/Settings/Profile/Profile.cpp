@@ -79,7 +79,7 @@ MachineSettings*Profile::getMachineSettingsHandle()
    return mMachineSettings.data();
 }
 
-ToolListModel*Profile::getToolListModelHandle()
+ToolListModel* Profile::getToolListModelHandle()
 {
    return mToolsListModel.data();
 }

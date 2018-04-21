@@ -138,6 +138,10 @@ public:
     QString getMarker() const;
     void setMarker(const QString marker);
 
+    bool isToolChangeCommand();
+    QString removeM6();
+    int getToolNumber();
+
 private:
     static long nextID();
     char mRawCommand;

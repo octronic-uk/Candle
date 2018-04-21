@@ -58,6 +58,7 @@ public:
 signals:
    void sendProgramSignal(const GcodeFileModel&);
    void sendProgramFromLineSignal(const GcodeFileModel&, long);
+   void toolChangeCompletedSignal();
 
 public slots:
     void onGrblMachineConnected(bool);
@@ -89,6 +90,7 @@ private slots:
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
     void onStopTriggered(bool ean);
+    void onToolChange(int);
 
 private: // Members
     Ui::MainForm mUi;

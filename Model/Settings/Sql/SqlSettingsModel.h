@@ -42,6 +42,7 @@ public:
     bool createNewProfile(QString);
     ProfilesListModel* getProfilesListModelHandle();
     ToolHolder* getToolHolderByID(int id);
+    Tool* getToolByNumber(int num);
 
 signals:
     void settingsModelReadySignal(SqlSettingsModel*);

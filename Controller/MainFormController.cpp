@@ -380,6 +380,17 @@ void MainFormController::setupGrblMachineModelSignals()
         &mGrblMachineModel, SIGNAL(machineConnectedSigal(bool)),
         this, SLOT(onGrblMachineConnected(bool))
     );
+    // Tool Change
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(toolChangeSignal(int)),
+        this, SLOT(onToolChange(int))
+    );
+    connect
+    (
+        this, SIGNAL(toolChangeCompletedSignal()),
+        &mGrblMachineModel, SLOT(onToolChangeCompleted())
+    );
 
 }
 
@@ -826,5 +837,33 @@ void MainFormController::onStopTriggered(bool checked)
         mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::CyclePauseResume());
         mUi.actionStop->setText("Feed Hold");
         mUi.actionStop->setIcon(QIcon(":/Images/SVG/hand-paper.svg"));
+    }
+}
+
+void MainFormController::onToolChange(int tool)
+{
+    // TODO - get tool info from settings model
+    Tool* requestedTool = mSqlSettingsModel->getToolByNumber(tool);
+    QString toolStr;
+    if (requestedTool)
+    {
+       toolStr = "("+QString::number(tool)+") "+requestedTool->getName();
+    }
+    else
+    {
+        toolStr = QString::number(tool);
+    }
+
+    auto result = QMessageBox::information
+    (
+        &mMainWindow,
+        tr("Tool Change"),
+        QString("Tool Change Detected.\n\nPlease change to tool %1 and click 'Ok' to proceed.").arg(toolStr),
+        QMessageBox::Ok
+    );
+
+    if (result == QMessageBox::Ok)
+    {
+       emit toolChangeCompletedSignal();
     }
 }

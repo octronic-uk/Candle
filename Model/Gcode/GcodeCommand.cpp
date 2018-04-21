@@ -263,6 +263,27 @@ void GcodeCommand::setMarker(const QString marker)
     mMarker = marker;
 }
 
+bool GcodeCommand::isToolChangeCommand()
+{
+   return mCommand.contains("M6");
+}
+
+QString GcodeCommand::removeM6()
+{
+    QString noM6 = mCommand;
+    return noM6.replace("M6","  ");
+}
+
+int GcodeCommand::getToolNumber()
+{
+    static QRegExp toolNumRegex("T(\\d+)");
+    if (toolNumRegex.indexIn(mCommand) > -1)
+    {
+        return toolNumRegex.cap(1).toInt();
+    }
+    return -1;
+}
+
 GrblResponse GcodeCommand::getResponse() const
 {
     return mResponse;

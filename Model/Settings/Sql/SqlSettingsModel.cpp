@@ -117,6 +117,13 @@ ToolHolder* SqlSettingsModel::getToolHolderByID(int id)
    return nullptr;
 }
 
+Tool* SqlSettingsModel::getToolByNumber(int num)
+{
+    return getCurrentProfileHandle()
+            ->getToolListModelHandle()
+            ->getToolByNumber(num);
+}
+
 bool SqlSettingsModel::createNewProfile(Profile* profile)
 {
     if (!insertProfileInDB(profile))

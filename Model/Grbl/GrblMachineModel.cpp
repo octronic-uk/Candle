@@ -42,7 +42,8 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mBytesWaiting(0),
       mStatusRequested(false),
       mWaitingForStatus(false),
-      mProgramRunning(false)
+      mProgramRunning(false),
+      mToolChangeWaiting(false)
 {
     setupSerialPort();
     // Setup timer
@@ -408,6 +409,12 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         return false;
     }
 
+    if (mToolChangeWaiting)
+    {
+        qDebug() << "GrblMachineModel: Tool change waiting...";
+        return false;
+    }
+
     // Serial port has been flushed
     if (mBytesWaiting == 0)
     {
@@ -425,8 +432,20 @@ bool GrblMachineModel::sendNextCommandFromQueue()
             // Take the command off the queue for processing
             command = mCommandQueue.takeFirst();
             mCommandBuffer.append(command);
-            mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
-            command->setState(GcodeCommandState::Sent);
+
+            if (command->isToolChangeCommand())
+            {
+                mToolChangeWaiting = true;
+                mBytesWaiting += mSerialPort.write(command->removeM6().toLatin1());
+                emit toolChangeSignal(command->getToolNumber());
+                command->setState(GcodeCommandState::Sent);
+                break;
+            }
+            else
+            {
+                mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
+                command->setState(GcodeCommandState::Sent);
+            }
         }
         return true;
     }
@@ -438,17 +457,6 @@ void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
 {
     mBytesWaiting -= bytes;
     qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
-}
-
-void GrblMachineModel::grblReset()
-{
-    //qDebug() << "GrblMachineModel: Grbl Reset";
-    mProgramRunning = false;
-    // Drop all remaining commands in buffer
-    clearCommandBuffer();
-    clearCommandQueue();
-    // Write the C^X
-    mBytesWaiting += mSerialPort.write(QByteArray(1, static_cast<char>(24)));
 }
 
 void GrblMachineModel::onSendProgram(const GcodeFileModel& gcodeFile)
@@ -641,6 +649,11 @@ void GrblMachineModel::onUpdateRapidOverride(float rate)
 
 }
 
+void GrblMachineModel::onToolChangeCompleted()
+{
+    mToolChangeWaiting = false;
+}
+
 void GrblMachineModel::onUpdateSpindleOverride(float speed)
 {
 
@@ -660,12 +673,17 @@ int GrblMachineModel::bufferLengthInUse()
 {
     int length = 0;
 
+    qDebug() << "GrblMachineModel: Commands in buffer:";
     for (GcodeCommand* gc : mCommandBuffer)
     {
+        qDebug() << "\t" << gc->getLine()
+                 << "|" << gc->getCommand()
+                 << "|" << gc->getArgs();
+
         length += gc->getCommandLength();
     }
 
-    //qDebug() << "GrblMachineModel: Buffer in use:" << length;
+    qDebug() << "GrblMachineModel: Buffer in use:" << length;
     return length;
 }
 
@@ -673,8 +691,11 @@ bool GrblMachineModel::isSpaceInBuffer(GcodeCommand* cmd)
 {
     int bufferLeft = BUFFER_LENGTH_LIMIT - bufferLengthInUse();
     int bufferUsed = BUFFER_LENGTH_LIMIT - bufferLeft;
+    qDebug() << "GrblMachineModel: Buffer Left" << bufferLeft
+             << "cmd length" << cmd->getCommandLength();
+
     emit setBufferProgressSignal(((float)bufferUsed/BUFFER_LENGTH_LIMIT)*100);
-    return (bufferLeft) > (cmd->getCommandLength());
+    return bufferLeft >= cmd->getCommandLength();
 }
 
 GcodeCommand GrblMachineModel::feedOverride(GcodeCommand* command, double overridePercent)

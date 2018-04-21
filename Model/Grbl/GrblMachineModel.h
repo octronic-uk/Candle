@@ -45,7 +45,6 @@ public:
     void initialise();
     int bufferLengthInUse();
     bool sendNextCommandFromQueue();
-    void grblReset();
     bool isPortOpen();
     int commandsQueueLength();
     QString getPortName();
@@ -98,6 +97,7 @@ signals:
     void machineConnectedSigal(bool);
 
     void firmwareConfigurationReadSignal(int,QString);
+    void toolChangeSignal(int);
 
 public slots:
     void onSendProgram(const GcodeFileModel& gcodeFile);
@@ -107,6 +107,7 @@ public slots:
     void onUpdateSpindleOverride(float speed);
     void onUpdateFeedOverride(float rate);
     void onUpdateRapidOverride(float rate);
+    void onToolChangeCompleted();
 
 private slots:
     void onConnect();
@@ -147,6 +148,7 @@ private: // Members
     bool mWaitingForStatus;
     QMap<int,QString> mFirmwareConfiguration;
     bool mProgramRunning;
+    bool mToolChangeWaiting;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
