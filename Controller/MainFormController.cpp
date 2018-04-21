@@ -476,6 +476,9 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.stateFormController->setClass(StateClass::Danger);
             break;
         case GrblMachineState::Run:
+            mUi.jogFormController->setFormActive(false);
+            mUi.consoleFormController->setFormActive(false);
+            mUi.controlFormController->setFormActive(false);
             mUi.stateFormController->setClass(StateClass::Success);
             break;
         case GrblMachineState::Home:
@@ -494,6 +497,8 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.stateFormController->setClass(StateClass::Danger);
             break;
         case GrblMachineState::Jog:
+            mUi.consoleFormController->setFormActive(false);
+            mUi.overrideFormController->setFormActive(false);
             mUi.stateFormController->setClass(StateClass::Warning);
             break;
 

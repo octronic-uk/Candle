@@ -80,11 +80,6 @@ void GrblMachineModel::onConnect()
 {
     if (!mSerialPort.isOpen())
     {
-        /*
-        qDebug() << "GrblMachineModel: Attempting to open port"
-             << getPortName()
-             << getBaudRate();
-        */
         openPort();
     }
 }
@@ -124,7 +119,6 @@ void GrblMachineModel::updateWorkCoordinateOffset(const GrblResponse& resp)
     and spindle speed,
     respectively.
 */
-
 void GrblMachineModel::updateOverrides(const GrblResponse& data)
 {
     static QRegExp overridesRegex("Ov:(\\d+),(\\d+),(\\d+)");
@@ -268,10 +262,6 @@ void GrblMachineModel::parseError(const GrblResponse& error)
         else if (errorStrRegex.indexIn(trimmedError) != -1)
         {
             mErrorString = errorStrRegex.cap(1);
-        }
-        else
-        {
-            //qDebug() << "GrblMachineModel: Error code not found in regex pattern";
         }
     }
 }
