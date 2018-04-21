@@ -104,5 +104,6 @@
         <file>Images/SVG/search.svg</file>
         <file>Images/SVG/gamepad.svg</file>
         <file>Images/SVG/exchange-alt.svg</file>
+        <file>Images/SVG/thumbs-up.svg</file>
     </qresource>
 </RCC>

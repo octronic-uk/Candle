@@ -135,10 +135,10 @@ void GrblMachineModel::updateOverrides(const GrblResponse& data)
        mRapidOverride = overridesRegex.cap(2).toFloat();
        mSpindleOverride = overridesRegex.cap(3).toFloat();
 
-       qDebug() << QString("GrblMachineController: Got overrides F%1 R%2 S%3")
-               .arg(mFeedOverride)
-               .arg(mRapidOverride)
-               .arg(mSpindleOverride);
+       qDebug() << "GrblMachineController: Got overrides"
+                << "F" << mFeedOverride
+                << "R" << mRapidOverride
+                << "S" << mSpindleOverride;
 
        emit updateFeedOverrideSignal(mFeedOverride);
        emit updateRapidOverrideSignal(mRapidOverride);
@@ -435,7 +435,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
             // Take the command off the queue for processing
             command = mCommandQueue.takeFirst();
             mCommandBuffer.append(command);
-            mBytesWaiting += mSerialPort.write(QString(command->getCommand() + "\r").toLatin1());
+            mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
             command->setState(GcodeCommandState::Sent);
         }
         return true;
@@ -534,16 +534,15 @@ void GrblMachineModel::stopStatusTimer()
 
 void GrblMachineModel::updateStatus(GrblResponse response)
 {
-    /*qDebug() << "GrblMachineModel: Updating status from response"
+    qDebug() << "GrblMachineModel: Updating status from response"
              << response.getData();
-             */
 
-    static QRegExp statusRegex("<([^|<]\\w+)\\|");
+    static QRegExp statusRegex("<([^|<]\\w+)[:\\|]");
 
     if (statusRegex.indexIn(response.getData()) >=0)
     {
         QString stateStr = statusRegex.cap(1);
-        //qDebug() << "GrblMachineModel: parsing state from" << stateStr;
+        qDebug() << "GrblMachineModel: parsing state from" << stateStr;
         mLastState = mState;
         mState = stateFromString(stateStr);
         if (mState != mLastState)
@@ -641,7 +640,7 @@ void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
         else
         {
             qDebug() << "GrblMachineController: Manual ASCII Gcode Send" << command->getCommand();
-            mBytesWaiting += mSerialPort.write(QString(command->getCommand()+"\r").toLatin1());
+            mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
         }
         mSerialPort.flush();
     }
@@ -673,7 +672,7 @@ int GrblMachineModel::bufferLengthInUse()
 
     for (GcodeCommand* gc : mCommandBuffer)
     {
-        length += gc->getCommandLength()+1;
+        length += gc->getCommandLength();
     }
 
     //qDebug() << "GrblMachineModel: Buffer in use:" << length;
@@ -685,7 +684,7 @@ bool GrblMachineModel::isSpaceInBuffer(GcodeCommand* cmd)
     int bufferLeft = BUFFER_LENGTH_LIMIT - bufferLengthInUse();
     int bufferUsed = BUFFER_LENGTH_LIMIT - bufferLeft;
     emit setBufferProgressSignal(((float)bufferUsed/BUFFER_LENGTH_LIMIT)*100);
-    return (bufferLeft) > (cmd->getCommandLength()+1);
+    return (bufferLeft) > (cmd->getCommandLength());
 }
 
 GcodeCommand GrblMachineModel::feedOverride(GcodeCommand* command, double overridePercent)

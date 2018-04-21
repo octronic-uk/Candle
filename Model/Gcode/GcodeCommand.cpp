@@ -65,7 +65,7 @@ GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
 
 GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
 {
-    static GcodeCommand gc("G90");
+    static GcodeCommand gc("G90\r");
     return &gc;
 }
 
@@ -77,20 +77,20 @@ GcodeCommand* GcodeCommand::ControlXCommand()
 
 GcodeCommand* GcodeCommand::GetConfigurationCommand()
 {
-    static GcodeCommand doubleBuck("$$");
+    static GcodeCommand doubleBuck("$$\r");
     return &doubleBuck;
 }
 
 GcodeCommand* GcodeCommand::SetConfigurationCommand(int param, QString value)
 {
     static GcodeCommand doubleBuck;
-    doubleBuck = (QString("$%1=%2").arg(param).arg(value));
+    doubleBuck = (QString("$%1=%2\r").arg(param).arg(value));
     return &doubleBuck;
 }
 
 GcodeCommand* GcodeCommand::UnlockCommand()
 {
-    static GcodeCommand gc("$X");
+    static GcodeCommand gc("$X\r");
     return &gc;
 }
 
@@ -108,43 +108,43 @@ GcodeCommand* GcodeCommand::StatusUpdateCommand()
 
 GcodeCommand* GcodeCommand::SpindleCounterClockwiseCommand()
 {
-    static GcodeCommand gc("M4");
+    static GcodeCommand gc("M4\r");
     return &gc;
 }
 
 GcodeCommand* GcodeCommand::SpindleClockwiseCommand()
 {
-    static GcodeCommand gc("M3");
+    static GcodeCommand gc("M3\r");
     return &gc;
 }
 
 GcodeCommand* GcodeCommand::SpindleStopCommand()
 {
-    static GcodeCommand gc("M5");
+    static GcodeCommand gc("M5\r");
     return &gc;
 }
 
 GcodeCommand* GcodeCommand::HomingCommand()
 {
-   static GcodeCommand gc("$H");
+   static GcodeCommand gc("$H\r");
    return &gc;
 }
 
 GcodeCommand* GcodeCommand::ZeroXYCommand()
 {
-   static GcodeCommand gc("G92X0Y0");
+   static GcodeCommand gc("G92X0Y0\r");
    return &gc;
 }
 
 GcodeCommand*GcodeCommand::GetGcodeParamsCommand()
 {
-   static GcodeCommand gc("$#");
+   static GcodeCommand gc("$#\r");
    return &gc;
 }
 
 GcodeCommand*GcodeCommand::ZeroZCommand()
 {
-   static GcodeCommand gc("G92Z0");
+   static GcodeCommand gc("G92Z0\r");
    return &gc;
 }
 
@@ -154,9 +154,9 @@ GcodeCommand* GcodeCommand::CyclePauseResume()
     return &gc;
 }
 
-GcodeCommand* GcodeCommand::StopCommand()
+GcodeCommand* GcodeCommand::FeedHoldCommand()
 {
-   static GcodeCommand gc("~");
+   static GcodeCommand gc("!");
    return &gc;
 }
 
@@ -168,7 +168,7 @@ GcodeCommand* GcodeCommand::JogCommand
     bool machineCoordinates
 )
 {
-    static QString jogString = "$J=%1 %2 X%3 Y%4 Z%5 F%6";
+    static QString jogString = "$J=%1 %2 X%3 Y%4 Z%5 F%6\r";
     static GcodeCommand gc;
     gc = GcodeCommand(
         jogString

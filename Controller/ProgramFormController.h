@@ -37,9 +37,6 @@ public:
     explicit ProgramFormController(QWidget *parent = nullptr);
     ~ProgramFormController() override;
 
-    bool isPauseChecked();
-    void setPauseChecked(bool);
-
     bool isAutoScrollChecked();
     void setAutoScrollChecked(bool);
     int getChkTestModeWidth(); // sizehint->width
@@ -50,9 +47,6 @@ public:
 
 signals:
     void setKeyboardControlSignal(bool);
-    void programAbortSignal();
-    void programPauseSignal(QString);
-    void programResetSignal();
     void sendProgramSignal();
     void sendProgramFromLineSignal(long);
     void gcodeCommandManualSendSignal(GcodeCommand*);
@@ -60,9 +54,6 @@ signals:
 public slots:
     void onReserveGcodeRowsSignal(int);
     void onTestModeButtonClicked(bool checked);
-    void onAbortButtonClicked();
-    void onPauseButtonClicked(bool checked);
-    void onResetButtonClicked();
 
     void onTableInsertLine();
     void onTableDeleteLines();

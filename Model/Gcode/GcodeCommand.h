@@ -89,7 +89,7 @@ public:
     static GcodeCommand* GetGcodeParamsCommand();
     static GcodeCommand* ZeroZCommand();
     static GcodeCommand* CyclePauseResume();
-    static GcodeCommand* StopCommand();
+    static GcodeCommand* FeedHoldCommand();
     static GcodeCommand* GetConfigurationCommand();
     static GcodeCommand* SetConfigurationCommand(int param, QString value);
 

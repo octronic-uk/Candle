@@ -107,16 +107,6 @@ void ProgramFormController::setupSendMenu()
     );
 }
 
-bool ProgramFormController::isPauseChecked()
-{
-    return mUi.pauseButton->isChecked();
-}
-
-void ProgramFormController::setPauseChecked(bool checked)
-{
-    mUi.pauseButton->setChecked(checked);
-}
-
 bool ProgramFormController::isAutoScrollChecked()
 {
     return mUi.autoScrollButton->isChecked();
@@ -130,10 +120,7 @@ void ProgramFormController::setAutoScrollChecked(bool checked)
 void ProgramFormController::setFormActive(bool active)
 {
     mUi.sendButton->setEnabled(active);
-    mUi.resetButton->setEnabled(active);
-    mUi.abortButton->setEnabled(active);
     mUi.testModeButton->setEnabled(active);
-    mUi.pauseButton->setEnabled(active);
     mUi.autoScrollButton->setEnabled(active);
 }
 
@@ -380,12 +367,6 @@ void ProgramFormController::setupSignalSlots()
         this,
         SLOT(onMarkerSelectionChanged(const QItemSelection&, const QItemSelection&))
     );
-
-    connect
-    (
-        mUi.pauseButton, SIGNAL(toggled(bool)),
-        this, SLOT(onPauseButtonClicked(bool))
-    );
 }
 
 void ProgramFormController::onMarkerSelectionChanged
@@ -430,9 +411,7 @@ void ProgramFormController::onSendActionTriggered()
     {
         return;
     }
-    onResetButtonClicked();
     emit setKeyboardControlSignal(false);
-    mUi.pauseButton->setFocus();
     emit sendProgramSignal();
 }
 
@@ -600,32 +579,6 @@ void ProgramFormController::onTestModeButtonClicked(bool checked)
 {
     Q_UNUSED(checked)
     //qDebug() << "ProgramFormController: onChkBoxTestClicked";
-}
-
-void ProgramFormController::onAbortButtonClicked()
-{
-    //qDebug() << "ProgramFormController: onCmdFileAbortClicked";
-    emit programAbortSignal();
-}
-
-void ProgramFormController::onPauseButtonClicked(bool checked)
-{
-    //qDebug() << "ProgramFormController: onPauseButtonClicked";
-    if (checked)
-    {
-        mUi.pauseButton->setText("Resume");
-    }
-    else
-    {
-        mUi.pauseButton->setText("Pause");
-    }
-    emit gcodeCommandManualSendSignal(GcodeCommand::CyclePauseResume());
-}
-
-void ProgramFormController::onResetButtonClicked()
-{
-    //qDebug() << "ProgramFormController: onCmdFileResetClicked";
-    emit programResetSignal();
 }
 
 void ProgramFormController::onScrollBarAction(int action)

@@ -116,8 +116,8 @@ void MainFormController::setupToolbarSignals()
     // Stop
     connect
     (
-        mUi.actionStop, SIGNAL(triggered()),
-        this, SLOT(onStopTriggered())
+        mUi.actionStop, SIGNAL(toggled(bool)),
+        this, SLOT(onStopTriggered(bool))
     );
 
 }
@@ -806,7 +806,20 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mUi.statusBar->addPermanentWidget(&mBufferProgressBar);
 }
 
-void MainFormController::onStopTriggered()
+void MainFormController::onStopTriggered(bool checked)
 {
-    mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::StopCommand());
+    // in resume state
+    if (checked)
+    {
+        mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::FeedHoldCommand());
+        mUi.actionStop->setText("Resume");
+        mUi.actionStop->setIcon(QIcon(":/Images/SVG/thumbs-up.svg"));
+    }
+    // in feed hold mode
+    else
+    {
+        mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::CyclePauseResume());
+        mUi.actionStop->setText("Feed Hold");
+        mUi.actionStop->setIcon(QIcon(":/Images/SVG/hand-paper.svg"));
+    }
 }

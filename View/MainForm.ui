@@ -392,15 +392,21 @@
    </property>
   </action>
   <action name="actionStop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../Resources/Images.qrc">
      <normaloff>:/Images/SVG/hand-paper.svg</normaloff>:/Images/SVG/hand-paper.svg</iconset>
    </property>
    <property name="text">
-    <string>Stop</string>
+    <string>Feed Hold</string>
    </property>
    <property name="toolTip">
     <string>Stop</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
    </property>
   </action>
  </widget>

@@ -105,7 +105,7 @@ void GcodeFileModel::load(QList<QString> data)
             }
             else
             {
-                item->setCommand(trimmed);
+                item->setCommand(trimmed + "\r");
                 item->setState(GcodeCommandState::InQueue);
             }
             item->setLine(mGcodeParser->getCommandNumber());

@@ -88,7 +88,7 @@ private slots:
     void onActRecentFileTriggered();
     void onMachineStateUpdated(const GrblMachineState& state);
     void onActionClearAllTriggered();
-    void onStopTriggered();
+    void onStopTriggered(bool ean);
 
 private: // Members
     Ui::MainForm mUi;
