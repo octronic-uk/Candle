@@ -59,6 +59,9 @@ private slots:
 
     void onKeyboardControlToggled(bool checked);
     void onJoystickControlToggled(bool checked);
+protected:
+    void keyPressEvent(QKeyEvent *event);
+
 
 private:
     JogForm mUi;

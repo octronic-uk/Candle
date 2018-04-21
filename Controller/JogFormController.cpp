@@ -15,8 +15,10 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
+
 #include "JogFormController.h"
 #include <QPushButton>
+#include <QKeyEvent>
 #include <QtDebug>
 
 #include "Model/Gcode/GcodeCommand.h"
@@ -40,11 +42,56 @@ JogFormController::~JogFormController()
 void JogFormController::onKeyboardControlToggled(bool checked)
 {
    mKeyboardControl = checked;
+   mKeyboardControl ? grabKeyboard() : releaseKeyboard();
 }
 
 void JogFormController::onJoystickControlToggled(bool checked)
 {
     mJoystickControl=checked;
+}
+
+void JogFormController::keyPressEvent(QKeyEvent* event)
+{
+   qDebug() << "JogFormController: T'hasty little key event dere";
+
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+
+   switch(event->key())
+   {
+      case Qt::Key_Up:
+           y = getStepValue();
+           break;
+      case Qt::Key_Down:
+           y = -getStepValue();
+           break;
+      case Qt::Key_Left:
+           x = -getStepValue();
+           break;
+      case Qt::Key_Right:
+           x = getStepValue();
+           break;
+      case Qt::Key_PageUp:
+           z = getStepValue();
+           break;
+      case Qt::Key_PageDown:
+           z = -getStepValue();
+           break;
+   }
+
+    qDebug() << QString("JogFormController: Stepping: X:%1 Y:%2 Z:%3 @ F:%4")
+        .arg(x)
+        .arg(y)
+        .arg(z)
+        .arg(getFeedRate()
+    );
+
+    GcodeCommand* jogCmd = GcodeCommand::JogCommand(x,y,z,getFeedRate(),false,false);
+
+    qDebug() << "JogFormController:" << jogCmd->getCommand();
+
+    emit gcodeCommandManualSendSignal(jogCmd);
 }
 
 
@@ -57,6 +104,7 @@ void JogFormController::setFormActive(bool active)
         child->setEnabled(active);
     }
 }
+
 
 void JogFormController::initialise()
 {
