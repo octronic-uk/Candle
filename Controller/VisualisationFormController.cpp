@@ -401,18 +401,6 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
             mToolDrawer.setToolHandle(tool);
             mToolDrawer.update();
         }
-
-        if (machine)
-        {
-            int width = machine->getWorkAreaWidth();
-            int height = machine->getWorkAreaHeight();
-
-            mWorkArea.setX(width);
-            mWorkArea.setY(height);
-
-            // Choose biggest
-            mGridDrawer.setSize(width > height ? width : height);
-        }
     }
 }
 
@@ -421,5 +409,33 @@ void VisualisationFormController::onUpdateWCO(const QVector3D wco)
    mWCO = wco;
    mOriginDrawer.setPosition(mWCO + mWorkArea);
    mCodeDrawer.setPosition(mWCO + mWorkArea);
+}
+
+void VisualisationFormController::onFirmwareConfigurationRead(int param, QString value)
+{
+    /*
+        $130	X Max travel
+        $131	Y Max travel
+        $132	Z Max travel
+    */
+
+    qDebug() << "VisualisationFormController: Firmware Config Read";
+
+    switch (param)
+    {
+        case 130:
+            mWorkArea.setX(value.toFloat());
+            break;
+        case 131:
+            mWorkArea.setY(value.toFloat());
+            break;
+        case 132:
+            mWorkArea.setZ(value.toFloat());
+            break;
+        default:
+            break;
+    }
+
+    mGridDrawer.setSize(mWorkArea);
 }
 

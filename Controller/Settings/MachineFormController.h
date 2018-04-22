@@ -56,9 +56,6 @@ public:
     int rapidSpeed();
     void setRapidSpeed(int rapidSpeed);
 
-    QString heightmapProbingFeed();
-    void setHeightmapProbingFeed(QString heightmapProbingFeed);
-
     int acceleration();
     void setAcceleration(int acceleration);
 
@@ -93,13 +90,9 @@ private slots:
     void onUserCommand2ValueChanged(QString);
     void onUserCommand3ValueChanged(QString);
     void onUserCommand4ValueChanged(QString);
-    void onHeightMapProbingFeedValueChanged(QString);
-    void onWorkAreaWidthValueChanged(int);
-    void onWorkAreaHeightValueChanged(int);
 private:
     Ui::MachineForm mUi;
     SqlSettingsModel* mSettingsModelHandle;
-
 
     MachineSettings*getSettings();
     bool isModelValid();

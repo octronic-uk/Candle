@@ -73,6 +73,9 @@ public slots:
     void onUpdateWorkPosition(const QVector3D);
     void onUpdateMachinePosition(const QVector3D);
     void onUpdateWCO(const QVector3D);
+
+    void onFirmwareConfigurationRead(int param, QString value);
+
 private slots:
 
     void onFollowToolButtonToggled(bool toggled);

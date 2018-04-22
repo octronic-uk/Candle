@@ -48,17 +48,17 @@ public:
     float getMinorSpacing() const;
     void setMinorSpacing(float minorSpacing);
 
-    float getSize() const;
-    void setSize(float size);
+    QVector3D getSize() const;
+    void setSize(QVector3D size);
 public slots:
-    void onSizeUpdated(float size);
+    void onSizeUpdated(QVector3D size);
 protected:
     bool updateData() override;
 
 private:
     float mMajorSpacing;
     float mMinorSpacing;
-    float mSize;
+    QVector3D mSize;
     QColor mMajorColor;
     QColor mMinorColor;
     QColor mTextColor;

@@ -49,11 +49,6 @@ void MachineFormController::setupSignalSlots()
     connect(mUi.txtUserCommand1, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand2ValueChanged(QString)));
     connect(mUi.txtUserCommand2, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand3ValueChanged(QString)));
     connect(mUi.txtUserCommand3, SIGNAL(textEdited(QString)), this, SLOT(onUserCommand4ValueChanged(QString)));
-    // Height Mep
-    connect(mUi.txtHeightMapProbingFeed, SIGNAL(textEdited(QString)), this, SLOT(onHeightMapProbingFeedValueChanged(QString)));
-    // Work Area
-    connect(mUi.workAreaWidthSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onWorkAreaWidthValueChanged(int)));
-    connect(mUi.workAreaHeightSpinBox,SIGNAL(valueChanged(int)),this,SLOT(onWorkAreaHeightValueChanged(int)));
 }
 
 void MachineFormController::setFormActive(bool)
@@ -75,10 +70,7 @@ void MachineFormController::initialise()
         setSafePositionCommand(settings->getSafePositionCmds());
         setMoveOnRestore(settings->getRestoreOrigin());
         setRestoreMode(settings->getRestoreType());
-        setHeightmapProbingFeed(QString::number(settings->getHeightMapProbeFeed()));
         setUnits(settings->getUnits());
-        mUi.workAreaWidthSpinBox->setValue(settings->getWorkAreaWidth());
-        mUi.workAreaHeightSpinBox->setValue(settings->getWorkAreaHeight());
     }
 }
 
@@ -140,16 +132,6 @@ int MachineFormController::rapidSpeed()
 void MachineFormController::setRapidSpeed(int rapidSpeed)
 {
     mUi.txtRapidSpeed->setValue(rapidSpeed);
-}
-
-QString MachineFormController::heightmapProbingFeed()
-{
-    return mUi.txtHeightMapProbingFeed->text();
-}
-
-void MachineFormController::setHeightmapProbingFeed(QString heightmapProbingFeed)
-{
-    mUi.txtHeightMapProbingFeed->setText(heightmapProbingFeed);
 }
 
 int MachineFormController::acceleration()
@@ -371,39 +353,6 @@ void MachineFormController::onUserCommand4ValueChanged(QString value)
     {
         auto settings = getSettings();
         settings->setUserCmd4(value);
-        commit();
-    }
-}
-
-void MachineFormController::onHeightMapProbingFeedValueChanged(QString value)
-{
-    qDebug() << "MachineFormController: height map" << value;
-    if (isModelValid())
-    {
-        auto settings = getSettings();
-        settings->setHeightMapProbeFeed(value.toInt());
-        commit();
-    }
-}
-
-void MachineFormController::onWorkAreaWidthValueChanged(int width)
-{
-    qDebug() << "MachineFormController: work area width" << width;
-    if (isModelValid())
-    {
-        auto settings = getSettings();
-        settings->setWorkAreaWidth(width);
-        commit();
-    }
-}
-
-void MachineFormController::onWorkAreaHeightValueChanged(int height)
-{
-    qDebug() << "MachineFormController: work area height" << height;
-    if (isModelValid())
-    {
-        auto settings = getSettings();
-        settings->setWorkAreaHeight(height);
         commit();
     }
 }

@@ -162,6 +162,11 @@ void MainFormController::setupSettingsModelSignals()
         &mGrblMachineModel, SIGNAL(firmwareConfigurationReadSignal(int,QString)),
         &mSettingsFormController, SLOT(onFirmwareConfigurationRead(int,QString))
     );
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(firmwareConfigurationReadSignal(int,QString)),
+        mUi.visualisationFormController, SLOT(onFirmwareConfigurationRead(int,QString))
+    );
     connect(
         mSettingsFormController.getGrblConfigurationFormControllerHandle(),
         SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),

@@ -173,7 +173,6 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             parseAlarmResponse(response);
             break;
         case GrblResponseType::Startup:
-            //qDebug() << "GrblMachineModel: Got a Startup Message";
             parseGrblVersion(response);
             emit appendResponseToConsoleSignal(response);
             mStatusRequested = false;
@@ -186,6 +185,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
         case GrblResponseType::Unlocked:
             mState = GrblMachineState::Unlocked;
             emit appendResponseToConsoleSignal(response);
+            onGcodeCommandManualSend(GcodeCommand::GetGcodeParamsCommand());
             break;
         case GrblResponseType::Status:
             updateStatus(response);

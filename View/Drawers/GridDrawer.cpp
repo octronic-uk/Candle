@@ -23,7 +23,7 @@ GridDrawer::GridDrawer(float size, float major, float minor)
     : ShaderDrawable (),
       mMajorSpacing(major),
       mMinorSpacing(minor),
-      mSize(size),
+      mSize(size,size,size),
       mMajorColor(QColor("Black")),
       mMinorColor(QColor("DarkGray")),
       mTextColor(QColor(255,255,255))
@@ -62,10 +62,11 @@ int GridDrawer::getVertexCount()
 
 bool GridDrawer::updateData()
 {
+    // TODO - support rectangle sizes
     mLines.clear();
 
     float start = 0;//-(mSize/2);
-    float end = mSize;//(mSize/2);
+    float end = mSize.x();//(mSize/2);
 
     // X Lines
     for (float yPos = start; yPos <= end; yPos += mMinorSpacing)
@@ -92,19 +93,19 @@ bool GridDrawer::updateData()
    return true;
 }
 
-float GridDrawer::getSize() const
+QVector3D GridDrawer::getSize() const
 {
     return mSize;
 }
 
-void GridDrawer::setSize(float size)
+void GridDrawer::setSize(QVector3D size)
 {
     mSize = size;
 }
 
-void GridDrawer::onSizeUpdated(float size)
+void GridDrawer::onSizeUpdated(QVector3D size)
 {
-   setSize(size);
+    setSize(size);
     updateData();
 }
 
