@@ -87,6 +87,9 @@ public:
     GcodeParser getParser() const;
     void setParser(const GcodeParser& parser);
 
+    QVector3D getPosition() const;
+    void setPosition(QVector3D position);
+
 signals:
 
 public slots:
@@ -112,6 +115,7 @@ private:
     QImage mImage;
     QList<int> mIndexes;
     bool mGeometryUpdated;
+    QVector3D mPosition;
 
     bool prepareVectors();
     bool updateVectors();

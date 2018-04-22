@@ -26,12 +26,17 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
       mSpindleClockwise(false),
       mSettingsModelHandle(nullptr)
 
+
 {
     qDebug() << "VisualisationFormController: Constructing ";
 
     mUi.setupUi(this);
     mViewParser = QSharedPointer<GcodeViewParser>::create(this);
     mProbeParser = QSharedPointer<GcodeViewParser>::create(this);
+    mWorkArea = QVector3D(280,280,80);
+    mWCO = QVector3D(0,0,0);
+    mMachinePosition = QVector3D(0,0,0);
+    mWorkPosition = QVector3D(0,0,0);
 
     /*
     mUi.cmdFit->setParent(mUi.glwVisualizer);
@@ -360,10 +365,22 @@ void VisualisationFormController::onFollowToolButtonToggled(bool toggled)
 
 void VisualisationFormController::onUpdateWorkPosition(const QVector3D pos)
 {
-    mToolDrawer.setToolPosition(pos);
+    mWorkPosition = pos;
+}
+
+void VisualisationFormController::onUpdateMachinePosition(const QVector3D pos)
+{
+    mMachinePosition = pos;
+
+    QVector3D adjustedPos = pos;
+    adjustedPos.setX(adjustedPos.x() + mWorkArea.x());
+    adjustedPos.setY(adjustedPos.y() + mWorkArea.y());
+    adjustedPos.setZ(adjustedPos.z() + mWorkArea.z());
+
+    mToolDrawer.setToolPosition(adjustedPos);
     if (mFollowTool)
     {
-        mUi.glwVisualizer->onLookAt(pos);
+        mUi.glwVisualizer->onLookAt(adjustedPos);
     }
 }
 
@@ -389,6 +406,10 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
         {
             int width = machine->getWorkAreaWidth();
             int height = machine->getWorkAreaHeight();
+
+            mWorkArea.setX(width);
+            mWorkArea.setY(height);
+
             // Choose biggest
             mGridDrawer.setSize(width > height ? width : height);
         }
@@ -397,5 +418,8 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
 
 void VisualisationFormController::onUpdateWCO(const QVector3D wco)
 {
-   mOriginDrawer.setPosition(wco);
+   mWCO = wco;
+   mOriginDrawer.setPosition(mWCO + mWorkArea);
+   mCodeDrawer.setPosition(mWCO + mWorkArea);
 }
+

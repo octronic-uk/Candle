@@ -68,8 +68,10 @@ public slots:
 
     void onToggleGridButtonToggled(bool toggled);
     void onToggleToolButtonToggled(bool toggled);
-    void onUpdateWorkPosition(const QVector3D);
     void onSettingsModelReady(SqlSettingsModel*);
+
+    void onUpdateWorkPosition(const QVector3D);
+    void onUpdateMachinePosition(const QVector3D);
     void onUpdateWCO(const QVector3D);
 private slots:
 
@@ -84,9 +86,12 @@ private:
     OriginDrawer mOriginDrawer;
     GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
-    //WorkAreaDrawer mWorkAreaDrawer;
     SelectionDrawer mSelectionDrawer;
     bool mFollowTool;
+    QVector3D mWCO;
+    QVector3D mWorkPosition;
+    QVector3D mMachinePosition;
+    QVector3D mWorkArea;
 
     // Parsers
     QSharedPointer<GcodeViewParser> mViewParser;

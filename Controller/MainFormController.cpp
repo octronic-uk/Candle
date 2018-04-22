@@ -337,6 +337,16 @@ void MainFormController::setupGrblMachineModelSignals()
         &mGrblMachineModel, SIGNAL(updateWCOSignal(const QVector3D)),
         mUi.visualisationFormController, SLOT(onUpdateWCO(const QVector3D))
     );
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(updateWorkPositionSignal(const QVector3D)),
+        mUi.visualisationFormController, SLOT(onUpdateWorkPosition(const QVector3D))
+    );
+    connect
+    (
+        &mGrblMachineModel, SIGNAL(updateMachinePositionSignal(const QVector3D)),
+        mUi.visualisationFormController, SLOT(onUpdateMachinePosition(const QVector3D))
+    );
     // Rapid
     connect
     (

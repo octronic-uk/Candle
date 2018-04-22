@@ -20,6 +20,7 @@ GcodeDrawer::GcodeDrawer()
       mColorEnd(QColor("Red")),
       mGeometryUpdated(false)
 {
+    mPosition = QVector3D(0,0,0);
     mPointSize = 4;
     mLineWidth = 3;
     mViewParser = QSharedPointer<GcodeViewParser>::create();
@@ -140,7 +141,7 @@ bool GcodeDrawer::prepareVectors()
 
             // Draw first toolpath point
             vertex.color = Util::colorToVector(mColorStart);
-            vertex.position = list.at(i).getEnd();
+            vertex.position = list.at(i).getEnd() + mPosition;
             if (mIgnoreZ)
             {
                 vertex.position.setZ(0);
@@ -200,12 +201,12 @@ bool GcodeDrawer::prepareVectors()
         vertex.color = getSegmentColorVector(list.at(i));
 
         // Line start
-        vertex.position = list.at(j).getStart();
+        vertex.position = list.at(j).getStart() + mPosition;
         if (mIgnoreZ) vertex.position.setZ(0);
         mLines.append(vertex);
 
         // Line end
-        vertex.position = list.at(i).getEnd();
+        vertex.position = list.at(i).getEnd() + mPosition;
         if (mIgnoreZ) vertex.position.setZ(0);
         mLines.append(vertex);
 
@@ -213,7 +214,7 @@ bool GcodeDrawer::prepareVectors()
         if (i == list.count() - 1)
         {
             vertex.color = Util::colorToVector(mColorEnd);
-            vertex.position = list.at(i).getEnd();
+            vertex.position = list.at(i).getEnd() + mPosition;
             if (mIgnoreZ) vertex.position.setZ(0);
             vertex.start = QVector3D(sNan, sNan, mPointSize);
             mPoints.append(vertex);
@@ -614,6 +615,17 @@ GcodeDrawer::DrawMode GcodeDrawer::drawMode() const
 void GcodeDrawer::setDrawMode(const DrawMode &drawMode)
 {
     mDrawMode = drawMode;
+}
+
+QVector3D GcodeDrawer::getPosition() const
+{
+    return mPosition;
+}
+
+void GcodeDrawer::setPosition(QVector3D position)
+{
+    mPosition = position;
+    update();
 }
 
 int GcodeDrawer::grayscaleMax() const

@@ -64,8 +64,8 @@ bool GridDrawer::updateData()
 {
     mLines.clear();
 
-    float start = -(mSize/2);
-    float end = (mSize/2);
+    float start = 0;//-(mSize/2);
+    float end = mSize;//(mSize/2);
 
     // X Lines
     for (float yPos = start; yPos <= end; yPos += mMinorSpacing)
