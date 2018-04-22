@@ -258,6 +258,11 @@ QString GcodeCommand::getMarker() const
     return mMarker;
 }
 
+bool GcodeCommand::isMarker() const
+{
+   return !mMarker.isEmpty();
+}
+
 void GcodeCommand::setMarker(const QString marker)
 {
     mMarker = marker;

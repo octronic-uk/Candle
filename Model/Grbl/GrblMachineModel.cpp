@@ -30,7 +30,7 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mWorkPosition(QVector3D(0.0,0.0,0.0)),
       mWorkCoordinateOffset(QVector3D(0.0,0.0,0.0)),
       mSettingsModelHandle(nullptr),
-      mProgramSendInterval(1000/50),
+      mProgramSendInterval(1000/20),
       mStatusInterval(1000/5),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
@@ -422,6 +422,15 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         {
              GcodeCommand* command = mCommandQueue.first();
 
+             if (command->isMarker() ||  // Is Marker or
+                (command->getCommand().isEmpty() &&  // No Command
+                 command->getRawCommand() == 0))
+             {
+                 command = mCommandQueue.takeFirst();
+                 command->setState(GcodeCommandState::Skipped);
+                 continue;
+             }
+
             if (!isSpaceInBuffer(command))
             {
                 qDebug() << "GrblMachineController: Buffer full, waiting..."
@@ -433,12 +442,13 @@ bool GrblMachineModel::sendNextCommandFromQueue()
             command = mCommandQueue.takeFirst();
             mCommandBuffer.append(command);
 
+            // Don't send this becaue GRBL doesn't respond/care and buffer get
+            // misaligned
             if (command->isToolChangeCommand())
             {
                 mToolChangeWaiting = true;
-                mBytesWaiting += mSerialPort.write(command->removeM6().toLatin1());
                 emit toolChangeSignal(command->getToolNumber());
-                command->setState(GcodeCommandState::Sent);
+                command->setState(GcodeCommandState::Processed);
                 break;
             }
             else
@@ -449,7 +459,6 @@ bool GrblMachineModel::sendNextCommandFromQueue()
         }
         return true;
     }
-
     return false;
 }
 

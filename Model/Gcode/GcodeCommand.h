@@ -136,6 +136,7 @@ public:
     char getRawCommand();
 
     QString getMarker() const;
+    bool isMarker() const;
     void setMarker(const QString marker);
 
     bool isToolChangeCommand();
