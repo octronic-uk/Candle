@@ -32,15 +32,12 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
 
     mUi.setupUi(this);
     mViewParser = QSharedPointer<GcodeViewParser>::create(this);
-    mProbeParser = QSharedPointer<GcodeViewParser>::create(this);
     mWorkArea = QVector3D(280,280,80);
     mWCO = QVector3D(0,0,0);
     mMachinePosition = QVector3D(0,0,0);
     mWorkPosition = QVector3D(0,0,0);
 
-    mCodeDrawer.setViewParser(mViewParser);
-    mProbeDrawer.setViewParser(mProbeParser);
-    mProbeDrawer.setVisible(false);
+    mCodeDrawer.setViewParserHandle(mViewParser.data());
     mToolDrawer.setToolPosition(QVector3D(0, 0, 0));
     mLastDrawnLineIndex = 0;
 
@@ -79,9 +76,7 @@ void VisualisationFormController::setFormActive(bool active)
 void VisualisationFormController::initialise()
 {
     mCodeDrawer.initialise();
-    mProbeDrawer.initialise();
     mViewParser = QSharedPointer<GcodeViewParser>::create();
-    mProbeParser = QSharedPointer<GcodeViewParser>::create();
 }
 
 void VisualisationFormController::onTopButtonClicked()
@@ -203,7 +198,7 @@ void VisualisationFormController::onGcodeParserUpdated(GcodeParser* parser)
 {
     qDebug() << "VisualisationFormController: onGcodeParserUpdated";
     mViewParser->setLinesFromParser(parser,1.0,true);
-    mCodeDrawer.setViewParser(mViewParser);
+    mCodeDrawer.setViewParserHandle(mViewParser.data());
     mCodeDrawer.update();
     mUi.glwVisualizer->setUpdatesEnabled(true);
     mUi.glwVisualizer->fitDrawable(mCodeDrawer);
@@ -267,7 +262,6 @@ void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* setting
         mToolDrawer.setSettingsModelHandle(mSettingsModelHandle);
         Profile* currentProfile =  mSettingsModelHandle->getCurrentProfileHandle();
         Tool* tool = currentProfile->getToolListModelHandle()->getData(0);
-        MachineSettings* machine = currentProfile->getMachineSettingsHandle();
 
         if (tool)
         {

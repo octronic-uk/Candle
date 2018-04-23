@@ -40,15 +40,13 @@ GcodeFileModel::GcodeFileModel(QObject *parent)
 GcodeFileModel::~GcodeFileModel()
 {
     qDebug() << "GcodeFileModel: Destructing";
-    initialise();
-}
-
-void GcodeFileModel::initialise()
-{
+    for (GcodeCommand* item : mData)
+    {
+        delete item;
+    }
     mData.clear();
     mProgramLoading = false;
     mFileChanged = false;
-    mGcodeParser->initialise();
 }
 
 void GcodeFileModel::load(QList<QString> data)

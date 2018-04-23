@@ -27,8 +27,8 @@ public:
 
     void initialise();
 
-    void setViewParser(const QSharedPointer<GcodeViewParser>& viewParser);
-    QSharedPointer<GcodeViewParser> viewParser();
+    void setViewParserHandle(GcodeViewParser* viewParser);
+    GcodeViewParser* getViewParserHandle();
 
     bool simplify() const;
     void setSimplify(bool simplify);
@@ -72,7 +72,7 @@ public slots:
 private slots:
 
 private:
-    QSharedPointer<GcodeViewParser> mViewParser;
+    GcodeViewParser* mViewParserHandle;
     bool mIgnoreZ;
     QColor mColorNormal;
     QColor mColorDrawn;
@@ -81,7 +81,6 @@ private:
     QColor mColorStart;
     QColor mColorEnd;
     QColor mColorArc;
-    QImage mImage;
     QList<int> mIndexes;
     bool mGeometryUpdated;
     QVector3D mPosition;
@@ -89,6 +88,6 @@ private:
     bool prepareVectors();
     bool updateVectors();
 
-    QVector4D getSegmentColorVector(const LineSegment& segment);
-    QColor getSegmentColor(const LineSegment& segment);
+    QVector4D getSegmentColorVector(LineSegment* segment);
+    QColor getSegmentColor(LineSegment* segment);
 };

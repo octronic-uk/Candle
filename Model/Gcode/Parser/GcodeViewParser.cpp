@@ -24,7 +24,10 @@ GcodeViewParser::GcodeViewParser(QObject *parent) :
 
 GcodeViewParser::~GcodeViewParser()
 {
-    //foreach (LineSegment *ls, mLines) delete ls;
+    foreach (LineSegment *ls, mLines)
+    {
+        delete ls;
+    }
 }
 
 QVector3D GcodeViewParser::getMinimumExtremes() const
@@ -64,7 +67,7 @@ void GcodeViewParser::testLength(const QVector3D &start, const QVector3D &end)
     }
 }
 
-QList<LineSegment> GcodeViewParser::toObjRedux
+QList<LineSegment*> GcodeViewParser::toObjRedux
 (
     const QList<QString> &gcode,
     double arcPrecision,
@@ -82,14 +85,14 @@ QList<LineSegment> GcodeViewParser::toObjRedux
     return setLinesFromParser(gp.data(), arcPrecision, arcDegreeMode);
 }
 
-QList<LineSegment> GcodeViewParser::getLineSegmentList() const
+QList<LineSegment*> GcodeViewParser::getLineSegmentList() const
 {
     return mLines;
 }
 
 void GcodeViewParser::reset()
 {
-    //foreach (LineSegment *ls, mLines) delete ls;
+    foreach (LineSegment *ls, mLines) delete ls;
     mLines.clear();
     mLineIndexes.clear();
     mCurrentLine = 0;
@@ -112,7 +115,7 @@ QSize GcodeViewParser::getResolution() const
     );
 }
 
-QList<LineSegment> GcodeViewParser::setLinesFromParser
+QList<LineSegment*> GcodeViewParser::setLinesFromParser
 (
         GcodeParser* gp,
         double arcPrecision,
@@ -120,7 +123,7 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
 )
 {
     qDebug() << "GcodeViewParse::getLinesFromParser";
-    QList<PointSegment> segmentList = gp->getPointSegmentList();
+    QList<PointSegment*> segmentList = gp->getPointSegmentList();
     // For a line segment list ALL arcs must be converted to lines.
     double minArcLength = 0.1;
     double length;
@@ -129,25 +132,25 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
     Q_UNUSED(length)
 
     QVector3D start, end;
-    LineSegment ls;
+    LineSegment *ls = nullptr;
 
     // Prepare segments indexes
     mLineIndexes.resize(segmentList.count());
 
+    // TODO - Something isn't right here
     int lineIndex = 0;
-    bool first = true;
     for(int i=0; i<segmentList.count(); i++)
     {
-        PointSegment segment = segmentList[i];
-        bool isMetric = segment.isMetric();
-        segment.convertToMetric();
-        end = segment.point();
+        PointSegment *segment = segmentList[i];
+        bool isMetric = segment->isMetric();
+        segment->convertToMetric();
+        end = segment->point();
 
         // start is null for the first iteration.
-        if (!first)
+        if (ls == nullptr)
         {
             // Expand arc for graphics.
-            if (segment.isArc())
+            if (segment->isArc())
             {
                 /*
                 qDebug() << "GcodeViewParse: PS" << segment.getLineNumber() << "is arc"
@@ -158,10 +161,10 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
                 QList<QVector3D> points =
                     GcodeParser::generatePointsAlongArcBDring
                     (
-                        segment.plane(),
+                        segment->plane(),
                         start, end,
-                        segment.center(), segment.isClockwise(),
-                        segment.getRadius(),
+                        segment->center(), segment->isClockwise(),
+                        segment->getRadius(),
                         minArcLength, arcPrecision, arcDegreeMode
                     );
                 // Create line segments from points.
@@ -171,20 +174,20 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
                     foreach (QVector3D nextPoint, points)
                     {
                         if (nextPoint == startPoint) continue;
-                        ls = LineSegment(startPoint, nextPoint, lineIndex);
-                        ls.setIsArc(segment.isArc());
-                        ls.setIsClockwise(segment.isClockwise());
-                        ls.setPlane(segment.plane());
-                        ls.setIsRapidMovement(segment.isRapidMovement());
-                        ls.setIsZMovement(segment.isZMovement());
-                        ls.setIsMetric(isMetric);
-                        ls.setIsAbsolute(segment.isAbsolute());
-                        ls.setSpeed(segment.getSpeed());
-                        ls.setSpindleSpeed(segment.getSpindleSpeed());
-                        ls.setDwell(segment.getDwell());
+                        ls = new LineSegment(startPoint, nextPoint, lineIndex);
+                        ls->setIsArc(segment->isArc());
+                        ls->setIsClockwise(segment->isClockwise());
+                        ls->setPlane(segment->plane());
+                        ls->setIsRapidMovement(segment->isRapidMovement());
+                        ls->setIsZMovement(segment->isZMovement());
+                        ls->setIsMetric(isMetric);
+                        ls->setIsAbsolute(segment->isAbsolute());
+                        ls->setSpeed(segment->getSpeed());
+                        ls->setSpindleSpeed(segment->getSpindleSpeed());
+                        ls->setDwell(segment->getDwell());
                         testExtremes(nextPoint);
                         mLines.append(ls);
-                        mLineIndexes[segment.getLineNumber()].append(mLines.count() - 1);
+                        mLineIndexes[segment->getLineNumber()].append(mLines.count() - 1);
                         startPoint = nextPoint;
                     }
                     lineIndex++;
@@ -194,26 +197,25 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
             else
             {
                 //qDebug() << "GcodeViewParse: PS" << segment.getLineNumber() << "is NOT arc";
-                ls = LineSegment(start, end, lineIndex++);
-                ls.setIsArc(segment.isArc());
-                ls.setIsRapidMovement(segment.isRapidMovement());
-                ls.setIsZMovement(segment.isZMovement());
-                ls.setIsMetric(isMetric);
-                ls.setIsAbsolute(segment.isAbsolute());
-                ls.setSpeed(segment.getSpeed());
-                ls.setSpindleSpeed(segment.getSpindleSpeed());
-                ls.setDwell(segment.getDwell());
+                ls = new LineSegment(start, end, lineIndex++);
+                ls->setIsArc(segment->isArc());
+                ls->setIsRapidMovement(segment->isRapidMovement());
+                ls->setIsZMovement(segment->isZMovement());
+                ls->setIsMetric(isMetric);
+                ls->setIsAbsolute(segment->isAbsolute());
+                ls->setSpeed(segment->getSpeed());
+                ls->setSpindleSpeed(segment->getSpindleSpeed());
+                ls->setDwell(segment->getDwell());
                 testExtremes(end);
                 testLength(start, end);
                 mLines.append(ls);
-                mLineIndexes[segment.getLineNumber()].append(mLines.count() - 1);
+                mLineIndexes[segment->getLineNumber()].append(mLines.count() - 1);
             }
         }
         else
         {
             //qDebug() << "GcodeViewParse: First line"
              //        << segment.getLineNumber();
-            first = false;
         }
 
         start = end;
@@ -223,7 +225,7 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
     return mLines;
 }
 
-QList<LineSegment>& GcodeViewParser::getLines()
+QList<LineSegment*> GcodeViewParser::getLines()
 {
     return mLines;
 }

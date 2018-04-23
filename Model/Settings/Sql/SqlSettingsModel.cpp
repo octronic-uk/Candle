@@ -336,60 +336,34 @@ int SqlSettingsModel::getToolHoldersFromDB(Profile* profile)
     }
     // Remove existing
     ToolHolderListModel* modelHandle = profile->getToolHolderListModelHandle();
-    if (modelHandle == nullptr)
+    if (modelHandle != nullptr)
     {
         qDebug() << "SqlSettingsModel: Creating ToolHoldersListModel";
-
-        connect
-                (
-                    modelHandle,
-                    SIGNAL(toolHolderCreatedSignal(ToolHolder*)),
-                    this,
-                    SLOT(onToolHolderCreated(ToolHolder*))
-                    );
-
-        connect
-                (
-                    modelHandle,
-                    SIGNAL(toolHolderUpdatedSignal(ToolHolder*)),
-                    this,
-                    SLOT(onToolHolderUpdated(ToolHolder*))
-                    );
-
-        connect
-                (
-                    modelHandle,
-                    SIGNAL(toolHolderDeletedSignal(ToolHolder*)),
-                    this,
-                    SLOT(onToolHolderDeleted(ToolHolder*))
-                    );
-    }
-    else
-    {
         modelHandle->clear();
-    }
 
-    // Get form DB
-    QSqlQuery query;
-    query.prepare(SELECT_ALL_FROM_TOOL_HOLDER_BY_PROFILE_ID_QUERY);
-    query.addBindValue(profile->getID());
-    query.exec();
-    int idFieldNum = query.record().indexOf("id");
-    int nameFieldNum = query.record().indexOf("name");
-    // Populate
-    QList<QSharedPointer<ToolHolder>> holders;
-    while (query.next())
-    {
-        QString name = query.value(nameFieldNum).toString();
-        int id = query.value(idFieldNum).toInt();
-        auto th = QSharedPointer<ToolHolder>::create(profile,id,name);
-        holders.append(th);
-        qDebug() << "SqlSettingsModel: Inserting ToolHolder into model"
-                 << th->getID()
-                 << th->getName();
+        // Get form DB
+        QSqlQuery query;
+        query.prepare(SELECT_ALL_FROM_TOOL_HOLDER_BY_PROFILE_ID_QUERY);
+        query.addBindValue(profile->getID());
+        query.exec();
+        int idFieldNum = query.record().indexOf("id");
+        int nameFieldNum = query.record().indexOf("name");
+        // Populate
+        QList<QSharedPointer<ToolHolder>> holders;
+        while (query.next())
+        {
+            QString name = query.value(nameFieldNum).toString();
+            int id = query.value(idFieldNum).toInt();
+            auto th = QSharedPointer<ToolHolder>::create(profile,id,name);
+            holders.append(th);
+            qDebug() << "SqlSettingsModel: Inserting ToolHolder into model"
+                     << th->getID()
+                     << th->getName();
+        }
+        modelHandle->initialise(holders);
+        return modelHandle->rowCount();
     }
-    modelHandle->initialise(holders);
-    return modelHandle->rowCount();
+    return 0;
 }
 
 int SqlSettingsModel::getToolHoldersGeometryFromDB(Profile* profile)
@@ -709,52 +683,56 @@ int SqlSettingsModel::getToolGeometryFromDB(Profile* profile)
     }
     int numRecords = 0;
     ToolListModel* modelHandle = profile->getToolListModelHandle();
-    for (const QSharedPointer<Tool>& next : modelHandle->getAllData())
+    if (modelHandle != nullptr)
     {
-        QSqlQuery query;
-        query.prepare(SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY);
-        query.addBindValue(next->getID());
-
-        if (!query.exec())
+        for (const QSharedPointer<Tool>& next : modelHandle->getAllData())
         {
-            qDebug() << "SqlSettingsModel: Error getting geometry" << query.lastError();
-            continue;
+            QSqlQuery query;
+            query.prepare(SELECT_TOOL_GEOMETRY_BY_TOOL_ID_QUERY);
+            query.addBindValue(next->getID());
+
+            if (!query.exec())
+            {
+                qDebug() << "SqlSettingsModel: Error getting geometry" << query.lastError();
+                continue;
+            }
+
+            int idFieldNum = query.record().indexOf("id");
+            int toolIdFieldNum = query.record().indexOf("tool_id");
+            int indexFieldNum = query.record().indexOf("index");
+            int heightFieldNum = query.record().indexOf("height");
+            int upperDiameterFieldNum = query.record().indexOf("upper_diameter");
+            int lowerDiameterFieldNum = query.record().indexOf("lower_diameter");
+            int facesFieldNum = query.record().indexOf("faces");
+
+            qDebug() << "SqlSettingsModel: ToolGeometry"
+                     << "tool_id " << toolIdFieldNum
+                     << "index" << indexFieldNum
+                     << "height" << heightFieldNum
+                     << "upper_d" << upperDiameterFieldNum
+                     << "lower_d" << lowerDiameterFieldNum
+                     << "faces" << facesFieldNum;
+
+            while(query.next())
+            {
+                qDebug() << "SqlSettingsModel: Got ToolGeometry";
+                int id = query.value(idFieldNum).toInt();
+                int index = query.value(indexFieldNum).toInt();
+                float height = query.value(heightFieldNum).toFloat();
+                float upper = query.value(upperDiameterFieldNum).toFloat();
+                float lower = query.value(lowerDiameterFieldNum).toFloat();
+                int faces = query.value(facesFieldNum).toInt();
+
+                QSharedPointer<ToolGeometry> nextTG =
+                        QSharedPointer<ToolGeometry>::create
+                        (next.data(), id, index, height, upper, lower, faces);
+                next->insertItem(nextTG);
+            }
+            numRecords += next->getGeometryTableModelHandle()->rowCount();
         }
-
-        int idFieldNum = query.record().indexOf("id");
-        int toolIdFieldNum = query.record().indexOf("tool_id");
-        int indexFieldNum = query.record().indexOf("index");
-        int heightFieldNum = query.record().indexOf("height");
-        int upperDiameterFieldNum = query.record().indexOf("upper_diameter");
-        int lowerDiameterFieldNum = query.record().indexOf("lower_diameter");
-        int facesFieldNum = query.record().indexOf("faces");
-
-        qDebug() << "SqlSettingsModel: ToolGeometry"
-                 << "tool_id " << toolIdFieldNum
-                 << "index" << indexFieldNum
-                 << "height" << heightFieldNum
-                 << "upper_d" << upperDiameterFieldNum
-                 << "lower_d" << lowerDiameterFieldNum
-                 << "faces" << facesFieldNum;
-
-        while(query.next())
-        {
-            qDebug() << "SqlSettingsModel: Got ToolGeometry";
-            int id = query.value(idFieldNum).toInt();
-            int index = query.value(indexFieldNum).toInt();
-            float height = query.value(heightFieldNum).toFloat();
-            float upper = query.value(upperDiameterFieldNum).toFloat();
-            float lower = query.value(lowerDiameterFieldNum).toFloat();
-            int faces = query.value(facesFieldNum).toInt();
-
-            QSharedPointer<ToolGeometry> nextTG =
-                    QSharedPointer<ToolGeometry>::create
-                    (next.data(), id, index, height, upper, lower, faces);
-            next->insertItem(nextTG);
-        }
-        numRecords += next->getGeometryTableModelHandle()->rowCount();
+        return numRecords;
     }
-    return numRecords;
+    return 0;
 }
 
 bool SqlSettingsModel::insertToolGeometryInDB(ToolGeometry* tool)

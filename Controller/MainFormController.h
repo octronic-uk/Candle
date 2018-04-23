@@ -101,7 +101,7 @@ private: // Members
     QSharedPointer<SqlSettingsModel> mSqlSettingsModel;
     RecentFilesModel* mRecentGcodeFilesModelHandle;
     QMainWindow mMainWindow;
-    GcodeFileModel mGcodeFileModel;
+    QSharedPointer<GcodeFileModel> mGcodeFileModel;
     GrblMachineModel mGrblMachineModel;
     QProgressBar mCompletionProgressBar;
     QProgressBar mBufferProgressBar;

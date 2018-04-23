@@ -348,14 +348,14 @@ void GrblMachineModel::onSerialPortBaudRateChanged(int baud)
 
 void GrblMachineModel::onProgramSendTimerTimeout()
 {
-    qDebug () << "GrblMachineModel: onProgramSendTimerTimout";
+//    qDebug () << "GrblMachineModel: onProgramSendTimerTimout";
 
     if (mError)
     {
         mStatusRequested = false;
         mWaitingForStatus = false;
-
     }
+
     if (mStatusRequested)
     {
         if (mWaitingForStatus && !mError)
@@ -418,7 +418,13 @@ bool GrblMachineModel::closePort()
 
 void GrblMachineModel::initialise()
 {
-
+    mCommandBuffer.clear();
+    mCommandQueue.clear();
+    mCommandQueueInitialSize = -1;
+    mFeedOverride = 100;
+    mSpindleOverride = 100;
+    mRapidOverride = 100;
+    emit machineStateUpdatedSignal(GrblMachineState::Locked);
 }
 
 bool GrblMachineModel::sendNextCommandFromQueue()

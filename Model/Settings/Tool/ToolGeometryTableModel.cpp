@@ -146,7 +146,6 @@ bool ToolGeometryTableModel::removeRows(int row, int count, const QModelIndex &p
     beginRemoveRows(parent, row, row + count - 1);
     for (int r=row; r<row+count; r++)
     {
-        ToolGeometry* geom = mData.at(r).data();
         mData.removeAt(r);
     }
     endRemoveRows();

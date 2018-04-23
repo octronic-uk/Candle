@@ -82,7 +82,6 @@ private:
 
     // GL Drawers
     GcodeDrawer mCodeDrawer;
-    GcodeDrawer mProbeDrawer;
     OriginDrawer mOriginDrawer;
     GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
@@ -96,7 +95,6 @@ private:
 
     // Parsers
     QSharedPointer<GcodeViewParser> mViewParser;
-    QSharedPointer<GcodeViewParser> mProbeParser;
     QTimer mRedrawTimer;
     int mLastDrawnLineIndex;
     void updateParser();
