@@ -53,10 +53,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Home</string>
+      <string>Home ($H)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Home</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -67,6 +67,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -94,7 +97,7 @@
       <string>Z-probe</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Z-Probe</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -105,6 +108,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -129,10 +135,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Zero XY</string>
+      <string>Zero XY (G92 X0 Y0)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Zero XY</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -143,6 +149,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -167,10 +176,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Zero Z</string>
+      <string>Zero Z (G92 Z0)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Zero Z</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -182,10 +191,13 @@
        <height>32</height>
       </size>
      </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
+     </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QToolButton" name="restoreOriginButton">
+    <widget class="QToolButton" name="setSafePositionButton">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -208,14 +220,14 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Restore origin</string>
+      <string>Set Safe Position (G28.1)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>G28.1</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/SVG/dot-circle.svg</normaloff>:/Images/SVG/dot-circle.svg</iconset>
+       <normaloff>:/Images/SVG/smile.svg</normaloff>:/Images/SVG/smile.svg</iconset>
      </property>
      <property name="iconSize">
       <size>
@@ -223,10 +235,13 @@
        <height>32</height>
       </size>
      </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
+     </property>
     </widget>
    </item>
    <item row="1" column="1">
-    <widget class="QToolButton" name="safePositionButton">
+    <widget class="QToolButton" name="goToSafePositionButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -246,10 +261,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Safe position</string>
+      <string>Go To Safe Position (G28)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>G28</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -260,6 +275,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -284,10 +302,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Reset</string>
+      <string>Reset (CTRL+X)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Reset</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -298,6 +316,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -325,10 +346,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>Unlock</string>
+      <string>Unlock ($X)</string>
      </property>
      <property name="text">
-      <string/>
+      <string>Unlock</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -339,6 +360,9 @@
        <width>32</width>
        <height>32</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -362,6 +386,9 @@
      <property name="toolTip">
       <string>Spindle on/off</string>
      </property>
+     <property name="text">
+      <string>User 1</string>
+     </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
        <normaloff>:/Images/PNG/num1.png</normaloff>:/Images/PNG/num1.png</iconset>
@@ -371,6 +398,9 @@
        <width>30</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -394,6 +424,9 @@
      <property name="toolTip">
       <string>Spindle on/off</string>
      </property>
+     <property name="text">
+      <string>User 2</string>
+     </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
        <normaloff>:/Images/PNG/num2.png</normaloff>:/Images/PNG/num2.png</iconset>
@@ -403,6 +436,9 @@
        <width>30</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -426,6 +462,9 @@
      <property name="toolTip">
       <string>Spindle on/off</string>
      </property>
+     <property name="text">
+      <string>User 3</string>
+     </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
        <normaloff>:/Images/PNG/num3.png</normaloff>:/Images/PNG/num3.png</iconset>
@@ -435,6 +474,9 @@
        <width>30</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>
@@ -458,6 +500,9 @@
      <property name="toolTip">
       <string>Spindle on/off</string>
      </property>
+     <property name="text">
+      <string>User 4</string>
+     </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
        <normaloff>:/Images/PNG/num4.png</normaloff>:/Images/PNG/num4.png</iconset>
@@ -467,6 +512,9 @@
        <width>30</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>

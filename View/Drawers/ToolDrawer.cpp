@@ -12,7 +12,7 @@ ToolDrawer::ToolDrawer()
       mToolPosition(QVector3D(0, 0, 0)),
       mRotationAngle(0.0),
       mToolAngle(0.0),
-      mColor(QColor("DarkGray")),
+      mColor(QColor("Orange")),
       mSettingsModelHandle(nullptr),
       mToolHandle(nullptr)
 
@@ -41,7 +41,7 @@ void ToolDrawer::generateToolGeometry()
                 << "geom" << geom->getID();
                 */
 
-        int slices = geom->getFaces();
+       int slices = geom->getFaces();
        float upperRadius = geom->getUpperDiameter()/2;
        float lowerRadius = geom->getLowerDiameter()/2;
        float height = geom->getHeight();

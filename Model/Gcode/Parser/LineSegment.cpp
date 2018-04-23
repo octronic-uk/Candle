@@ -13,7 +13,7 @@ LineSegment::LineSegment()
     mToolhead = 0;
     mIsZMovement = false;
     mIsArc = false;
-    mIsFastTraverse = false;
+    mIsRapidMovement = false;
     mDrawn = false;
     mIsMetric = true;
     mIsAbsolute = true;
@@ -34,7 +34,7 @@ LineSegment::LineSegment(const LineSegment& initial)
     mToolhead = initial.getToolhead();
     mIsZMovement = initial.isZMovement();
     mIsArc = initial.isArc();
-    mIsFastTraverse = initial.isFastTraverse();
+    mIsRapidMovement = initial.isRapidMovement();
     mDrawn = initial.drawn();
     mFirst = initial.getStart();
     mSecond = initial.getEnd();
@@ -136,14 +136,14 @@ bool LineSegment::isArc()  const
     return mIsArc;
 }
 
-void LineSegment::setIsFastTraverse(bool isF)
+void LineSegment::setIsRapidMovement(bool isF)
 {
-    mIsFastTraverse = isF;
+    mIsRapidMovement = isF;
 }
 
-bool LineSegment::isFastTraverse() const
+bool LineSegment::isRapidMovement() const
 {
-    return mIsFastTraverse;
+    return mIsRapidMovement;
 }
 
 bool LineSegment::contains(const QVector3D &point) const

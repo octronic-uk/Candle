@@ -257,4 +257,9 @@ void ShaderDrawable::setPointSize(float pointSize)
     mPointSize = pointSize;
 }
 
+void ShaderDrawable::setNeedsUpdate()
+{
+   mNeedsUpdateGeometry = true;
+}
+
 

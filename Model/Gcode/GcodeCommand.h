@@ -86,12 +86,14 @@ public:
     static GcodeCommand* SpindleStopCommand();
     static GcodeCommand* HomingCommand();
     static GcodeCommand* ZeroXYCommand();
-    static GcodeCommand* GetGcodeParamsCommand();
+    static GcodeCommand* GetGcodeParserParamsCommand();
     static GcodeCommand* ZeroZCommand();
-    static GcodeCommand* CyclePauseResume();
+    static GcodeCommand* CyclePauseResumeCommand();
     static GcodeCommand* FeedHoldCommand();
-    static GcodeCommand* GetConfigurationCommand();
-    static GcodeCommand* SetConfigurationCommand(int param, QString value);
+    static GcodeCommand* GetFirmwareConfigurationCommand();
+    static GcodeCommand* SetFirmwareConfigurationCommand(int param, QString value);
+    static GcodeCommand* SetSafePositionCommand();
+    static GcodeCommand* GoToSafePositionCommand();
 
     static GcodeCommand* JogCommand
     (

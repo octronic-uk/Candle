@@ -41,7 +41,7 @@ void GrblConfigurationFormController::onFirmwareConfigurationRead(int param, QSt
 
 void GrblConfigurationFormController::onReadButtonClicked()
 {
-   emit gcodeCommandManualSendSignal(GcodeCommand::GetConfigurationCommand());
+   emit gcodeCommandManualSendSignal(GcodeCommand::GetFirmwareConfigurationCommand());
 }
 
 void GrblConfigurationFormController::onWriteButtonClicked()
@@ -51,7 +51,7 @@ void GrblConfigurationFormController::onWriteButtonClicked()
     {
         emit gcodeCommandManualSendSignal
         (
-            GcodeCommand::SetConfigurationCommand(param, configData[param])
+            GcodeCommand::SetFirmwareConfigurationCommand(param, configData[param])
         );
     }
 }

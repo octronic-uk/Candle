@@ -9,6 +9,7 @@
 #include <QDebug>
 #include "GcodeParser.h"
 #include <QMatrix4x4>
+#include "Utils/Util.h"
 
 GcodeParser::GcodeParser(QObject *parent)
     : QObject(parent),
@@ -299,7 +300,7 @@ PointSegment GcodeParser::processCommand(const QStringList &args)
     gCodes = parseCodes(args, 'G');
 
     // If there was no command, add the implicit one to the party.
-    if (gCodes.isEmpty() && mLastGcodeCommand != -1)
+    if (gCodes.isEmpty() && !Util::floatsAreEqual(mLastGcodeCommand,-1))
     {
         gCodes.append(mLastGcodeCommand);
     }
@@ -325,9 +326,9 @@ PointSegment GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, bool
     bool zOnly = false;
 
     // Check for z-only
-    if ((mCurrentPoint.x() == nextPoint.x() || qIsNaN(mCurrentPoint.x())) &&
-        (mCurrentPoint.y() == nextPoint.y() || qIsNaN(mCurrentPoint.y())) &&
-        (mCurrentPoint.z() != nextPoint.z()))
+    if (Util::floatsAreEqual(mCurrentPoint.x(),nextPoint.x()) &&
+        Util::floatsAreEqual(mCurrentPoint.y(),nextPoint.y()) &&
+        !Util::floatsAreEqual(mCurrentPoint.z(),nextPoint.z()))
     {
         //qDebug() << "GcodeParser: zOnly";
         zOnly = true;
@@ -335,7 +336,7 @@ PointSegment GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, bool
 
     ps.setIsMetric(mIsMetric);
     ps.setIsZMovement(zOnly);
-    ps.setIsFastTraverse(fastTraverse);
+    ps.setIsRapidMovement(fastTraverse);
     ps.setIsAbsolute(mInAbsoluteMode);
     ps.setSpeed(fastTraverse ? mTraverseSpeed : mLastSpeed);
     ps.setSpindleSpeed(mLastSpindleSpeed);
@@ -409,69 +410,69 @@ PointSegment GcodeParser::handleGCode(float code, const QStringList &args)
     PointSegment ps;
     QVector3D nextPoint = updatePointWithCommand(args, mCurrentPoint, mInAbsoluteMode);
 
-    if (code == GCODE_RAPID)
+    if (Util::floatsAreEqual(code,GCODE_RAPID))
     {
         ps = addLinearPointSegment(nextPoint, true);
     }
-    else if (code == GCODE_LINEAR_INTERPOLATION)
+    else if (Util::floatsAreEqual(code,GCODE_LINEAR_INTERPOLATION))
     {
         ps = addLinearPointSegment(nextPoint, false);
     }
-    else if (code == GCODE_STRAIGHT_PROBE)
+    else if (Util::floatsAreEqual(code,GCODE_STRAIGHT_PROBE))
     {
         ps = addLinearPointSegment(nextPoint, false);
     }
-    else if (code == GCODE_ARC_MOVE_IJK)
+    else if (Util::floatsAreEqual(code,GCODE_ARC_MOVE_IJK))
     {
         ps = addArcPointSegment(nextPoint, true, args);
     }
-    else if (code == GCODE_ARC_MOVE_RP)
+    else if (Util::floatsAreEqual(code,GCODE_ARC_MOVE_RP))
     {
         ps = addArcPointSegment(nextPoint, false, args);
     }
-    else if (code == GCODE_PLANE_XY)
+    else if (Util::floatsAreEqual(code, GCODE_PLANE_XY))
     {
         mCurrentPlane = PointSegment::XY;
     }
-    else if (code == GCODE_PLANE_ZX)
+    else if (Util::floatsAreEqual(code, GCODE_PLANE_ZX))
     {
         mCurrentPlane = PointSegment::ZX;
     }
-    else if (code == GCODE_PLANE_YZ)
+    else if (Util::floatsAreEqual(code, GCODE_PLANE_YZ))
     {
         mCurrentPlane = PointSegment::YZ;
     }
-    else if (code == GCODE_UNITS_INCHES)
+    else if (Util::floatsAreEqual(code,GCODE_UNITS_INCHES))
     {
         mIsMetric = false;
     }
-    else if (code == GCODE_UNITS_MM)
+    else if (Util::floatsAreEqual(code, GCODE_UNITS_MM))
     {
         mIsMetric = true;
     }
-    else if (code == GCODE_DISTANCE_ABSOLUTE)
+    else if (Util::floatsAreEqual(code,GCODE_DISTANCE_ABSOLUTE))
     {
         mInAbsoluteMode = true;
     }
-    else if (code == GCODE_DISTANCE_ABSOLUTE_IJK)
+    else if (Util::floatsAreEqual(code,GCODE_DISTANCE_ABSOLUTE_IJK))
     {
         mInAbsoluteIJKMode = true;
     }
-    else if (code == GCODE_DISTANCE_INCREMENTAL)
+    else if (Util::floatsAreEqual(code,GCODE_DISTANCE_INCREMENTAL))
     {
         mInAbsoluteMode = false;
     }
-    else if (code == GCODE_DISTANCE_INCREMENTAL_IJK)
+    else if (Util::floatsAreEqual(code, GCODE_DISTANCE_INCREMENTAL_IJK))
     {
         mInAbsoluteIJKMode = false;
     }
 
     if  (
-         code == GCODE_RAPID ||
-         code == GCODE_LINEAR_INTERPOLATION ||
-         code == GCODE_ARC_MOVE_IJK ||
-         code == GCODE_ARC_MOVE_RP ||
-         code == GCODE_STRAIGHT_PROBE
+         Util::floatsAreEqual(code, GCODE_RAPID) ||
+         Util::floatsAreEqual(code, GCODE_LINEAR_INTERPOLATION) ||
+         Util::floatsAreEqual(code, GCODE_ARC_MOVE_IJK) ||
+         Util::floatsAreEqual(code, GCODE_ARC_MOVE_RP) ||
+         Util::floatsAreEqual(code, GCODE_STRAIGHT_PROBE)
         )
     {
         mLastGcodeCommand = code;
@@ -696,7 +697,7 @@ QList<float> GcodeParser::parseCodes(const QStringList &args, char code)
     {
         if (s.length() > 0 && s[0].toUpper() == code)
         {
-            l.append(s.mid(1).toDouble());
+            l.append(s.mid(1).toFloat());
         }
     }
 
@@ -1043,7 +1044,7 @@ double GcodeParser::calculateSweep(double startAngle, double endAngle, bool isCw
     double sweep;
 
     // Full circle
-    if (startAngle == endAngle)
+    if (Util::floatsAreEqual(startAngle,endAngle))
     {
         sweep = (M_PI * 2);
         // Arcs
@@ -1051,7 +1052,7 @@ double GcodeParser::calculateSweep(double startAngle, double endAngle, bool isCw
     else
     {
         // Account for full circles and end angles of 0/360
-        if (endAngle == 0)
+        if (Util::floatsAreEqual(endAngle,0))
         {
             endAngle = M_PI * 2;
         }
@@ -1109,7 +1110,7 @@ GcodeParser::generatePointsAlongArcBDring
     }
 
     // Calculate radius if necessary.
-    if (radius == 0)
+    if (Util::floatsAreEqual(radius,0))
     {
         radius = sqrt(pow((double)(start.x() - center.x()), 2.0) + pow((double)(end.y() - center.y()), 2.0));
     }

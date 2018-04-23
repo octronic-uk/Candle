@@ -13,14 +13,8 @@
 #include <QTimer>
 #include <QTime>
 #include "View/Drawers/ShaderDrawable.h"
+#include "View/Widgets/Camera.h"
 
-enum class ProjectionMode
-{
-    ORTHO,
-    PERSPECTIVE
-};
-
-Q_DECLARE_METATYPE(ProjectionMode)
 
 #ifdef GLES
 class GLWidget : public QOpenGLWidget
@@ -100,7 +94,7 @@ private:
     void beginViewAnimation();
     void stopViewAnimation();
 
-    ProjectionMode mProjectionMode;
+    Camera mCamera;
     float mXRot, mYRot, mXLastRot, mYLastRot;
     float mXPan, mYPan, mXLastPan, mYLastPan, mZPan, mLastZPan;
     QVector3D mLookAt;
@@ -111,6 +105,7 @@ private:
     float mLineWidth;
     float mPointSize;
     float mNearPlane;
+    float mFarPlane;
     bool mAntialiasing;
     bool mMsaa;
     bool mVsync;

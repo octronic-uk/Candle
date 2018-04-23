@@ -35,6 +35,12 @@ public:
         return QVector4D(color.redF(), color.greenF(), color.blueF(), color.alphaF());
     }
 
+    static bool floatsAreEqual(float a, float b)
+    {
+       // TODO - Cry in corner
+       return QString::number(a,'f',3) == QString::number(b,'f',3);
+    }
+
     static QIcon invertIconColors(QIcon icon)
     {
         QImage img = icon.pixmap(icon.actualSize(QSize(64, 64))).toImage();

@@ -13,16 +13,6 @@ class GcodeDrawer : public QObject, public ShaderDrawable
 {
     Q_OBJECT
 public:
-    enum GrayscaleCode
-    {
-        S,
-        Z
-    };
-    enum DrawMode
-    {
-        Vectors,
-        Raster
-    };
 
     explicit GcodeDrawer();
     GcodeDrawer(const GcodeDrawer& other);
@@ -69,21 +59,6 @@ public:
     bool getIgnoreZ() const;
     void setIgnoreZ(bool ignoreZ);
 
-    bool getGrayscaleSegments() const;
-    void setGrayscaleSegments(bool grayscaleSegments);
-
-    GrayscaleCode grayscaleCode() const;
-    void setGrayscaleCode(const GrayscaleCode &grayscaleCode);
-
-    int grayscaleMin() const;
-    void setGrayscaleMin(int grayscaleMin);
-
-    int grayscaleMax() const;
-    void setGrayscaleMax(int grayscaleMax);
-
-    DrawMode drawMode() const;
-    void setDrawMode(const DrawMode &drawMode);
-
     GcodeParser getParser() const;
     void setParser(const GcodeParser& parser);
 
@@ -98,20 +73,14 @@ private slots:
 
 private:
     QSharedPointer<GcodeViewParser> mViewParser;
-    DrawMode mDrawMode;
-    bool mSimplify;
-    double mSimplifyPrecision;
     bool mIgnoreZ;
-    bool mGrayscaleSegments;
-    GrayscaleCode mGrayscaleCode;
-    int mGrayscaleMin;
-    int mGrayscaleMax;
     QColor mColorNormal;
     QColor mColorDrawn;
     QColor mColorHighlight;
     QColor mColorZMovement;
     QColor mColorStart;
     QColor mColorEnd;
+    QColor mColorArc;
     QImage mImage;
     QList<int> mIndexes;
     bool mGeometryUpdated;
@@ -119,11 +88,7 @@ private:
 
     bool prepareVectors();
     bool updateVectors();
-    bool prepareRaster();
-    bool updateRaster();
 
-    int getSegmentType(const LineSegment& segment);
     QVector4D getSegmentColorVector(const LineSegment& segment);
     QColor getSegmentColor(const LineSegment& segment);
-    void setImagePixelColor(QImage &image, double x, double y, const QRgb color) const;
 };

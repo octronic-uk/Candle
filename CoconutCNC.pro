@@ -110,10 +110,11 @@ SOURCES +=\
     Model/Settings/MachineSettings.cpp \
     Controller/Settings/NameDialogController.cpp \
     Model/Gcode/GcodeMarkerListModel.cpp \
-    View/Drawers/WorkAreaDrawer.cpp \
     Controller/Settings/GrblConfigurationFormController.cpp \
     Model/Grbl/GrblConfigurationModel.cpp \
-    Controller/OverrideFormController.cpp
+    Controller/OverrideFormController.cpp \
+    View/Widgets/Camera.cpp \
+    View/Drawers/SafePositionDrawer.cpp
 
 HEADERS  += \
     Model/Gcode/Parser/ArcProperties.h \
@@ -183,10 +184,11 @@ HEADERS  += \
     Model/Settings/MachineSettings.h \
     Controller/Settings/NameDialogController.h \
     Model/Gcode/GcodeMarkerListModel.h \
-    View/Drawers/WorkAreaDrawer.h \
     Controller/Settings/GrblConfigurationFormController.h \
     Model/Grbl/GrblConfigurationModel.h \
-    Controller/OverrideFormController.h
+    Controller/OverrideFormController.h \
+    View/Widgets/Camera.h \
+    View/Drawers/SafePositionDrawer.h
 
 FORMS    += \
     View/AboutForm.ui \

@@ -24,9 +24,8 @@ GLWidget::GLWidget(QWidget *parent)
     : QGLWidget(parent),
       mShaderProgram(nullptr),
 #endif
-     mProjectionMode(ProjectionMode::PERSPECTIVE),
      mColorText(QColor("White")),
-     mColorBackground(QColor("LightGray")),
+     mColorBackground(QColor("DarkGray")),
      mNearPlane(2)
 {
     mAnimateView = false;
@@ -401,10 +400,10 @@ void GLWidget::updateProjection()
 
     mProjectionMatrix.frustum
     (
-        (-0.5f + mXPan) * asp,
-        (0.5f + mXPan) * asp,
-        -0.5f + mYPan,
-        0.5f + mYPan,
+        (-0.5f/* + mXPan*/) * asp,
+        (0.5f /*+ mXPan*/) * asp,
+        -0.5f /*+ mYPan*/,
+        0.5f /*+ mYPan*/,
         mNearPlane,
         1000.0f//mDistance * 2
     );
@@ -685,7 +684,9 @@ void GLWidget::onRepaintTimerTimeout()
 
 void GLWidget::onLookAt(QVector3D lookAt)
 {
-    mLookAt = lookAt;
+    mLookAt.setX(lookAt.x());
+    mLookAt.setY(lookAt.z());
+    mLookAt.setZ(-lookAt.y());
     updateView();
 }
 

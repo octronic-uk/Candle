@@ -69,13 +69,11 @@ void ControlFormController::onProbeButtonClicked()
 void ControlFormController::onZeroXYButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::ZeroXYCommand());
-    emit gcodeCommandManualSendSignal(GcodeCommand::GetGcodeParamsCommand());
 }
 
 void ControlFormController::onZeroZButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::ZeroZCommand());
-    emit gcodeCommandManualSendSignal(GcodeCommand::GetGcodeParamsCommand());
 }
 
 void ControlFormController::onUserCommand1ButtonClicked()
@@ -119,8 +117,8 @@ void ControlFormController::setupSignalSlots()
     connect(mUi.zeroXYButton,SIGNAL(clicked()),this,SLOT(onZeroXYButtonClicked()));
     connect(mUi.zeroZButton,SIGNAL(clicked()),this,SLOT(onZeroZButtonClicked()));
 
-    connect(mUi.restoreOriginButton,SIGNAL(clicked()),this,SLOT(onRestoreOriginButtonClicked()));
-    connect(mUi.safePositionButton,SIGNAL(clicked()),this,SLOT(onSafePositionButtonClicked()));
+    connect(mUi.goToSafePositionButton,SIGNAL(clicked()),this,SLOT(onGoToSafePositionButtonClicked()));
+    connect(mUi.setSafePositionButton,SIGNAL(clicked()),this,SLOT(onSetSafePositionButtonClicked()));
     connect(mUi.unlockButton, SIGNAL(clicked()),this,SLOT(onUnlockButtonClicked()));
     connect(mUi.resetButton, SIGNAL(clicked()),this,SLOT(onResetButtonClicked()));
 
@@ -137,8 +135,8 @@ void ControlFormController::setFormActive(bool active)
     mUi.zeroXYButton->setEnabled(active);
     mUi.zeroZButton->setEnabled(active);
 
-    mUi.restoreOriginButton->setEnabled(active);
-    mUi.safePositionButton->setEnabled(active);
+    mUi.goToSafePositionButton->setEnabled(active);
+    mUi.setSafePositionButton->setEnabled(active);
     // Always enabled
     mUi.resetButton->setEnabled(true);
     mUi.unlockButton->setEnabled(true);
@@ -179,32 +177,9 @@ void ControlFormController::highlightUnlockReset(bool highlight)
    }
 }
 
-void ControlFormController::onRestoreOriginButtonClicked()
+void ControlFormController::onGoToSafePositionButtonClicked()
 {
-    /*
-    // Restore offset
-    sendCommand(QString("G21"), -1, mSettingsForm->showUICommands());
-    sendCommand(QString("G53G90G0X%1Y%2Z%3").arg(toMetric(mUi->txtMPosX->text().toDouble()))
-                                            .arg(toMetric(mUi->txtMPosY->text().toDouble()))
-                                            .arg(toMetric(mUi->txtMPosZ->text().toDouble())), -1, mSettingsForm->showUICommands());
-    sendCommand(QString("G92X%1Y%2Z%3").arg(toMetric(mUi->txtMPosX->text().toDouble()) - mStoredX)
-                                        .arg(toMetric(mUi->txtMPosY->text().toDouble()) - mStoredY)
-                                        .arg(toMetric(mUi->txtMPosZ->text().toDouble()) - mStoredZ), -1, mSettingsForm->showUICommands());
-
-    // Move tool
-    if (mSettingsForm->moveOnRestore())
-    {
-        switch (mSettingsForm->restoreMode())
-        {
-        case 0:
-            sendCommand("G0X0Y0", -1, mSettingsForm->showUICommands());
-            break;
-        case 1:
-            sendCommand("G0X0Y0Z0", -1, mSettingsForm->showUICommands());
-            break;
-        }
-    }
-    */
+    emit gcodeCommandManualSendSignal(GcodeCommand::GoToSafePositionCommand());
 }
 
 void ControlFormController::onResetButtonClicked()
@@ -217,20 +192,10 @@ void ControlFormController::onUnlockButtonClicked()
     emit gcodeCommandManualSendSignal(GcodeCommand::UnlockCommand());
 }
 
-void ControlFormController::onSafePositionButtonClicked()
+void ControlFormController::onSetSafePositionButtonClicked()
 {
-    if (isModelValid())
-    {
-        auto machineSettings = getMachineSettingsHandle();
-        QString safePos = machineSettings->getSafePositionCmds();
-        QStringList list = safePos.split(";");
-
-        foreach (QString cmd, list)
-        {
-            GcodeCommand* next = new GcodeCommand(cmd.trimmed());
-            emit gcodeCommandManualSendSignal(next);
-        }
-    }
+    emit gcodeCommandManualSendSignal(GcodeCommand::SetSafePositionCommand());
+    emit safePositionSetSignal();
 }
 
 bool ControlFormController::isModelValid()

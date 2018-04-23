@@ -175,7 +175,7 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
                         ls.setIsArc(segment.isArc());
                         ls.setIsClockwise(segment.isClockwise());
                         ls.setPlane(segment.plane());
-                        ls.setIsFastTraverse(segment.isFastTraverse());
+                        ls.setIsRapidMovement(segment.isRapidMovement());
                         ls.setIsZMovement(segment.isZMovement());
                         ls.setIsMetric(isMetric);
                         ls.setIsAbsolute(segment.isAbsolute());
@@ -196,7 +196,7 @@ QList<LineSegment> GcodeViewParser::setLinesFromParser
                 //qDebug() << "GcodeViewParse: PS" << segment.getLineNumber() << "is NOT arc";
                 ls = LineSegment(start, end, lineIndex++);
                 ls.setIsArc(segment.isArc());
-                ls.setIsFastTraverse(segment.isFastTraverse());
+                ls.setIsRapidMovement(segment.isRapidMovement());
                 ls.setIsZMovement(segment.isZMovement());
                 ls.setIsMetric(isMetric);
                 ls.setIsAbsolute(segment.isAbsolute());

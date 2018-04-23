@@ -483,6 +483,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.overrideFormController->setFormActive(true);
             mUi.stateFormController->setClass(StateClass::Warning);
             break;
+        case GrblMachineState::Error:
         case GrblMachineState::Locked:
             mUi.consoleFormController->setFormActive(false);
             mUi.programFormController->setFormActive(false);
@@ -496,15 +497,27 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.stateFormController->setClass(StateClass::Primary);
             break;
         case GrblMachineState::Idle:
+            if (!mGrblMachineModel.getProgramRunning())
+            {
+                mUi.programFormController->setFormActive(true);
+                mUi.consoleFormController->setFormActive(true);
+                mUi.controlFormController->setFormActive(true);
+                mUi.controlFormController->highlightUnlockReset(false);
+                mUi.jogFormController->setFormActive(true);
+                mUi.overrideFormController->setFormActive(true);
+            }
             mUi.stateFormController->setClass(StateClass::Info);
             break;
         case GrblMachineState::Alarm:
             mUi.stateFormController->setClass(StateClass::Danger);
             break;
         case GrblMachineState::Run:
-            mUi.jogFormController->setFormActive(false);
-            mUi.consoleFormController->setFormActive(false);
-            mUi.controlFormController->setFormActive(false);
+            if (mGrblMachineModel.getProgramRunning())
+            {
+                mUi.jogFormController->setFormActive(false);
+                mUi.consoleFormController->setFormActive(false);
+                mUi.controlFormController->setFormActive(false);
+            }
             mUi.stateFormController->setClass(StateClass::Success);
             break;
         case GrblMachineState::Home:
@@ -567,6 +580,13 @@ void MainFormController::setupControlFormSignals()
         mUi.controlFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
         &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
     );
+    // Safe Position Changed
+    connect
+    (
+        mUi.controlFormController,SIGNAL(safePositionSetSignal()),
+        mUi.visualisationFormController,SLOT(onSafePositionSetSignal())
+    );
+
 }
 
 void MainFormController::onSendProgram()
@@ -849,7 +869,7 @@ void MainFormController::onStopTriggered(bool checked)
     // in feed hold mode
     else
     {
-        mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::CyclePauseResume());
+        mGrblMachineModel.onGcodeCommandManualSend(GcodeCommand::CyclePauseResumeCommand());
         mUi.actionStop->setText("Feed Hold");
         mUi.actionStop->setIcon(QIcon(":/Images/SVG/hand-paper.svg"));
     }

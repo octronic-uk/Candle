@@ -26,7 +26,7 @@
 #include "View/Drawers/GcodeDrawer.h"
 #include "View/Drawers/ToolDrawer.h"
 #include "View/Drawers/GridDrawer.h"
-#include "View/Drawers/WorkAreaDrawer.h"
+#include "View/Drawers/SafePositionDrawer.h"
 #include "View/Drawers/SelectionDrawer.h"
 #include "Model/Gcode/GcodeCommand.h"
 
@@ -54,20 +54,16 @@ public slots:
     double toolZPosition();
     QString getParserStatus();
     GLWidget* getVisualiser();
-    void setGLWBufferState(QString state); // glwBuffer.setBufferState
-    void placeVisualizerButtons();
     void onVisualizatorRotationChanged();
 
-    void timerEvent(QTimerEvent* te) override;
-    void showEvent(QShowEvent* se) override;
-    void hideEvent(QHideEvent* he) override;
-    void resizeEvent(QResizeEvent* re) override;
+    void timerEvent();
     void onGcodeFileLoadStarted();
     void onGcodeFileLoadFinished(GcodeFileModel*);
     void onGcodeParserUpdated(GcodeParser*);
 
     void onToggleGridButtonToggled(bool toggled);
     void onToggleToolButtonToggled(bool toggled);
+    void onShowSafePositionToggled(bool toggled);
     void onSettingsModelReady(SqlSettingsModel*);
 
     void onUpdateWorkPosition(const QVector3D);
@@ -77,8 +73,9 @@ public slots:
     void onFirmwareConfigurationRead(int param, QString value);
 
 private slots:
-
     void onFollowToolButtonToggled(bool toggled);
+    void onSafePositionSetSignal();
+
 private:
     int mButtonPadding;
     VisualisationForm mUi;
@@ -90,6 +87,7 @@ private:
     GridDrawer mGridDrawer;
     ToolDrawer mToolDrawer;
     SelectionDrawer mSelectionDrawer;
+    SafePositionDrawer mSafePositionDrawer;
     bool mFollowTool;
     QVector3D mWCO;
     QVector3D mWorkPosition;
@@ -99,7 +97,7 @@ private:
     // Parsers
     QSharedPointer<GcodeViewParser> mViewParser;
     QSharedPointer<GcodeViewParser> mProbeParser;
-    QBasicTimer mToolAnimationTimer;
+    QTimer mRedrawTimer;
     int mLastDrawnLineIndex;
     void updateParser();
     bool mSpindleClockwise;

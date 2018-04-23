@@ -42,6 +42,7 @@ public:
 
 signals:
     void gcodeCommandManualSendSignal(GcodeCommand*);
+    void safePositionSetSignal();
 
 public slots:
     void onSettingsModelReady(SqlSettingsModel* model);
@@ -49,11 +50,11 @@ public slots:
 private slots:
     void onResetButtonClicked();
     void onUnlockButtonClicked();
-    void onSafePositionButtonClicked();
+    void onSetSafePositionButtonClicked();
     void onHomeButtonClicked();
     void onProbeButtonClicked();
     void onZeroXYButtonClicked();
-    void onRestoreOriginButtonClicked();
+    void onGoToSafePositionButtonClicked();
     void onZeroZButtonClicked();
     void onUserCommand1ButtonClicked();
     void onUserCommand2ButtonClicked();

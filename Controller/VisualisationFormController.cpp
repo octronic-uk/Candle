@@ -38,14 +38,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mMachinePosition = QVector3D(0,0,0);
     mWorkPosition = QVector3D(0,0,0);
 
-    /*
-    mUi.cmdFit->setParent(mUi.glwVisualizer);
-    mUi.cmdIsometric->setParent(mUi.glwVisualizer);
-    mUi.cmdTop->setParent(mUi.glwVisualizer);
-    mUi.cmdFront->setParent(mUi.glwVisualizer);
-    mUi.cmdLeft->setParent(mUi.glwVisualizer);
-    */
-
     mCodeDrawer.setViewParser(mViewParser);
     mProbeDrawer.setViewParser(mProbeParser);
     mProbeDrawer.setVisible(false);
@@ -59,20 +51,13 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     mUi.glwVisualizer->addDrawable(&mOriginDrawer);
     mUi.glwVisualizer->addDrawable(&mCodeDrawer);
     mUi.glwVisualizer->addDrawable(&mToolDrawer);
-//    mUi.glwVisualizer->addDrawable(&mWorkAreaDrawer);
+    mUi.glwVisualizer->addDrawable(&mSafePositionDrawer);
     mUi.glwVisualizer->addDrawable(&mSelectionDrawer);
-    /*
-    mUi.glwVisualizer->addDrawable(&mProbeDrawer);
-    mUi.glwVisualizer->addDrawable(&mHeightMapBorderDrawer);
-    mUi.glwVisualizer->addDrawable(&mHeightMapGridDrawer);
-    mUi.glwVisualizer->addDrawable(&mHeightMapInterpolationDrawer);
-    */
     mUi.glwVisualizer->fitDrawable(mCodeDrawer);
-    placeVisualizerButtons();
+    mRedrawTimer.start(1000.0f/30.0f);
     setupSignalSlots();
 
-    //mToolAnimationTimer.start(static_cast<int>(1000.0f/5.0f), this);
-    //mUi.cmdSpindle->setChecked(true);
+    mSafePositionDrawer.setVisible(false);
     emit spindleEnabledSignal(true);
 }
 
@@ -95,26 +80,8 @@ void VisualisationFormController::initialise()
 {
     mCodeDrawer.initialise();
     mProbeDrawer.initialise();
-    //mSelectionDrawer.initialise();
     mViewParser = QSharedPointer<GcodeViewParser>::create();
     mProbeParser = QSharedPointer<GcodeViewParser>::create();
-//    mHeightMapBorderDrawer.initialise();
-//    mHeightMapGridDrawer.initialise();
-//    mHeightMapInterpolationDrawer.initialise();
-
-}
-
-void VisualisationFormController::placeVisualizerButtons()
-{
-    /*
-    qDebug() << "VisualisationFormController: placeVisualizerButtons";
-    int xPos = mButtonPadding;
-    mUi.cmdIsometric->move(xPos,0); //mButtonPadding);
-    mUi.cmdTop->move(xPos, mUi.cmdIsometric->geometry().bottom() + mButtonPadding);
-    mUi.cmdLeft->move(xPos, mUi.cmdTop->geometry().bottom() + mButtonPadding);
-    mUi.cmdFront->move(xPos, mUi.cmdLeft->geometry().bottom() + mButtonPadding);
-    mUi.cmdFit->move(xPos, mUi.cmdFront->geometry().bottom() + mButtonPadding);
-    */
 }
 
 void VisualisationFormController::onTopButtonClicked()
@@ -155,7 +122,6 @@ QString VisualisationFormController::getParserStatus()
 
 void VisualisationFormController::onVisualizatorRotationChanged()
 {
-    //qDebug() << "VisualisationFormController: onVisualizatorRotationChanged";
     mUi.cmdIsometric->setChecked(false);
 }
 
@@ -165,87 +131,12 @@ void VisualisationFormController::onFitButtonClicked()
     mUi.glwVisualizer->fitDrawable(mCodeDrawer);
 }
 
-void VisualisationFormController::updateParser()
-{
-    qDebug() << "VisualisationFormController: updateParser";
-    /*
-    QTime time;
-
-    qDebug() << "updating parser:" << mCurrentGCodeTableModel << mCurrentDrawer;
-    time.start();
-
-    GcodeViewParse *parser = mCurrentDrawer->viewParser();
-
-    GcodeParser gp;
-    gp.setTraverseSpeed(mSettingsForm->rapidSpeed());
-    if (mCodeDrawer->getIgnoreZ()) gp.reset(QVector3D(qQNaN(), qQNaN(), 0));
-
-    mUi->tblProgram->setUpdatesEnabled(false);
-
-    QString stripped;
-    QList<QString> args;
-
-    QProgressDialog progress(tr("Updating..."), tr("Abort"), 0, mCurrentGCodeTableModel->rowCount() - 2, this);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.setFixedSize(progress.sizeHint());
-
-    if (mCurrentGCodeTableModel->rowCount() > PROGRESS_MIN_LINES) {
-        progress.show();
-        progress.setStyleSheet("QProgressBar {text-align: center; qproperty-format: \"\"}");
-    }
-
-    for (int i = 0; i < mCurrentGCodeTableModel->rowCount() - 1; i++) {
-        // Get stored args
-        args = mCurrentGCodeTableModel->data().at(i).args;
-
-        // Store args if none
-        if (args.isEmpty()) {
-            stripped = GcodePreprocessorUtils::removeComment(mCurrentGCodeTableModel->data().at(i).command);
-            args = GcodePreprocessorUtils::splitCommand(stripped);
-            mCurrentGCodeTableModel->data()[i].args = args;
-        }
-
-        // Add command to parser
-        gp.addCommand(args);
-
-        // Update table model
-        mCurrentGCodeTableModel->data()[i].state = GCodeItem::InQueue;
-        mCurrentGCodeTableModel->data()[i].response = QString();
-        mCurrentGCodeTableModel->data()[i].line = gp.getCommandNumber();
-
-        if (progress.isVisible() && (i % PROGRESS_STEP == 0)) {
-            progress.setValue(i);
-            qApp->processEvents();
-            if (progress.wasCanceled()) break;
-        }
-    }
-    progress.close();
-
-    mUi->tblProgram->setUpdatesEnabled(true);
-
-    parser->reset();
-
-    updateProgramEstimatedTime(parser->getLinesFromParser(&gp, mSettingsForm->arcPrecision(), mSettingsForm->arcDegreeMode()));
-    mCurrentDrawer->update();
-    mUi->glwVisualizer->updateExtremes(mCurrentDrawer);
-    updateControlsState();
-
-    if (mCurrentGCodeTableModel == &mProgramTableModel) m_fileChanged = true;
-
-    qDebug() << "Update parser time: " << time.elapsed();
-    */
-}
-
 void VisualisationFormController::setupSignalSlots()
 {
     qDebug() << "VisualisationFormController: Setup Signals/Slots";
     connect(
         getVisualiser(), SIGNAL(rotationChanged()),
         this, SLOT(onVisualizatorRotationChanged())
-    );
-    connect(
-        getVisualiser(), SIGNAL(resized()),
-        this, SLOT(placeVisualizerButtons())
     );
     // Command Buttons
     connect(
@@ -280,29 +171,9 @@ void VisualisationFormController::setupSignalSlots()
         mUi.toggleFollowToolButton, SIGNAL(toggled(bool)),
         this, SLOT(onFollowToolButtonToggled(bool))
     );
-
-}
-
-void VisualisationFormController::showEvent(QShowEvent *se)
-{
-    qDebug() << "VisualisationFormController: showEvent";
-    Q_UNUSED(se)
-    placeVisualizerButtons();
-    mUi.glwVisualizer->setUpdatesEnabled(true);
-}
-
-void VisualisationFormController::hideEvent(QHideEvent *he)
-{
-    qDebug() << "VisualisationFormController: hideEvent";
-    Q_UNUSED(he)
-    mUi.glwVisualizer->setUpdatesEnabled(false);
-}
-
-void VisualisationFormController::resizeEvent(QResizeEvent *re)
-{
-//    qDebug() << "VisualisationFormController: resizeEvent";
-    Q_UNUSED(re)
-    placeVisualizerButtons();
+    connect(mUi.toggleSafePositionButton,SIGNAL(toggled(bool)),this,SLOT(onShowSafePositionToggled(bool)));
+    // Redraw Timer
+    connect(&mRedrawTimer, SIGNAL(timeout()),this,SLOT(timerEvent()));
 }
 
 void VisualisationFormController::onGcodeFileLoadStarted()
@@ -316,19 +187,10 @@ GLWidget* VisualisationFormController::getVisualiser()
     return mUi.glwVisualizer;
 }
 
-void VisualisationFormController::setGLWBufferState(QString state)
+void VisualisationFormController::timerEvent()
 {
-    Q_UNUSED(state)
-}
-
-void VisualisationFormController::timerEvent(QTimerEvent *te)
-{
-    if (te->timerId() == mToolAnimationTimer.timerId())
-    {
-        mToolDrawer.rotate(mSpindleClockwise ? -1 : 1);
-    }
+    mToolDrawer.rotate(mSpindleClockwise ? -1 : 1);
     mUi.glwVisualizer->repaint();
-    te->accept();
 }
 
 void VisualisationFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
@@ -358,9 +220,22 @@ void VisualisationFormController::onToggleToolButtonToggled(bool toggled)
     mToolDrawer.setVisible(toggled);
 }
 
+void VisualisationFormController::onShowSafePositionToggled(bool toggled)
+{
+   mSafePositionDrawer.setVisible(toggled);
+}
+
 void VisualisationFormController::onFollowToolButtonToggled(bool toggled)
 {
     mFollowTool = toggled;
+}
+
+void VisualisationFormController::onSafePositionSetSignal()
+{
+   mUi.toggleSafePositionButton->setChecked(true);
+   mSafePositionDrawer.setVisible(true);
+   mSafePositionDrawer.setPosition(mToolDrawer.toolPosition());
+   mSafePositionDrawer.setNeedsUpdate();
 }
 
 void VisualisationFormController::onUpdateWorkPosition(const QVector3D pos)
@@ -413,29 +288,30 @@ void VisualisationFormController::onUpdateWCO(const QVector3D wco)
 
 void VisualisationFormController::onFirmwareConfigurationRead(int param, QString value)
 {
-    /*
-        $130	X Max travel
-        $131	Y Max travel
-        $132	Z Max travel
-    */
-
     qDebug() << "VisualisationFormController: Firmware Config Read";
 
     switch (param)
     {
         case 130:
+            qDebug() << "VisualisationFormController: Setting work area x" << value.toFloat();
             mWorkArea.setX(value.toFloat());
+            mGridDrawer.onSizeUpdated(mWorkArea);
             break;
+
         case 131:
+            qDebug() << "VisualisationFormController: Setting work area y" << value.toFloat();
             mWorkArea.setY(value.toFloat());
+            mGridDrawer.onSizeUpdated(mWorkArea);
             break;
+
         case 132:
+            qDebug() << "VisualisationFormController: Setting work area z" << value.toFloat();
             mWorkArea.setZ(value.toFloat());
+            mGridDrawer.onSizeUpdated(mWorkArea);
             break;
+
         default:
             break;
     }
-
-    mGridDrawer.setSize(mWorkArea);
 }
 

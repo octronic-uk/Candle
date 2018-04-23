@@ -75,13 +75,13 @@ GcodeCommand* GcodeCommand::ControlXCommand()
     return &gc;
 }
 
-GcodeCommand* GcodeCommand::GetConfigurationCommand()
+GcodeCommand* GcodeCommand::GetFirmwareConfigurationCommand()
 {
     static GcodeCommand doubleBuck("$$\r");
     return &doubleBuck;
 }
 
-GcodeCommand* GcodeCommand::SetConfigurationCommand(int param, QString value)
+GcodeCommand* GcodeCommand::SetFirmwareConfigurationCommand(int param, QString value)
 {
     static GcodeCommand doubleBuck;
     doubleBuck = (QString("$%1=%2\r").arg(param).arg(value));
@@ -136,7 +136,7 @@ GcodeCommand* GcodeCommand::ZeroXYCommand()
    return &gc;
 }
 
-GcodeCommand*GcodeCommand::GetGcodeParamsCommand()
+GcodeCommand*GcodeCommand::GetGcodeParserParamsCommand()
 {
    static GcodeCommand gc("$#\r");
    return &gc;
@@ -148,7 +148,7 @@ GcodeCommand*GcodeCommand::ZeroZCommand()
    return &gc;
 }
 
-GcodeCommand* GcodeCommand::CyclePauseResume()
+GcodeCommand* GcodeCommand::CyclePauseResumeCommand()
 {
     static GcodeCommand gc("~");
     return &gc;
@@ -179,6 +179,18 @@ GcodeCommand* GcodeCommand::JogCommand
             .arg(QString::number(z,'g',3))
             .arg(feedRate)
     );
+    return &gc;
+}
+
+GcodeCommand* GcodeCommand::SetSafePositionCommand()
+{
+    static GcodeCommand gc("G28.1\r");
+    return &gc;
+}
+
+GcodeCommand*GcodeCommand::GoToSafePositionCommand()
+{
+    static GcodeCommand gc("G28 G91 Z0\rG28 G91 X0 Y0\r");
     return &gc;
 }
 

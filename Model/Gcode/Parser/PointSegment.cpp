@@ -18,7 +18,7 @@ PointSegment::PointSegment()
     mIsAbsolute = true;
     mIsZMovement = false;
     mIsArc = false;
-    mIsFastTraverse = false;
+    mIsRapidMovement = false;
     mLineNumber = -1;
     mSpeed = 0;
     mSpindleSpeed = 0;
@@ -34,7 +34,7 @@ PointSegment::PointSegment(const PointSegment &ps)
       mIsMetric(ps.isMetric()),
       mIsZMovement(ps.isZMovement()),
       mIsArc(ps.isArc()),
-      mIsFastTraverse(ps.isFastTraverse()),
+      mIsRapidMovement(ps.isRapidMovement()),
       mIsAbsolute(ps.isAbsolute()),
       mLineNumber(ps.mLineNumber)
 {
@@ -152,14 +152,14 @@ bool PointSegment::isArc() const
     return mIsArc;
 }
 
-void PointSegment::setIsFastTraverse(bool isF)
+void PointSegment::setIsRapidMovement(bool isF)
 {
-    mIsFastTraverse = isF;
+    mIsRapidMovement = isF;
 }
 
-bool PointSegment::isFastTraverse() const
+bool PointSegment::isRapidMovement() const
 {
-    return mIsFastTraverse;
+    return mIsRapidMovement;
 }
 
 // Arc properties.

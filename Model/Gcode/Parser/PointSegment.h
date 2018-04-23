@@ -50,8 +50,8 @@ public:
     void setIsArc(bool isA);
     bool isArc() const;
 
-    void setIsFastTraverse(bool isF);
-    bool isFastTraverse() const;
+    void setIsRapidMovement(bool isF);
+    bool isRapidMovement() const;
 
     void setArcCenter(const QVector3D &center);
 
@@ -88,7 +88,7 @@ private:
     bool mIsMetric;
     bool mIsZMovement;
     bool mIsArc;
-    bool mIsFastTraverse;
+    bool mIsRapidMovement;
     bool mIsAbsolute;
     int mLineNumber;
     planes mPlane;

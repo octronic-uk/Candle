@@ -34,13 +34,16 @@ enum class GrblMachineState
     Door,
     Locked,
     Unlocked,
-    Jog
+    Jog,
+    Error
 };
 
 static QString stateToString(GrblMachineState state)
 {
     switch (state)
     {
+        case GrblMachineState::Error:
+            return "Error";
         case GrblMachineState::Unknown:
             return "Unknown";
         case GrblMachineState::Idle:
@@ -113,6 +116,10 @@ static GrblMachineState stateFromString(QString stateStr)
     else if (stateStr.toUpper() == "JOG")
     {
         return GrblMachineState::Jog;
+    }
+    else if (stateStr.toUpper() == "ERROR")
+    {
+        return GrblMachineState::Error;
     }
 
     return GrblMachineState::Unknown;

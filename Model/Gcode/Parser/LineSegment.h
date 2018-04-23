@@ -40,8 +40,8 @@ public:
     void setIsArc(bool isA);
     bool isArc() const;
 
-    void setIsFastTraverse(bool isF);
-    bool isFastTraverse() const;
+    void setIsRapidMovement(bool isF);
+    bool isRapidMovement() const;
 
     bool contains(const QVector3D &point) const;
 
@@ -84,7 +84,7 @@ private:
     bool mIsZMovement;
     bool mIsArc;
     bool mIsClockwise;
-    bool mIsFastTraverse;
+    bool mIsRapidMovement;
     int mLineNumber;
     bool mDrawn;
     bool mIsMetric;

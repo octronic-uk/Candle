@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>538</width>
-    <height>281</height>
+    <height>379</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -235,6 +235,29 @@
          <property name="icon">
           <iconset resource="../Resources/Images.qrc">
            <normaloff>:/Images/SVG/search.svg</normaloff>:/Images/SVG/search.svg</iconset>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QToolButton" name="toggleSafePositionButton">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="statusTip">
+          <string>Toggle Safe Position Marker</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../Resources/Images.qrc">
+           <normaloff>:/Images/SVG/smile.svg</normaloff>:/Images/SVG/smile.svg</iconset>
          </property>
          <property name="checkable">
           <bool>true</bool>

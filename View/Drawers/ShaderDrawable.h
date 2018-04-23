@@ -40,6 +40,8 @@ public:
     float pointSize() const;
     void setPointSize(float pointSize);
 
+    void setNeedsUpdate();
+
 signals:
 
 public slots:
@@ -57,8 +59,8 @@ protected:
 
     virtual bool updateData();
     void init();
+    bool mNeedsUpdateGeometry;
 
 private:
     QOpenGLVertexArrayObject mVAO;
-    bool mNeedsUpdateGeometry;
 };

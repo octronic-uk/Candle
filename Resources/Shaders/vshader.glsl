@@ -5,7 +5,7 @@ precision mediump float;
 #endif
 
 uniform mat4 mvp_matrix;
-uniform mat4 mv_matrix;
+//uniform mat4 mv_matrix;
 
 attribute vec4 a_position;
 attribute vec4 a_color;

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>218</height>
+    <width>186</width>
+    <height>191</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,13 +56,6 @@
          <number>2</number>
         </property>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Spindle</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QToolButton" name="spindleOverrideButton">
@@ -91,7 +84,7 @@
              <string>Spindle on/off</string>
             </property>
             <property name="text">
-             <string>Spindle On</string>
+             <string>Spindle</string>
             </property>
             <property name="icon">
              <iconset resource="../Resources/Images.qrc">
@@ -107,7 +100,7 @@
              <bool>true</bool>
             </property>
             <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonIconOnly</enum>
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
             <property name="autoRaise">
              <bool>false</bool>
@@ -173,13 +166,6 @@
          <number>2</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Feed</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
            <widget class="QToolButton" name="feedOverrideButton">
@@ -196,7 +182,7 @@
              </size>
             </property>
             <property name="text">
-             <string> Override</string>
+             <string>Feed</string>
             </property>
             <property name="icon">
              <iconset resource="../Resources/Images.qrc">
@@ -210,6 +196,9 @@
             </property>
             <property name="checkable">
              <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
            </widget>
           </item>
@@ -257,13 +246,6 @@
          <number>2</number>
         </property>
         <item>
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Rapid</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QToolButton" name="rapidOverrideButton">
@@ -280,7 +262,7 @@
              </size>
             </property>
             <property name="text">
-             <string> Override</string>
+             <string>Rapid</string>
             </property>
             <property name="icon">
              <iconset resource="../Resources/Images.qrc">
@@ -294,6 +276,9 @@
             </property>
             <property name="checkable">
              <bool>true</bool>
+            </property>
+            <property name="toolButtonStyle">
+             <enum>Qt::ToolButtonTextUnderIcon</enum>
             </property>
            </widget>
           </item>

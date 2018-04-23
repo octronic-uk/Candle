@@ -68,6 +68,9 @@ public:
     static QString stateToString(GrblMachineState state);
     void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
+    bool getProgramRunning() const;
+    void setProgramRunning(bool programRunning);
+
 signals:
     void updateProgramTableStatusSignal(GcodeCommand* state);
 

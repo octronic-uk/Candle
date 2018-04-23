@@ -171,34 +171,49 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
     {
         case GrblResponseType::Alarm:
             parseAlarmResponse(response);
+            emit appendResponseToConsoleSignal(response);
             break;
         case GrblResponseType::Startup:
             parseGrblVersion(response);
-            emit appendResponseToConsoleSignal(response);
             mStatusRequested = false;
             mWaitingForStatus = false;
+            mState = GrblMachineState::Locked;
+            emit appendResponseToConsoleSignal(response);
             break;
         case GrblResponseType::Locked:
             mState = GrblMachineState::Locked;
             emit appendResponseToConsoleSignal(response);
             break;
         case GrblResponseType::Unlocked:
+            mError = false;
             mState = GrblMachineState::Unlocked;
+            onGcodeCommandManualSend(GcodeCommand::GetFirmwareConfigurationCommand());
             emit appendResponseToConsoleSignal(response);
-            onGcodeCommandManualSend(GcodeCommand::GetGcodeParamsCommand());
             break;
         case GrblResponseType::Status:
-            updateStatus(response);
-            updateMachinePosition(response);
-            updateWorkCoordinateOffset(response);
-            updateOverrides(response);
-            updateWorkPosition();
-            //qDebug() << "GrblMachineModel: Got status!";
-            mStatusRequested = false;
-            mWaitingForStatus = false;
+            if (!mError)
+            {
+                updateStatus(response);
+                updateMachinePosition(response);
+                updateWorkCoordinateOffset(response);
+                updateOverrides(response);
+                updateWorkPosition();
+                //qDebug() << "GrblMachineModel: Got status!";
+                mStatusRequested = false;
+                mWaitingForStatus = false;
+            }
             break;
         case GrblResponseType::Ok:
-            if (!mCommandBuffer.isEmpty())
+            if (mError)
+            {
+                mState = GrblMachineState::Unlocked;
+                mError = false;
+                mProgramRunning = false;
+                mStatusRequested = false;
+                mWaitingForStatus = false;
+                startProgramSendTimer();
+            }
+            else if (!mCommandBuffer.isEmpty())
             {
                 next = mCommandBuffer.takeFirst();
                 qDebug() << "GrblMachineModel: Popping command"
@@ -226,13 +241,16 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
                 emit jobCompletedSignal();
                 mProgramRunning = false;
             }
+
+            emit appendResponseToConsoleSignal(response);
+
             break;
         case GrblResponseType::Error:
             parseError(response);
             mError = true;
-            //qDebug() << "GrblMachineModel: Error" << response.getData();
-            stopProgramSendTimer();
-            //stopStatusTimer();
+            mWaitingForStatus = false;
+            mStatusRequested = false;
+            mState = GrblMachineState::Error;
             emit errorSignal(mErrorString);
             emit appendResponseToConsoleSignal(response);
             break;
@@ -330,15 +348,23 @@ void GrblMachineModel::onSerialPortBaudRateChanged(int baud)
 
 void GrblMachineModel::onProgramSendTimerTimeout()
 {
+    qDebug () << "GrblMachineModel: onProgramSendTimerTimout";
+
+    if (mError)
+    {
+        mStatusRequested = false;
+        mWaitingForStatus = false;
+
+    }
     if (mStatusRequested)
     {
-        if (mWaitingForStatus)
+        if (mWaitingForStatus && !mError)
         {
-            //qDebug() << "GrblMachineModel: Still waiting for status";
+            qDebug() << "GrblMachineModel: Still waiting for last status request to respond";
             return;
         }
 
-        else if (mSerialPort.isOpen() && mBytesWaiting == 0)
+        else if (mSerialPort.isOpen() && mBytesWaiting == 0 && !mError)
         {
             //qDebug() << "GrblMachineModel: Requesting status";
             mBytesWaiting += mSerialPort.write
@@ -468,6 +494,16 @@ void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
     qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
 }
 
+bool GrblMachineModel::getProgramRunning() const
+{
+    return mProgramRunning;
+}
+
+void GrblMachineModel::setProgramRunning(bool programRunning)
+{
+    mProgramRunning = programRunning;
+}
+
 void GrblMachineModel::onSendProgram(const GcodeFileModel& gcodeFile)
 {
     //qDebug() << "GrblMachineModel: onSendProgram()";
@@ -511,7 +547,6 @@ void GrblMachineModel::startStatusTimer()
 {
     if (!mStatusTimer.isActive())
     {
-        //qDebug() << "GrblMachineModel: Starting Status Timer";
         mStatusTimer.start(mStatusInterval);
     }
 }
@@ -520,14 +555,14 @@ void GrblMachineModel::startProgramSendTimer()
 {
     if (!mProgramSendTimer.isActive())
     {
-        //qDebug() << "GrblMachineModel: Starting Program Timer";
+        qDebug() << "GrblMachineController: Starting status timer";
         mProgramSendTimer.start(mProgramSendInterval);
     }
 }
 
 void GrblMachineModel::stopProgramSendTimer()
 {
-    //qDebug() << "GrblMachineController: Stopping program send timer";
+    qDebug() << "GrblMachineController: Stopping program send timer";
     mProgramSendTimer.stop();
     clearCommandBuffer();
     clearCommandQueue();
@@ -535,7 +570,7 @@ void GrblMachineModel::stopProgramSendTimer()
 
 void GrblMachineModel::stopStatusTimer()
 {
-    //qDebug() << "GrblMachineController: Stopping status timer";
+    qDebug() << "GrblMachineController: Stopping status timer";
     mStatusTimer.stop();
 }
 

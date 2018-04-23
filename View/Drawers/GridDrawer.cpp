@@ -24,8 +24,8 @@ GridDrawer::GridDrawer(float size, float major, float minor)
       mMajorSpacing(major),
       mMinorSpacing(minor),
       mSize(size,size,size),
-      mMajorColor(QColor("Black")),
-      mMinorColor(QColor("DarkGray")),
+      mMajorColor(QColor("DarkBlue")),
+      mMinorColor(QColor("LightBlue")),
       mTextColor(QColor(255,255,255))
 {
     mLineWidth = 1;
@@ -62,32 +62,43 @@ int GridDrawer::getVertexCount()
 
 bool GridDrawer::updateData()
 {
-    // TODO - support rectangle sizes
     mLines.clear();
 
-    float start = 0;//-(mSize/2);
-    float end = mSize.x();//(mSize/2);
+    float xStart = 0;
+    float xEnd = mSize.x();
+
+    float yStart = 0;
+    float yEnd = mSize.y();
+
+    qDebug() << "GridDrawer: xStart" << xStart << "xEnd" << xEnd
+             << "yStart" << yStart << "yEnd" << yEnd;
 
     // X Lines
-    for (float yPos = start; yPos <= end; yPos += mMinorSpacing)
+    // -----
+    // -----
+    // -----
+    for (float yPos = yStart; yPos <= yEnd; yPos += mMinorSpacing)
     {
         QVector4D color = fmod(abs(yPos), mMajorSpacing) == 0.0f ?
             Util::colorToVector(mMajorColor) :
             Util::colorToVector(mMinorColor);
 
-        mLines.append({QVector3D(start, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
-        mLines.append({QVector3D(end, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
+        mLines.append({QVector3D(xStart, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
+        mLines.append({QVector3D(xEnd, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
     }
 
     // Y Lines
-    for (float xPos = start; xPos <= end; xPos += mMinorSpacing)
+    // |  |  |
+    // |  |  |
+    // |  |  |
+    for (float xPos = xStart; xPos <= xEnd; xPos += mMinorSpacing)
     {
         QVector4D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
             Util::colorToVector(mMajorColor) :
             Util::colorToVector(mMinorColor);
 
-        mLines.append({QVector3D(xPos, start, 0),color,QVector3D(sNan, sNan, sNan)});
-        mLines.append({QVector3D(xPos, end, 0),color,QVector3D(sNan, sNan, sNan)});
+        mLines.append({QVector3D(xPos, yStart, 0),color,QVector3D(sNan, sNan, sNan)});
+        mLines.append({QVector3D(xPos, yEnd, 0),color,QVector3D(sNan, sNan, sNan)});
     }
 
    return true;
@@ -106,7 +117,7 @@ void GridDrawer::setSize(QVector3D size)
 void GridDrawer::onSizeUpdated(QVector3D size)
 {
     setSize(size);
-    updateData();
+    mNeedsUpdateGeometry = true;
 }
 
 float GridDrawer::getMinorSpacing() const
