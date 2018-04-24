@@ -303,13 +303,13 @@ void MainFormController::setupGrblMachineModelSignals()
     );
     connect
     (
-        this, SIGNAL(sendProgramSignal(const GcodeFileModel&)),
-        &mGrblMachineModel, SLOT(onSendProgram(const GcodeFileModel&))
+        this, SIGNAL(sendProgramSignal(GcodeFileModel*)),
+        &mGrblMachineModel, SLOT(onSendProgram(GcodeFileModel*))
     );
     connect
     (
-        this, SIGNAL(sendProgramFromLineSignal(const GcodeFileModel&,long)),
-        &mGrblMachineModel, SLOT(onSendProgramFromLine(const GcodeFileModel&,long))
+        this, SIGNAL(sendProgramFromLineSignal(GcodeFileModel*,long)),
+        &mGrblMachineModel, SLOT(onSendProgramFromLine(GcodeFileModel*,long))
     );
     connect
     (
@@ -560,7 +560,8 @@ void MainFormController::onActionClearAllTriggered()
             mUi.stateFormController->initialise();
             mUi.visualisationFormController->initialise();
             mSettingsFormController.initialise();
-            mGcodeFileModel.reset();
+            mGcodeFileModel.clear();
+            mGcodeFileModel = QSharedPointer<GcodeFileModel>::create();
             mGrblMachineModel.initialise();
             break;
         case QMessageBox::Cancel:
@@ -691,6 +692,7 @@ void MainFormController::onActFileOpenTriggered()
 
     //qDebug() << "MainFormController: Opening File " << fileName;
 
+    mGcodeFileModel.clear();
     mGcodeFileModel = QSharedPointer<GcodeFileModel>::create();
     setupGcodeFileModelSignals();
 
@@ -715,7 +717,10 @@ void MainFormController::initialise()
 
 void MainFormController::onGrblMachineConnected(bool connected)
 {
-    mUi.programFormController->setFormActive(mGcodeFileModel->isOpen() && connected);
+    if (mGcodeFileModel)
+    {
+        mUi.programFormController->setFormActive(mGcodeFileModel->isOpen() && connected);
+    }
     mUi.actionConnect->setEnabled(!connected);
 }
 

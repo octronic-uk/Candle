@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <QSharedPointer>
 #include <QVector3D>
 
 #include "ArcProperties.h"
@@ -24,11 +25,10 @@ public:
     PointSegment();
     PointSegment(const PointSegment &ps);
     PointSegment(const QVector3D &b, int num);
-    PointSegment(const QVector3D &point, int num, const QVector3D &center, double radius, bool clockwise);
+    PointSegment(const QVector3D &getPointHandle, int num, const QVector3D &center, double radius, bool clockwise);
     ~PointSegment();
 
-    void setPoint(const QVector3D &mPoint);
-    QVector3D point() const;
+    QVector3D* getPointHandle();
 
     QVector<double> points() const;
 
@@ -84,7 +84,7 @@ private:
     double mSpeed;
     double mSpindleSpeed;
     double mDwell;
-    QVector3D mPoint;
+    QSharedPointer<QVector3D> mPoint;
     bool mIsMetric;
     bool mIsZMovement;
     bool mIsArc;

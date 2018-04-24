@@ -35,14 +35,14 @@ public:
     int getTruncateDecimalLength();
     void setTruncateDecimalLength(int truncateDecimalLength);
     void reset(const QVector3D &initialPoint = QVector3D(qQNaN(), qQNaN(), qQNaN()));
-    PointSegment* addCommand(QString command);
-    PointSegment* addCommand(const QStringList &args);
+    QSharedPointer<PointSegment> addCommand(QString command);
+    QSharedPointer<PointSegment> addCommand(const QStringList &args);
     QVector3D getCurrentPoint();
-    QList<PointSegment*> expandArc();
+    QList<QSharedPointer<PointSegment>> expandArc();
     QStringList preprocessCommands(QStringList commands);
     QStringList preprocessCommand(QString command);
     QStringList convertArcsToLines(QString command);
-    QList<PointSegment*> getPointSegmentList();
+    QList<PointSegment*> getPointSegmentHandlesList();
     double getTraverseSpeed() const;
     void setTraverseSpeed(double traverseSpeed);
     int getCommandNumber() const;
@@ -115,12 +115,12 @@ private:
     double mLastSpindleSpeed;
 
     // The gcode.
-    QList<PointSegment*> mPoints;
-    PointSegment* processCommand(const QStringList &args);
-    PointSegment* handleMCode(float code, const QStringList &args);
-    PointSegment* handleGCode(float code, const QStringList &args);
-    PointSegment* addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse);
-    PointSegment* addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args);
+    QList<QSharedPointer<PointSegment>> mPoints;
+    QSharedPointer<PointSegment> processCommand(const QStringList &args);
+    void handleMCode(float code, const QStringList &args);
+    QSharedPointer<PointSegment> handleGCode(float code, const QStringList &args);
+    QSharedPointer<PointSegment> addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse);
+    QSharedPointer<PointSegment> addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args);
     void setLastGcodeCommand(float num);
 };
 

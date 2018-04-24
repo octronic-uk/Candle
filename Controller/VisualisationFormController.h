@@ -56,7 +56,6 @@ public slots:
     GLWidget* getVisualiser();
     void onVisualizatorRotationChanged();
 
-    void timerEvent();
     void onGcodeFileLoadStarted();
     void onGcodeFileLoadFinished(GcodeFileModel*);
     void onGcodeParserUpdated(GcodeParser*);
@@ -94,8 +93,6 @@ private:
     QVector3D mWorkArea;
 
     // Parsers
-    QSharedPointer<GcodeViewParser> mViewParser;
-    QTimer mRedrawTimer;
     int mLastDrawnLineIndex;
     void updateParser();
     bool mSpindleClockwise;

@@ -26,8 +26,8 @@ public:
     QVector3D getMaximumExtremes() const override;
 
     void initialise();
+    void updateViewParser(GcodeParser*);
 
-    void setViewParserHandle(GcodeViewParser* viewParser);
     GcodeViewParser* getViewParserHandle();
 
     bool simplify() const;
@@ -72,7 +72,7 @@ public slots:
 private slots:
 
 private:
-    GcodeViewParser* mViewParserHandle;
+    QSharedPointer<GcodeViewParser> mViewParser;
     bool mIgnoreZ;
     QColor mColorNormal;
     QColor mColorDrawn;

@@ -12,7 +12,7 @@
 
 PointSegment::PointSegment()
 {
-    qDebug() << "PointSegment: Constructor";
+//    qDebug() << "PointSegment: Constructor";
     mToolhead = 0;
     mIsMetric = true;
     mIsAbsolute = true;
@@ -24,6 +24,7 @@ PointSegment::PointSegment()
     mSpindleSpeed = 0;
     mDwell = 0;
     mPlane = XY;
+    mPoint = QSharedPointer<QVector3D>::create();
 }
 
 PointSegment::PointSegment(const PointSegment &ps)
@@ -38,7 +39,7 @@ PointSegment::PointSegment(const PointSegment &ps)
       mIsAbsolute(ps.isAbsolute()),
       mLineNumber(ps.mLineNumber)
 {
-    qDebug() << "PointSegment: Copy Constructor, isZMovement" << mIsZMovement;
+//    qDebug() << "PointSegment: Copy Constructor, isZMovement" << mIsZMovement;
     if (isArc())
     {
         //qDebug() << "PointSegment: isArc";
@@ -53,8 +54,8 @@ PointSegment::PointSegment(const QVector3D &b, int num)
     : PointSegment()
 
 {
-    qDebug() << "PointSegment: QVector3D Constructor, " << b << num;
-    mPoint = b;
+//    qDebug() << "PointSegment: QVector3D Constructor, " << b << num;
+    mPoint = QSharedPointer<QVector3D>::create(b);
     mLineNumber = num;
 }
 
@@ -73,23 +74,20 @@ PointSegment::PointSegment
     mArcProperties.isClockwise = clockwise;
 }
 
-PointSegment::~PointSegment() {}
-
-void PointSegment::setPoint(const QVector3D &point)
+PointSegment::~PointSegment()
 {
-    mPoint = QVector3D(point);
 }
 
-QVector3D PointSegment::point() const
+QVector3D* PointSegment::getPointHandle()
 {
-    return mPoint;
+    return mPoint.data();
 }
 
 QVector<double> PointSegment::points() const
 {
     QVector<double> points;
-    points.append(mPoint.x());
-    points.append(mPoint.y());
+    points.append(mPoint->x());
+    points.append(mPoint->y());
     return points;
 }
 
@@ -213,9 +211,9 @@ void PointSegment::convertToMetric()
     }
 
     mIsMetric = true;
-    mPoint.setX(mPoint.x() * 25.4);
-    mPoint.setY(mPoint.y() * 25.4);
-    mPoint.setZ(mPoint.z() * 25.4);
+    mPoint->setX(mPoint->x() * 25.4);
+    mPoint->setY(mPoint->y() * 25.4);
+    mPoint->setZ(mPoint->z() * 25.4);
 
     if (mIsArc)
     {

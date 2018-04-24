@@ -103,8 +103,8 @@ signals:
     void toolChangeSignal(int);
 
 public slots:
-    void onSendProgram(const GcodeFileModel& gcodeFile);
-    void onSendProgramFromLine(const GcodeFileModel& gcodeFile, long fromId);
+    void onSendProgram(GcodeFileModel* gcodeFile);
+    void onSendProgramFromLine(GcodeFileModel* gcodeFile, long fromId);
     void onGcodeCommandManualSend(GcodeCommand*);
 
     void onUpdateSpindleOverride(float speed);

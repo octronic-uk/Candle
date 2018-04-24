@@ -13,7 +13,6 @@
 #include <QTimer>
 #include <QTime>
 #include "View/Drawers/ShaderDrawable.h"
-#include "View/Widgets/Camera.h"
 
 
 #ifdef GLES
@@ -82,11 +81,11 @@ signals:
 
 public slots:
     void onLookAt(QVector3D lookAt);
+    void onRepaintTimerTimeout();
 
 private slots:
     void onFramesTimer();
     void viewAnimation();
-    void onRepaintTimerTimeout();
 
 private:
     float normalizeAngle(float angle);
@@ -94,7 +93,6 @@ private:
     void beginViewAnimation();
     void stopViewAnimation();
 
-    Camera mCamera;
     float mXRot, mYRot, mXLastRot, mYLastRot;
     float mXPan, mYPan, mXLastPan, mYLastPan, mZPan, mLastZPan;
     QVector3D mLookAt;

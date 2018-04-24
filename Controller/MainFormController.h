@@ -56,8 +56,8 @@ public:
     void initialise() override;
 
 signals:
-   void sendProgramSignal(const GcodeFileModel&);
-   void sendProgramFromLineSignal(const GcodeFileModel&, long);
+   void sendProgramSignal(GcodeFileModel*);
+   void sendProgramFromLineSignal(GcodeFileModel*, long);
    void toolChangeCompletedSignal();
 
 public slots:

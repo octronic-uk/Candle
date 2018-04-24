@@ -18,13 +18,13 @@ GcodeDrawer::GcodeDrawer()
     mPosition = QVector3D(0,0,0);
     mPointSize = 10;
     mLineWidth = 3;
-    mViewParserHandle = nullptr;
+    mViewParser = QSharedPointer<GcodeViewParser>::create();
 }
 
 GcodeDrawer::GcodeDrawer(const GcodeDrawer& other)
     : QObject(other.parent())
 {
-    mViewParserHandle = other.mViewParserHandle;
+    mViewParser = other.mViewParser;
     mIgnoreZ = other.mIgnoreZ;
     mColorNormal = other.mColorNormal;
     mColorDrawn = other.mColorDrawn;
@@ -65,13 +65,13 @@ bool GcodeDrawer::prepareVectors()
 {
     qDebug() << "GcodeDrawer: preparing vectors" << this;
 
-    if (mViewParserHandle == nullptr)
+    if (mViewParser == nullptr)
     {
         qDebug() << "GcodeDrawer: Viewparser is null";
         return true;
     }
 
-    QList<LineSegment*> list = mViewParserHandle->getLines();
+    QList<LineSegment*> list = mViewParser->getLineSegmentHandlesList();
     VertexData vertex;
 
     qDebug() << "GcodeDrawer: lines count" << list.count();
@@ -168,8 +168,13 @@ bool GcodeDrawer::prepareVectors()
 
 bool GcodeDrawer::updateVectors()
 {
+    if (mViewParser == nullptr)
+    {
+        return true;
+    }
+
     // Update vertices
-    QList<LineSegment*> list = mViewParserHandle->getLines();
+    QList<LineSegment*> list = mViewParser->getLineSegmentHandlesList();
 
     // Map buffer
     VertexData *data = static_cast<VertexData*>(mVBO.map(QOpenGLBuffer::WriteOnly));
@@ -241,15 +246,15 @@ QColor GcodeDrawer::getSegmentColor(LineSegment* segment)
 
 QVector3D GcodeDrawer::getSizes() const
 {
-    QVector3D min = mViewParserHandle->getMinimumExtremes();
-    QVector3D max = mViewParserHandle->getMaximumExtremes();
+    QVector3D min = mViewParser->getMinimumExtremes();
+    QVector3D max = mViewParser->getMaximumExtremes();
 
     return QVector3D(max.x() - min.x(), max.y() - min.y(), max.z() - min.z());
 }
 
 QVector3D GcodeDrawer::getMinimumExtremes() const
 {
-    QVector3D v = mViewParserHandle->getMinimumExtremes();
+    QVector3D v = mViewParser->getMinimumExtremes();
     if (mIgnoreZ)
         v.setZ(0);
 
@@ -258,7 +263,7 @@ QVector3D GcodeDrawer::getMinimumExtremes() const
 
 QVector3D GcodeDrawer::getMaximumExtremes() const
 {
-    QVector3D v = mViewParserHandle->getMaximumExtremes();
+    QVector3D v = mViewParser->getMaximumExtremes();
     if (mIgnoreZ) v.setZ(0);
 
     return v;
@@ -276,17 +281,20 @@ void GcodeDrawer::initialise()
     mGeometryUpdated = false;
     mPointSize = 10;
     mLineWidth = 4;
+    mViewParser.clear();
+    mViewParser = QSharedPointer<GcodeViewParser>::create();
     update();
 }
 
-void GcodeDrawer::setViewParserHandle(GcodeViewParser* viewParser)
+void GcodeDrawer::updateViewParser(GcodeParser* parser)
 {
-    mViewParserHandle = viewParser;
+    mViewParser->setLinesFromParser(parser,50,true);
+    update();
 }
 
 GcodeViewParser* GcodeDrawer::getViewParserHandle()
 {
-    return mViewParserHandle;
+    return mViewParser.data();
 }
 
 bool GcodeDrawer::geometryUpdated()
