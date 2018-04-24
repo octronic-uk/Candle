@@ -162,7 +162,7 @@ bool GcodeDrawer::prepareVectors()
         }
     }
     mGeometryUpdated = true;
-    mIndexes.clear();
+    //mIndexes.clear();
     return true;
 }
 
@@ -205,7 +205,7 @@ bool GcodeDrawer::updateVectors()
         }
     }
 
-    mIndexes.clear();
+    //mIndexes.clear();
     if (data) mVBO.unmap();
     return !data;
 }
@@ -288,7 +288,7 @@ void GcodeDrawer::initialise()
 
 void GcodeDrawer::updateViewParser(GcodeParser* parser)
 {
-    mViewParser->setLinesFromParser(parser,50,true);
+    mViewParser->setLinesFromParser(parser,10,true);
     update();
 }
 

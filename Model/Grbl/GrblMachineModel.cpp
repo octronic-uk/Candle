@@ -368,11 +368,8 @@ void GrblMachineModel::onProgramSendTimerTimeout()
 
         else if (mSerialPort.isOpen() && mBytesWaiting == 0 && !mError)
         {
-            //qDebug() << "GrblMachineModel: Requesting status";
-            mBytesWaiting += mSerialPort.write
-            (
-                QString(GcodeCommand::StatusUpdateCommand()->getCommand()).toLatin1()
-            );
+            qDebug() << "GrblMachineModel: Requesting status";
+            mBytesWaiting += mSerialPort.write(GcodeCommand::StatusUpdateCommand()->getCommand().toLatin1());
             mStatusRequested = true;
             mWaitingForStatus = true;
         }
@@ -439,7 +436,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
     if (!mSerialPort.isOpen())
     {
         qDebug() << "GrblMachineModel: sendCommand FAILED -> SerialPort is not open";
-        mProgramSendTimer.stop();
+        //mProgramSendTimer.stop();
         return false;
     }
 
@@ -467,8 +464,8 @@ bool GrblMachineModel::sendNextCommandFromQueue()
 
             if (!isSpaceInBuffer(command))
             {
-                //qDebug() << "GrblMachineController: Buffer full, waiting..."
-                         //<< command->getCommand();
+                qDebug() << "GrblMachineController: Buffer full, waiting..."
+                         << command->getCommand();
                 break;
             }
 
@@ -487,6 +484,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
             }
             else
             {
+                qDebug() << "GrblMachineModel: Writing" << command->getCommand();
                 mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
                 command->setState(GcodeCommandState::Sent);
             }
@@ -499,7 +497,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
 void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
 {
     mBytesWaiting -= bytes;
-    //qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
+    qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
 }
 
 bool GrblMachineModel::getProgramRunning() const
@@ -681,7 +679,6 @@ void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
 {
     if (mSerialPort.isOpen())
     {
-        //mSerialPort.flush();
         if (command->getRawCommand() > 0)
         {
             qDebug() << "GrblMachineController: Manual Raw Gcode Send 0x"
@@ -727,18 +724,18 @@ int GrblMachineModel::bufferLengthInUse()
 {
     int length = 0;
 
-    /*qDebug() << "GrblMachineModel: Commands in buffer:";
+    //qDebug() << "GrblMachineModel: Commands in buffer:";
     for (GcodeCommand* gc : mCommandBuffer)
     {
-        qDebug() << "\t" << gc->getLine()
+        /*qDebug() << "\t" << gc->getLine()
                  << "|" << gc->getCommand()
                  << "|" << gc->getArgs();
+                 */
 
         length += gc->getCommandLength();
     }
 
-    qDebug() << "GrblMachineModel: Buffer in use:" << length;
-    */
+    //qDebug() << "GrblMachineModel: Buffer in use:" << length;
     return length;
 }
 
