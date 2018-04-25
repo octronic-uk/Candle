@@ -121,30 +121,24 @@ void GcodeParser::reset(const QVector3D &initialPoint)
     // The unspoken home location.
     mCurrentPoint = initialPoint;
     mCurrentPlane = PointSegment::XY;
-    mPoints.append(QSharedPointer<PointSegment>::create(mCurrentPoint, -1));
+    mPoints.append(QSharedPointer<PointSegment>::create(nullptr, mCurrentPoint, -1));
 }
 
 /**
 * Add a command to be processed.
 */
-QSharedPointer<PointSegment> GcodeParser::addCommand(QString command)
+QSharedPointer<PointSegment> GcodeParser::addCommand(GcodeCommand* command)
 {
-    QString stripped = removeComment(command);
+    QString stripped = removeComment(command->getCommand());
     QStringList args = splitCommand(stripped);
-    return addCommand(args);
-}
+    command->setArgs(args);
 
-/**
-* Add a command which has already been broken up into its arguments.
-*/
-QSharedPointer<PointSegment> GcodeParser::addCommand(const QStringList &args)
-{
-    if (args.isEmpty())
+    if (command->getArgs().isEmpty())
     {
-        //qDebug() << "GcodeParser: Adding Empty Args PointSegment";
-        return QSharedPointer<PointSegment>::create();
+        return QSharedPointer<PointSegment>::create(command);
     }
-    return processCommand(args);
+
+    return processCommand(command);
 }
 
 /**
@@ -168,7 +162,7 @@ QVector3D GcodeParser::getCurrentPoint()
 * Expands the last point in the list if it is an arc according to the
 * the parsers settings.
 */
-QList<QSharedPointer<PointSegment>> GcodeParser::expandArc()
+QList<QSharedPointer<PointSegment>> GcodeParser::expandArc(GcodeCommand* parent)
 {
     //qDebug() << "GcodeParser::expandArc()";
     PointSegment* startSegment = mPoints[mPoints.size() - 2].data();
@@ -222,7 +216,8 @@ QList<QSharedPointer<PointSegment>> GcodeParser::expandArc()
 
     while (psi.hasNext())
     {
-        auto temp = QSharedPointer<PointSegment>::create(psi.next(), mCommandNumber++);
+        auto temp = QSharedPointer<PointSegment>::create(parent, psi.next(), mCommandNumber++);
+        temp->setIsArc(true);
         temp->setIsMetric(lastSegment->isMetric());
         mPoints.append(temp);
         psl.append(temp);
@@ -256,10 +251,12 @@ int GcodeParser::getCommandNumber() const
     return mCommandNumber - 1;
 }
 
-QSharedPointer<PointSegment> GcodeParser::processCommand(const QStringList &args)
+QSharedPointer<PointSegment> GcodeParser::processCommand(GcodeCommand* command)
 {
     QList<float> gCodes;
-    QSharedPointer<PointSegment> ps = QSharedPointer<PointSegment>::create();
+    QSharedPointer<PointSegment> ps = QSharedPointer<PointSegment>::create(command);
+
+    QStringList args = command->getArgs();
 
     // Handle F code
     double speed = parseCoord(args, 'F');
@@ -293,21 +290,15 @@ QSharedPointer<PointSegment> GcodeParser::processCommand(const QStringList &args
 
     foreach (float code, gCodes)
     {
-        ps = handleGCode(code, args);
+        ps = handleGCode(command, code);
     }
 
     return ps;
 }
 
-QSharedPointer<PointSegment> GcodeParser::addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse)
+QSharedPointer<PointSegment> GcodeParser::addLinearPointSegment(GcodeCommand* parent, const QVector3D &nextPoint, bool fastTraverse)
 {
-    /*qDebug() << "GcodeParser: addLinearPointSegment"
-             << "Current" << mCurrentPoint
-             << "Next" << nextPoint
-             << "Fast Traverse" << fastTraverse;
-             */
-
-    auto ps = QSharedPointer<PointSegment>::create(nextPoint, mCommandNumber++);
+    auto ps = QSharedPointer<PointSegment>::create(parent, nextPoint, mCommandNumber++);
 
     bool zOnly = false;
 
@@ -316,7 +307,6 @@ QSharedPointer<PointSegment> GcodeParser::addLinearPointSegment(const QVector3D 
         Util::floatsAreEqual(mCurrentPoint.y(),nextPoint.y()) &&
         !Util::floatsAreEqual(mCurrentPoint.z(),nextPoint.z()))
     {
-        //qDebug() << "GcodeParser: zOnly";
         zOnly = true;
     }
 
@@ -333,9 +323,9 @@ QSharedPointer<PointSegment> GcodeParser::addLinearPointSegment(const QVector3D 
     return ps;
 }
 
-QSharedPointer<PointSegment> GcodeParser::addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args)
+QSharedPointer<PointSegment> GcodeParser::addArcPointSegment(GcodeCommand* cmd, const QVector3D &nextPoint, bool clockwise, const QStringList &args)
 {
-    auto ps = QSharedPointer<PointSegment>::create(nextPoint, mCommandNumber++);
+    auto ps = QSharedPointer<PointSegment>::create(cmd, nextPoint, mCommandNumber++);
 
     QVector3D center = updateCenterWithCommand(args, mCurrentPoint, nextPoint, mInAbsoluteIJKMode, clockwise);
     double radius = parseCoord(args, 'R');
@@ -357,8 +347,11 @@ QSharedPointer<PointSegment> GcodeParser::addArcPointSegment(const QVector3D &ne
                 break;
         }
 
-        radius = sqrt(pow((double)((m * mCurrentPoint).x() - (m * center).x()), 2.0)
-                      + pow((double)((m * mCurrentPoint).y() - (m * center).y()), 2.0));
+        radius = sqrt
+        (
+            pow(static_cast<double>(((m * mCurrentPoint).x() - (m * center).x())), 2.0) +
+            pow(static_cast<double>(((m * mCurrentPoint).y() - (m * center).y())), 2.0)
+        );
     }
 
     ps->setIsMetric(mIsMetric);
@@ -387,32 +380,33 @@ void GcodeParser::handleMCode(float code, const QStringList &args)
     }
 }
 
-QSharedPointer<PointSegment> GcodeParser::handleGCode(float code, const QStringList &args)
+QSharedPointer<PointSegment> GcodeParser::handleGCode(GcodeCommand* command, float code)
 {
     //qDebug() << "GcodeParser: handleGCode" << code << args;
+    QStringList args = command->getArgs();
 
     QSharedPointer<PointSegment> ps;
     QVector3D nextPoint = updatePointWithCommand(args, mCurrentPoint, mInAbsoluteMode);
 
     if (Util::floatsAreEqual(code,GCODE_RAPID))
     {
-        ps=addLinearPointSegment(nextPoint, true);
+        ps=addLinearPointSegment(command, nextPoint, true);
     }
     else if (Util::floatsAreEqual(code,GCODE_LINEAR_INTERPOLATION))
     {
-        ps=addLinearPointSegment(nextPoint, false);
+        ps=addLinearPointSegment(command, nextPoint, false);
     }
     else if (Util::floatsAreEqual(code,GCODE_STRAIGHT_PROBE))
     {
-        ps=addLinearPointSegment(nextPoint, false);
+        ps=addLinearPointSegment(command, nextPoint, false);
     }
     else if (Util::floatsAreEqual(code,GCODE_ARC_MOVE_IJK))
     {
-        ps=addArcPointSegment(nextPoint, true, args);
+        ps=addArcPointSegment(command, nextPoint, true, args);
     }
     else if (Util::floatsAreEqual(code,GCODE_ARC_MOVE_RP))
     {
-        ps=addArcPointSegment(nextPoint, false, args);
+        ps=addArcPointSegment(command, nextPoint, false, args);
     }
     else if (Util::floatsAreEqual(code, GCODE_PLANE_XY))
     {
@@ -464,6 +458,7 @@ QSharedPointer<PointSegment> GcodeParser::handleGCode(float code, const QStringL
     return ps;
 }
 
+/*
 QStringList GcodeParser::preprocessCommands(QStringList commands)
 {
 
@@ -476,7 +471,9 @@ QStringList GcodeParser::preprocessCommands(QStringList commands)
 
     return result;
 }
+*/
 
+/*
 QStringList GcodeParser::preprocessCommand(QString command)
 {
 
@@ -538,7 +535,9 @@ QStringList GcodeParser::preprocessCommand(QString command)
 
     return result;
 }
+*/
 
+/*
 QStringList GcodeParser::convertArcsToLines(QString command)
 {
 
@@ -571,6 +570,7 @@ QStringList GcodeParser::convertArcsToLines(QString command)
     }
     return result;
 }
+*/
 
 /**
 * Searches the command string for an 'f' and replaces the speed value
@@ -816,7 +816,8 @@ QVector3D GcodeParser::updateCenterWithCommand(QStringList commandArgs, QVector3
         }
     }
 
-    if (qIsNaN(i) && qIsNaN(j) && qIsNaN(k)) {
+    if (qIsNaN(i) && qIsNaN(j) && qIsNaN(k))
+    {
         return convertRToCenter(initial, nextPoint, r, absoluteIJKMode, clockwise);
     }
 

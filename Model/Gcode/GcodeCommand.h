@@ -76,7 +76,9 @@ public:
     GcodeCommand(char rawCmd);
 
     static long ID;
-    static GcodeCommand* AbsoluteCoordinatesCommand();
+    static GcodeCommand* AbsoluteXCommand(float);
+    static GcodeCommand* AbsoluteYCommand(float);
+    static GcodeCommand* AbsoluteZCommand(float);
     static GcodeCommand* ControlXCommand();
     static GcodeCommand* UnlockCommand();
     static GcodeCommand* StatusUpdateCommand();
@@ -94,6 +96,7 @@ public:
     static GcodeCommand* SetFirmwareConfigurationCommand(int param, QString value);
     static GcodeCommand* SetSafePositionCommand();
     static GcodeCommand* GoToSafePositionCommand();
+    static GcodeCommand* GoToOriginCommand();
 
     static GcodeCommand* JogCommand
     (
@@ -145,6 +148,7 @@ public:
     QString removeM6();
     int getToolNumber();
 
+    bool isM30Command();
 private:
     static long nextID();
     char mRawCommand;

@@ -30,8 +30,8 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mWorkPosition(QVector3D(0.0,0.0,0.0)),
       mWorkCoordinateOffset(QVector3D(0.0,0.0,0.0)),
       mSettingsModelHandle(nullptr),
-      mProgramSendInterval(1000/20),
-      mStatusInterval(1000/5),
+      mProgramSendInterval(1000/10),
+      mStatusInterval(1000/3),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
       mFeedOverride(100),
@@ -163,7 +163,7 @@ void GrblMachineModel::parseGrblVersion(const GrblResponse& response)
 
 void GrblMachineModel::processResponse(const GrblResponse& response)
 {
-    //qDebug() << "GrblMachineModel: Process Response" << response.getData();
+    qDebug() << "GrblMachineModel: Process Response" << response.getData();
 
     mLastState = mState;
     GcodeCommand* next = nullptr;
@@ -230,6 +230,14 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
                 mCountProcessedCommands++;
                 emit updateProgramTableStatusSignal(next);
                 emit setCompletionProgressSignal(getProcessedPercent());
+
+                if (next->isM30Command())
+                {
+                    emit setCompletionProgressSignal(100);
+                    emit jobCompletedSignal();
+                    mProgramRunning = false;
+
+                }
                 //emit appendResponseToConsoleSignal(response);
             }
 
@@ -464,14 +472,15 @@ bool GrblMachineModel::sendNextCommandFromQueue()
 
             if (!isSpaceInBuffer(command))
             {
+                /*
                 qDebug() << "GrblMachineController: Buffer full, waiting..."
                          << command->getCommand();
+                         */
                 break;
             }
 
             // Take the command off the queue for processing
             command = mCommandQueue.takeFirst();
-            mCommandBuffer.append(command);
 
             // Don't send this becaue GRBL doesn't respond/care and buffer get
             // misaligned
@@ -484,6 +493,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
             }
             else
             {
+                mCommandBuffer.append(command);
                 qDebug() << "GrblMachineModel: Writing" << command->getCommand();
                 mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
                 command->setState(GcodeCommandState::Sent);
@@ -497,7 +507,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
 void GrblMachineModel::onSerialBytesWritten(qint64 bytes)
 {
     mBytesWaiting -= bytes;
-    qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
+    //qDebug() << "GrblMachineModel: Serial bytes Written:" << bytes << "/ Remaining:" << mBytesWaiting;
 }
 
 bool GrblMachineModel::getProgramRunning() const
@@ -691,7 +701,6 @@ void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
             qDebug() << "GrblMachineController: Manual ASCII Gcode Send" << command->getCommand();
             mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
         }
-        mSerialPort.flush();
     }
 }
 

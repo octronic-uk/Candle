@@ -10,9 +10,10 @@
 #include "PointSegment.h"
 
 
-PointSegment::PointSegment()
+PointSegment::PointSegment(GcodeCommand* parent)
 {
 //    qDebug() << "PointSegment: Constructor";
+    mParent = parent;
     mToolhead = 0;
     mIsMetric = true;
     mIsAbsolute = true;
@@ -50,8 +51,8 @@ PointSegment::PointSegment(const PointSegment &ps)
     }
 }
 
-PointSegment::PointSegment(const QVector3D &b, int num)
-    : PointSegment()
+PointSegment::PointSegment(GcodeCommand* parent, const QVector3D &b, int num)
+    : PointSegment(parent)
 
 {
 //    qDebug() << "PointSegment: QVector3D Constructor, " << b << num;
@@ -61,12 +62,13 @@ PointSegment::PointSegment(const QVector3D &b, int num)
 
 PointSegment::PointSegment
 (
+    GcodeCommand* parent,
     const QVector3D &point,
     int num,
     const QVector3D &center,
     double radius,
     bool clockwise
-) : PointSegment(point, num)
+) : PointSegment(parent, point, num)
 {
     mIsArc = true;
     mArcProperties.center = QVector3D(center);
@@ -262,4 +264,14 @@ double PointSegment::getDwell() const
 void PointSegment::setDwell(double dwell)
 {
     mDwell = dwell;
+}
+
+GcodeCommand* PointSegment::getParent() const
+{
+    return mParent;
+}
+
+void PointSegment::setParent(GcodeCommand* parent)
+{
+    mParent = parent;
 }

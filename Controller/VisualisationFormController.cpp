@@ -239,6 +239,11 @@ void VisualisationFormController::onUpdateMachinePosition(const QVector3D pos)
     {
         mUi.glwVisualizer->onLookAt(adjustedPos);
     }
+    else
+    {
+        mUi.glwVisualizer->onLookAt(mOriginDrawer.getPosition());
+    }
+
 }
 
 void VisualisationFormController::onSettingsModelReady(SqlSettingsModel* settings)
@@ -268,6 +273,7 @@ void VisualisationFormController::onUpdateWCO(const QVector3D wco)
        mOriginDrawer.setPosition(mWCO + mWorkArea);
        mCodeDrawer.setPosition(mWCO + mWorkArea);
     }
+
 }
 
 void VisualisationFormController::onFirmwareConfigurationRead(int param, QString value)

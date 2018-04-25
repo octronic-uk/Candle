@@ -12,7 +12,8 @@ GcodeDrawer::GcodeDrawer()
       mColorZMovement(QColor("Yellow")),
       mColorStart(QColor("Green")),
       mColorEnd(QColor("Red")),
-      mColorArc(QColor("Red")),
+      mColorArc(QColor(0,255,0)),
+      mColorRapid(QColor("Red")),
       mGeometryUpdated(false)
 {
     mPosition = QVector3D(0,0,0);
@@ -122,6 +123,7 @@ bool GcodeDrawer::prepareVectors()
         }
 
         // Prepare vertices
+        /*
         if (ls->isRapidMovement())
         {
             vertex.start = ls->getStart();
@@ -130,6 +132,11 @@ bool GcodeDrawer::prepareVectors()
         {
             vertex.start = QVector3D(sNan, sNan, sNan);
         }
+            y tho?
+        */
+
+        vertex.start = QVector3D(sNan, sNan, sNan);
+
 
         ls->setVertexIndex(mLines.count());
 
@@ -228,6 +235,10 @@ QColor GcodeDrawer::getSegmentColor(LineSegment* segment)
     {
         return mColorArc;
     }
+    else if (segment->isRapidMovement())
+    {
+        return mColorRapid;
+    }
     else if (segment->drawn())
     {
         return mColorDrawn;
@@ -236,10 +247,7 @@ QColor GcodeDrawer::getSegmentColor(LineSegment* segment)
     {
         return mColorHighlight;
     }
-    else if (segment->isRapidMovement())
-    {
-        return mColorNormal;
-    }
+
 
     return mColorNormal;
 }

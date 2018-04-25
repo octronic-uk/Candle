@@ -26,12 +26,19 @@
 JogFormController::JogFormController(QWidget *parent)
     : AbstractFormController(parent),
       mJogDelta(1.0),
+      mDoubleValidator(nullptr),
       mKeyboardControl(false),
       mJoystickControl(false)
 {
     qDebug() << "JogFormController: Constructing";
     mUi.setupUi(this);
     setupSignalSlots();
+    mDoubleValidator = new QDoubleValidator(this);
+    mDoubleValidator->setDecimals(3);
+    mUi.xPositionLineEdit->setValidator(mDoubleValidator);
+    mUi.yPositionLineEdit->setValidator(mDoubleValidator);
+    mUi.zPositionLineEdit->setValidator(mDoubleValidator);
+
 }
 
 JogFormController::~JogFormController()
@@ -137,7 +144,7 @@ void JogFormController::onStepPresetButtonClicked()
     mUi.stepSpinner->setSingleStep(mJogDelta);
     mUi.stepSpinner->setValue(mJogDelta);
 
-    emit statusUpdateSignal(QString("Jog by %1 mm").arg(mJogDelta));
+    emit statusBarUpdateSignal(QString("Jog by %1 mm").arg(QString::number(mJogDelta,'g',3)));
 }
 
 void JogFormController::onFeedRateValueChanged(int value)
@@ -147,22 +154,57 @@ void JogFormController::onFeedRateValueChanged(int value)
 
 void JogFormController::onStepValueChanged(double value)
 {
-    emit statusUpdateSignal(QString("Jog by %1 mm").arg(value));
+    emit statusBarUpdateSignal(QString("Jog by %1 mm").arg(QString::number(value,'g',3)));
+
+    if (value != 0.01)
+        mUi.jogPreset_0_01->setChecked(false);
+    if (value != 0.1)
+        mUi.jogPreset_0_1->setChecked(false);
+    if (value != 1)
+        mUi.jogPreset_1->setChecked(false);
+    if (value != 10)
+        mUi.jogPreset_10->setChecked(false);
+    if (value != 100)
+        mUi.jogPreset_100->setChecked(false);
 }
 
 void JogFormController::onGotoXButtonClicked()
 {
-
+    float x = mUi.xPositionLineEdit->text().toFloat();
+    emit gcodeCommandManualSendSignal(GcodeCommand::AbsoluteXCommand(x));
+    mUi.xPositionLineEdit->clear();
+    mUi.xPositionLineEdit->clearFocus();
 }
 
 void JogFormController::onGotoYButtonClicked()
 {
-
+    float y = mUi.yPositionLineEdit->text().toFloat();
+    emit gcodeCommandManualSendSignal(GcodeCommand::AbsoluteYCommand(y));
+    mUi.yPositionLineEdit->clear();
+    mUi.yPositionLineEdit->clearFocus();
 }
 
 void JogFormController::onGotoZButtonClicked()
 {
+    float z = mUi.zPositionLineEdit->text().toFloat();
+    emit gcodeCommandManualSendSignal(GcodeCommand::AbsoluteZCommand(z));
+    mUi.zPositionLineEdit->clear();
+    mUi.zPositionLineEdit->clearFocus();
+}
 
+void JogFormController::onGotoXValueChanged(QString text)
+{
+    mUi.gotoXButton->setEnabled(!text.isEmpty());
+}
+
+void JogFormController::onGotoYValueChanged(QString text)
+{
+    mUi.gotoYButton->setEnabled(!text.isEmpty());
+}
+
+void JogFormController::onGotoZValueChanged(QString text)
+{
+    mUi.gotoZButton->setEnabled(!text.isEmpty());
 }
 
 double JogFormController::getJogDistance() const
@@ -205,7 +247,8 @@ void JogFormController::onJogDirectionButtonClicked()
     }
     else if (senderBtn == mUi.jogOrigin)
     {
-        // TODO - origin command
+        emit gcodeCommandManualSendSignal(GcodeCommand::GoToOriginCommand());
+        return;
     }
     else if (senderBtn == mUi.jogXPlus)
     {
@@ -330,6 +373,17 @@ void JogFormController::setupSignalSlots()
     connect(mUi.gotoXButton,SIGNAL(clicked()),this,SLOT(onGotoXButtonClicked()));
     connect(mUi.gotoYButton,SIGNAL(clicked()),this,SLOT(onGotoYButtonClicked()));
     connect(mUi.gotoZButton,SIGNAL(clicked()),this,SLOT(onGotoZButtonClicked()));
+
+    connect(mUi.xPositionLineEdit,SIGNAL(textEdited(QString)),this,SLOT(onGotoXValueChanged(QString)));
+    connect(mUi.yPositionLineEdit,SIGNAL(textEdited(QString)),this,SLOT(onGotoYValueChanged(QString)));
+    connect(mUi.zPositionLineEdit,SIGNAL(textEdited(QString)),this,SLOT(onGotoZValueChanged(QString)));
+
+    /*
+    connect(mUi.xPositionLineEdit,SIGNAL(returnPressed()),this,SLOT(onGotoXButtonClicked()));
+    connect(mUi.yPositionLineEdit,SIGNAL(returnPressed()),this,SLOT(onGotoYButtonClicked()));
+    connect(mUi.zPositionLineEdit,SIGNAL(returnPressed()),this,SLOT(onGotoZButtonClicked()));
+    */
+
 
     // Keyboard/Joystic control
     connect(mUi.keyboardControlToolButton,SIGNAL(toggled(bool)),this,SLOT(onKeyboardControlToggled(bool)));

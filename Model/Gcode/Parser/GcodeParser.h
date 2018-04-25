@@ -35,13 +35,13 @@ public:
     int getTruncateDecimalLength();
     void setTruncateDecimalLength(int truncateDecimalLength);
     void reset(const QVector3D &initialPoint = QVector3D(qQNaN(), qQNaN(), qQNaN()));
-    QSharedPointer<PointSegment> addCommand(QString command);
-    QSharedPointer<PointSegment> addCommand(const QStringList &args);
+    QSharedPointer<PointSegment> addCommandFromArgs(GcodeCommand* command);
+    QSharedPointer<PointSegment> addCommand(GcodeCommand* command);
     QVector3D getCurrentPoint();
-    QList<QSharedPointer<PointSegment>> expandArc();
-    QStringList preprocessCommands(QStringList commands);
-    QStringList preprocessCommand(QString command);
-    QStringList convertArcsToLines(QString command);
+    QList<QSharedPointer<PointSegment>> expandArc(GcodeCommand*);
+    //QStringList preprocessCommands(QStringList commands);
+    //QStringList preprocessCommand(QString command);
+    //QStringList convertArcsToLines(QString command);
     QList<PointSegment*> getPointSegmentHandlesList();
     double getTraverseSpeed() const;
     void setTraverseSpeed(double traverseSpeed);
@@ -116,11 +116,11 @@ private:
 
     // The gcode.
     QList<QSharedPointer<PointSegment>> mPoints;
-    QSharedPointer<PointSegment> processCommand(const QStringList &args);
+    QSharedPointer<PointSegment> processCommand(GcodeCommand* command);
     void handleMCode(float code, const QStringList &args);
-    QSharedPointer<PointSegment> handleGCode(float code, const QStringList &args);
-    QSharedPointer<PointSegment> addLinearPointSegment(const QVector3D &nextPoint, bool fastTraverse);
-    QSharedPointer<PointSegment> addArcPointSegment(const QVector3D &nextPoint, bool clockwise, const QStringList &args);
+    QSharedPointer<PointSegment> handleGCode(GcodeCommand* cmd, float code);
+    QSharedPointer<PointSegment> addLinearPointSegment(GcodeCommand* cmd, const QVector3D &nextPoint, bool fastTraverse);
+    QSharedPointer<PointSegment> addArcPointSegment(GcodeCommand* cmd, const QVector3D &nextPoint, bool clockwise, const QStringList &args);
     void setLastGcodeCommand(float num);
 };
 

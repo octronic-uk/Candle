@@ -113,7 +113,6 @@ SOURCES +=\
     Controller/Settings/GrblConfigurationFormController.cpp \
     Model/Grbl/GrblConfigurationModel.cpp \
     Controller/OverrideFormController.cpp \
-    View/Widgets/Camera.cpp \
     View/Drawers/SafePositionDrawer.cpp
 
 HEADERS  += \
@@ -187,14 +186,12 @@ HEADERS  += \
     Controller/Settings/GrblConfigurationFormController.h \
     Model/Grbl/GrblConfigurationModel.h \
     Controller/OverrideFormController.h \
-    View/Widgets/Camera.h \
     View/Drawers/SafePositionDrawer.h
 
 FORMS    += \
     View/AboutForm.ui \
     View/ConsoleForm.ui \
     View/ControlForm.ui \
-    View/FeedForm.ui \
     View/JogForm.ui \
     View/MainForm.ui \
     View/ProgramForm.ui \

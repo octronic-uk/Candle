@@ -63,9 +63,24 @@ GcodeCommand::GcodeCommand(const GcodeCommand* other)
 
 GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
 
-GcodeCommand* GcodeCommand::AbsoluteCoordinatesCommand()
+GcodeCommand* GcodeCommand::AbsoluteXCommand(float x)
 {
-    static GcodeCommand gc("G90\r");
+    static GcodeCommand gc;
+    gc = GcodeCommand(QString("G90X%1\r").arg(QString::number(x,'g',3)));
+    return &gc;
+}
+
+GcodeCommand* GcodeCommand::AbsoluteYCommand(float y)
+{
+    static GcodeCommand gc;
+    gc = GcodeCommand(QString("G90Y%1\r").arg(QString::number(y,'g',3)));
+    return &gc;
+}
+
+GcodeCommand* GcodeCommand::AbsoluteZCommand(float z)
+{
+    static GcodeCommand gc;
+    gc = GcodeCommand(QString("G90Z%1\r").arg(QString::number(z,'g',3)));
     return &gc;
 }
 
@@ -188,12 +203,17 @@ GcodeCommand* GcodeCommand::SetSafePositionCommand()
     return &gc;
 }
 
-GcodeCommand*GcodeCommand::GoToSafePositionCommand()
+GcodeCommand* GcodeCommand::GoToSafePositionCommand()
 {
     static GcodeCommand gc("G28 G91 Z0\rG28 G91 X0 Y0\r");
     return &gc;
 }
 
+GcodeCommand* GcodeCommand::GoToOriginCommand()
+{
+    static GcodeCommand gc("G90 X0Y0Z0\r");
+    return &gc;
+}
 
 bool GcodeCommand::operator==(const GcodeCommand& other)
 {
@@ -213,6 +233,11 @@ int GcodeCommand::getCommandLength() const
 QString GcodeCommand::getCommand() const
 {
     return mCommand;
+}
+
+bool GcodeCommand::isM30Command()
+{
+    return mCommand.contains("M30");
 }
 
 void GcodeCommand::setCommand(const QString& command)

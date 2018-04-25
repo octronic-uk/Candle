@@ -24,7 +24,7 @@ class GLWidget : public QGLWidget, protected QOpenGLFunctions
     Q_OBJECT
 public:
     explicit GLWidget(QWidget *parent = nullptr);
-    ~GLWidget();
+    virtual ~GLWidget();
 
 
     void addDrawable(ShaderDrawable *drawable);

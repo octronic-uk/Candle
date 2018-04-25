@@ -20,8 +20,6 @@
 #include <QDir>
 
 #include <QtDebug>
-#include <QMessageBox> // TODO - Move these to view/controller
-#include <QProgressDialog>
 
 #include "GcodeFileModel.h"
 #include "Model/Gcode/GcodeTableModel.h"
@@ -30,8 +28,8 @@
 GcodeFileModel::GcodeFileModel(QObject *parent)
     : QObject(parent),
       mProgramLoading(false),
-      mFileOpen(false),
-      mFileChanged(false)
+      mFileChanged(false),
+      mFileOpen(false)
 {
     qDebug() << "GcodeFileModel: Constructing";
     mGcodeParser = QSharedPointer<GcodeParser>::create(this);
@@ -75,22 +73,28 @@ void GcodeFileModel::load(QList<QString> data)
     while (!data.isEmpty())
     {
         QString command;
-        QString stripped;
         QString trimmed;
         QList<QString> args;
         GcodeCommand* item = new GcodeCommand();
         command = data.takeFirst();
-        //qDebug() << "GcodeFileModel: Next Line" << command;
-        // Trim command
         trimmed = command.trimmed();
+        item->setCommand(command);
+
+        //qDebug() << "GcodeFileModel: Next Line" << command;
         if (!trimmed.isEmpty())
         {
-            // Split command
-            stripped = GcodeParser::removeComment(command);
-            args = GcodeParser::splitCommand(stripped);
-            mGcodeParser->addCommand(args);
+            item->setLine(mGcodeParser->getCommandNumber());
+            item->setTableIndex(index);
 
-            if (args.isEmpty())
+            mGcodeParser->addCommand(item);
+
+            if (item->getCommand() == "%")
+            {
+                qDebug() << "GcodeFileModel: Skipping % at index " << index;
+                continue;
+            }
+
+            if (item->getArgs().isEmpty())
             {
                 QString marker = GcodeParser::parseComment(command);
                 qDebug() << "GcodeFileModel: marker " << marker;
@@ -106,11 +110,9 @@ void GcodeFileModel::load(QList<QString> data)
                 item->setCommand(trimmed + '\r');
                 item->setState(GcodeCommandState::InQueue);
             }
-            item->setLine(mGcodeParser->getCommandNumber());
-            item->setArgs(args);
-            item->setTableIndex(index);
-            index++;
+
             mData.append(item);
+            index++;
         }
     }
     mProgramLoading = false;

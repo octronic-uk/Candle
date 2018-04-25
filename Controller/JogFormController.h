@@ -42,7 +42,6 @@ public:
     void setJogDistance(double jogDistance);
 
 signals:
-    void statusBarUpdateSignal(QString);
     void gcodeCommandManualSendSignal(GcodeCommand*);
 
 private slots:
@@ -56,11 +55,15 @@ private slots:
     void onGotoYButtonClicked();
     void onGotoZButtonClicked();
 
+    void onGotoXValueChanged(QString text);
+    void onGotoYValueChanged(QString text);
+    void onGotoZValueChanged(QString text);
+
 
     void onKeyboardControlToggled(bool checked);
     void onJoystickControlToggled(bool checked);
 protected:
-    void keyPressEvent(QKeyEvent *event);
+    void keyPressEvent(QKeyEvent *event) override;
 
 
 private:
@@ -68,6 +71,7 @@ private:
     double mJogDelta;
     double mJogDistance;
     int mFeedRate;
+    QDoubleValidator *mDoubleValidator;
 
     // Keyboard
     bool mKeyboardControl;

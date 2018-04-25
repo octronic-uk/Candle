@@ -69,7 +69,7 @@ GLWidget::GLWidget(QWidget *parent)
     mFramesTimer.start(1000);
 
     connect(&mRepaintTimer,SIGNAL(timeout()),this,SLOT(onRepaintTimerTimeout()));
-    mRepaintTimer.start(1000/30);
+    mRepaintTimer.start(1000/10);
 }
 
 GLWidget::~GLWidget()
@@ -680,6 +680,7 @@ void GLWidget::onRepaintTimerTimeout()
 {
     if (mAnimateView) viewAnimation();
     if (mUpdatesEnabled) update();
+    repaint();
 }
 
 void GLWidget::onLookAt(QVector3D lookAt)

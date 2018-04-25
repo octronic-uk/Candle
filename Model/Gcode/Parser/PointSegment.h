@@ -12,6 +12,8 @@
 
 #include "ArcProperties.h"
 
+class GcodeCommand;
+
 class PointSegment
 {
 public:
@@ -22,10 +24,10 @@ public:
         YZ
     };
 
-    PointSegment();
+    PointSegment(GcodeCommand* parent);
     PointSegment(const PointSegment &ps);
-    PointSegment(const QVector3D &b, int num);
-    PointSegment(const QVector3D &getPointHandle, int num, const QVector3D &center, double radius, bool clockwise);
+    PointSegment(GcodeCommand* parent, const QVector3D &b, int num);
+    PointSegment(GcodeCommand* parent, const QVector3D &getPointHandle, int num, const QVector3D &center, double radius, bool clockwise);
     ~PointSegment();
 
     QVector3D* getPointHandle();
@@ -78,7 +80,11 @@ public:
     double getDwell() const;
     void setDwell(double dwell);
 
+    GcodeCommand* getParent() const;
+    void setParent(GcodeCommand* parent);
+
 private:
+    GcodeCommand* mParent;
     ArcProperties mArcProperties;
     int mToolhead;
     double mSpeed;

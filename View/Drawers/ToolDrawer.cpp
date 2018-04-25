@@ -292,9 +292,9 @@ void ToolDrawer::generateToolHolderGeometry()
         currentZ += height;
 
         // Fade away
-        color.setX(color.x() * 1.5f);
-        color.setY(color.y() * 1.5f);
-        color.setZ(color.z() * 1.5f);
+        color.setX(color.x() * 1.75f);
+        color.setY(color.y() * 1.75f);
+        color.setZ(color.z() * 1.75f);
         //color.setW(color.w() * 0.8f);
    }
 }

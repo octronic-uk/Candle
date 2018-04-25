@@ -81,6 +81,7 @@ private:
     QColor mColorStart;
     QColor mColorEnd;
     QColor mColorArc;
+    QColor mColorRapid;
     QList<int> mIndexes;
     bool mGeometryUpdated;
     QVector3D mPosition;
