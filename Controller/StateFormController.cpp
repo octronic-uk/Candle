@@ -145,3 +145,12 @@ void StateFormController::setupSignalSlots()
 }
 
 
+void StateFormController::onFeedRateChanged(int feed)
+{
+   mUi.feedText->setText(QString::number(feed));
+}
+
+void StateFormController::onSpindleSpeedChanged(int speed)
+{
+
+}

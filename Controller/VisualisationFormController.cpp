@@ -276,6 +276,8 @@ void VisualisationFormController::onUpdateWCO(const QVector3D wco)
 
 }
 
+
+
 void VisualisationFormController::onFirmwareConfigurationRead(int param, QString value)
 {
     qDebug() << "VisualisationFormController: Firmware Config Read";

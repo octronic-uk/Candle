@@ -102,6 +102,10 @@ signals:
     void firmwareConfigurationReadSignal(int,QString);
     void toolChangeSignal(int);
 
+    void feedRateChangedSignal(int);
+    void spindleSpeedChangedSignal(int);
+
+
 public slots:
     void onSendProgram(GcodeFileModel* gcodeFile);
     void onSendProgramFromLine(GcodeFileModel* gcodeFile, long fromId);
@@ -152,6 +156,8 @@ private: // Members
     QMap<int,QString> mFirmwareConfiguration;
     bool mProgramRunning;
     bool mToolChangeWaiting;
+    int mFeedRate;
+    int mSpindleSpeed;
 
 private: // Member Functions
     GcodeCommand feedOverride(GcodeCommand* command, double overridePercent);
@@ -172,6 +178,7 @@ private: // Member Functions
     void updateOverrides(const GrblResponse& data);
     void updateWorkCoordinateOffset(const GrblResponse& data);
     void updateMachinePosition(const GrblResponse& data);
+    void updateFeedRateAndSpindleSpeed(const GrblResponse& response);
 
     void processResponse(const GrblResponse& data);
     void parseError(const GrblResponse& error);

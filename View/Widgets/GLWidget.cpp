@@ -31,10 +31,10 @@ GLWidget::GLWidget(QWidget *parent)
     mAnimateView = false;
     mUpdatesEnabled = false;
 
-    mXRot = 90;
-    mYRot = 0;
+    mXRot = 45;
+    mYRot = 45;
 
-    mXRotTarget = 90;
+    mXRotTarget = 45;
     mYRotTarget = 0;
 
     //mZoom = 1;

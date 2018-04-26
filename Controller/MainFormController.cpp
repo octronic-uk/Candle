@@ -418,6 +418,18 @@ void MainFormController::setupJogFormSignals()
     );
 }
 
+void MainFormController::setupStateFormSignals()
+{
+   connect(
+        &mGrblMachineModel, SIGNAL(feedRateChangedSignal(int)),
+        mUi.stateFormController, SLOT(onFeedRateChanged(int))
+    );
+    connect(
+        &mGrblMachineModel, SIGNAL(spindleSpeedChangedSignal(int)),
+        mUi.stateFormController, SLOT(onSpindleSpeedChanged(int))
+    );
+}
+
 void MainFormController::setupConsoleFormSignals()
 {
     // Console Form
@@ -613,13 +625,13 @@ void MainFormController::setupSignalSlots()
     setupMenuBarSignals();
     setupToolbarSignals();
     setupSettingsModelSignals();
-    //setupGcodeFileModelSignals();
     setupRecentFilesModelsSignals();
     setupGrblMachineModelSignals();
     setupJogFormSignals();
     setupConsoleFormSignals();
     setupControlFormSignals();
     setupProgramFormSignals();
+    setupStateFormSignals();
 }
 
 void MainFormController::showMainWindow()

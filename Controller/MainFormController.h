@@ -76,6 +76,7 @@ public slots:
     void onProfileChanged(Profile* model);
     void onAlarm(QString alarmMsg);
 
+
 private slots:
     // Main Menu Actions
     void onJobCompleted();
@@ -127,6 +128,7 @@ private: // Member Functions
     void setupControlFormSignals();
     void setupProgramFormSignals();
     void setupJogFormSignals();
+    void setupStateFormSignals();
     void setupCompletionAndBufferProgressBars();
 };
 

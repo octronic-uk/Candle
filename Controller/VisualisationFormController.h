@@ -69,6 +69,7 @@ public slots:
     void onUpdateMachinePosition(const QVector3D);
     void onUpdateWCO(const QVector3D);
 
+
     void onFirmwareConfigurationRead(int param, QString value);
 
 private slots:

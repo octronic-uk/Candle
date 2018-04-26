@@ -31,7 +31,7 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mWorkCoordinateOffset(QVector3D(0.0,0.0,0.0)),
       mSettingsModelHandle(nullptr),
       mProgramSendInterval(1000/10),
-      mStatusInterval(1000/3),
+      mStatusInterval(1000/5),
       mCountProcessedCommands(0),
       mCommandQueueInitialSize(0),
       mFeedOverride(100),
@@ -43,7 +43,9 @@ GrblMachineModel::GrblMachineModel(QObject *parent)
       mStatusRequested(false),
       mWaitingForStatus(false),
       mProgramRunning(false),
-      mToolChangeWaiting(false)
+      mToolChangeWaiting(false),
+      mFeedRate(0),
+      mSpindleSpeed(0)
 {
     setupSerialPort();
     // Setup timer
@@ -96,6 +98,18 @@ void GrblMachineModel::updateMachinePosition(const GrblResponse& response)
         mMachinePosition.setY(machinePositionExpression.cap(2).toFloat());
         mMachinePosition.setZ(machinePositionExpression.cap(3).toFloat());
         emit updateMachinePositionSignal(mMachinePosition);
+    }
+}
+
+void GrblMachineModel::updateFeedRateAndSpindleSpeed(const GrblResponse& response)
+{
+    static QRegExp feedSpeedRegex("\\|FS:(\\d+),(\\d+)\\|");
+    if (feedSpeedRegex.indexIn(response.getData()) > -1)
+    {
+        mFeedRate = feedSpeedRegex.cap(1).toInt();
+        mSpindleSpeed = feedSpeedRegex.cap(2).toInt();
+        emit feedRateChangedSignal(mFeedRate);
+        emit spindleSpeedChangedSignal(mSpindleSpeed);
     }
 }
 
@@ -198,6 +212,7 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
                 updateMachinePosition(response);
                 updateWorkCoordinateOffset(response);
                 updateOverrides(response);
+                updateFeedRateAndSpindleSpeed(response);
                 updateWorkPosition();
                 //qDebug() << "GrblMachineModel: Got status!";
                 mStatusRequested = false;

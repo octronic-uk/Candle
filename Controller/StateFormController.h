@@ -57,6 +57,8 @@ public slots:
     void onUpdateMachinePosition(const QVector3D);
     void onUpdateWorkPosition(const QVector3D);
     void setCurrentTool(Tool* toolHandle);
+    void onFeedRateChanged(int);
+    void onSpindleSpeedChanged(int);
 private:
     StateForm mUi;
 
