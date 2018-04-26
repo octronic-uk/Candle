@@ -653,13 +653,15 @@ void MainFormController::onGrblMachineError(QString error)
 
 void MainFormController::onJobCompleted()
 {
-    QMessageBox::information
-    (
-        &mMainWindow,
-        tr("Program Finished"),
-        QString("All operations have completed."),
-        QMessageBox::Ok
-    );
+    QMessageBox dialog(&mMainWindow);
+
+    dialog.setWindowTitle(tr("Program Finished"));
+    dialog.setText(QString("All operations have completed."));
+    dialog.setStandardButtons(QMessageBox::Ok);
+    auto icon = QPixmap(":/Images/SVG/thumbs-up.svg");
+    dialog.setIconPixmap(icon.scaled(48,48));
+    dialog.exec();
+
     onMachineStateUpdated(GrblMachineState::Unlocked);
 }
 
@@ -889,17 +891,19 @@ void MainFormController::onToolChange(int tool)
     {
         toolStr = QString::number(tool);
     }
+    QMessageBox dialog(&mMainWindow);
 
-    auto result = QMessageBox::information
-    (
-        &mMainWindow,
-        tr("Tool Change"),
-        QString("Tool Change Detected.\n\nPlease change to tool %1 and click 'Ok' to proceed.").arg(toolStr),
-        QMessageBox::Ok
-    );
+    dialog.setWindowTitle(tr("Tool Change"));
+    dialog.setText(QString("Tool Change Detected.\n\nPlease change to tool %1 and click 'Ok' to proceed.").arg(toolStr));
+    dialog.setStandardButtons(QMessageBox::Ok);
+    auto icon = QPixmap(":/Images/SVG/drilling-machine.svg");
+    dialog.setIconPixmap(icon.scaled(48,48));
+
+    auto result = dialog.exec();
 
     if (result == QMessageBox::Ok)
     {
-       emit toolChangeCompletedSignal();
+        emit toolChangeCompletedSignal();
+        mUi.stateFormController->setCurrentTool(requestedTool);
     }
 }

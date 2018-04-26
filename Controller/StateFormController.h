@@ -26,6 +26,8 @@
 
 using namespace Ui;
 
+class Tool;
+
 enum class StateClass
 {
     Primary,
@@ -54,6 +56,7 @@ public slots:
     void onToolTextUpdate(QString text, QColor textColor = QColor("Black"), QColor bgColor = QColor("White"));
     void onUpdateMachinePosition(const QVector3D);
     void onUpdateWorkPosition(const QVector3D);
+    void setCurrentTool(Tool* toolHandle);
 private:
     StateForm mUi;
 

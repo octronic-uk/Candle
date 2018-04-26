@@ -15,8 +15,9 @@
  * contact the author of this file, or the owner of the project in which
  * this file belongs to.
  */
-#include "StateFormController.h"
 
+#include "StateFormController.h"
+#include "Model/Settings/Tool/Tool.h"
 
 
 StateFormController::StateFormController(QWidget *parent)
@@ -113,6 +114,18 @@ void StateFormController::onUpdateWorkPosition(const QVector3D pos)
    mUi.txtWPosX->setText(QString::number(pos.x(), 'f', 2));
    mUi.txtWPosY->setText(QString::number(pos.y(), 'f', 2));
    mUi.txtWPosZ->setText(QString::number(pos.z(), 'f', 2));
+}
+
+void StateFormController::setCurrentTool(Tool* toolHandle)
+{
+   if (toolHandle)
+   {
+       mUi.toolText->setText(toolHandle->toString());
+   }
+   else
+   {
+       mUi.toolText->setText("---");
+   }
 }
 
 void StateFormController::setFormActive(bool active)

@@ -84,7 +84,7 @@ void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
     QString cmd = command->getCommand();
     //qDebug() << "ConsoleFormController: Appending Command:" << cmd;
     mUi.txtConsole->setTextColor(QColor("Black"));
-    mUi.txtConsole->append("CNC <-- "+cmd);
+    mUi.txtConsole->append("CNC <-- "+cmd.trimmed());
 }
 
 void ConsoleFormController::setupSignalSlots()

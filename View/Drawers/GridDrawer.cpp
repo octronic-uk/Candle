@@ -24,11 +24,11 @@ GridDrawer::GridDrawer(float size, float major, float minor)
       mMajorSpacing(major),
       mMinorSpacing(minor),
       mSize(size,size,size),
-      mMajorColor(QColor("DarkBlue")),
-      mMinorColor(QColor("LightBlue")),
+      mMajorColor(QColor("#333333")),
+      mMinorColor(QColor("#CCCCCC")),
       mTextColor(QColor(255,255,255))
 {
-    mLineWidth = 1;
+    mLineWidth = 2;
     mMajorColor.setAlpha(255);
     mMinorColor.setAlpha(255);
     mTextColor.setAlpha(255);
@@ -62,6 +62,9 @@ int GridDrawer::getVertexCount()
 
 bool GridDrawer::updateData()
 {
+    QVector<VertexData> majorLines;
+    QVector<VertexData> minorLines;
+
     mLines.clear();
 
     float xStart = 0;
@@ -79,12 +82,19 @@ bool GridDrawer::updateData()
     // -----
     for (float yPos = yStart; yPos <= yEnd; yPos += mMinorSpacing)
     {
-        QVector4D color = fmod(abs(yPos), mMajorSpacing) == 0.0f ?
-            Util::colorToVector(mMajorColor) :
-            Util::colorToVector(mMinorColor);
-
-        mLines.append({QVector3D(xStart, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
-        mLines.append({QVector3D(xEnd, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
+        QVector4D color;
+        if (fmod(abs(yPos), mMajorSpacing) == 0.0f)
+        {
+            color = Util::colorToVector(mMajorColor);
+            majorLines.append({QVector3D(xStart, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
+            majorLines.append({QVector3D(xEnd, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
+        }
+        else
+        {
+            color = Util::colorToVector(mMinorColor);
+            minorLines.append({QVector3D(xStart, yPos, 0), color, QVector3D(sNan, sNan, sNan)});
+            minorLines.append({QVector3D(xEnd, yPos, 0),color,QVector3D(sNan, sNan, sNan)});
+        }
     }
 
     // Y Lines
@@ -93,13 +103,24 @@ bool GridDrawer::updateData()
     // |  |  |
     for (float xPos = xStart; xPos <= xEnd; xPos += mMinorSpacing)
     {
-        QVector4D color = fmod(abs(xPos), mMajorSpacing) == 0.0f ?
-            Util::colorToVector(mMajorColor) :
-            Util::colorToVector(mMinorColor);
-
-        mLines.append({QVector3D(xPos, yStart, 0),color,QVector3D(sNan, sNan, sNan)});
-        mLines.append({QVector3D(xPos, yEnd, 0),color,QVector3D(sNan, sNan, sNan)});
+        QVector4D color;
+        if (fmod(abs(xPos), mMajorSpacing) == 0.0f)
+        {
+            color = Util::colorToVector(mMajorColor);
+            majorLines.append({QVector3D(xPos, yStart, 0),color,QVector3D(sNan, sNan, sNan)});
+            majorLines.append({QVector3D(xPos, yEnd, 0),color,QVector3D(sNan, sNan, sNan)});
+        }
+        else
+        {
+            color = Util::colorToVector(mMinorColor);
+            minorLines.append({QVector3D(xPos, yStart, 0),color,QVector3D(sNan, sNan, sNan)});
+            minorLines.append({QVector3D(xPos, yEnd, 0),color,QVector3D(sNan, sNan, sNan)});
+        }
     }
+
+    // Draw major lines after minor lines so they're on top
+    mLines.append(minorLines);
+    mLines.append(majorLines);
 
    return true;
 }

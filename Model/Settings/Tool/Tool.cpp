@@ -144,6 +144,13 @@ void Tool::setSelectedGeometryRow(int row)
     mSelectedGeometryHandle = mGeometryTableModel->getToolGeometryHandleAtRow(row);
 }
 
+QString Tool::toString()
+{
+    return QString("(%1) %2")
+               .arg(QString::number(mToolNumber))
+               .arg(mName);
+}
+
 ToolGeometry* Tool::getSelectedGeometryHandle()
 {
     return mSelectedGeometryHandle;

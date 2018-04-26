@@ -25,7 +25,7 @@ GLWidget::GLWidget(QWidget *parent)
       mShaderProgram(nullptr),
 #endif
      mColorText(QColor("White")),
-     mColorBackground(QColor("DarkGray")),
+     mColorBackground(QColor("#ededed")),
      mNearPlane(2)
 {
     mAnimateView = false;

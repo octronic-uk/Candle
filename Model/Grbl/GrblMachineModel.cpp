@@ -498,6 +498,7 @@ bool GrblMachineModel::sendNextCommandFromQueue()
                 mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
                 command->setState(GcodeCommandState::Sent);
             }
+            emit appendCommandToConsoleSignal(command);
         }
         return true;
     }
@@ -701,6 +702,7 @@ void GrblMachineModel::onGcodeCommandManualSend(GcodeCommand* command)
             qDebug() << "GrblMachineController: Manual ASCII Gcode Send" << command->getCommand();
             mBytesWaiting += mSerialPort.write(command->getCommand().toLatin1());
         }
+        emit appendCommandToConsoleSignal(command);
     }
 }
 

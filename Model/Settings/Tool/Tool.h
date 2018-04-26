@@ -63,6 +63,7 @@ public:
     Profile* getParentHandle() const;
 
     void setSelectedGeometryRow(int row);
+    QString toString();
 private:
     Profile* mParentHandle;
     ToolGeometry *mSelectedGeometryHandle;

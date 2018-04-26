@@ -106,5 +106,7 @@
         <file>Images/SVG/exchange-alt.svg</file>
         <file>Images/SVG/thumbs-up.svg</file>
         <file>Images/SVG/smile.svg</file>
+        <file>Images/SVG/tool-bit.svg</file>
+        <file>Images/SVG/drilling-machine.svg</file>
     </qresource>
 </RCC>
