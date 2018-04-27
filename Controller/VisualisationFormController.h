@@ -43,8 +43,7 @@ public:
     ~VisualisationFormController() override;
     void setFormActive(bool active) override;
     void initialise() override;
-signals:
-    void spindleEnabledSignal(bool);
+    void setRotating(bool);
 public slots:
     void onFitButtonClicked();
     void onTopButtonClicked();
@@ -71,6 +70,7 @@ public slots:
 
 
     void onFirmwareConfigurationRead(int param, QString value);
+    void onSpindleSpeedChanged(int);
 
 private slots:
     void onFollowToolButtonToggled(bool toggled);

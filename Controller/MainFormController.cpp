@@ -18,6 +18,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QErrorMessage>
+#include <QDesktopWidget>
 
 #include "Controller/ConsoleFormController.h"
 #include "Controller/ControlFormController.h"
@@ -427,6 +428,14 @@ void MainFormController::setupStateFormSignals()
     connect(
         &mGrblMachineModel, SIGNAL(spindleSpeedChangedSignal(int)),
         mUi.stateFormController, SLOT(onSpindleSpeedChanged(int))
+                );
+}
+
+void MainFormController::setupVisualisationFormSignals()
+{
+    connect(
+        &mGrblMachineModel, SIGNAL(spindleSpeedChangedSignal(int)),
+        mUi.visualisationFormController, SLOT(onSpindleSpeedChanged(int))
     );
 }
 
@@ -632,12 +641,24 @@ void MainFormController::setupSignalSlots()
     setupControlFormSignals();
     setupProgramFormSignals();
     setupStateFormSignals();
+    setupVisualisationFormSignals();
 }
 
 void MainFormController::showMainWindow()
 {
     //qDebug() << "MainFormController: showMainWindow ";
+    auto geom = qApp->desktop()->availableGeometry();
+    mMainWindow.setGeometry(
+        QStyle::alignedRect(
+            Qt::LeftToRight,
+            Qt::AlignCenter,
+            geom.size(),
+            geom
+        )
+    );
     mMainWindow.show();
+    mMainWindow.raise();  // for MacOS
+    mMainWindow.activateWindow(); // for Windows
 }
 
 bool MainFormController::saveChanges()

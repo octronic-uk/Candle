@@ -6,7 +6,6 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QFile>
-#include <QSplashScreen>
 
 #include "Controller/MainFormController.h"
 
@@ -49,17 +48,12 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("CoconutCNC");
 
     QApplication app(argc, argv);
-    QPixmap pixmap(":/Images/PNG/splash.png");
-    QSplashScreen splash(pixmap);
     app.setApplicationVersion(APP_VERSION);
-
-    splash.show();
-    app.processEvents();
     MainFormController window;
     initGL();
     initLocales(app);
     window.showMainWindow();
-    window.setWindowState(Qt::WindowMaximized);
-    splash.finish(&window);
+
+
     return app.exec();
 }

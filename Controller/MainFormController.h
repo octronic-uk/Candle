@@ -129,6 +129,7 @@ private: // Member Functions
     void setupProgramFormSignals();
     void setupJogFormSignals();
     void setupStateFormSignals();
+    void setupVisualisationFormSignals();
     void setupCompletionAndBufferProgressBars();
 };
 

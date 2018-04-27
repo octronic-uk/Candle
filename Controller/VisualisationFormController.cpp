@@ -25,8 +25,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
       mFollowTool(false),
       mSpindleClockwise(false),
       mSettingsModelHandle(nullptr)
-
-
 {
     qDebug() << "VisualisationFormController: Constructing ";
 
@@ -53,7 +51,6 @@ VisualisationFormController::VisualisationFormController(QWidget *parent)
     setupSignalSlots();
 
     mSafePositionDrawer.setVisible(false);
-    emit spindleEnabledSignal(true);
 }
 
 VisualisationFormController::~VisualisationFormController()
@@ -305,4 +302,10 @@ void VisualisationFormController::onFirmwareConfigurationRead(int param, QString
         default:
             break;
     }
+}
+
+void VisualisationFormController::onSpindleSpeedChanged(int speed)
+{
+    mToolDrawer.setSpindleRotating(speed > 0);
+    mToolDrawer.setSpindleSpeed(speed);
 }

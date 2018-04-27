@@ -14,7 +14,9 @@ ToolDrawer::ToolDrawer()
       mToolAngle(0.0),
       mColor(QColor("Orange")),
       mSettingsModelHandle(nullptr),
-      mToolHandle(nullptr)
+      mToolHandle(nullptr),
+      mSpindleRotating(false),
+      mSpindleSpeed(10.0f)
 
 {
     qDebug() << "ToolDrawer: Constructing";
@@ -51,8 +53,8 @@ void ToolDrawer::generateToolGeometry()
        {
            //qDebug() << "ToolDrawer: Making a slice" << i;
 
-            float theta = (twoPi / slices) * i;
-            float nextTheta = (twoPi / slices) * (i+1);
+            float theta = ((twoPi / slices) * i ) + mRotationAngle;
+            float nextTheta = ((twoPi / slices) * (i+1)) + mRotationAngle;
 
             //qDebug () << "ToolDrawer: theta " << theta;
             //qDebug () << "ToolDrawer: nextTheta " << nextTheta;
@@ -192,8 +194,8 @@ void ToolDrawer::generateToolHolderGeometry()
        {
            //qDebug() << "ToolDrawer: Making a slice" << i;
 
-            float theta = 2 * static_cast<float>(M_PI) * i / slices;
-            float nextTheta = 2 * static_cast<float>(M_PI) * (i+1) / slices;
+            float theta = (2 * static_cast<float>(M_PI) * i / slices) + mRotationAngle;
+            float nextTheta = (2 * static_cast<float>(M_PI) * (i+1) / slices) + mRotationAngle;
 
             /*vertex at top middle */
             QVector3D topMiddlePos(
@@ -310,6 +312,7 @@ bool ToolDrawer::updateData()
         return true;
     }
 
+    rotate();
     generateToolGeometry();
     generateToolHolderGeometry();
 
@@ -324,6 +327,16 @@ SqlSettingsModel* ToolDrawer::getSettingsModelHandle() const
 void ToolDrawer::setSettingsModelHandle(SqlSettingsModel* settingsModelHandle)
 {
     mSettingsModelHandle = settingsModelHandle;
+}
+
+void ToolDrawer::setSpindleRotating(bool rotating)
+{
+   mSpindleRotating = rotating;
+}
+
+void ToolDrawer::setSpindleSpeed(float speed)
+{
+   mSpindleSpeed = speed;
 }
 
 Tool* ToolDrawer::getToolHandle() const
@@ -388,23 +401,9 @@ void ToolDrawer::setToolPosition(const QVector3D &toolPosition)
     }
 }
 
-float ToolDrawer::rotationAngle() const
+void ToolDrawer::rotate()
 {
-    return mRotationAngle;
-}
-
-void ToolDrawer::setRotationAngle(float rotationAngle)
-{
-    if (mRotationAngle != rotationAngle)
-    {
-        mRotationAngle = rotationAngle;
-        update();
-    }
-}
-
-void ToolDrawer::rotate(float angle)
-{
-    setRotationAngle(normalizeAngle(mRotationAngle + angle));
+    mRotationAngle = normalizeAngle(mRotationAngle + mSpindleSpeed);
 }
 
 float ToolDrawer::toolAngle() const
@@ -442,4 +441,9 @@ float ToolDrawer::normalizeAngle(float angle)
     }
 
     return angle;
+}
+
+bool ToolDrawer::needsUpdateGeometry() const
+{
+    return mNeedsUpdateGeometry || mSpindleRotating;
 }

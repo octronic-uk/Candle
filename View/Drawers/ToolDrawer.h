@@ -26,10 +26,6 @@ public:
     QVector3D toolPosition() const;
     void setToolPosition(const QVector3D &toolPosition);
 
-    float rotationAngle() const;
-    void setRotationAngle(float rotationAngle);
-    void rotate(float angle);
-
     float toolAngle() const;
     void setToolAngle(float toolAngle);
 
@@ -42,9 +38,17 @@ public:
     SqlSettingsModel* getSettingsModelHandle() const;
     void setSettingsModelHandle(SqlSettingsModel* settingsModelHandle);
 
+    void setSpindleRotating(bool);
+    void setSpindleSpeed(float);
+
+    bool needsUpdateGeometry() const;
+
 protected:
     float normalizeAngle(float angle);
     bool updateData() override;
+    void generateToolGeometry();
+    void generateToolHolderGeometry();
+    void rotate();
 
 private:
     float mToolDiameter;
@@ -56,7 +60,6 @@ private:
     QColor mColor;
     SqlSettingsModel* mSettingsModelHandle;
     Tool* mToolHandle;
-
-    void generateToolGeometry();
-    void generateToolHolderGeometry();
+    bool mSpindleRotating;
+    float mSpindleSpeed;
 };
