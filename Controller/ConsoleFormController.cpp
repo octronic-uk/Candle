@@ -64,7 +64,7 @@ void ConsoleFormController::onCommandSendAction()
     // TODO - Store in combobox history
     mUi.cboCommand->setCurrentText("");
     // TODO - Leak Spin
-    emit gcodeCommandSendSignal(new GcodeCommand(commandText));
+    emit gcodeCommandSendSignal(new GcodeCommand(commandText+"\r"));
 }
 
 void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& response)
