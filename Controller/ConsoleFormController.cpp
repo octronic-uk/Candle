@@ -35,7 +35,7 @@ ConsoleFormController::~ConsoleFormController()
     qDebug() << "Destructing ConsoleFormController";
 }
 
-void ConsoleFormController::onCmdClearConsoleClicked()
+void ConsoleFormController::onClearConsoleClicked(bool)
 {
     mUi.txtConsole->clear();
 }
@@ -54,7 +54,7 @@ void ConsoleFormController::initialise()
 
 
 // Console
-void ConsoleFormController::onCommandSendAction()
+void ConsoleFormController::onCommandSendAction(bool)
 {
     QString commandText = mUi.cboCommand->currentText();
     if (commandText.isEmpty())
@@ -81,7 +81,14 @@ void ConsoleFormController::onAppendResponseToConsole(const GrblResponse& respon
 
 void ConsoleFormController::onAppendCommandToConsole(GcodeCommand* command)
 {
-    QString cmd = command->getCommand();
+    QString cmd;
+    if (command->isRawCommand())
+    {
+        cmd = QString("0x%1").arg(QString::number(command->getRawCommand(),16).toUpper());
+    }
+    else {
+        cmd = command->getCommand();
+    }
     //qDebug() << "ConsoleFormController: Appending Command:" << cmd;
     mUi.txtConsole->setTextColor(QColor("Black"));
     mUi.txtConsole->append("CNC <-- "+cmd.trimmed());
@@ -91,7 +98,8 @@ void ConsoleFormController::setupSignalSlots()
 {
     //qDebug() << "ConsoleFormController: Setup Signals/Slots";
     connect(
-        mUi.commandSendButton, SIGNAL(clicked()),
-        this, SLOT(onCommandSendAction())
+        mUi.commandSendButton, SIGNAL(clicked(bool)),
+        this, SLOT(onCommandSendAction(bool))
     );
+    connect(mUi.consoleClearButton,SIGNAL(clicked(bool)),this,SLOT(onClearConsoleClicked(bool)));
 }

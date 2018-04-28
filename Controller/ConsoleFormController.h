@@ -32,7 +32,6 @@ class ConsoleFormController : public AbstractFormController
 public:
     ConsoleFormController(QWidget *parent = nullptr);
     ~ConsoleFormController() override;
-    void onCmdClearConsoleClicked();
     int getConsoleMinHeight();
     void setFormActive(bool active) override;
 
@@ -40,9 +39,10 @@ public:
 signals:
     void gcodeCommandSendSignal(GcodeCommand*);
 public slots:
-    void onCommandSendAction();
+    void onCommandSendAction(bool);
     void onAppendResponseToConsole(const GrblResponse&);
     void onAppendCommandToConsole(GcodeCommand*);
+    void onClearConsoleClicked(bool);
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;

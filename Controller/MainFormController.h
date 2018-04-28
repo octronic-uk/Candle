@@ -127,6 +127,7 @@ private: // Member Functions
     void setupConsoleFormSignals();
     void setupControlFormSignals();
     void setupProgramFormSignals();
+    void setupOverrideFormSignals();
     void setupJogFormSignals();
     void setupStateFormSignals();
     void setupVisualisationFormSignals();

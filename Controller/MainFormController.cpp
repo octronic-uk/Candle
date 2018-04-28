@@ -198,6 +198,12 @@ void MainFormController::setupMenuBarSignals()
         mUi.actFileSaveTransformedAs, SIGNAL(triggered()),
         this, SLOT(onActFileSaveTransformedAsTriggered())
     );
+    // File Exit
+    connect
+    (
+        mUi.actFileExit, SIGNAL(triggered()),
+        this, SLOT(onActFileExitTriggered())
+    );
 }
 
 void MainFormController::setupGcodeFileModelSignals()
@@ -347,39 +353,7 @@ void MainFormController::setupGrblMachineModelSignals()
         &mGrblMachineModel, SIGNAL(updateMachinePositionSignal(const QVector3D)),
         mUi.visualisationFormController, SLOT(onUpdateMachinePosition(const QVector3D))
     );
-    // Rapid
-    connect
-    (
-        &mGrblMachineModel, SIGNAL(updateRapidOverrideSignal(float)),
-        mUi.overrideFormController, SLOT(onUpdateRapidOverride(float))
-    );
-    connect
-    (
-        mUi.overrideFormController, SIGNAL(updateRapidOverrideSignal(float)),
-        &mGrblMachineModel, SLOT(onUpdateRapidOverride(float))
-    );
-    // Spindle
-    connect
-    (
-        &mGrblMachineModel, SIGNAL(updateSpindleOverrideSignal(float)),
-        mUi.overrideFormController, SLOT(onUpdateSpindleOverride(float))
-    );
-    connect
-    (
-        mUi.overrideFormController, SIGNAL(updateSpindleOverrideSignal(float)),
-        &mGrblMachineModel, SLOT(onUpdateSpindleOverride(float))
-    );
-    // Feed
-    connect
-    (
-        &mGrblMachineModel, SIGNAL(updateFeedOverrideSignal(float)),
-        mUi.overrideFormController, SLOT(onUpdateFeedOverride(float))
-    );
-    connect
-    (
-        mUi.overrideFormController, SIGNAL(updateFeedOverrideSignal(float)),
-        &mGrblMachineModel, SLOT(onUpdateFeedOverride(float))
-    );
+    // Machine State
     connect
     (
         &mGrblMachineModel, SIGNAL(errorSignal(QString)),
@@ -480,6 +454,15 @@ void MainFormController::setupProgramFormSignals()
     );
     connect(
         mUi.programFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
+        &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
+                );
+}
+
+void MainFormController::setupOverrideFormSignals()
+{
+    connect
+    (
+        mUi.overrideFormController, SIGNAL(gcodeCommandManualSendSignal(GcodeCommand*)),
         &mGrblMachineModel, SLOT(onGcodeCommandManualSend(GcodeCommand*))
     );
 }
@@ -642,6 +625,7 @@ void MainFormController::setupSignalSlots()
     setupProgramFormSignals();
     setupStateFormSignals();
     setupVisualisationFormSignals();
+    setupOverrideFormSignals();
 }
 
 void MainFormController::showMainWindow()

@@ -41,6 +41,7 @@ public:
     void highlightUnlockReset(bool highlight);
 
 signals:
+
     void gcodeCommandManualSendSignal(GcodeCommand*);
     void safePositionSetSignal();
 

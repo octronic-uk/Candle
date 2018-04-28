@@ -21,6 +21,8 @@
 #include "AbstractFormController.h"
 #include "ui_OverrideForm.h"
 
+class GcodeCommand;
+
 using namespace Ui;
 
 class OverrideFormController : public AbstractFormController
@@ -35,23 +37,26 @@ public:
     void initialise() override;
 
 signals:
-    void updateSpindleOverrideSignal(float val);
-    void updateFeedOverrideSignal(float val);
-    void updateRapidOverrideSignal(float val);
+    void gcodeCommandManualSendSignal(GcodeCommand*);
 
 public slots:
-    void onUpdateSpindleOverride(float speed);
-    void onUpdateFeedOverride(float val);
-    void onUpdateRapidOverride(float val);
 
 private slots:
-    void onFeedOverrideToggled(bool checked);
-    void onSpindleOverrideToggled(bool checked);
-    void onRapidOverrideToggled(bool checked);
+    void onFeedDefaultClicked(bool);
+    void onFeedPlusOneClicked(bool);
+    void onFeedMinusOneClicked(bool);
+    void onFeedPlusTenClicked(bool);
+    void onFeedMinusTenClicked(bool);
 
-    void onSpindleSliderValueChanged(int value);
-    void onFeedSliderValueChanged(int value);
-    void onRapidSliderValueChanged(int value);
+    void onSpindleDefaultClicked(bool);
+    void onSpindlePlusOneClicked(bool);
+    void onSpindleMinusOneClicked(bool);
+    void onSpindlePlusTenClicked(bool);
+    void onSpindleMinusTenClicked(bool);
+
+    void onRapidDefaultClicked(bool);
+    void onRapid25PercentClicked(bool);
+    void onRapid50PercentClicked(bool);
 
 private:
     OverrideForm mUi;

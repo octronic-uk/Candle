@@ -61,7 +61,7 @@ GcodeCommand::GcodeCommand(const GcodeCommand* other)
       mShowInConsole(other->mShowInConsole) {}
 
 
-GcodeCommand::GcodeCommand(char rawCmd) : mRawCommand(rawCmd) {}
+GcodeCommand::GcodeCommand(unsigned char rawCmd) : mRawCommand(rawCmd) {}
 
 GcodeCommand* GcodeCommand::AbsoluteXCommand(float x)
 {
@@ -112,6 +112,12 @@ GcodeCommand* GcodeCommand::UnlockCommand()
 GcodeCommand* GcodeCommand::ResetCommand()
 {
     static GcodeCommand gc(0x18);
+    return &gc;
+}
+
+GcodeCommand* GcodeCommand::JogCancelCommand()
+{
+    static GcodeCommand gc(0x85);
     return &gc;
 }
 
@@ -212,6 +218,84 @@ GcodeCommand* GcodeCommand::GoToSafePositionCommand()
 GcodeCommand* GcodeCommand::GoToOriginCommand()
 {
     static GcodeCommand gc("G90 X0Y0Z0\r");
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::FeedOvDefault()
+{
+    static GcodeCommand gc(0x90);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::FeedOvPlusOne()
+{
+    static GcodeCommand gc(0x93);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::FeedOvPlusTen()
+{
+    static GcodeCommand gc(0x91);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::FeedOvMinusOne()
+{
+    static GcodeCommand gc(0x94);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::FeedOvMinusTen()
+{
+    static GcodeCommand gc(0x92);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::RapidOvDefault()
+{
+    static GcodeCommand gc(0x95);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::RapidOv50Percent()
+{
+    static GcodeCommand gc(0x96);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::RapidOv25Percent()
+{
+    static GcodeCommand gc(0x97);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::SpindleOvDefault()
+{
+    static GcodeCommand gc(0x99);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::SpindleOvPlusOne()
+{
+    static GcodeCommand gc(0x9C);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::SpindleOvPlusTen()
+{
+    static GcodeCommand gc(0x9A);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::SpindleOvMinusOne()
+{
+    static GcodeCommand gc(0x9D);
+    return &gc;
+}
+
+GcodeCommand *GcodeCommand::SpindleOvMinusTen()
+{
+    static GcodeCommand gc(0x9B);
     return &gc;
 }
 
@@ -371,7 +455,7 @@ void GcodeCommand::setState(const GcodeCommandState state)
     mState = state;
 }
 
-char GcodeCommand::getRawCommand()
+unsigned char GcodeCommand::getRawCommand()
 {
     return mRawCommand;
 }

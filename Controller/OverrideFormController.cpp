@@ -16,6 +16,7 @@
  * this file belongs to.
  */
 #include "OverrideFormController.h"
+#include "Model/Gcode/GcodeCommand.h"
 
 OverrideFormController::OverrideFormController(QWidget *parent)
     : AbstractFormController(parent)
@@ -33,69 +34,21 @@ OverrideFormController::~OverrideFormController()
 
 void OverrideFormController::setFormActive(bool active)
 {
-    mUi.spindleOverrideButton->setEnabled(active);
-    mUi.spindleOverrideButton->setChecked(false);
-    mUi.spindleOverrideSlider->setEnabled(active);
-    mUi.spindleOverrideSlider->setValue(100);
+    mUi.spindleDefaultButton->setEnabled(active);
+    mUi.spindleMinusOneButton->setEnabled(active);
+    mUi.spindlePlusOneButton->setEnabled(active);
+    mUi.spindleMinusTenButton->setEnabled(active);
+    mUi.spindlePlusTenButton->setEnabled(active);
 
-    mUi.feedOverrideButton->setEnabled(active);
-    mUi.feedOverrideButton->setChecked(false);
-    mUi.feedOverrideSlider->setEnabled(active);
-    mUi.feedOverrideSlider->setValue(100);
+    mUi.feedDefaultButton->setEnabled(active);
+    mUi.feedMinusOneButton->setEnabled(active);
+    mUi.feedPlusOneButton->setEnabled(active);
+    mUi.feedMinusTenButton->setEnabled(active);
+    mUi.feedPlusTenButton->setEnabled(active);
 
-    mUi.rapidOverrideButton->setEnabled(active);
-    mUi.rapidOverrideButton->setChecked(false);
-    mUi.rapidOverrideSlider->setEnabled(active);
-    mUi.rapidOverrideSlider->setValue(100);
-}
-
-void OverrideFormController::initialise()
-{
-    mUi.spindleOverrideButton->setEnabled(false);
-    mUi.spindleOverrideButton->setChecked(false);
-    mUi.spindleOverrideSlider->setValue(100);
-    mUi.spindleOverrideSlider->setEnabled(false);
-
-    mUi.feedOverrideButton->setEnabled(false);
-    mUi.feedOverrideButton->setChecked(false);
-    mUi.feedOverrideSlider->setValue(100);
-    mUi.feedOverrideSlider->setEnabled(false);
-
-    mUi.rapidOverrideButton->setEnabled(false);
-    mUi.rapidOverrideButton->setChecked(false);
-    mUi.rapidOverrideSlider->setValue(100);
-    mUi.rapidOverrideSlider->setEnabled(false);
-}
-
-void OverrideFormController::onSpindleOverrideToggled(bool checked)
-{
-    mUi.spindleOverrideSlider->setEnabled(checked);
-    if (!checked)
-    {
-        mUi.spindleOverrideSlider->setValue(100);
-    }
-    emit updateSpindleOverrideSignal(mUi.spindleOverrideSlider->value());
-}
-
-void OverrideFormController::onRapidOverrideToggled(bool checked)
-{
-    mUi.rapidOverrideSlider->setEnabled(checked);
-    if (!checked)
-    {
-        mUi.rapidOverrideSlider->setValue(100);
-    }
-    emit updateRapidOverrideSignal(mUi.rapidOverrideSlider->value());
-
-}
-
-void OverrideFormController::onFeedOverrideToggled(bool checked)
-{
-    mUi.feedOverrideSlider->setEnabled(checked);
-    if (!checked)
-    {
-        mUi.feedOverrideSlider->setValue(100);
-    }
-    emit updateFeedOverrideSignal(mUi.feedOverrideSlider->value());
+    mUi.rapidDefaultButton->setEnabled(active);
+    mUi.rapid25PercentButton->setEnabled(active);
+    mUi.rapid50PercentButton->setEnabled(active);
 }
 
 void OverrideFormController::setupSignalSlots()
@@ -103,68 +56,98 @@ void OverrideFormController::setupSignalSlots()
     qDebug() << "OverrideFormController: Setup Signals/Slots";
 
     // Spindle
-    connect
-    (
-        mUi.spindleOverrideSlider, SIGNAL(valueChanged(int)),
-        this, SLOT(onSpindleSliderValueChanged(int))
-    );
-    connect
-    (
-        mUi.spindleOverrideButton, SIGNAL(toggled(bool)),
-        this, SLOT(onSpindleOverrideToggled(bool))
-    );
-
+    connect(mUi.spindleDefaultButton,SIGNAL(clicked(bool)),this,SLOT(onSpindleDefaultClicked(bool)));
+    connect(mUi.spindlePlusOneButton,SIGNAL(clicked(bool)),this,SLOT(onSpindlePlusOneClicked(bool)));
+    connect(mUi.spindleMinusOneButton,SIGNAL(clicked(bool)),this,SLOT(onSpindleMinusOneClicked(bool)));
+    connect(mUi.spindlePlusTenButton,SIGNAL(clicked(bool)),this,SLOT(onSpindlePlusTenClicked(bool)));
+    connect(mUi.spindleMinusTenButton,SIGNAL(clicked(bool)),this,SLOT(onSpindleMinusTenClicked(bool)));
     // Feed
-    connect(
-        mUi.feedOverrideSlider, SIGNAL(valueChanged(int)),
-        this, SLOT(onFeedSliderValueChanged(int))
-    );
-    connect(
-        mUi.feedOverrideButton, SIGNAL(toggled(bool)),
-        this, SLOT(onFeedOverrideToggled(bool))
-    );
+    connect(mUi.feedDefaultButton,SIGNAL(clicked(bool)),this,SLOT(onFeedDefaultClicked(bool)));
+    connect(mUi.feedPlusOneButton,SIGNAL(clicked(bool)),this,SLOT(onFeedPlusOneClicked(bool)));
+    connect(mUi.feedMinusOneButton,SIGNAL(clicked(bool)),this,SLOT(onFeedMinusOneClicked(bool)));
+    connect(mUi.feedPlusTenButton,SIGNAL(clicked(bool)),this,SLOT(onFeedPlusTenClicked(bool)));
+    connect(mUi.feedMinusTenButton,SIGNAL(clicked(bool)),this,SLOT(onFeedMinusTenClicked(bool)));
 
-    connect(
-        mUi.rapidOverrideSlider, SIGNAL(valueChanged(int)),
-        this, SLOT(onRapidSliderValueChanged(int))
-    );
-    connect(
-        mUi.rapidOverrideButton, SIGNAL(toggled(bool)),
-        this, SLOT(onRapidOverrideToggled(bool))
-    );
+    // Rapid
+    connect(mUi.rapidDefaultButton,SIGNAL(clicked(bool)),this,SLOT(onRapidDefaultClicked(bool)));
+    connect(mUi.rapid25PercentButton,SIGNAL(clicked(bool)),this,SLOT(onRapid25PercentClicked(bool)));
+    connect(mUi.rapid50PercentButton,SIGNAL(clicked(bool)),this,SLOT(onRapid50PercentClicked(bool)));
 }
 
-void OverrideFormController::onUpdateFeedOverride(float val)
+void OverrideFormController::initialise()
 {
-    mUi.feedOverrideButton->setChecked(val != 100);
-    mUi.feedOverrideSlider->setValue(val);
+    setFormActive(false);
 }
 
-void OverrideFormController::onUpdateRapidOverride(float val)
+void OverrideFormController::onFeedDefaultClicked(bool checked)
 {
-    mUi.rapidOverrideButton->setChecked(val != 100);
-    mUi.rapidOverrideSlider->setValue(val);
+    emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvDefault());
 }
 
-void OverrideFormController::onUpdateSpindleOverride(float val)
+void OverrideFormController::onFeedPlusOneClicked(bool checked)
 {
-    mUi.spindleOverrideButton->setChecked(val != 100);
-    mUi.spindleOverrideSlider->setValue(val);
+
+    emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvPlusOne());
 }
 
-void OverrideFormController::onFeedSliderValueChanged(int value)
+void OverrideFormController::onFeedMinusOneClicked(bool checked)
 {
-    mUi.feedOverrideButton->setChecked(value != 100);
-    emit updateFeedOverrideSignal(value);
+    emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvMinusOne());
 }
 
-void OverrideFormController::onRapidSliderValueChanged(int value)
+void OverrideFormController::onFeedPlusTenClicked(bool checked)
 {
-    mUi.rapidOverrideButton->setChecked(value != 100);
-    emit updateRapidOverrideSignal(value);
+    emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvPlusTen());
 }
-void OverrideFormController::onSpindleSliderValueChanged(int value)
+
+void OverrideFormController::onFeedMinusTenClicked(bool checked)
 {
-    mUi.spindleOverrideButton->setChecked(value != 100);
-    emit updateSpindleOverrideSignal(value);
+    emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvMinusTen());
+}
+
+void OverrideFormController::onSpindleDefaultClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvDefault());
+
+}
+
+void OverrideFormController::onSpindlePlusOneClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvPlusOne());
+
+}
+
+void OverrideFormController::onSpindleMinusOneClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvMinusOne());
+
+}
+
+void OverrideFormController::onSpindlePlusTenClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvPlusTen());
+
+}
+
+void OverrideFormController::onSpindleMinusTenClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvMinusTen());
+
+}
+
+void OverrideFormController::onRapidDefaultClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::RapidOvDefault());
+
+}
+
+void OverrideFormController::onRapid25PercentClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::RapidOv25Percent());
+
+}
+
+void OverrideFormController::onRapid50PercentClicked(bool checked)
+{
+    emit gcodeCommandManualSendSignal(GcodeCommand::RapidOv50Percent());
 }

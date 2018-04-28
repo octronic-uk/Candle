@@ -108,5 +108,9 @@
         <file>Images/SVG/smile.svg</file>
         <file>Images/SVG/tool-bit.svg</file>
         <file>Images/SVG/drilling-machine.svg</file>
+        <file>Images/SVG/backward.svg</file>
+        <file>Images/SVG/caret-left.svg</file>
+        <file>Images/SVG/caret-right.svg</file>
+        <file>Images/SVG/forward.svg</file>
     </qresource>
 </RCC>

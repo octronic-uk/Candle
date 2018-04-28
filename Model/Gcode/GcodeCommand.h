@@ -73,9 +73,11 @@ public:
 
     GcodeCommand(const GcodeCommand& other);
     GcodeCommand(const GcodeCommand* other);
-    GcodeCommand(char rawCmd);
+    GcodeCommand(unsigned char rawCmd);
 
     static long ID;
+
+    static GcodeCommand* JogCancelCommand();
     static GcodeCommand* AbsoluteXCommand(float);
     static GcodeCommand* AbsoluteYCommand(float);
     static GcodeCommand* AbsoluteZCommand(float);
@@ -97,6 +99,23 @@ public:
     static GcodeCommand* SetSafePositionCommand();
     static GcodeCommand* GoToSafePositionCommand();
     static GcodeCommand* GoToOriginCommand();
+
+    static GcodeCommand* FeedOvDefault();
+    static GcodeCommand* FeedOvPlusOne();
+    static GcodeCommand* FeedOvPlusTen();
+    static GcodeCommand* FeedOvMinusOne();
+    static GcodeCommand* FeedOvMinusTen();
+
+    static GcodeCommand* RapidOvDefault();
+    static GcodeCommand* RapidOv50Percent();
+    static GcodeCommand* RapidOv25Percent();
+
+    static GcodeCommand* SpindleOvDefault();
+    static GcodeCommand* SpindleOvPlusOne();
+    static GcodeCommand* SpindleOvPlusTen();
+    static GcodeCommand* SpindleOvMinusOne();
+    static GcodeCommand* SpindleOvMinusTen();
+
 
     static GcodeCommand* JogCommand
     (
@@ -138,7 +157,7 @@ public:
 
     long getID();
     bool hasID(long id);
-    char getRawCommand();
+    unsigned char getRawCommand();
 
     QString getMarker() const;
     bool isMarker() const;
@@ -151,7 +170,7 @@ public:
     bool isM30Command();
 private:
     static long nextID();
-    char mRawCommand;
+    unsigned char mRawCommand;
     QString mCommand;
     GrblResponse mResponse;
     GcodeCommandState mState;
