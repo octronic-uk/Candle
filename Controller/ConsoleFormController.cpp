@@ -20,6 +20,8 @@
 #include "ConsoleFormController.h"
 #include "ui_ConsoleForm.h"
 
+#include <QLineEdit>
+
 using namespace Ui;
 
 ConsoleFormController::ConsoleFormController(QWidget *parent)
@@ -35,7 +37,7 @@ ConsoleFormController::~ConsoleFormController()
     qDebug() << "Destructing ConsoleFormController";
 }
 
-void ConsoleFormController::onClearConsoleClicked(bool)
+void ConsoleFormController::onClearConsoleClicked()
 {
     mUi.txtConsole->clear();
 }
@@ -54,7 +56,7 @@ void ConsoleFormController::initialise()
 
 
 // Console
-void ConsoleFormController::onCommandSendAction(bool)
+void ConsoleFormController::onCommandSendAction()
 {
     QString commandText = mUi.cboCommand->currentText();
     if (commandText.isEmpty())
@@ -98,8 +100,14 @@ void ConsoleFormController::setupSignalSlots()
 {
     //qDebug() << "ConsoleFormController: Setup Signals/Slots";
     connect(
-        mUi.commandSendButton, SIGNAL(clicked(bool)),
-        this, SLOT(onCommandSendAction(bool))
+        mUi.commandSendButton, SIGNAL(clicked()),
+        this, SLOT(onCommandSendAction())
     );
-    connect(mUi.consoleClearButton,SIGNAL(clicked(bool)),this,SLOT(onClearConsoleClicked(bool)));
+    connect(
+        mUi.cboCommand->lineEdit(),
+        SIGNAL(returnPressed()),
+        this,
+        SLOT(onCommandSendAction())
+    );
+    connect(mUi.consoleClearButton,SIGNAL(clicked()),this,SLOT(onClearConsoleClicked()));
 }
