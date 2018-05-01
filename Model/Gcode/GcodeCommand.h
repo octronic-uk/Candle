@@ -98,7 +98,8 @@ public:
     static GcodeCommand* SetFirmwareConfigurationCommand(int param, QString value);
     static GcodeCommand* SetSafePositionCommand();
     static GcodeCommand* GoToSafePositionCommand();
-    static GcodeCommand* GoToOriginCommand();
+    static GcodeCommand* GoToXYOriginCommand();
+    static GcodeCommand* GoToZOriginCommand();
 
     static GcodeCommand* FeedOvDefault();
     static GcodeCommand* FeedOvPlusOne();

@@ -215,9 +215,15 @@ GcodeCommand* GcodeCommand::GoToSafePositionCommand()
     return &gc;
 }
 
-GcodeCommand* GcodeCommand::GoToOriginCommand()
+GcodeCommand* GcodeCommand::GoToXYOriginCommand()
 {
-    static GcodeCommand gc("G90 X0Y0Z0\r");
+    static GcodeCommand gc("G90 X0Y0\r");
+    return &gc;
+}
+
+GcodeCommand* GcodeCommand::GoToZOriginCommand()
+{
+    static GcodeCommand gc("G90 Z0\r");
     return &gc;
 }
 

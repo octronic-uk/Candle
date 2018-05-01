@@ -39,6 +39,7 @@ public:
     void setFormActive(bool active) override;
     void initialise() override;
     void highlightUnlockReset(bool highlight);
+    void setResetUnlockActive(bool active);
 
 signals:
 

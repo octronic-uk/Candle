@@ -247,7 +247,7 @@ void JogFormController::onJogDirectionButtonClicked()
     }
     else if (senderBtn == mUi.jogOrigin)
     {
-        emit gcodeCommandManualSendSignal(GcodeCommand::GoToOriginCommand());
+        emit gcodeCommandManualSendSignal(GcodeCommand::GoToXYOriginCommand());
         return;
     }
     else if (senderBtn == mUi.jogXPlus)
@@ -273,6 +273,11 @@ void JogFormController::onJogDirectionButtonClicked()
     else if (senderBtn == mUi.jogZPlus)
     {
         z = getStepValue();
+    }
+    else if (senderBtn == mUi.jogZOriginButton)
+    {
+        emit gcodeCommandManualSendSignal(GcodeCommand::GoToZOriginCommand());
+        return;
     }
     else if (senderBtn == mUi.jogZMinus)
     {
@@ -339,6 +344,7 @@ void JogFormController::setupSignalSlots()
     connect(mUi.jogXPlusYMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
     // Z Axis
     connect(mUi.jogZPlus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
+    connect(mUi.jogZOriginButton,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
     connect(mUi.jogZMinus,SIGNAL(clicked()),this,SLOT(onJogDirectionButtonClicked()));
 
     // Step Spinner

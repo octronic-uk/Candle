@@ -239,7 +239,7 @@ void MainFormController::setupGcodeFileModelSignals()
         mGcodeFileModel.data(), SIGNAL(gcodeFileLoadFinishedSignal(GcodeFileModel*)),
         this, SLOT(onGcodeFileLoadFinished(GcodeFileModel*))
     );
-    // Gcode Loading Finished
+    // Gcode Loading Started
     connect(
         mGcodeFileModel.data(), SIGNAL(gcodeFileLoadStartedSignal()),
         mUi.visualisationFormController, SLOT(onGcodeFileLoadStarted())
@@ -491,6 +491,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.jogFormController->setFormActive(false);
             mUi.overrideFormController->setFormActive(false);
             mUi.stateFormController->setClass(StateClass::Danger);
+            mUi.controlFormController->setResetUnlockActive(true);
             break;
         case GrblMachineState::Unknown:
             mUi.stateFormController->setClass(StateClass::Primary);
@@ -638,7 +639,7 @@ void MainFormController::showMainWindow()
             geom
         )
     );
-    mMainWindow.show();
+    mMainWindow.showMaximized();
     mMainWindow.raise();  // for MacOS
     mMainWindow.activateWindow(); // for Windows
 }
@@ -806,10 +807,16 @@ void MainFormController::onGcodeFileLoadFinished(GcodeFileModel* items)
 {
     Q_UNUSED(items)
     //qDebug() << "MainFormController: onGcodeFileLoadFinished";
+    QString fileName =  mGcodeFileModel->getCurrentFileName();
+
     onStatusBarUpdate
     (
-        QString("Opened Gcode File " + mGcodeFileModel->getCurrentFileName())
+        QString("Opened Gcode File " +fileName)
     );
+
+    mMainWindow.setWindowTitle("CoconutCNC - " + fileName);
+    mMainWindow.setWindowFilePath(fileName); // For macOS
+
     if (mGrblMachineModel.isPortOpen())
     {
         mUi.programFormController->setFormActive(true);

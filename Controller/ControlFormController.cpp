@@ -66,6 +66,11 @@ void ControlFormController::onProbeButtonClicked()
     }
 }
 
+void ControlFormController::setResetUnlockActive(bool active)
+{
+    mUi.resetButton->setEnabled(active);
+    mUi.unlockButton->setEnabled(active);
+}
 void ControlFormController::onZeroXYButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::ZeroXYCommand());
