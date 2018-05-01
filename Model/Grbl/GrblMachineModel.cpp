@@ -275,6 +275,8 @@ void GrblMachineModel::processResponse(const GrblResponse& response)
             mError = true;
             mWaitingForStatus = false;
             mStatusRequested = false;
+            clearCommandQueue();
+            clearCommandBuffer();
             mState = GrblMachineState::Error;
             emit errorSignal(mErrorString);
             emit appendResponseToConsoleSignal(response);

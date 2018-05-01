@@ -481,6 +481,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.overrideFormController->setFormActive(true);
             mUi.stateFormController->setClass(StateClass::Warning);
             break;
+        case GrblMachineState::Alarm:
         case GrblMachineState::Error:
         case GrblMachineState::Locked:
             mUi.consoleFormController->setFormActive(false);
@@ -505,9 +506,6 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
                 mUi.overrideFormController->setFormActive(true);
             }
             mUi.stateFormController->setClass(StateClass::Info);
-            break;
-        case GrblMachineState::Alarm:
-            mUi.stateFormController->setClass(StateClass::Danger);
             break;
         case GrblMachineState::Run:
             if (mGrblMachineModel.getProgramRunning())

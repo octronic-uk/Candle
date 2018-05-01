@@ -134,12 +134,10 @@ void ControlFormController::setFormActive(bool active)
     mUi.probeZButton->setEnabled(active);
     mUi.zeroXYButton->setEnabled(active);
     mUi.zeroZButton->setEnabled(active);
-
     mUi.goToSafePositionButton->setEnabled(active);
     mUi.setSafePositionButton->setEnabled(active);
-    // Always enabled
-    mUi.resetButton->setEnabled(true);
-    mUi.unlockButton->setEnabled(true);
+    mUi.resetButton->setEnabled(active);
+    mUi.unlockButton->setEnabled(active);
 
     if (isModelValid())
     {

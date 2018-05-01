@@ -112,5 +112,6 @@
         <file>Images/SVG/caret-left.svg</file>
         <file>Images/SVG/caret-right.svg</file>
         <file>Images/SVG/forward.svg</file>
+        <file>Images/SVG/z-origin.svg</file>
     </qresource>
 </RCC>
