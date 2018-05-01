@@ -39,10 +39,10 @@ public:
 signals:
     void gcodeCommandSendSignal(GcodeCommand*);
 public slots:
-    void onCommandSendAction(bool);
+    void onCommandSendAction();
     void onAppendResponseToConsole(const GrblResponse&);
     void onAppendCommandToConsole(GcodeCommand*);
-    void onClearConsoleClicked(bool);
+    void onClearConsoleClicked();
 private:
     ConsoleForm mUi;
     int mStoredConsoleMinimumHeight;
