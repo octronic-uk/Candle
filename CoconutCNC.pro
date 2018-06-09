@@ -206,7 +206,8 @@ FORMS    += \
     View/Settings/ToolForm.ui \
     View/Settings/NameDialog.ui \
     View/Settings/GrblConfigurationForm.ui \
-    View/OverrideForm.ui
+    View/OverrideForm.ui \
+    View/ToolChangePromptForm.ui
 
 DEFINES += _USE_MATH_DEFINES
 #DEFINES += QT_SHAREDPOINTER_TRACK_POINTERS

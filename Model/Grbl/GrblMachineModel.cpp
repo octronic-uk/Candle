@@ -448,7 +448,6 @@ void GrblMachineModel::initialise()
     mFeedOverride = 100;
     mSpindleOverride = 100;
     mRapidOverride = 100;
-    emit machineStateUpdatedSignal(GrblMachineState::Locked);
 }
 
 bool GrblMachineModel::sendNextCommandFromQueue()

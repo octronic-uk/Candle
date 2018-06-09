@@ -163,125 +163,12 @@ void ProgramFormController::onTableProgramCustomContextMenuRequested(const QPoin
 
 void ProgramFormController::onTableCellChanged(QModelIndex i1, QModelIndex i2)
 {
-    /*
-    qDebug() << "ProgramFormController: Table Cell Changed" << i1 << i2;
-    Q_UNUSED(i2)
 
-    GcodeTableModel *model = static_cast<GcodeTableModel*>(sender());
-
-    if (i1.column() != 0)
-    {
-        qDebug() << "ProgramFormController: No need to edit that there column"
-                 << i1.column()
-                 << "here sonny";
-        return;
-    }
-
-    // Inserting new line at end
-    if (i1.row() == (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() != "")
-    {
-        model->setData(model->index(model->rowCount() - 1, 2), InQueue);
-        model->insertRow(model->rowCount());
-
-        if (!mProgramLoading)
-        {
-            mUi.programTable->setCurrentIndex(model->index(i1.row() + 1, 1));
-        }
-    }
-    // Remove last line
-    else if (i1.row() != (model->rowCount() - 1) && model->data(model->index(i1.row(), 1)).toString() == "")
-    {
-        mUi.programTable->setCurrentIndex(model->index(i1.row() + 1, 1));
-        mProgramTableModel.removeRow(i1.row());
-    }
-
-    if (!mProgramLoading)
-    {
-        // Clear cached args
-        model->setData(model->index(i1.row(), 5), QVariant());
-
-        // Update visualizer
-        //updateParser();
-    }
-    */
 }
 
 void ProgramFormController::onTableCurrentChanged(QModelIndex i1, QModelIndex i2)
 {
-    //qDebug() << "ProgramFormController: TableCurrentChanged" << i1 << i2;
-    // Update toolpath hightlighting
-    /*
-    if (idx1.row() > mProgramTableModel.rowCount() - 2)
-    {
-        idx1 = mProgramTableModel.index(mProgramTableModel.rowCount() - 2, 0);
-    }
-    if (idx2.row() > mProgramTableModel.rowCount() - 2)
-    {
-        idx2 = mProgramTableModel.index(mProgramTableModel.rowCount() - 2, 0);
-    }
 
-    GcodeViewParse *parser = mCurrentDrawer->viewParser();
-    QList<LineSegment*> list = parser->getLineSegmentList();
-    QVector<QList<int>> lineIndexes = parser->getLinesIndexes();
-
-    // Update linesegments on cell changed
-    if (!mCurrentDrawer->geometryUpdated())
-    {
-        for (int i = 0; i < list.count(); i++)
-        {
-            list.at(i)->setIsHightlight(list.at(i)->getLineNumber() <= mProgramTableModel.data(mProgramTableModel.index(idx1.row(), 4)).toInt());
-        }
-    // Update vertices on current cell changed
-    }
-    else
-    {
-        int lineFirst = mProgramTableModel.data(mProgramTableModel.index(idx1.row(), 4)).toInt();
-        int lineLast = mProgramTableModel.data(mProgramTableModel.index(idx2.row(), 4)).toInt();
-        if (lineLast < lineFirst) qSwap(lineLast, lineFirst);
-//        qDebug() << "table current changed" << idx1.row() << idx2.row() << lineFirst << lineLast;
-
-        QList<int> indexes;
-        for (int i = lineFirst + 1; i <= lineLast; i++)
-        {
-            foreach (int l, lineIndexes.at(i))
-            {
-                list.at(l)->setIsHightlight(idx1.row() > idx2.row());
-                indexes.append(l);
-            }
-        }
-
-        mSelectionDrawer.setEndPosition(indexes.isEmpty() ?
-            QVector3D(sNan, sNan, sNan) :
-            (
-                mCodeDrawer->getIgnoreZ() ?
-                    QVector3D(
-                        list.at(indexes.last())->getEnd().x(),
-                        list.at(indexes.last())->getEnd().y(),
-                        0
-                    )
-                :
-                list.at(indexes.last())->getEnd()
-            )
-        );
-
-        mSelectionDrawer.update();
-
-        if (!indexes.isEmpty()) mCurrentDrawer->update(indexes);
-    }
-
-    // Update selection marker
-    int line = mProgramTableModel.data(mProgramTableModel.index(idx1.row(), 4)).toInt();
-    if (line > 0 && !lineIndexes.at(line).isEmpty())
-    {
-        QVector3D pos = list.at(lineIndexes.at(line).last())->getEnd();
-        mSelectionDrawer.setEndPosition(mCodeDrawer->getIgnoreZ() ? QVector3D(pos.x(), pos.y(), 0) : pos);
-    }
-    else
-    {
-        mSelectionDrawer.setEndPosition(QVector3D(sNan, sNan, sNan));
-    }
-    mSelectionDrawer.update();
-    */
 }
 
 void ProgramFormController::onTableInsertLine()
@@ -432,113 +319,6 @@ void ProgramFormController::onSendFromCurrentLineActionTriggered()
         emit sendProgramFromLineSignal(startingAt->getID());
         setAutoScrollChecked(true);
     }
-
-    /*
-    // Set parser state
-    if (mSettingsForm->autoLine())
-    {
-        GcodeViewParse *parser = mCurrentDrawer->viewParser();
-        QList<LineSegment*> list = parser->getLineSegmentList();
-        QVector<QList<int>> lineIndexes = parser->getLinesIndexes();
-
-        int lineNumber = mProgramTableModel.data(mProgramTableModel.index(commandIndex, 4)).toInt();
-        LineSegment* firstSegment = list.at(lineIndexes.at(lineNumber).first());
-        LineSegment* lastSegment = list.at(lineIndexes.at(lineNumber).last());
-        LineSegment* feedSegment = lastSegment;
-        int segmentIndex = list.indexOf(feedSegment);
-        while (feedSegment->isFastTraverse() && segmentIndex > 0) feedSegment = list.at(--segmentIndex);
-
-        QStringList commands;
-
-        commands.append(QString("M3 S%1").arg(qMax<double>(lastSegment->getSpindleSpeed(), mUi->txtSpindleSpeed->value())));
-
-        commands.append(QString("G21 G90 G0 X%1 Y%2")
-                        .arg(firstSegment->getStart().x())
-                        .arg(firstSegment->getStart().y()));
-        commands.append(QString("G1 Z%1 F%2")
-                        .arg(firstSegment->getStart().z())
-                        .arg(feedSegment->getSpeed()));
-
-        commands.append(QString("%1 %2 %3 F%4")
-                        .arg(lastSegment->isMetric() ? "G21" : "G20")
-                        .arg(lastSegment->isAbsolute() ? "G90" : "G91")
-                        .arg(lastSegment->isFastTraverse() ? "G0" : "G1")
-                        .arg(lastSegment->isMetric() ? feedSegment->getSpeed() : feedSegment->getSpeed() / 25.4));
-
-        if (lastSegment->isArc())
-        {
-            commands.append(lastSegment->plane() == PointSegment::XY ? "G17"
-            : lastSegment->plane() == PointSegment::ZX ? "G18" : "G19");
-        }
-
-        QMessageBox box(this);
-        box.setIcon(QMessageBox::Information);
-        box.setText(tr("Following commands will be sent before selected line:\n") + commands.join('\n'));
-        box.setWindowTitle(qApp->applicationDisplayName());
-        box.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        box.addButton(tr("Skip"), QMessageBox::DestructiveRole);
-
-        int res = box.exec();
-
-        if (res == QMessageBox::Cancel)
-        {
-            return;
-        }
-        else if (res == QMessageBox::Ok)
-        {
-            foreach (QString command, commands)
-            {
-                sendCommand(command, -1, mSettingsForm->showUICommands());
-            }
-        }
-    }
-
-    mFileCommandIndex = commandIndex;
-    mFileProcessedCommandIndex = commandIndex;
-    mLastDrawnLineIndex = 0;
-    mProbeIndex = -1;
-
-    QList<LineSegment*> list = mViewParser.getLineSegmentList();
-
-    QList<int> indexes;
-    for (int i = 0; i < list.count(); i++)
-    {
-        list[i]->setDrawn(list.at(i)->getLineNumber() < mProgramTableModel.data().at(commandIndex).line);
-        indexes.append(i);
-    }
-    mCodeDrawer->update(indexes);
-
-    mUi->programTable->setUpdatesEnabled(false);
-
-    for (int i = 0; i < mProgramTableModel.data().count() - 1; i++)
-    {
-        mProgramTableModel.data()[i].state = i < commandIndex ? GcodeCommand::Skipped : GcodeCommand::InQueue;
-        mProgramTableModel.data()[i].response = QString();
-    }
-    mUi->programTable->setUpdatesEnabled(true);
-    mUi->glwVisualizer->setSpendTime(QTime(0, 0, 0));
-
-    mStartTime.start();
-
-    mTransferCompleted = false;
-    mProcessingFile = true;
-    mFileEndSent = false;
-    mStoredKeyboardControl = mUi->chkKeyboardControl->isChecked();
-    mUi->chkKeyboardControl->setChecked(false);
-
-    if (!mUi->chkTestMode->isChecked())
-    {
-        storeOffsets(); // Allready stored on check
-    }
-    storeParserState();
-
-    updateControlsState();
-    mUi->pauseButton->setFocus();
-
-    mFileCommandIndex = commandIndex;
-    mFileProcessedCommandIndex = commandIndex;
-    sendNextFileCommands();
-    */
 }
 
 void ProgramFormController::onUpdateProgramTableStatus(GcodeCommand* command)
@@ -595,17 +375,5 @@ void ProgramFormController::onGcodeFileLoadStarted()
 
 void ProgramFormController::onTestModeButtonChecked(bool checked)
 {
-    /*
-    if (checked)
-    {
-        storeOffsets();
-        storeParserState();
-        sendCommand("$C", -1, mSettingsForm->showUICommands());
-    }
-    else
-    {
-        mAborting = true;
-        grblReset();
-    };
-    */
+    // TODO
 }

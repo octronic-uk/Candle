@@ -68,5 +68,11 @@ private:
     SqlSettingsModel* mSettingsModelHandle;
 
     bool isModelValid();
+    void evaluateGotoSafePosition();
+    void evaluateZZero();
+    void evaluateXYZero();
     MachineSettings* getMachineSettingsHandle();
+    bool mSafePositionSet;
+    bool mZOriginSet;
+    bool mXYOriginSet;
 };

@@ -18,10 +18,14 @@
 
 #include "ControlFormController.h"
 #include "Model/Settings/Sql/SqlSettingsModel.h"
+#include <QMessageBox>
 
 ControlFormController::ControlFormController(QWidget *parent)
     : AbstractFormController(parent),
-      mSettingsModelHandle(nullptr)
+      mSettingsModelHandle(nullptr),
+      mSafePositionSet(false),
+      mZOriginSet(false),
+      mXYOriginSet(false)
 {
     qDebug() << "Contructing ControlFormController";
     mUi.setupUi(this);
@@ -73,12 +77,41 @@ void ControlFormController::setResetUnlockActive(bool active)
 }
 void ControlFormController::onZeroXYButtonClicked()
 {
+    if (mXYOriginSet)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle(tr("Reset XY Origin"));
+        msg.setText("XY Origin has all ready been set.\n\nAre you sure you want to overwrite it?");
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        auto result = msg.exec();
+
+        if (result != QMessageBox::Ok)
+        {
+            return;
+        }
+    }
+
     emit gcodeCommandManualSendSignal(GcodeCommand::ZeroXYCommand());
+    mXYOriginSet = true;
 }
 
 void ControlFormController::onZeroZButtonClicked()
 {
+    if (mZOriginSet)
+    {
+        QMessageBox msg;
+        msg.setWindowTitle(tr("Reset Z Origin"));
+        msg.setText("Z Origin has all ready been set.\n\nAre you sure you want to overwrite it?");
+        msg.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        auto result = msg.exec();
+
+        if (result != QMessageBox::Ok)
+        {
+            return;
+        }
+    }
     emit gcodeCommandManualSendSignal(GcodeCommand::ZeroZCommand());
+    mZOriginSet = true;
 }
 
 void ControlFormController::onUserCommand1ButtonClicked()
@@ -139,7 +172,7 @@ void ControlFormController::setFormActive(bool active)
     mUi.probeZButton->setEnabled(active);
     mUi.zeroXYButton->setEnabled(active);
     mUi.zeroZButton->setEnabled(active);
-    mUi.goToSafePositionButton->setEnabled(active);
+    mUi.goToSafePositionButton->setEnabled(active && mSafePositionSet);
     mUi.setSafePositionButton->setEnabled(active);
     mUi.resetButton->setEnabled(active);
     mUi.unlockButton->setEnabled(active);
@@ -163,7 +196,10 @@ void ControlFormController::setFormActive(bool active)
 
 void ControlFormController::initialise()
 {
-
+    mSafePositionSet = false;
+    mXYOriginSet = false;
+    mZOriginSet = false;
+    setFormActive(false);
 }
 
 void ControlFormController::highlightUnlockReset(bool highlight)
@@ -182,12 +218,16 @@ void ControlFormController::highlightUnlockReset(bool highlight)
 
 void ControlFormController::onGoToSafePositionButtonClicked()
 {
-    emit gcodeCommandManualSendSignal(GcodeCommand::GoToSafePositionCommand());
+    if (mSafePositionSet)
+    {
+        emit gcodeCommandManualSendSignal(GcodeCommand::GoToSafePositionCommand());
+    }
 }
 
 void ControlFormController::onResetButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::ResetCommand());
+    mSafePositionSet = false;
 }
 
 void ControlFormController::onUnlockButtonClicked()
@@ -197,13 +237,37 @@ void ControlFormController::onUnlockButtonClicked()
 
 void ControlFormController::onSetSafePositionButtonClicked()
 {
+    if (mSafePositionSet)
+    {
+        QMessageBox dialog(this);
+
+        dialog.setWindowTitle(tr("Reset Safe Position"));
+        dialog.setText(tr("A G28 Safe position has already been set.\n\nAre you sure you want to overwrite it?"));
+        dialog.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+
+        auto result = dialog.exec();
+
+        if (result != QMessageBox::Ok)
+        {
+            evaluateGotoSafePosition();
+            return;
+        }
+    }
+
     emit gcodeCommandManualSendSignal(GcodeCommand::SetSafePositionCommand());
     emit safePositionSetSignal();
+    mSafePositionSet = true;
+    evaluateGotoSafePosition();
 }
 
 bool ControlFormController::isModelValid()
 {
     return mSettingsModelHandle != nullptr;
+}
+
+void ControlFormController::evaluateGotoSafePosition()
+{
+   mUi.goToSafePositionButton->setEnabled(mSafePositionSet);
 }
 
 void ControlFormController::onSettingsModelReady(SqlSettingsModel* model)
