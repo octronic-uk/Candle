@@ -70,10 +70,10 @@ void ControlFormController::onProbeButtonClicked()
     }
 }
 
-void ControlFormController::setResetUnlockActive(bool active)
+void ControlFormController::setClearAlarmResetActive(bool active)
 {
     mUi.resetButton->setEnabled(active);
-    mUi.unlockButton->setEnabled(active);
+    mUi.clearAlarmButton->setEnabled(active);
 }
 void ControlFormController::onZeroXYButtonClicked()
 {
@@ -146,6 +146,11 @@ void ControlFormController::onUserCommand4ButtonClicked()
     emit gcodeCommandManualSendSignal(new GcodeCommand(command));
 }
 
+void ControlFormController::onUnlockUiButtonClicked()
+{
+    emit uiLockOverrideSignal();
+}
+
 void ControlFormController::setupSignalSlots()
 {
 
@@ -157,13 +162,15 @@ void ControlFormController::setupSignalSlots()
 
     connect(mUi.goToSafePositionButton,SIGNAL(clicked()),this,SLOT(onGoToSafePositionButtonClicked()));
     connect(mUi.setSafePositionButton,SIGNAL(clicked()),this,SLOT(onSetSafePositionButtonClicked()));
-    connect(mUi.unlockButton, SIGNAL(clicked()),this,SLOT(onUnlockButtonClicked()));
+    connect(mUi.clearAlarmButton, SIGNAL(clicked()),this,SLOT(onClearAlarmButtonClicked()));
     connect(mUi.resetButton, SIGNAL(clicked()),this,SLOT(onResetButtonClicked()));
 
     connect(mUi.user1Button,SIGNAL(clicked()),this,SLOT(onUserCommand1ButtonClicked()));
     connect(mUi.user2Button,SIGNAL(clicked()),this,SLOT(onUserCommand2ButtonClicked()));
     connect(mUi.user3Button,SIGNAL(clicked()),this,SLOT(onUserCommand3ButtonClicked()));
     connect(mUi.user4Button,SIGNAL(clicked()),this,SLOT(onUserCommand4ButtonClicked()));
+
+    connect(mUi.unlockUiButton,SIGNAL(clicked()),this,SLOT(onUnlockUiButtonClicked()));
 }
 
 void ControlFormController::setFormActive(bool active)
@@ -175,7 +182,7 @@ void ControlFormController::setFormActive(bool active)
     mUi.goToSafePositionButton->setEnabled(active && mSafePositionSet);
     mUi.setSafePositionButton->setEnabled(active);
     mUi.resetButton->setEnabled(active);
-    mUi.unlockButton->setEnabled(active);
+    mUi.clearAlarmButton->setEnabled(active);
 
     if (isModelValid())
     {
@@ -202,13 +209,13 @@ void ControlFormController::initialise()
     setFormActive(false);
 }
 
-void ControlFormController::highlightUnlockReset(bool highlight)
+void ControlFormController::highlightClearAlarmReset(bool highlight)
 {
    if (highlight)
    {
-       QPalette p = mUi.unlockButton->palette();
-       p.setColor(mUi.unlockButton->backgroundRole(),QColor(200,40,40));
-       mUi.unlockButton->setPalette(p);
+       QPalette p = mUi.clearAlarmButton->palette();
+       p.setColor(mUi.clearAlarmButton->backgroundRole(),QColor(200,40,40));
+       mUi.clearAlarmButton->setPalette(p);
 
        p = mUi.resetButton->palette();
        p.setColor(mUi.resetButton->backgroundRole(),QColor(200,0,0));
@@ -230,7 +237,7 @@ void ControlFormController::onResetButtonClicked()
     mSafePositionSet = false;
 }
 
-void ControlFormController::onUnlockButtonClicked()
+void ControlFormController::onClearAlarmButtonClicked()
 {
     emit gcodeCommandManualSendSignal(GcodeCommand::UnlockCommand());
 }

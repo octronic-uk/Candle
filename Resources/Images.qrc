@@ -114,5 +114,6 @@
         <file>Images/SVG/forward.svg</file>
         <file>Images/SVG/z-origin.svg</file>
         <file>Images/SVG/magic.svg</file>
+        <file>Images/SVG/bell-slash-solid.svg</file>
     </qresource>
 </RCC>

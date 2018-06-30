@@ -9,16 +9,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>212</width>
-    <height>160</height>
+    <width>308</width>
+    <height>190</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" rowstretch="1,1,1" columnstretch="1,1,1,1" rowminimumheight="48,48,48" columnminimumwidth="48,48,48,48">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1,1,1">
+   <property name="spacing">
+    <number>0</number>
    </property>
    <property name="leftMargin">
     <number>0</number>
@@ -32,345 +32,535 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="0">
-    <widget class="QToolButton" name="homeButton">
-     <property name="enabled">
-      <bool>false</bool>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Home ($H)</string>
-     </property>
-     <property name="text">
-      <string>Home</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/SVG/home.svg</normaloff>:/Images/SVG/home.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
+     <item>
+      <widget class="QToolButton" name="homeButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Home ($H)</string>
+       </property>
+       <property name="text">
+        <string>Home</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/SVG/home.svg</normaloff>:/Images/SVG/home.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="probeZButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Z-probe</string>
+       </property>
+       <property name="text">
+        <string>Z-Probe</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/search_for_z.png</normaloff>:/Images/PNG/search_for_z.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="zeroXYButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Zero XY (G92 X0 Y0)</string>
+       </property>
+       <property name="text">
+        <string>Zero XY</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/axis_zero.png</normaloff>:/Images/PNG/axis_zero.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="zeroZButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Zero Z (G92 Z0)</string>
+       </property>
+       <property name="text">
+        <string>Zero Z</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/zero_z.png</normaloff>:/Images/PNG/zero_z.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="1">
-    <widget class="QToolButton" name="probeZButton">
-     <property name="enabled">
-      <bool>false</bool>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Z-probe</string>
-     </property>
-     <property name="text">
-      <string>Z-Probe</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/search_for_z.png</normaloff>:/Images/PNG/search_for_z.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
+     <item>
+      <widget class="QToolButton" name="setSafePositionButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Set Safe Position (G28.1)</string>
+       </property>
+       <property name="text">
+        <string>G28.1</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/SVG/smile.svg</normaloff>:/Images/SVG/smile.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="goToSafePositionButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Go To Safe Position (G28)</string>
+       </property>
+       <property name="text">
+        <string>G28</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/axis_return.png</normaloff>:/Images/PNG/axis_return.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="resetButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Reset (CTRL+X)</string>
+       </property>
+       <property name="text">
+        <string>Reset</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/SVG/restart.svg</normaloff>:/Images/SVG/restart.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="clearAlarmButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="baseSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Unlock ($X)</string>
+       </property>
+       <property name="text">
+        <string>Clear Alarm</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/SVG/bell-slash-solid.svg</normaloff>:/Images/SVG/bell-slash-solid.svg</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="2">
-    <widget class="QToolButton" name="zeroXYButton">
-     <property name="enabled">
-      <bool>false</bool>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>0</number>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Zero XY (G92 X0 Y0)</string>
-     </property>
-     <property name="text">
-      <string>Zero XY</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/axis_zero.png</normaloff>:/Images/PNG/axis_zero.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
+     <item>
+      <widget class="QToolButton" name="user1Button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Spindle on/off</string>
+       </property>
+       <property name="text">
+        <string>User 1</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/num1.png</normaloff>:/Images/PNG/num1.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="user2Button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Spindle on/off</string>
+       </property>
+       <property name="text">
+        <string>User 2</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/num2.png</normaloff>:/Images/PNG/num2.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="user3Button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Spindle on/off</string>
+       </property>
+       <property name="text">
+        <string>User 3</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/num3.png</normaloff>:/Images/PNG/num3.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="user4Button">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>48</width>
+         <height>48</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Spindle on/off</string>
+       </property>
+       <property name="text">
+        <string>User 4</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../Resources/Images.qrc">
+         <normaloff>:/Images/PNG/num4.png</normaloff>:/Images/PNG/num4.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextUnderIcon</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="3">
-    <widget class="QToolButton" name="zeroZButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Zero Z (G92 Z0)</string>
-     </property>
+   <item>
+    <widget class="QPushButton" name="unlockUiButton">
      <property name="text">
-      <string>Zero Z</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/zero_z.png</normaloff>:/Images/PNG/zero_z.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QToolButton" name="setSafePositionButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Set Safe Position (G28.1)</string>
-     </property>
-     <property name="text">
-      <string>G28.1</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/SVG/smile.svg</normaloff>:/Images/SVG/smile.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QToolButton" name="goToSafePositionButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Go To Safe Position (G28)</string>
-     </property>
-     <property name="text">
-      <string>G28</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/axis_return.png</normaloff>:/Images/PNG/axis_return.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2">
-    <widget class="QToolButton" name="resetButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Reset (CTRL+X)</string>
-     </property>
-     <property name="text">
-      <string>Reset</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/SVG/restart.svg</normaloff>:/Images/SVG/restart.svg</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="3">
-    <widget class="QToolButton" name="unlockButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Unlock ($X)</string>
-     </property>
-     <property name="text">
-      <string>Unlock</string>
+      <string>  Unlock UI</string>
      </property>
      <property name="icon">
       <iconset resource="../Resources/Images.qrc">
@@ -378,164 +568,9 @@
      </property>
      <property name="iconSize">
       <size>
-       <width>32</width>
-       <height>32</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QToolButton" name="user1Button">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Spindle on/off</string>
-     </property>
-     <property name="text">
-      <string>User 1</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/num1.png</normaloff>:/Images/PNG/num1.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
        <width>30</width>
        <height>30</height>
       </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QToolButton" name="user2Button">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Spindle on/off</string>
-     </property>
-     <property name="text">
-      <string>User 2</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/num2.png</normaloff>:/Images/PNG/num2.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>30</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QToolButton" name="user3Button">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Spindle on/off</string>
-     </property>
-     <property name="text">
-      <string>User 3</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/num3.png</normaloff>:/Images/PNG/num3.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>30</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QToolButton" name="user4Button">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>48</width>
-       <height>48</height>
-      </size>
-     </property>
-     <property name="toolTip">
-      <string>Spindle on/off</string>
-     </property>
-     <property name="text">
-      <string>User 4</string>
-     </property>
-     <property name="icon">
-      <iconset resource="../Resources/Images.qrc">
-       <normaloff>:/Images/PNG/num4.png</normaloff>:/Images/PNG/num4.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>30</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>

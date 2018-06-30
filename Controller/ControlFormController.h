@@ -38,20 +38,21 @@ public:
     void setupSignalSlots() override;
     void setFormActive(bool active) override;
     void initialise() override;
-    void highlightUnlockReset(bool highlight);
-    void setResetUnlockActive(bool active);
+    void highlightClearAlarmReset(bool highlight);
+    void setClearAlarmResetActive(bool active);
 
 signals:
 
     void gcodeCommandManualSendSignal(GcodeCommand*);
     void safePositionSetSignal();
+    void uiLockOverrideSignal();
 
 public slots:
     void onSettingsModelReady(SqlSettingsModel* model);
 
 private slots:
     void onResetButtonClicked();
-    void onUnlockButtonClicked();
+    void onClearAlarmButtonClicked();
     void onSetSafePositionButtonClicked();
     void onHomeButtonClicked();
     void onProbeButtonClicked();
@@ -62,6 +63,7 @@ private slots:
     void onUserCommand2ButtonClicked();
     void onUserCommand3ButtonClicked();
     void onUserCommand4ButtonClicked();
+    void onUnlockUiButtonClicked();
 
 private:
     ControlForm mUi;

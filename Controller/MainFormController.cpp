@@ -476,7 +476,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.programFormController->setFormActive(true);
             mUi.consoleFormController->setFormActive(true);
             mUi.controlFormController->setFormActive(true);
-            mUi.controlFormController->highlightUnlockReset(false);
+            mUi.controlFormController->highlightClearAlarmReset(false);
             mUi.jogFormController->setFormActive(true);
             mUi.overrideFormController->setFormActive(true);
             mUi.stateFormController->setClass(StateClass::Warning);
@@ -487,11 +487,11 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
             mUi.consoleFormController->setFormActive(false);
             mUi.programFormController->setFormActive(false);
             mUi.controlFormController->setFormActive(false);
-            mUi.controlFormController->highlightUnlockReset(true);
+            mUi.controlFormController->highlightClearAlarmReset(true);
             mUi.jogFormController->setFormActive(false);
             mUi.overrideFormController->setFormActive(false);
             mUi.stateFormController->setClass(StateClass::Danger);
-            mUi.controlFormController->setResetUnlockActive(true);
+            mUi.controlFormController->setClearAlarmResetActive(true);
             break;
         case GrblMachineState::Unknown:
             mUi.stateFormController->setClass(StateClass::Primary);
@@ -502,7 +502,7 @@ void MainFormController::onMachineStateUpdated(const GrblMachineState& state)
                 mUi.programFormController->setFormActive(true);
                 mUi.consoleFormController->setFormActive(true);
                 mUi.controlFormController->setFormActive(true);
-                mUi.controlFormController->highlightUnlockReset(false);
+                mUi.controlFormController->highlightClearAlarmReset(false);
                 mUi.jogFormController->setFormActive(true);
                 mUi.overrideFormController->setFormActive(true);
             }
@@ -585,6 +585,16 @@ void MainFormController::setupControlFormSignals()
         mUi.visualisationFormController,SLOT(onSafePositionSetSignal())
     );
 
+    connect
+    (
+        mUi.controlFormController,SIGNAL(uiLockOverrideSignal()),
+        this,SLOT(onUiLockOverride())
+    );
+}
+
+void MainFormController::onUiLockOverride()
+{
+    onMachineStateUpdated(GrblMachineState::Unlocked);
 }
 
 void MainFormController::onSendProgram()

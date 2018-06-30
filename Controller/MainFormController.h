@@ -93,6 +93,7 @@ private slots:
     void onStopTriggered(bool ean);
     void onToolChange(int);
 
+    void onUiLockOverride();
 private: // Members
     Ui::MainForm mUi;
     AboutFormController mAboutFormController;

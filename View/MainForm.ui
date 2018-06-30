@@ -96,20 +96,10 @@
      <addaction name="separator"/>
      <addaction name="clearRecentGcodeFilesAction"/>
     </widget>
-    <widget class="QMenu" name="recentHeightMapFilesMenu">
-     <property name="title">
-      <string>Recent HeightMap Files</string>
-     </property>
-     <addaction name="clearRecentHeightMapFilesAction"/>
-    </widget>
     <addaction name="actAbout"/>
     <addaction name="separator"/>
     <addaction name="actFileOpen"/>
     <addaction name="recentGcodeFilesMenu"/>
-    <addaction name="recentHeightMapFilesMenu"/>
-    <addaction name="separator"/>
-    <addaction name="actFileSave"/>
-    <addaction name="actFileSaveAs"/>
     <addaction name="separator"/>
     <addaction name="actFileExit"/>
    </widget>
@@ -223,7 +213,6 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actFileOpen"/>
-   <addaction name="actFileSave"/>
    <addaction name="actionClearAll"/>
    <addaction name="separator"/>
    <addaction name="actionConnect"/>
@@ -233,21 +222,21 @@
   </widget>
   <widget class="QDockWidget" name="stateDockWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize">
     <size>
-     <width>58</width>
-     <height>35</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
-     <height>524287</height>
+     <width>16777215</width>
+     <height>250</height>
     </size>
    </property>
    <property name="floating">
@@ -283,14 +272,14 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>58</width>
-     <height>35</height>
+     <width>0</width>
+     <height>0</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
-     <height>35</height>
+     <width>16777215</width>
+     <height>16777215</height>
     </size>
    </property>
    <property name="floating">
