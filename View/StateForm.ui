@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>405</width>
-    <height>191</height>
+    <width>427</width>
+    <height>206</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -441,7 +441,7 @@
     </widget>
    </item>
    <item row="7" column="3" colspan="3">
-    <widget class="QLineEdit" name="lineEdit">
+    <widget class="QLineEdit" name="spindleText">
      <property name="enabled">
       <bool>false</bool>
      </property>

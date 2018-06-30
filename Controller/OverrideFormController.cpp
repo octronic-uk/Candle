@@ -81,73 +81,86 @@ void OverrideFormController::initialise()
 
 void OverrideFormController::onFeedDefaultClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvDefault());
 }
 
 void OverrideFormController::onFeedPlusOneClicked(bool checked)
 {
 
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvPlusOne());
 }
 
 void OverrideFormController::onFeedMinusOneClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvMinusOne());
 }
 
 void OverrideFormController::onFeedPlusTenClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvPlusTen());
 }
 
 void OverrideFormController::onFeedMinusTenClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::FeedOvMinusTen());
 }
 
 void OverrideFormController::onSpindleDefaultClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvDefault());
 
 }
 
 void OverrideFormController::onSpindlePlusOneClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvPlusOne());
 
 }
 
 void OverrideFormController::onSpindleMinusOneClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvMinusOne());
 
 }
 
 void OverrideFormController::onSpindlePlusTenClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvPlusTen());
 
 }
 
 void OverrideFormController::onSpindleMinusTenClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::SpindleOvMinusTen());
 
 }
 
 void OverrideFormController::onRapidDefaultClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::RapidOvDefault());
 
 }
 
 void OverrideFormController::onRapid25PercentClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::RapidOv25Percent());
 
 }
 
 void OverrideFormController::onRapid50PercentClicked(bool checked)
 {
+    Q_UNUSED(checked)
     emit gcodeCommandManualSendSignal(GcodeCommand::RapidOv50Percent());
 }

@@ -4,7 +4,7 @@
 * A G-Code Controller and Visualiser for GRBL Machines. 
 * Written in C++/Qt
 
-__ CoconutCNC is still under *heavy* development. Please do not use it in a production environment.__
+**CoconutCNC is still under __heavy__ development. Please do not use it in a production environment.**
 
 ## Key Functions
 * Customisable User Interface. Taylor to a Touch/Mouse Driven Experience.

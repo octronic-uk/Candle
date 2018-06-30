@@ -87,6 +87,8 @@ void MainFormController::setupToolbarActions()
 
     QAction *eStop = mUi.actionStop;
     mUi.toolBar->addAction(eStop);
+
+    setupWizardMenu();
 }
 
 void MainFormController::setupToolbarSignals()
@@ -402,7 +404,7 @@ void MainFormController::setupStateFormSignals()
     connect(
         &mGrblMachineModel, SIGNAL(spindleSpeedChangedSignal(int)),
         mUi.stateFormController, SLOT(onSpindleSpeedChanged(int))
-                );
+    );
 }
 
 void MainFormController::setupVisualisationFormSignals()
@@ -595,6 +597,21 @@ void MainFormController::setupControlFormSignals()
 void MainFormController::onUiLockOverride()
 {
     onMachineStateUpdated(GrblMachineState::Unlocked);
+}
+
+void MainFormController::onActionSetupGRBLConnectionTriggered()
+{
+
+}
+
+void MainFormController::onActionSetupToolLibraryTriggered()
+{
+
+}
+
+void MainFormController::onActionSetupWorkPositionTriggered()
+{
+
 }
 
 void MainFormController::onSendProgram()
@@ -890,6 +907,25 @@ void MainFormController::setupCompletionAndBufferProgressBars()
     mBufferProgressBar.setMinimumWidth(200);
     mBufferProgressBar.setMaximumWidth(200);
     mUi.statusBar->addPermanentWidget(&mBufferProgressBar);
+}
+
+void MainFormController::setupWizardMenu()
+{
+    connect
+    (
+        mUi.actionSetup_GRBL_Connection, SIGNAL(triggered()),
+        this,SLOT(onActionSetupGRBLConnectionTriggered())
+    );
+    connect
+    (
+        mUi.actionSetup_Tool_Library, SIGNAL(triggered()),
+        this,SLOT(onActionSetupToolLibraryTriggered())
+    );
+    connect
+    (
+        mUi.actionSetup_Work_Position, SIGNAL(triggered()),
+        this,SLOT(onActionSetupWorkPositionTriggered())
+    );
 }
 
 void MainFormController::onStopTriggered(bool checked)

@@ -94,6 +94,10 @@ private slots:
     void onToolChange(int);
 
     void onUiLockOverride();
+    void onActionSetupGRBLConnectionTriggered();
+    void onActionSetupToolLibraryTriggered();
+    void onActionSetupWorkPositionTriggered();
+
 private: // Members
     Ui::MainForm mUi;
     AboutFormController mAboutFormController;
@@ -109,6 +113,7 @@ private: // Members
     QProgressBar mBufferProgressBar;
     QHBoxLayout mStatusProgressBarsHLayout;
     QLayout* mOldStatusBarLayout;
+    QMenu mWizardMenu;
 
 
 private: // Member Functions
@@ -133,6 +138,7 @@ private: // Member Functions
     void setupStateFormSignals();
     void setupVisualisationFormSignals();
     void setupCompletionAndBufferProgressBars();
+    void setupWizardMenu();
 };
 
 

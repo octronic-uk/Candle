@@ -33,7 +33,7 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1,1">
      <property name="spacing">
       <number>0</number>
      </property>
@@ -216,7 +216,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1,1">
      <property name="spacing">
       <number>0</number>
      </property>
@@ -399,7 +399,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,1,1,1">
      <property name="spacing">
       <number>0</number>
      </property>
@@ -558,7 +558,13 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="unlockUiButton">
+    <widget class="QToolButton" name="unlockUiButton">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="text">
       <string>  Unlock UI</string>
      </property>
@@ -571,6 +577,9 @@
        <width>30</width>
        <height>30</height>
       </size>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextUnderIcon</enum>
      </property>
     </widget>
    </item>

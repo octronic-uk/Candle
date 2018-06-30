@@ -152,5 +152,5 @@ void StateFormController::onFeedRateChanged(int feed)
 
 void StateFormController::onSpindleSpeedChanged(int speed)
 {
-
+   mUi.spindleText->setText(QString::number(speed));
 }

@@ -82,7 +82,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="mnuFile">
@@ -91,7 +91,7 @@
     </property>
     <widget class="QMenu" name="recentGcodeFilesMenu">
      <property name="title">
-      <string>&amp;Recent Gcode Fies</string>
+      <string>Open &amp;Recent File...</string>
      </property>
      <addaction name="separator"/>
      <addaction name="clearRecentGcodeFilesAction"/>
@@ -103,7 +103,19 @@
     <addaction name="separator"/>
     <addaction name="actFileExit"/>
    </widget>
+   <widget class="QMenu" name="menuWizards">
+    <property name="tearOffEnabled">
+     <bool>false</bool>
+    </property>
+    <property name="title">
+     <string>&amp;Wizards</string>
+    </property>
+    <addaction name="actionSetup_GRBL_Connection"/>
+    <addaction name="actionSetup_Tool_Library"/>
+    <addaction name="actionSetup_Work_Position"/>
+   </widget>
    <addaction name="mnuFile"/>
+   <addaction name="menuWizards"/>
   </widget>
   <widget class="QDockWidget" name="controlDockWidget">
    <property name="sizePolicy">
@@ -216,7 +228,6 @@
    <addaction name="actionClearAll"/>
    <addaction name="separator"/>
    <addaction name="actionConnect"/>
-   <addaction name="actionWizard"/>
    <addaction name="actFileSettings"/>
    <addaction name="separator"/>
   </widget>
@@ -229,13 +240,13 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>16777215</width>
+     <width>524287</width>
      <height>250</height>
     </size>
    </property>
@@ -272,14 +283,14 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>0</width>
-     <height>0</height>
+     <width>67</width>
+     <height>38</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>16777215</width>
-     <height>16777215</height>
+     <width>524287</width>
+     <height>38</height>
     </size>
    </property>
    <property name="floating">
@@ -312,7 +323,7 @@
      <normaloff>:/Images/SVG/folder-open.svg</normaloff>:/Images/SVG/folder-open.svg</iconset>
    </property>
    <property name="text">
-    <string>&amp;Open</string>
+    <string>&amp;Open...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -451,6 +462,21 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionSetup_GRBL_Connection">
+   <property name="text">
+    <string>Setup GRBL Connection</string>
+   </property>
+  </action>
+  <action name="actionSetup_Tool_Library">
+   <property name="text">
+    <string>Setup Tool Library</string>
+   </property>
+  </action>
+  <action name="actionSetup_Work_Position">
+   <property name="text">
+    <string>Setup Work Position</string>
    </property>
   </action>
  </widget>
